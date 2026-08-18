@@ -1,0 +1,46 @@
+{%- paginate blog.articles by 12 -%}
+  <div class="container">
+    <h1 class="h1" style="padding-top: var(--space-7);">{{ blog.title | escape }}</h1>
+
+    {%- if blog.articles_count > 0 -%}
+      <div class="article-list">
+        {%- for article in blog.articles -%}
+          <article class="article-card">
+            <a href="{{ article.url }}" class="article-card__image">
+              {%- if article.image -%}
+                <img
+                  src="{{ article.image | image_url: width: 1000 }}"
+                  alt="{{ article.image.alt | escape }}"
+                  width="{{ article.image.width }}"
+                  height="{{ article.image.height }}"
+                  loading="lazy"
+                >
+              {%- endif -%}
+            </a>
+
+            <p class="article-card__meta">{{ article.published_at | date: '%b %d, %Y' }}</p>
+            <h2 class="h4" style="margin-bottom: var(--space-2);">
+              <a href="{{ article.url }}">{{ article.title | escape }}</a>
+            </h2>
+            <p class="muted">{{ article.excerpt_or_content | strip_html | truncatewords: 28 }}</p>
+          </article>
+        {%- endfor -%}
+      </div>
+
+      {% render 'pagination', paginate: paginate %}
+    {%- else -%}
+      <div class="empty-state">
+        <p class="h3">{{ 'sections.blog.no_articles' | t }}</p>
+      </div>
+    {%- endif -%}
+  </div>
+{%- endpaginate -%}
+
+{% schema %}
+{
+  "name": "Blog posts",
+  "tag": "section",
+  "class": "main-blog-section",
+  "settings": []
+}
+{% endschema %}

@@ -1,0 +1,40 @@
+{
+  "name": "Footer",
+  "type": "footer",
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "blocks": {
+        "text-1": {
+          "type": "text",
+          "settings": {
+            "heading": "House of Garments",
+            "text": "<p>Limited-run streetwear out of Lebanon. Delivery all over Lebanon.</p>"
+          }
+        },
+        "menu-1": {
+          "type": "menu",
+          "settings": {
+            "heading": "Shop",
+            "menu": "main-menu"
+          }
+        },
+        "menu-2": {
+          "type": "menu",
+          "settings": {
+            "heading": "Info",
+            "menu": "footer"
+          }
+        }
+      },
+      "block_order": ["text-1", "menu-1", "menu-2"],
+      "settings": {
+        "show_newsletter": true,
+        "newsletter_heading": "Get the drop first",
+        "show_payment_icons": true,
+        "show_social": true
+      }
+    }
+  },
+  "order": ["footer"]
+}

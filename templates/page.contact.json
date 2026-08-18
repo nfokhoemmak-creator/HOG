@@ -1,0 +1,12 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-contact",
+      "settings": {
+        "message_label": "Message",
+        "success_message": "Thanks — we'll get back to you."
+      }
+    }
+  },
+  "order": ["main"]
+}

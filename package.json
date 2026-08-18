@@ -1,0 +1,24 @@
+{
+  "name": "house-of-garments-theme",
+  "version": "1.0.0",
+  "description": "Custom Shopify Online Store 2.0 theme for House of Garments (houseofgarments.co)",
+  "private": true,
+  "license": "MIT",
+  "homepage": "https://houseofgarments.co",
+  "scripts": {
+    "dev": "shopify theme dev",
+    "check": "shopify theme check",
+    "check:fix": "shopify theme check --auto-correct",
+    "pull": "shopify theme pull",
+    "push": "shopify theme push --unpublished",
+    "deploy": "shopify theme push --live",
+    "package": "shopify theme package",
+    "validate:json": "node scripts/validate-json.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "@shopify/cli": "^3.60.0"
+  }
+}

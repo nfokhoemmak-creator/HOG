@@ -1,0 +1,63 @@
+<div class="container container--narrow">
+  <h1 class="h1" style="padding-top: var(--space-7);">{{ page.title | escape }}</h1>
+
+  {%- if page.content != blank -%}
+    <div class="page-content rte" style="padding-bottom: var(--space-4);">{{ page.content }}</div>
+  {%- endif -%}
+
+  {%- form 'contact' -%}
+    {%- if form.posted_successfully? -%}
+      <p class="form__success">{{ section.settings.success_message }}</p>
+    {%- elsif form.errors -%}
+      <p class="form__error">{{ form.errors | default_errors }}</p>
+    {%- endif -%}
+
+    <div class="field">
+      <label class="field__label" for="ContactName">{{ 'customer.register.first_name' | t }}</label>
+      <input class="field__input" type="text" id="ContactName" name="contact[name]" autocomplete="name">
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="ContactEmail">{{ 'customer.register.email' | t }}</label>
+      <input class="field__input" type="email" id="ContactEmail" name="contact[email]" autocomplete="email" required>
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="ContactPhone">{{ 'customer.addresses.phone' | t }}</label>
+      <input class="field__input" type="tel" id="ContactPhone" name="contact[phone]" autocomplete="tel">
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="ContactBody">{{ section.settings.message_label }}</label>
+      <textarea id="ContactBody" name="contact[body]" required></textarea>
+    </div>
+
+    <button type="submit" class="btn">{{ 'customer.login_page.submit' | t }}</button>
+  {%- endform -%}
+
+  <div style="padding-block: var(--space-6);">
+    {% render 'social-links' %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Contact form",
+  "tag": "section",
+  "class": "main-contact-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "message_label",
+      "label": "Message label",
+      "default": "Message"
+    },
+    {
+      "type": "text",
+      "id": "success_message",
+      "label": "Success message",
+      "default": "Thanks — we'll get back to you."
+    }
+  ]
+}
+{% endschema %}

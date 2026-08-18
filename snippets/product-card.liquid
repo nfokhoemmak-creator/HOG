@@ -1,0 +1,155 @@
+{%- comment -%}
+  Renders a product card for grids.
+
+  Accepts:
+  - card_product: {Object} product (required)
+  - lazy_load: {Boolean} default true; pass false for the first row
+  - show_quick_add: {Boolean} defaults to settings.card_quick_add
+  - image_ratio: {String} override settings.card_image_ratio
+
+  Badges are driven by product tags — see the tag table in README.md.
+
+  Usage:
+  {% render 'product-card', card_product: product, lazy_load: false %}
+{%- endcomment -%}
+
+{%- liquid
+  assign ratio = image_ratio | default: settings.card_image_ratio
+  assign loading = 'lazy'
+  if lazy_load == false
+    assign loading = 'eager'
+  endif
+
+  assign is_limited = false
+  assign is_preorder = false
+  assign is_new = false
+
+  if card_product.tags contains 'limited'
+    assign is_limited = true
+  endif
+  if card_product.tags contains 'preorder' or card_product.title contains 'PRE-ORDER'
+    assign is_preorder = true
+  endif
+  if card_product.tags contains 'new'
+    assign is_new = true
+  endif
+
+  assign on_sale = false
+  if card_product.compare_at_price > card_product.price
+    assign on_sale = true
+  endif
+
+  assign second_image = card_product.media[1].preview_image
+-%}
+
+<div class="card{% if settings.animations_enabled %} reveal{% endif %}">
+  <a
+    class="card__media card__media--{{ ratio }}"
+    href="{{ card_product.url }}"
+    aria-label="{{ card_product.title | escape }}"
+  >
+    {%- if settings.card_show_badges -%}
+      <div class="card__badges">
+        {%- if is_preorder -%}
+          <span class="badge badge--accent">{{ 'products.product.preorder' | t }}</span>
+        {%- elsif is_limited -%}
+          <span class="badge badge--accent">{{ 'products.product.limited' | t }}</span>
+        {%- elsif is_new -%}
+          <span class="badge">{{ 'products.product.new' | t }}</span>
+        {%- endif -%}
+
+        {%- if on_sale and card_product.available -%}
+          <span class="badge badge--sale">{{ 'products.product.on_sale' | t }}</span>
+        {%- endif -%}
+
+        {%- unless card_product.available -%}
+          <span class="badge badge--sold">
+            {%- if settings.card_sold_out_short -%}
+              {{ 'products.product.sold_out_short' | t }}
+            {%- else -%}
+              {{ 'products.product.sold_out' | t }}
+            {%- endif -%}
+          </span>
+        {%- endunless -%}
+      </div>
+    {%- endif -%}
+
+    {%- if card_product.featured_media -%}
+      <img
+        class="card__image card__image--primary"
+        src="{{ card_product.featured_media | image_url: width: 800 }}"
+        srcset="
+          {{ card_product.featured_media | image_url: width: 400 }} 400w,
+          {{ card_product.featured_media | image_url: width: 600 }} 600w,
+          {{ card_product.featured_media | image_url: width: 800 }} 800w,
+          {{ card_product.featured_media | image_url: width: 1200 }} 1200w
+        "
+        sizes="(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw"
+        alt="{{ card_product.featured_media.alt | escape }}"
+        width="{{ card_product.featured_media.width }}"
+        height="{{ card_product.featured_media.height }}"
+        loading="{{ loading }}"
+      >
+
+      {%- if settings.card_hover_second_image and second_image -%}
+        <img
+          class="card__image card__image--hover"
+          src="{{ second_image | image_url: width: 800 }}"
+          srcset="
+            {{ second_image | image_url: width: 400 }} 400w,
+            {{ second_image | image_url: width: 800 }} 800w
+          "
+          sizes="(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw"
+          alt=""
+          width="{{ second_image.width }}"
+          height="{{ second_image.height }}"
+          loading="lazy"
+          aria-hidden="true"
+        >
+      {%- endif -%}
+    {%- else -%}
+      {{ 'product-1' | placeholder_svg_tag: 'card__image card__image--primary' }}
+    {%- endif -%}
+  </a>
+
+  {%- liquid
+    assign quick_add = show_quick_add
+    if quick_add == null
+      assign quick_add = settings.card_quick_add
+    endif
+  -%}
+
+  {%- if quick_add and card_product.available -%}
+    <div class="card__quick-add">
+      {%- if card_product.variants.size == 1 -%}
+        <form method="post" action="{{ routes.cart_add_url }}" data-quick-add-form>
+          <input type="hidden" name="form_type" value="product">
+          <input type="hidden" name="utf8" value="✓">
+          <input type="hidden" name="id" value="{{ card_product.variants.first.id }}">
+          <input type="hidden" name="quantity" value="1">
+          <button
+            type="submit"
+            class="btn btn--small btn--full"
+            aria-label="{{ 'products.product.quick_add_for' | t: product: card_product.title }}"
+          >
+            {{ 'products.product.quick_add' | t }}
+          </button>
+        </form>
+      {%- else -%}
+        <a class="btn btn--small btn--full" href="{{ card_product.url }}">
+          {{ 'products.product.choose_options' | t }}
+        </a>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  <div class="card__info">
+    {%- if settings.card_show_vendor and card_product.vendor != blank -%}
+      <span class="card__vendor">{{ card_product.vendor }}</span>
+    {%- endif -%}
+
+    <a class="card__title" href="{{ card_product.url }}">{{ card_product.title | escape }}</a>
+
+    {% render 'price', product: card_product %}
+  </div>
+</div>

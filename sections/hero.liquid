@@ -1,0 +1,181 @@
+{%- liquid
+  assign alignment = section.settings.text_alignment | default: 'left'
+-%}
+
+<section class="hero hero--{{ section.settings.height }} hero--{{ alignment }}">
+  <div class="hero__media">
+    {%- if section.settings.video_url != blank -%}
+      <video autoplay muted loop playsinline poster="{{ section.settings.image | image_url: width: 1600 }}">
+        <source src="{{ section.settings.video_url }}" type="video/mp4">
+      </video>
+    {%- elsif section.settings.image != blank -%}
+      <img
+        src="{{ section.settings.image | image_url: width: 2400 }}"
+        srcset="
+          {{ section.settings.image | image_url: width: 800 }} 800w,
+          {{ section.settings.image | image_url: width: 1400 }} 1400w,
+          {{ section.settings.image | image_url: width: 2000 }} 2000w,
+          {{ section.settings.image | image_url: width: 2400 }} 2400w
+        "
+        sizes="100vw"
+        alt="{{ section.settings.image.alt | escape }}"
+        width="{{ section.settings.image.width }}"
+        height="{{ section.settings.image.height }}"
+        fetchpriority="high"
+      >
+    {%- else -%}
+      {{ 'lifestyle-1' | placeholder_svg_tag: 'hero__placeholder' }}
+    {%- endif -%}
+  </div>
+
+  <div class="hero__overlay" style="opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};"></div>
+
+  <div class="container hero__content">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="hero__heading">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+
+    {%- if section.settings.subheading != blank -%}
+      <p class="hero__subheading">{{ section.settings.subheading }}</p>
+    {%- endif -%}
+
+    {%- if section.settings.show_countdown and section.settings.countdown_date != blank -%}
+      <countdown-timer data-date="{{ section.settings.countdown_date }}">
+        {%- if section.settings.countdown_heading != blank -%}
+          <p class="eyebrow">{{ section.settings.countdown_heading }}</p>
+        {%- endif -%}
+
+        <div class="countdown">
+          <div class="countdown__unit">
+            <span class="countdown__value" data-days>--</span>
+            <span class="countdown__label">{{ 'products.product.drop_countdown.days' | t }}</span>
+          </div>
+          <div class="countdown__unit">
+            <span class="countdown__value" data-hours>--</span>
+            <span class="countdown__label">{{ 'products.product.drop_countdown.hours' | t }}</span>
+          </div>
+          <div class="countdown__unit">
+            <span class="countdown__value" data-minutes>--</span>
+            <span class="countdown__label">{{ 'products.product.drop_countdown.minutes' | t }}</span>
+          </div>
+          <div class="countdown__unit">
+            <span class="countdown__value" data-seconds>--</span>
+            <span class="countdown__label">{{ 'products.product.drop_countdown.seconds' | t }}</span>
+          </div>
+        </div>
+
+        <p class="eyebrow accent" data-live-message hidden>
+          {{ 'products.product.drop_countdown.live' | t }}
+        </p>
+      </countdown-timer>
+    {%- endif -%}
+
+    {%- if section.settings.button_label != blank -%}
+      <a class="btn btn--accent" href="{{ section.settings.button_link | default: routes.all_products_collection_url }}">
+        {{ section.settings.button_label }}
+      </a>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.hero.name",
+  "tag": "section",
+  "class": "hero-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.hero.settings.image.label"
+    },
+    {
+      "type": "url",
+      "id": "video_url",
+      "label": "t:sections.hero.settings.video_url.label"
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "t:sections.hero.settings.height.label",
+      "options": [
+        { "value": "small", "label": "t:sections.hero.settings.height.options__1" },
+        { "value": "medium", "label": "t:sections.hero.settings.height.options__2" },
+        { "value": "full", "label": "t:sections.hero.settings.height.options__3" }
+      ],
+      "default": "full"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 90,
+      "step": 5,
+      "unit": "%",
+      "label": "t:sections.hero.settings.overlay_opacity.label",
+      "default": 45
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.hero.settings.heading.label",
+      "default": "NEW DROP"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "t:sections.hero.settings.subheading.label",
+      "default": "Limited pieces. Once they're gone, they're gone."
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "t:sections.hero.settings.text_alignment.label",
+      "options": [
+        { "value": "left", "label": "t:sections.hero.settings.text_alignment.options__1" },
+        { "value": "center", "label": "t:sections.hero.settings.text_alignment.options__2" },
+        { "value": "right", "label": "t:sections.hero.settings.text_alignment.options__3" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:sections.hero.settings.button_label.label",
+      "default": "Shop the drop"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "t:sections.hero.settings.button_link.label"
+    },
+    {
+      "type": "header",
+      "content": "Countdown"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_countdown",
+      "label": "t:sections.hero.settings.show_countdown.label",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "countdown_date",
+      "label": "t:sections.hero.settings.countdown_date.label",
+      "info": "t:sections.hero.settings.countdown_date.info"
+    },
+    {
+      "type": "text",
+      "id": "countdown_heading",
+      "label": "t:sections.hero.settings.countdown_heading.label",
+      "default": "Drops in"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.hero.name"
+    }
+  ]
+}
+{% endschema %}

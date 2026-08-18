@@ -1,0 +1,92 @@
+{%- liquid
+  assign scheme_class = ''
+  case section.settings.color_scheme
+    when 'accent'
+      assign scheme_class = 'announcement-bar--accent'
+    when 'inverse'
+      assign scheme_class = 'announcement-bar--inverse'
+  endcase
+-%}
+
+{%- if section.blocks.size > 0 -%}
+  <announcement-rotator
+    class="announcement-bar {{ scheme_class }}"
+    data-speed="{{ section.settings.rotate_speed }}"
+    {% unless section.settings.rotate %}data-static{% endunless %}
+    role="region"
+    aria-label="{{ 'sections.announcements.announcement' | t }}"
+  >
+    <div class="announcement-bar__list">
+      {%- for block in section.blocks -%}
+        <div
+          class="announcement-bar__item"
+          {% if forloop.index > 1 and section.settings.rotate %}hidden{% endif %}
+          {{ block.shopify_attributes }}
+        >
+          {%- if block.settings.link != blank -%}
+            <a href="{{ block.settings.link }}">{{ block.settings.text }}</a>
+          {%- else -%}
+            {{ block.settings.text }}
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+  </announcement-rotator>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.announcement_bar.name",
+  "tag": "aside",
+  "class": "announcement-bar-section",
+  "max_blocks": 5,
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:sections.announcement_bar.settings.color_scheme.label",
+      "options": [
+        { "value": "accent", "label": "t:sections.announcement_bar.settings.color_scheme.options__1" },
+        { "value": "inverse", "label": "t:sections.announcement_bar.settings.color_scheme.options__2" },
+        { "value": "default", "label": "t:sections.announcement_bar.settings.color_scheme.options__3" }
+      ],
+      "default": "accent"
+    },
+    {
+      "type": "checkbox",
+      "id": "rotate",
+      "label": "t:sections.announcement_bar.settings.rotate.label",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "rotate_speed",
+      "min": 3,
+      "max": 12,
+      "step": 1,
+      "unit": "s",
+      "label": "t:sections.announcement_bar.settings.rotate_speed.label",
+      "default": 5
+    }
+  ],
+  "blocks": [
+    {
+      "type": "announcement",
+      "name": "t:sections.announcement_bar.blocks.announcement.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "t:sections.announcement_bar.blocks.announcement.settings.text.label",
+          "default": "DELIVERY ALL OVER LEBANON"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:sections.announcement_bar.blocks.announcement.settings.link.label"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

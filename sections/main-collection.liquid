@@ -1,0 +1,170 @@
+{%- paginate collection.products by 24 -%}
+  <div class="container">
+    {%- if section.settings.show_filters or section.settings.show_sort -%}
+      <form class="facets" id="FacetForm">
+        {%- if section.settings.show_filters -%}
+          <div class="facets__filters">
+            {%- for filter in collection.filters -%}
+              {%- case filter.type -%}
+                {%- when 'list' -%}
+                  <details data-dismissible>
+                    <summary>
+                      {{ filter.label }}
+                      {%- if filter.active_values.size > 0 -%}
+                        <span class="accent">({{ filter.active_values.size }})</span>
+                      {%- endif -%}
+                      {% render 'icon', name: 'chevron-down' %}
+                    </summary>
+
+                    <div class="facets__panel">
+                      {%- for value in filter.values -%}
+                        <label class="facets__option">
+                          <input
+                            type="checkbox"
+                            name="{{ value.param_name }}"
+                            value="{{ value.value }}"
+                            {% if value.active %}checked{% endif %}
+                            {% if value.count == 0 and value.active == false %}disabled{% endif %}
+                            onchange="this.form.submit()"
+                          >
+                          <span>{{ value.label }}</span>
+                          <span class="facets__count">({{ value.count }})</span>
+                        </label>
+                      {%- endfor -%}
+                    </div>
+                  </details>
+
+                {%- when 'price_range' -%}
+                  <details data-dismissible>
+                    <summary>
+                      {{ filter.label }}
+                      {% render 'icon', name: 'chevron-down' %}
+                    </summary>
+
+                    <div class="facets__panel">
+                      <label class="facets__option">
+                        <span>{{ 'products.facets.from' | t }}</span>
+                        <input
+                          class="field__input"
+                          type="number"
+                          name="{{ filter.min_value.param_name }}"
+                          value="{{ filter.min_value.value | money_without_currency | remove: ',' }}"
+                          min="0"
+                          max="{{ filter.range_max | money_without_currency | remove: ',' }}"
+                        >
+                      </label>
+                      <label class="facets__option">
+                        <span>{{ 'products.facets.to' | t }}</span>
+                        <input
+                          class="field__input"
+                          type="number"
+                          name="{{ filter.max_value.param_name }}"
+                          value="{{ filter.max_value.value | money_without_currency | remove: ',' }}"
+                          min="0"
+                          max="{{ filter.range_max | money_without_currency | remove: ',' }}"
+                        >
+                      </label>
+                      <button type="submit" class="btn btn--small">{{ 'products.facets.apply' | t }}</button>
+                    </div>
+                  </details>
+              {%- endcase -%}
+            {%- endfor -%}
+
+            {%- if collection.filters.size > 0 -%}
+              <a class="eyebrow underline" href="{{ collection.url }}" style="align-self: center;">
+                {{ 'products.facets.clear_all' | t }}
+              </a>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+
+        <div style="display: flex; align-items: center; gap: var(--space-3);">
+          {%- if section.settings.show_count -%}
+            <span class="eyebrow">
+              {{ 'sections.collection_template.product_count_simple' | t: count: collection.products_count }}
+            </span>
+          {%- endif -%}
+
+          {%- if section.settings.show_sort -%}
+            {%- assign sort_by = collection.sort_by | default: collection.default_sort_by -%}
+            <label class="visually-hidden" for="SortBy">{{ 'products.facets.sort_by_label' | t }}</label>
+            <select class="select" name="sort_by" id="SortBy" onchange="this.form.submit()">
+              {%- for option in collection.sort_options -%}
+                <option value="{{ option.value }}" {% if option.value == sort_by %}selected{% endif %}>
+                  {{ option.name }}
+                </option>
+              {%- endfor -%}
+            </select>
+          {%- endif -%}
+        </div>
+      </form>
+    {%- endif -%}
+
+    {%- if collection.products.size > 0 -%}
+      <div
+        class="product-grid"
+        style="--cols-desktop: {{ section.settings.columns_desktop }}; --cols-mobile: {{ section.settings.columns_mobile }};"
+      >
+        {%- for product in collection.products -%}
+          {% render 'product-card', card_product: product, lazy_load: forloop.index > 4 %}
+        {%- endfor -%}
+      </div>
+
+      {% render 'pagination', paginate: paginate %}
+    {%- else -%}
+      <div class="empty-state">
+        <p class="h3">{{ 'sections.collection_template.empty' | t }}</p>
+        <a class="btn btn--outline" href="{{ collection.url }}">
+          {{ 'sections.collection_template.clear_all' | t }}
+        </a>
+      </div>
+    {%- endif -%}
+  </div>
+{%- endpaginate -%}
+
+{% schema %}
+{
+  "name": "t:sections.main_collection.name",
+  "tag": "section",
+  "class": "main-collection-section",
+  "settings": [
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "label": "t:sections.main_collection.settings.columns_desktop.label",
+      "default": 4
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "t:sections.main_collection.settings.columns_mobile.label",
+      "options": [
+        { "value": "1", "label": "t:sections.main_collection.settings.columns_mobile.options__1" },
+        { "value": "2", "label": "t:sections.main_collection.settings.columns_mobile.options__2" }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filters",
+      "label": "t:sections.main_collection.settings.show_filters.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sort",
+      "label": "t:sections.main_collection.settings.show_sort.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_count",
+      "label": "t:sections.main_collection.settings.show_count.label",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

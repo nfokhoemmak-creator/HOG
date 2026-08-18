@@ -1,0 +1,104 @@
+<div class="section">
+  <div class="container">
+    <div
+      class="image-with-text{% if settings.animations_enabled %} reveal{% endif %}"
+      style="display: grid; gap: var(--space-6); align-items: center;{% if section.settings.layout == 'right' %} direction: rtl;{% endif %}"
+    >
+      <div style="direction: ltr;">
+        {%- if section.settings.image != blank -%}
+          <img
+            src="{{ section.settings.image | image_url: width: 1400 }}"
+            srcset="
+              {{ section.settings.image | image_url: width: 700 }} 700w,
+              {{ section.settings.image | image_url: width: 1400 }} 1400w
+            "
+            sizes="(min-width: 990px) 50vw, 100vw"
+            alt="{{ section.settings.image.alt | escape }}"
+            width="{{ section.settings.image.width }}"
+            height="{{ section.settings.image.height }}"
+            loading="lazy"
+            style="width: 100%; border-radius: var(--radius);"
+          >
+        {%- else -%}
+          {{ 'lifestyle-2' | placeholder_svg_tag: '' }}
+        {%- endif -%}
+      </div>
+
+      <div style="direction: ltr; display: grid; gap: var(--space-4); justify-items: start;">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="h2">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+
+        {%- if section.settings.text != blank -%}
+          <div>{{ section.settings.text }}</div>
+        {%- endif -%}
+
+        {%- if section.settings.button_label != blank -%}
+          <a class="btn btn--outline" href="{{ section.settings.button_link }}">
+            {{ section.settings.button_label }}
+          </a>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% style %}
+  @media screen and (min-width: 750px) {
+    #shopify-section-{{ section.id }} .image-with-text {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+{% endstyle %}
+
+{% schema %}
+{
+  "name": "t:sections.image_with_text.name",
+  "tag": "section",
+  "class": "image-with-text-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.image_with_text.settings.image.label"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "t:sections.image_with_text.settings.layout.label",
+      "options": [
+        { "value": "left", "label": "t:sections.image_with_text.settings.layout.options__1" },
+        { "value": "right", "label": "t:sections.image_with_text.settings.layout.options__2" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.image_with_text.settings.heading.label",
+      "default": "Made in limited runs"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "t:sections.image_with_text.settings.text.label",
+      "default": "<p>Small batches, heavyweight fabric, and no restocks. What you see is what exists.</p>"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:sections.image_with_text.settings.button_label.label"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "t:sections.image_with_text.settings.button_link.label"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.image_with_text.name"
+    }
+  ]
+}
+{% endschema %}

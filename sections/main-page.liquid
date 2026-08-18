@@ -1,0 +1,13 @@
+<div class="container container--narrow">
+  <h1 class="h1" style="padding-top: var(--space-7);">{{ page.title | escape }}</h1>
+  <div class="page-content rte">{{ page.content }}</div>
+</div>
+
+{% schema %}
+{
+  "name": "Page",
+  "tag": "section",
+  "class": "main-page-section",
+  "settings": []
+}
+{% endschema %}

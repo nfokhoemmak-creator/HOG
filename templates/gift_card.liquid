@@ -1,0 +1,64 @@
+{% layout none %}
+{%- liquid
+  assign initial_value = gift_card.initial_value | money
+  assign balance_value = gift_card.balance | money
+  assign gift_card_title = 'gift_cards.issued.title' | t: value: initial_value, shop: shop.name
+-%}
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>{{ gift_card_title }}</title>
+    {{ 'base.css' | asset_url | stylesheet_tag }}
+    <style>
+      :root {
+        --color-bg: {{ settings.color_background }};
+        --color-bg-alt: {{ settings.color_background_alt }};
+        --color-fg: {{ settings.color_text }};
+        --color-muted: {{ settings.color_text_muted }};
+        --color-accent: {{ settings.color_accent }};
+        --color-accent-contrast: {{ settings.color_accent_contrast }};
+        --color-border: {{ settings.color_border }};
+        --color-btn-bg: {{ settings.color_button_background }};
+        --color-btn-fg: {{ settings.color_button_text }};
+        --radius: {{ settings.layout_corner_radius }}px;
+        --container: 60rem;
+        --gutter: 24px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="container container--narrow" style="padding-block: var(--space-8); text-align: center;">
+      <p class="eyebrow">{{ shop.name }}</p>
+      <h1 class="h2" style="margin-block: var(--space-4);">{{ gift_card_title }}</h1>
+
+      {%- if gift_card.expired -%}
+        <p class="form__error">{{ 'gift_cards.issued.expired' | t }}</p>
+      {%- endif -%}
+
+      <div style="display: inline-block; padding: var(--space-6); border: 1px solid var(--color-border); border-radius: var(--radius);">
+        <p class="h1 accent">{{ gift_card.balance | money }}</p>
+
+        {%- if gift_card.balance != gift_card.initial_value -%}
+          <p class="muted">{{ 'gift_cards.issued.remaining_html' | t: balance: balance_value }}</p>
+        {%- endif -%}
+
+        <p style="margin-top: var(--space-4); font-family: var(--font-heading-family); letter-spacing: 0.2em;">
+          {{ gift_card.code | format_code }}
+        </p>
+      </div>
+
+      <p style="margin-top: var(--space-6);">
+        <a class="btn btn--accent" href="{{ shop.url }}">{{ 'gift_cards.issued.shop_link' | t }}</a>
+      </p>
+
+      <p style="margin-top: var(--space-4);">
+        <button type="button" class="btn btn--outline btn--small" onclick="window.print()">
+          {{ 'gift_cards.issued.print_gift_card' | t }}
+        </button>
+      </p>
+    </main>
+  </body>
+</html>

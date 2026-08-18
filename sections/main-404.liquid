@@ -1,0 +1,19 @@
+<div class="container">
+  <div class="empty-state" style="min-height: 50vh; align-content: center;">
+    <p class="h0">404</p>
+    <h1 class="h3">{{ 'sections.404.title' | t }}</h1>
+    <p class="muted">{{ 'sections.404.subtext' | t }}</p>
+    <a class="btn btn--accent" href="{{ routes.all_products_collection_url }}">
+      {{ 'sections.404.link' | t }}
+    </a>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "404",
+  "tag": "section",
+  "class": "main-404-section",
+  "settings": []
+}
+{% endschema %}

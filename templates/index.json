@@ -1,0 +1,75 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero",
+      "settings": {
+        "height": "full",
+        "overlay_opacity": 45,
+        "heading": "NEW DROP",
+        "subheading": "Limited pieces, made in Lebanon. Once they're gone, they're gone.",
+        "text_alignment": "left",
+        "button_label": "Shop the drop",
+        "show_countdown": false,
+        "countdown_heading": "Drops in"
+      }
+    },
+    "featured": {
+      "type": "featured-collection",
+      "settings": {
+        "title": "New drop",
+        "products_to_show": 8,
+        "columns_desktop": 4,
+        "columns_mobile": "2",
+        "show_view_all": true
+      }
+    },
+    "drop-banner": {
+      "type": "drop-banner",
+      "settings": {
+        "eyebrow": "Limited run",
+        "heading": "NO RESTOCKS",
+        "text": "<p>Every piece is made in a small batch. When a size sells out, that's it.</p>",
+        "button_label": "Shop the catalog",
+        "marquee": "EVERYBODY CAN'T HAVE LIMITED ITEMS ·"
+      }
+    },
+    "categories": {
+      "type": "collection-list",
+      "blocks": {
+        "col-1": { "type": "featured_collection", "settings": {} },
+        "col-2": { "type": "featured_collection", "settings": {} },
+        "col-3": { "type": "featured_collection", "settings": {} }
+      },
+      "block_order": ["col-1", "col-2", "col-3"],
+      "settings": {
+        "title": "Shop by category",
+        "columns_desktop": 3
+      }
+    },
+    "image-with-text": {
+      "type": "image-with-text",
+      "settings": {
+        "layout": "left",
+        "heading": "Made in limited runs",
+        "text": "<p>Heavyweight fabric, boxy fits, and nothing that gets remade. House of Garments releases in drops — follow along on Instagram so you don't miss one.</p>",
+        "button_label": "Follow @houseofgarments.co",
+        "button_link": "https://www.instagram.com/houseofgarments.co/"
+      }
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {
+        "heading": "Get the drop first",
+        "text": "<p>New releases go to the list before anywhere else. Delivery all over Lebanon.</p>"
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "featured",
+    "drop-banner",
+    "categories",
+    "image-with-text",
+    "newsletter"
+  ]
+}

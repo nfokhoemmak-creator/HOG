@@ -1,0 +1,54 @@
+{%- comment -%}
+  Renders the social icon row from theme settings. Renders nothing when no
+  social URLs are set.
+
+  Usage:
+  {% render 'social-links' %}
+{%- endcomment -%}
+
+{%- liquid
+  assign has_social = false
+  if settings.social_instagram_link != blank or settings.social_tiktok_link != blank or settings.social_whatsapp_link != blank or settings.social_facebook_link != blank
+    assign has_social = true
+  endif
+-%}
+
+{%- if has_social -%}
+  <ul class="social-list">
+    {%- if settings.social_instagram_link != blank -%}
+      <li>
+        <a href="{{ settings.social_instagram_link }}" target="_blank" rel="noopener" aria-describedby="a11y-new-window-message">
+          <span class="visually-hidden">Instagram</span>
+          {% render 'icon', name: 'instagram' %}
+        </a>
+      </li>
+    {%- endif -%}
+
+    {%- if settings.social_tiktok_link != blank -%}
+      <li>
+        <a href="{{ settings.social_tiktok_link }}" target="_blank" rel="noopener" aria-describedby="a11y-new-window-message">
+          <span class="visually-hidden">TikTok</span>
+          {% render 'icon', name: 'tiktok' %}
+        </a>
+      </li>
+    {%- endif -%}
+
+    {%- if settings.social_whatsapp_link != blank -%}
+      <li>
+        <a href="{{ settings.social_whatsapp_link }}" target="_blank" rel="noopener" aria-describedby="a11y-new-window-message">
+          <span class="visually-hidden">WhatsApp</span>
+          {% render 'icon', name: 'whatsapp' %}
+        </a>
+      </li>
+    {%- endif -%}
+
+    {%- if settings.social_facebook_link != blank -%}
+      <li>
+        <a href="{{ settings.social_facebook_link }}" target="_blank" rel="noopener" aria-describedby="a11y-new-window-message">
+          <span class="visually-hidden">Facebook</span>
+          {% render 'icon', name: 'facebook' %}
+        </a>
+      </li>
+    {%- endif -%}
+  </ul>
+{%- endif -%}

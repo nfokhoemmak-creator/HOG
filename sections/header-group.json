@@ -1,0 +1,39 @@
+{
+  "name": "Header",
+  "type": "header",
+  "sections": {
+    "announcement-bar": {
+      "type": "announcement-bar",
+      "blocks": {
+        "announcement-1": {
+          "type": "announcement",
+          "settings": {
+            "text": "DELIVERY ALL OVER LEBANON"
+          }
+        },
+        "announcement-2": {
+          "type": "announcement",
+          "settings": {
+            "text": "EVERYBODY CAN'T HAVE LIMITED ITEMS"
+          }
+        }
+      },
+      "block_order": ["announcement-1", "announcement-2"],
+      "settings": {
+        "color_scheme": "accent",
+        "rotate": true,
+        "rotate_speed": 5
+      }
+    },
+    "header": {
+      "type": "header",
+      "settings": {
+        "menu": "main-menu",
+        "sticky": true,
+        "show_search": true,
+        "show_account": true
+      }
+    }
+  },
+  "order": ["announcement-bar", "header"]
+}

@@ -1,0 +1,73 @@
+<article class="container container--narrow">
+  <div style="padding-top: var(--space-7);">
+    <p class="eyebrow">{{ article.published_at | date: '%b %d, %Y' }}</p>
+    <h1 class="h1" style="margin-block: var(--space-3);">{{ article.title | escape }}</h1>
+    {%- if article.author != blank -%}
+      <p class="muted">{{ 'sections.article.by_author' | t: author: article.author }}</p>
+    {%- endif -%}
+  </div>
+
+  {%- if article.image -%}
+    <img
+      src="{{ article.image | image_url: width: 1400 }}"
+      alt="{{ article.image.alt | escape }}"
+      width="{{ article.image.width }}"
+      height="{{ article.image.height }}"
+      style="width: 100%; margin-top: var(--space-5); border-radius: var(--radius);"
+    >
+  {%- endif -%}
+
+  <div class="page-content rte">{{ article.content }}</div>
+
+  <a class="underline eyebrow" href="{{ blog.url }}">
+    {{ 'sections.article.back_to_blog' | t: title: blog.title }}
+  </a>
+
+  {%- if blog.comments_enabled? -%}
+    <div style="padding-block: var(--space-7);">
+      {%- if article.comments_count > 0 -%}
+        <h2 class="h3" style="margin-bottom: var(--space-4);">{{ article.comments_count }}</h2>
+        {%- for comment in article.comments -%}
+          <div style="padding-block: var(--space-3); border-top: 1px solid var(--color-border);">
+            <p>{{ comment.content }}</p>
+            <p class="muted" style="font-size: 1.2rem;">{{ comment.author }} — {{ comment.created_at | date: '%b %d, %Y' }}</p>
+          </div>
+        {%- endfor -%}
+      {%- endif -%}
+
+      {%- form 'new_comment', article -%}
+        {%- if form.errors -%}
+          <p class="form__error">{{ form.errors | default_errors }}</p>
+        {%- elsif form.posted_successfully? -%}
+          <p class="form__success">{{ 'general.newsletter_form.confirmation' | t }}</p>
+        {%- endif -%}
+
+        <div class="field">
+          <label class="field__label" for="CommentAuthor">{{ 'customer.register.first_name' | t }}</label>
+          <input class="field__input" type="text" id="CommentAuthor" name="comment[author]" required>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="CommentEmail">{{ 'customer.register.email' | t }}</label>
+          <input class="field__input" type="email" id="CommentEmail" name="comment[email]" required>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="CommentBody">{{ 'sections.article.share' | t }}</label>
+          <textarea id="CommentBody" name="comment[body]" required></textarea>
+        </div>
+
+        <button type="submit" class="btn">{{ 'customer.login_page.submit' | t }}</button>
+      {%- endform -%}
+    </div>
+  {%- endif -%}
+</article>
+
+{% schema %}
+{
+  "name": "Blog post",
+  "tag": "section",
+  "class": "main-article-section",
+  "settings": []
+}
+{% endschema %}

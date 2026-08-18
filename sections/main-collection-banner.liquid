@@ -1,0 +1,46 @@
+<div class="container">
+  <div class="collection-banner">
+    <h1 class="collection-banner__title">{{ collection.title | escape }}</h1>
+
+    {%- if section.settings.show_description and collection.description != blank -%}
+      <div class="muted" style="max-width: 60ch;">{{ collection.description }}</div>
+    {%- endif -%}
+
+    {%- if section.settings.show_image and collection.image -%}
+      <img
+        src="{{ collection.image | image_url: width: 1800 }}"
+        srcset="
+          {{ collection.image | image_url: width: 900 }} 900w,
+          {{ collection.image | image_url: width: 1800 }} 1800w
+        "
+        sizes="100vw"
+        alt="{{ collection.image.alt | escape }}"
+        width="{{ collection.image.width }}"
+        height="{{ collection.image.height }}"
+        style="width: 100%; aspect-ratio: 21 / 9; object-fit: cover; border-radius: var(--radius); margin-top: var(--space-4);"
+      >
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.main_collection_banner.name",
+  "tag": "section",
+  "class": "collection-banner-section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_image",
+      "label": "t:sections.main_collection_banner.settings.show_image.label",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "t:sections.main_collection_banner.settings.show_description.label",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

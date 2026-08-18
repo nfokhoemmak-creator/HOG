@@ -1,0 +1,79 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "blocks": {
+        "badges": { "type": "badges", "settings": {} },
+        "title": { "type": "title", "settings": {} },
+        "price": { "type": "price", "settings": {} },
+        "variant_picker": { "type": "variant_picker", "settings": {} },
+        "quantity": { "type": "quantity_selector", "settings": {} },
+        "buy_buttons": {
+          "type": "buy_buttons",
+          "settings": {
+            "show_dynamic_checkout": true
+          }
+        },
+        "description": { "type": "description", "settings": {} },
+        "fabric": {
+          "type": "accordion",
+          "settings": {
+            "heading": "Materials",
+            "metafield": "custom.fabric"
+          }
+        },
+        "fit": {
+          "type": "accordion",
+          "settings": {
+            "heading": "Fit",
+            "metafield": "custom.fit"
+          }
+        },
+        "size_guide": {
+          "type": "accordion",
+          "settings": {
+            "heading": "Size guide",
+            "metafield": "custom.size_guide"
+          }
+        },
+        "shipping": {
+          "type": "accordion",
+          "settings": {
+            "heading": "Shipping & returns",
+            "content": "<p>Delivery all over Lebanon, 2–4 business days. Exchanges accepted within 7 days on unworn pieces with tags attached.</p>"
+          }
+        },
+        "share": { "type": "share", "settings": {} }
+      },
+      "block_order": [
+        "badges",
+        "title",
+        "price",
+        "variant_picker",
+        "quantity",
+        "buy_buttons",
+        "description",
+        "fabric",
+        "fit",
+        "size_guide",
+        "shipping",
+        "share"
+      ],
+      "settings": {
+        "media_layout": "stacked",
+        "enable_sticky_info": true
+      }
+    },
+    "related": {
+      "type": "featured-collection",
+      "settings": {
+        "title": "You might also like",
+        "products_to_show": 4,
+        "columns_desktop": 4,
+        "columns_mobile": "2",
+        "show_view_all": true
+      }
+    }
+  },
+  "order": ["main", "related"]
+}

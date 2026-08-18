@@ -1,0 +1,161 @@
+<div class="container">
+  <h1 class="h1" style="padding-top: var(--space-6);">{{ 'sections.cart.title' | t }}</h1>
+
+  {%- if cart.item_count == 0 -%}
+    <div class="empty-state">
+      <p class="h3">{{ 'sections.cart.empty' | t }}</p>
+      <p class="muted">{{ 'sections.cart.empty_body' | t }}</p>
+      <a class="btn" href="{{ routes.all_products_collection_url }}">
+        {{ 'sections.cart.browse_catalog' | t }}
+      </a>
+    </div>
+  {%- else -%}
+    <form action="{{ routes.cart_url }}" method="post" novalidate class="cart-page__grid">
+      <div>
+        <table class="cart-table">
+          <thead>
+            <tr>
+              <th colspan="2">{{ 'sections.cart.product' | t }}</th>
+              <th>{{ 'sections.cart.quantity' | t }}</th>
+              <th>{{ 'sections.cart.total' | t }}</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {%- for item in cart.items -%}
+              <tr>
+                <td style="width: 10rem;">
+                  <a href="{{ item.url }}">
+                    {%- if item.image -%}
+                      <img
+                        src="{{ item.image | image_url: width: 240 }}"
+                        alt="{{ item.image.alt | escape }}"
+                        width="120"
+                        height="160"
+                        loading="lazy"
+                        style="width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: var(--radius);"
+                      >
+                    {%- endif -%}
+                  </a>
+                </td>
+
+                <td>
+                  <a class="cart-item__title" href="{{ item.url }}">{{ item.product.title | escape }}</a>
+
+                  {%- unless item.product.has_only_default_variant -%}
+                    <div class="cart-item__variant">{{ item.variant.title }}</div>
+                  {%- endunless -%}
+
+                  <div class="cart-item__variant">{{ item.final_price | money }}</div>
+
+                  {%- for discount in item.line_level_discount_allocations -%}
+                    <div class="cart-item__variant accent">
+                      {{ discount.discount_application.title }} (-{{ discount.amount | money }})
+                    </div>
+                  {%- endfor -%}
+                </td>
+
+                <td>
+                  <quantity-input class="quantity-input">
+                    <button type="button" data-action="decrease" aria-label="{{ 'products.product.quantity.decrease' | t: product: item.product.title }}">&minus;</button>
+                    <input
+                      type="number"
+                      name="updates[]"
+                      value="{{ item.quantity }}"
+                      min="0"
+                      aria-label="{{ 'products.product.quantity.input_label' | t: product: item.product.title }}"
+                    >
+                    <button type="button" data-action="increase" aria-label="{{ 'products.product.quantity.increase' | t: product: item.product.title }}">+</button>
+                  </quantity-input>
+
+                  <div style="margin-top: var(--space-2);">
+                    <a class="cart-item__remove" href="{{ item.url_to_remove }}">{{ 'sections.cart.remove' | t }}</a>
+                  </div>
+                </td>
+
+                <td>{{ item.final_line_price | money }}</td>
+              </tr>
+            {%- endfor -%}
+          </tbody>
+        </table>
+
+        <button type="submit" name="update" class="btn btn--outline btn--small" style="margin-top: var(--space-4);">
+          {{ 'sections.cart.update' | t }}
+        </button>
+      </div>
+
+      <aside style="display: grid; gap: var(--space-4); padding: var(--space-5); border: 1px solid var(--color-border); border-radius: var(--radius);">
+        {%- if settings.cart_show_note -%}
+          <div class="field">
+            <label class="field__label" for="CartNote">{{ 'sections.cart.note' | t }}</label>
+            <textarea id="CartNote" name="note" placeholder="{{ 'sections.cart.note_placeholder' | t }}">{{ cart.note }}</textarea>
+          </div>
+        {%- endif -%}
+
+        <div class="cart-totals">
+          <span>{{ 'sections.cart.subtotal' | t }}</span>
+          <span>
+            {%- if settings.currency_code_enabled -%}
+              {{ cart.total_price | money_with_currency }}
+            {%- else -%}
+              {{ cart.total_price | money }}
+            {%- endif -%}
+          </span>
+        </div>
+
+        {%- for discount in cart.cart_level_discount_applications -%}
+          <div class="cart-totals accent">
+            <span>{{ discount.title }}</span>
+            <span>-{{ discount.total_allocated_amount | money }}</span>
+          </div>
+        {%- endfor -%}
+
+        <p class="cart-notice">{{ 'sections.cart.taxes_and_shipping_at_checkout' | t }}</p>
+
+        <button type="submit" name="checkout" class="btn btn--accent btn--full">
+          {{ 'sections.cart.checkout' | t }}
+        </button>
+
+        {%- if additional_checkout_buttons -%}
+          <div>{{ content_for_additional_checkout_buttons }}</div>
+        {%- endif -%}
+
+        {%- if settings.cart_notice != blank -%}
+          <div class="cart-notice">{{ settings.cart_notice }}</div>
+        {%- endif -%}
+      </aside>
+    </form>
+  {%- endif -%}
+</div>
+
+{%- if section.settings.show_cross_sell and cart.item_count > 0 -%}
+  {%- assign related = collections.all.products -%}
+  <div class="section">
+    <div class="container">
+      <div class="section__head">
+        <h2 class="h3">{{ 'sections.featured_collection.view_all' | t }}</h2>
+      </div>
+      <div class="product-grid" style="--cols-desktop: 4; --cols-mobile: 2;">
+        {%- for product in related limit: 4 -%}
+          {% render 'product-card', card_product: product %}
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.main_cart.name",
+  "tag": "section",
+  "class": "main-cart-section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_cross_sell",
+      "label": "t:sections.main_cart.settings.show_cross_sell.label",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

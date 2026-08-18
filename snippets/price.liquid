@@ -1,0 +1,79 @@
+{%- comment -%}
+  Renders a price, handling sale, unit and "from" pricing.
+
+  Accepts:
+  - product: {Object} product or variant (required)
+  - use_variant: {Boolean} price the selected/first available variant instead of the product
+  - show_compare: {Boolean} render the struck-through compare-at price (default true)
+  - price_class: {String} extra class on the wrapper
+  - id_prefix: {String} used to build data-target ids for JS updates
+
+  Usage:
+  {% render 'price', product: product, use_variant: true, id_prefix: 'ProductPrice' %}
+{%- endcomment -%}
+
+{%- liquid
+  if use_variant and product.selected_or_first_available_variant
+    assign target = product.selected_or_first_available_variant
+  else
+    assign target = product
+  endif
+
+  assign compare_at = target.compare_at_price
+  assign price = target.price | default: 0
+
+  assign on_sale = false
+  if compare_at > price
+    assign on_sale = true
+  endif
+
+  assign show_from = false
+  if product.price_varies and use_variant != true
+    assign show_from = true
+  endif
+
+  if settings.currency_code_enabled
+    assign money = price | money_with_currency
+    assign money_compare = compare_at | money_with_currency
+  else
+    assign money = price | money
+    assign money_compare = compare_at | money
+  endif
+-%}
+
+<div class="price {{ price_class }}{% if on_sale %} price--on-sale{% endif %}">
+  {%- if show_from -%}
+    <span class="price__from muted">{{ 'products.facets.from' | t }}</span>
+  {%- endif -%}
+
+  <span class="price__current" data-price-current{% if id_prefix %} id="{{ id_prefix }}-current"{% endif %}>
+    {{ money }}
+  </span>
+
+  {%- if show_compare != false -%}
+    <s
+      class="price__compare"
+      data-price-compare
+      {% if id_prefix %}id="{{ id_prefix }}-compare"{% endif %}
+      {% unless on_sale %}hidden{% endunless %}
+    >
+      {{ money_compare }}
+    </s>
+  {%- endif -%}
+
+  {%- if target.unit_price_measurement -%}
+    <span class="price__unit">
+      {{ target.unit_price | money }}
+      <span class="visually-hidden">{{ 'accessibility.unit_price_separator' | t }}</span>
+      /
+      {%- if target.unit_price_measurement.reference_value != 1 -%}
+        {{- target.unit_price_measurement.reference_value -}}
+      {%- endif -%}
+      {{ target.unit_price_measurement.reference_unit }}
+    </span>
+  {%- endif -%}
+
+  <span class="visually-hidden">
+    {%- if on_sale -%}{{ 'products.product.on_sale' | t }}{%- endif -%}
+  </span>
+</div>

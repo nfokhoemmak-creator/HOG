@@ -1,0 +1,51 @@
+<div class="container">
+  <h1 class="h1" style="padding-top: var(--space-7);">{{ page_title }}</h1>
+
+  <div class="product-grid" style="--cols-desktop: 3; --cols-mobile: 2; margin-top: var(--space-5);">
+    {%- for list_collection in collections -%}
+      {%- if list_collection.all_products_count > 0 -%}
+        <div class="card">
+          <a class="card__media card__media--portrait" href="{{ list_collection.url }}">
+            {%- if list_collection.image -%}
+              <img
+                class="card__image card__image--primary"
+                src="{{ list_collection.image | image_url: width: 800 }}"
+                alt="{{ list_collection.image.alt | escape }}"
+                width="{{ list_collection.image.width }}"
+                height="{{ list_collection.image.height }}"
+                loading="lazy"
+              >
+            {%- elsif list_collection.products.first.featured_media -%}
+              <img
+                class="card__image card__image--primary"
+                src="{{ list_collection.products.first.featured_media | image_url: width: 800 }}"
+                alt=""
+                width="800"
+                height="1067"
+                loading="lazy"
+              >
+            {%- else -%}
+              {{ 'collection-1' | placeholder_svg_tag: 'card__image' }}
+            {%- endif -%}
+          </a>
+
+          <div class="card__info">
+            <a class="card__title" href="{{ list_collection.url }}">{{ list_collection.title | escape }}</a>
+            <span class="card__vendor">
+              {{ 'sections.collection_template.product_count_simple' | t: count: list_collection.all_products_count }}
+            </span>
+          </div>
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Collections list",
+  "tag": "section",
+  "class": "main-list-collections-section",
+  "settings": []
+}
+{% endschema %}

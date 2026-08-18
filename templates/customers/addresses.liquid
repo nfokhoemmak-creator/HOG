@@ -1,0 +1,52 @@
+<div class="container account" style="grid-template-columns: 1fr;">
+  <div>
+    <h1 class="h2" style="margin-bottom: var(--space-5);">{{ 'customer.addresses.title' | t }}</h1>
+
+    <details class="accordion" style="margin-bottom: var(--space-6);">
+      <summary>
+        {{ 'customer.addresses.add_new' | t }}
+        {% render 'icon', name: 'plus' %}
+      </summary>
+
+      <div class="accordion__content account__form">
+        {%- form 'customer_address', customer.new_address -%}
+          {% render 'address-fields', form: form %}
+          <button type="submit" class="btn">{{ 'customer.addresses.add' | t }}</button>
+        {%- endform -%}
+      </div>
+    </details>
+
+    <div class="address-list">
+      {%- paginate customer.addresses by 10 -%}
+        {%- for address in customer.addresses -%}
+          <div class="address-card">
+            {%- if address == customer.default_address -%}
+              <span class="badge badge--accent">{{ 'customer.addresses.default' | t }}</span>
+            {%- endif -%}
+
+            <div style="margin-block: var(--space-3);">{{ address | format_address }}</div>
+
+            <details>
+              <summary class="underline eyebrow" style="cursor: pointer;">
+                {{ 'customer.addresses.edit' | t }}
+              </summary>
+
+              <div style="margin-top: var(--space-4);" class="account__form">
+                {%- form 'customer_address', address -%}
+                  {% render 'address-fields', form: form %}
+                  <button type="submit" class="btn btn--small">{{ 'customer.addresses.update' | t }}</button>
+                {%- endform -%}
+              </div>
+            </details>
+          </div>
+        {%- endfor -%}
+
+        {% render 'pagination', paginate: paginate %}
+      {%- endpaginate -%}
+    </div>
+
+    <p style="margin-top: var(--space-5);">
+      <a class="underline" href="{{ routes.account_url }}">{{ 'customer.account.return' | t }}</a>
+    </p>
+  </div>
+</div>

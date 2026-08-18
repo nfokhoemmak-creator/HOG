@@ -1,0 +1,104 @@
+{%- liquid
+  assign target = collections[section.settings.collection]
+  assign limit = section.settings.products_to_show
+
+  assign fallback_title = 'onboarding.collection_title' | t
+  assign heading = section.settings.title | default: target.title | default: fallback_title
+-%}
+
+<div class="section">
+  <div class="container">
+    <div class="section__head">
+      <h2 class="h2">{{ heading }}</h2>
+
+      {%- if section.settings.show_view_all and target != blank -%}
+        <a class="underline eyebrow" href="{{ target.url }}">
+          {{ 'sections.featured_collection.view_all' | t }}
+        </a>
+      {%- endif -%}
+    </div>
+
+    <div
+      class="product-grid"
+      style="--cols-desktop: {{ section.settings.columns_desktop }}; --cols-mobile: {{ section.settings.columns_mobile }};"
+    >
+      {%- if target.products.size > 0 -%}
+        {%- for product in target.products limit: limit -%}
+          {% render 'product-card', card_product: product, lazy_load: forloop.index > 4 %}
+        {%- endfor -%}
+      {%- else -%}
+        {%- for i in (1..limit) -%}
+          <div class="card">
+            <div class="card__media card__media--{{ settings.card_image_ratio }}">
+              {{ 'product-' | append: forloop.index | placeholder_svg_tag: 'card__image' }}
+            </div>
+            <div class="card__info">
+              <span class="card__title">{{ 'onboarding.product_title' | t }}</span>
+              <div class="price"><span class="price__current">{{ 3000 | money }}</span></div>
+            </div>
+          </div>
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.featured_collection.name",
+  "tag": "section",
+  "class": "featured-collection-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "t:sections.featured_collection.settings.title.label",
+      "default": "New drop"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "t:sections.featured_collection.settings.collection.label"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 2,
+      "max": 16,
+      "step": 1,
+      "label": "t:sections.featured_collection.settings.products_to_show.label",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "label": "t:sections.featured_collection.settings.columns_desktop.label",
+      "default": 4
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "t:sections.featured_collection.settings.columns_mobile.label",
+      "options": [
+        { "value": "1", "label": "t:sections.featured_collection.settings.columns_mobile.options__1" },
+        { "value": "2", "label": "t:sections.featured_collection.settings.columns_mobile.options__2" }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "t:sections.featured_collection.settings.show_view_all.label",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.featured_collection.name"
+    }
+  ]
+}
+{% endschema %}

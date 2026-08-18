@@ -1,0 +1,39 @@
+{%- comment -%}
+  Renders numbered pagination.
+
+  Accepts:
+  - paginate: {Object} the paginate object from {% paginate %} (required)
+
+  Usage:
+  {% render 'pagination', paginate: paginate %}
+{%- endcomment -%}
+
+{%- if paginate.pages > 1 -%}
+  <nav class="pagination" role="navigation" aria-label="{{ 'general.pagination.label' | t }}">
+    {%- if paginate.previous -%}
+      <a href="{{ paginate.previous.url }}" aria-label="{{ 'general.pagination.previous' | t }}">
+        {% render 'icon', name: 'arrow-right' %}
+      </a>
+    {%- endif -%}
+
+    {%- for part in paginate.parts -%}
+      {%- if part.is_link -%}
+        <a href="{{ part.url }}" aria-label="{{ 'general.pagination.page' | t: number: part.title }}">
+          {{- part.title -}}
+        </a>
+      {%- elsif part.title == current_page -%}
+        <span aria-current="page" aria-label="{{ 'general.pagination.page' | t: number: part.title }}">
+          {{- part.title -}}
+        </span>
+      {%- else -%}
+        <span>{{ part.title }}</span>
+      {%- endif -%}
+    {%- endfor -%}
+
+    {%- if paginate.next -%}
+      <a href="{{ paginate.next.url }}" aria-label="{{ 'general.pagination.next' | t }}">
+        {% render 'icon', name: 'arrow-right' %}
+      </a>
+    {%- endif -%}
+  </nav>
+{%- endif -%}

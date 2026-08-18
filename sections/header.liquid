@@ -1,0 +1,155 @@
+{%- liquid
+  assign menu = linklists[section.settings.menu]
+-%}
+
+<header class="header{% if section.settings.sticky %} header--sticky{% endif %}">
+  <div class="container header__inner">
+    <menu-drawer class="menu-toggle">
+      <button
+        type="button"
+        class="header__icon"
+        data-menu-open
+        aria-expanded="false"
+        aria-controls="MenuDrawer"
+        aria-label="{{ 'general.menu' | t }}"
+      >
+        {% render 'icon', name: 'menu' %}
+      </button>
+
+      <div class="menu-drawer" id="MenuDrawer" role="dialog" aria-modal="true" aria-label="{{ 'general.menu' | t }}">
+        <div class="menu-drawer__head">
+          <span class="eyebrow">{{ 'general.menu' | t }}</span>
+          <button type="button" class="header__icon" data-menu-close aria-label="{{ 'general.close' | t }}">
+            {% render 'icon', name: 'close' %}
+          </button>
+        </div>
+
+        <nav class="menu-drawer__list" aria-label="{{ 'general.menu' | t }}">
+          {%- for link in menu.links -%}
+            <div>
+              <a href="{{ link.url }}" {% if link.active %}aria-current="page"{% endif %}>{{ link.title }}</a>
+              {%- if link.links.size > 0 -%}
+                <div class="menu-drawer__sublist">
+                  {%- for child in link.links -%}
+                    <a href="{{ child.url }}">{{ child.title }}</a>
+                  {%- endfor -%}
+                </div>
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
+        </nav>
+      </div>
+    </menu-drawer>
+
+    {%- if request.page_type == 'index' -%}
+      <h1 class="header__logo">
+    {%- else -%}
+      <div class="header__logo">
+    {%- endif -%}
+      <a href="{{ routes.root_url }}">
+        {%- if settings.logo != blank -%}
+          <img
+            src="{{ settings.logo | image_url: width: 600 }}"
+            alt="{{ shop.name | escape }}"
+            width="{{ settings.logo.width }}"
+            height="{{ settings.logo.height }}"
+            style="width: {{ settings.logo_width }}px;"
+          >
+        {%- else -%}
+          {{ shop.name }}
+        {%- endif -%}
+      </a>
+    {%- if request.page_type == 'index' -%}
+      </h1>
+    {%- else -%}
+      </div>
+    {%- endif -%}
+
+    <nav class="header__nav" aria-label="{{ 'general.menu' | t }}">
+      {%- for link in menu.links -%}
+        <a href="{{ link.url }}" {% if link.active %}aria-current="page"{% endif %}>{{ link.title }}</a>
+      {%- endfor -%}
+    </nav>
+
+    <div class="header__actions">
+      {%- if section.settings.show_search -%}
+        <a class="header__icon" href="{{ routes.search_url }}" aria-label="{{ 'general.search.search' | t }}">
+          {% render 'icon', name: 'search' %}
+        </a>
+      {%- endif -%}
+
+      {%- if section.settings.show_account and shop.customer_accounts_enabled -%}
+        <a
+          class="header__icon"
+          href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}"
+          aria-label="{{ 'general.account' | t }}"
+        >
+          {% render 'icon', name: 'account' %}
+        </a>
+      {%- endif -%}
+
+      <a
+        class="header__icon"
+        href="{{ routes.cart_url }}"
+        aria-label="{{ 'general.cart' | t }}"
+        {% if settings.cart_type == 'drawer' %}data-cart-trigger{% endif %}
+      >
+        {% render 'icon', name: 'cart' %}
+        <span class="cart-count" data-cart-count {% if cart.item_count == 0 %}hidden{% endif %}>
+          {{- cart.item_count -}}
+        </span>
+      </a>
+    </div>
+  </div>
+</header>
+
+{%- comment -%} Structured data so search results carry the brand correctly. {%- endcomment -%}
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": {{ shop.name | json }},
+    "url": {{ shop.url | append: routes.root_url | json }},
+    {%- if settings.logo -%}
+      "logo": {{ settings.logo | image_url: width: 600 | prepend: "https:" | json }},
+    {%- endif -%}
+    {%- if settings.social_instagram_link != blank -%}
+      "sameAs": [{{ settings.social_instagram_link | json }}],
+    {%- endif -%}
+    "description": {{ shop.description | default: settings.brand_tagline | json }}
+  }
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.header.name",
+  "tag": "div",
+  "class": "header-section",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "t:sections.header.settings.menu.label",
+      "default": "main-menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky",
+      "label": "t:sections.header.settings.sticky.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "t:sections.header.settings.show_search.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_account",
+      "label": "t:sections.header.settings.show_account.label",
+      "default": true
+    }
+  ]
+}
+{% endschema %}
