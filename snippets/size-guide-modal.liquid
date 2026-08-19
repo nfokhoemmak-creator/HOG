@@ -1,0 +1,113 @@
+{%- comment -%}
+  Renders the size-guide modal dialog for the product page.
+
+  Content resolution order:
+  1. Product metafield named in block.settings.metafield (rich text)
+  2. Page picked in block.settings.page
+  3. Manual chart typed into block.settings.chart (one row per line,
+     cells separated by commas; the first line is the header row)
+
+  The optional block.settings.note rich text renders under whichever
+  content source wins.
+
+  Accepts:
+  - modal_id: {String} DOM id, unique per section (required)
+  - block: {Object} the size_guide block (required)
+  - product: {Object} product the metafield is read from
+
+  Usage:
+  {% render 'size-guide-modal', modal_id: modal_id, block: block, product: product %}
+{%- endcomment -%}
+
+{%- liquid
+  assign heading = block.settings.label
+  if heading == blank
+    assign heading = 'products.product.size_guide' | t
+  endif
+
+  assign meta_value = blank
+  if block.settings.metafield != blank
+    assign parts = block.settings.metafield | split: '.'
+    assign namespace = parts[0]
+    assign key = parts[1]
+    assign meta_value = product.metafields[namespace][key]
+  endif
+
+  assign guide_page = block.settings.page
+-%}
+
+<div
+  class="modal"
+  id="{{ modal_id }}"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="{{ modal_id }}-title"
+  hidden
+  data-modal
+>
+  <div class="modal__overlay" data-modal-close></div>
+
+  {%- comment -%}
+    tabindex="-1" on the panel keeps focus (and the Escape handler) inside
+    the dialog when a visitor clicks non-interactive content; tabindex="0"
+    on the body makes the scrollable chart reachable by keyboard.
+  {%- endcomment -%}
+  <div class="modal__panel" tabindex="-1">
+    <div class="modal__head">
+      <h2 class="h4" id="{{ modal_id }}-title">{{ heading }}</h2>
+      <button
+        type="button"
+        class="modal__close"
+        data-modal-close
+        aria-label="{{ 'general.close' | t }}"
+      >
+        {% render 'icon', name: 'close' %}
+      </button>
+    </div>
+
+    <div class="modal__body rte" tabindex="0" role="region" aria-labelledby="{{ modal_id }}-title">
+      {%- if meta_value != blank -%}
+        {{ meta_value | metafield_tag }}
+      {%- elsif guide_page != blank -%}
+        {{ guide_page.content }}
+      {%- elsif block.settings.chart != blank -%}
+        {%- assign rows = block.settings.chart | strip | newline_to_br | split: '<br />' -%}
+        <div class="size-chart-wrap">
+          <table class="size-chart">
+            {%- for row in rows -%}
+              {%- assign cells = row | strip | split: ',' -%}
+              {%- if cells.size == 0 -%}{%- continue -%}{%- endif -%}
+              {%- if forloop.first -%}
+                <thead>
+                  <tr>
+                    {%- for cell in cells -%}
+                      <th scope="col">{{ cell | strip }}</th>
+                    {%- endfor -%}
+                  </tr>
+                </thead>
+                <tbody>
+              {%- else -%}
+                <tr>
+                  {%- for cell in cells -%}
+                    {%- if forloop.first -%}
+                      <th scope="row">{{ cell | strip }}</th>
+                    {%- else -%}
+                      <td>{{ cell | strip }}</td>
+                    {%- endif -%}
+                  {%- endfor -%}
+                </tr>
+              {%- endif -%}
+              {%- if forloop.last -%}
+                </tbody>
+              {%- endif -%}
+            {%- endfor -%}
+          </table>
+        </div>
+      {%- endif -%}
+
+      {%- if block.settings.note != blank -%}
+        <div class="size-guide__note muted">{{ block.settings.note }}</div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>

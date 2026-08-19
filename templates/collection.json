@@ -3,6 +3,8 @@
     "banner": {
       "type": "main-collection-banner",
       "settings": {
+        "text_alignment": "center",
+        "show_count": true,
         "show_image": false,
         "show_description": true
       }

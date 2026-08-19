@@ -39,7 +39,12 @@
     "close": "Close",
     "menu": "Menu",
     "cart": "Cart",
-    "account": "Account"
+    "account": "Account",
+    "video": {
+      "sound": "Sound",
+      "play": "Play video",
+      "pause": "Pause video"
+    }
   },
   "accessibility": {
     "skip_to_text": "Skip to content",
@@ -92,6 +97,10 @@
     },
     "featured_collection": {
       "view_all": "View all"
+    },
+    "video_showcase": {
+      "label": "Videos",
+      "empty": "Add video blocks to this section to build the video strip."
     },
     "collection_list": {
       "view_all": "View all collections"
@@ -169,6 +178,7 @@
       "view_details": "View details",
       "quick_add": "Quick add",
       "quick_add_for": "Quick add {{ product }}",
+      "quick_add_size": "Quick add {{ product }} in size {{ size }}",
       "choose_options": "Choose options",
       "variant_sold_out_or_unavailable": "Variant sold out or unavailable",
       "description": "Description",

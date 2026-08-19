@@ -1,9 +1,15 @@
 <div class="container">
-  <div class="collection-banner">
+  <div class="collection-banner{% if section.settings.text_alignment == 'center' %} collection-banner--center{% endif %}">
     <h1 class="collection-banner__title">{{ collection.title | escape }}</h1>
 
+    {%- if section.settings.show_count -%}
+      <p class="eyebrow">
+        {{ 'sections.collection_template.product_count_simple' | t: count: collection.products_count }}
+      </p>
+    {%- endif -%}
+
     {%- if section.settings.show_description and collection.description != blank -%}
-      <div class="muted" style="max-width: 60ch;">{{ collection.description }}</div>
+      <div class="muted collection-banner__description">{{ collection.description }}</div>
     {%- endif -%}
 
     {%- if section.settings.show_image and collection.image -%}
@@ -29,6 +35,22 @@
   "tag": "section",
   "class": "collection-banner-section",
   "settings": [
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "t:sections.main_collection_banner.settings.text_alignment.label",
+      "options": [
+        { "value": "left", "label": "t:sections.main_collection_banner.settings.text_alignment.options__1" },
+        { "value": "center", "label": "t:sections.main_collection_banner.settings.text_alignment.options__2" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_count",
+      "label": "t:sections.main_collection_banner.settings.show_count.label",
+      "default": true
+    },
     {
       "type": "checkbox",
       "id": "show_image",

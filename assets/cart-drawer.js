@@ -42,16 +42,19 @@
 
   class CartDrawer extends HTMLElement {
     connectedCallback() {
-      this.panel = this.querySelector('.cart-drawer__panel');
-      this.overlay = this.querySelector('.cart-drawer__overlay');
-      this.closeButton = this.querySelector('[data-cart-close]');
       this.releaseFocus = null;
       this.opener = null;
 
-      if (this.overlay) this.overlay.addEventListener('click', () => this.close());
-      if (this.closeButton) this.closeButton.addEventListener('click', () => this.close());
+      this.bindDocument();
+      this.bindParts();
+    }
 
-      this.bindLineItems();
+    // Document-level listeners must attach exactly once — refresh() swaps
+    // innerHTML and rebinds parts, and stacking these would multiply every
+    // cart render.
+    bindDocument() {
+      if (this.documentBound) return;
+      this.documentBound = true;
 
       document.addEventListener('cart:updated', (event) => {
         this.render(event.detail && event.detail.sections);
@@ -68,6 +71,17 @@
         event.preventDefault();
         this.open(trigger);
       });
+    }
+
+    bindParts() {
+      this.panel = this.querySelector('.cart-drawer__panel');
+      this.overlay = this.querySelector('.cart-drawer__overlay');
+      this.closeButton = this.querySelector('[data-cart-close]');
+
+      if (this.overlay) this.overlay.addEventListener('click', () => this.close());
+      if (this.closeButton) this.closeButton.addEventListener('click', () => this.close());
+
+      this.bindLineItems();
     }
 
     bindLineItems() {
@@ -123,7 +137,7 @@
 
       const wasOpen = this.classList.contains('is-open');
       this.innerHTML = fresh.innerHTML;
-      this.connectedCallback();
+      this.bindParts();
       if (wasOpen) this.classList.add('is-open');
 
       updateCartCount();
@@ -202,25 +216,42 @@
 
     event.preventDefault();
     const button = form.querySelector('button[type="submit"]');
+    // Size chips are too small for text swaps; they just pulse while busy.
+    const quiet = button && button.hasAttribute('data-quick-add-quiet');
     const original = button ? button.textContent : '';
 
     if (button) {
       button.disabled = true;
-      button.textContent = strings.adding || 'Adding…';
+      button.classList.add('is-busy');
+      if (!quiet) button.textContent = strings.adding || 'Adding…';
     }
 
     try {
       await addToCart(new FormData(form), button);
     } catch (error) {
-      if (button) button.textContent = error.message;
+      if (button && !quiet) button.textContent = error.message;
+      if (button && quiet) {
+        // No room for text on a size chip: flag it red, expose the message
+        // as its title/label, and announce it for screen readers.
+        button.classList.add('is-error');
+        button.title = error.message || strings.cartError;
+        if (window.HOG) window.HOG.announce(error.message || strings.cartError);
+      }
       window.setTimeout(() => {
-        if (button) button.textContent = original;
+        if (button) {
+          if (!quiet) button.textContent = original;
+          button.classList.remove('is-error');
+          button.removeAttribute('title');
+        }
       }, 2500);
       return;
     } finally {
-      if (button) button.disabled = false;
+      if (button) {
+        button.disabled = false;
+        button.classList.remove('is-busy');
+      }
     }
 
-    if (button) button.textContent = original;
+    if (button && !quiet) button.textContent = original;
   });
 })();

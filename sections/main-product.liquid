@@ -18,7 +18,7 @@
   <div class="product">
     {%- comment -%} ------------------------------------------------ gallery {%- endcomment -%}
     <div class="product__media" data-gallery>
-      <div class="product__media-list">
+      <div class="product__media-list{% if section.settings.media_layout == 'grid' %} product__media-list--grid{% endif %}">
         {%- for media in product.media -%}
           <div data-media-id="{{ media.id }}">
             {%- case media.media_type -%}
@@ -142,6 +142,26 @@
               </div>
             {%- endunless -%}
 
+          {%- when 'size_guide' -%}
+            {%- liquid
+              assign modal_id = 'SizeGuide-' | append: section.id
+              assign size_guide_label = block.settings.label
+              if size_guide_label == blank
+                assign size_guide_label = 'products.product.size_guide' | t
+              endif
+            -%}
+            <div class="size-guide" {{ block.shopify_attributes }}>
+              <button
+                type="button"
+                class="size-guide__trigger"
+                data-modal-open="{{ modal_id }}"
+                aria-haspopup="dialog"
+              >
+                {% render 'icon', name: 'ruler' %}
+                <span class="underline">{{ size_guide_label }}</span>
+              </button>
+            </div>
+
           {%- when 'quantity_selector' -%}
             <div {{ block.shopify_attributes }}>
               <span class="variant-option__label">{{ 'sections.cart.quantity' | t }}</span>
@@ -254,6 +274,17 @@
       {%- endfor -%}
     </div>
   </div>
+
+  {%- comment -%}
+    The modal lives outside .product__info: the sticky column creates a
+    stacking context that would paint the fixed dialog behind the header.
+  {%- endcomment -%}
+  {%- for block in section.blocks -%}
+    {%- if block.type == 'size_guide' -%}
+      {%- assign modal_id = 'SizeGuide-' | append: section.id -%}
+      {% render 'size-guide-modal', modal_id: modal_id, block: block, product: product %}
+    {%- endif -%}
+  {%- endfor -%}
 </div>
 
 <script type="application/ld+json">
@@ -295,7 +326,8 @@
       "label": "t:sections.main_product.settings.media_layout.label",
       "options": [
         { "value": "stacked", "label": "t:sections.main_product.settings.media_layout.options__1" },
-        { "value": "thumbnails", "label": "t:sections.main_product.settings.media_layout.options__2" }
+        { "value": "thumbnails", "label": "t:sections.main_product.settings.media_layout.options__2" },
+        { "value": "grid", "label": "t:sections.main_product.settings.media_layout.options__3" }
       ],
       "default": "stacked"
     },
@@ -311,6 +343,44 @@
     { "type": "title", "name": "t:sections.main_product.blocks.title.name", "limit": 1 },
     { "type": "price", "name": "t:sections.main_product.blocks.price.name", "limit": 1 },
     { "type": "variant_picker", "name": "t:sections.main_product.blocks.variant_picker.name", "limit": 1 },
+    {
+      "type": "size_guide",
+      "name": "t:sections.main_product.blocks.size_guide.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "t:sections.main_product.blocks.size_guide.settings.label.label",
+          "default": "Size guide"
+        },
+        {
+          "type": "page",
+          "id": "page",
+          "label": "t:sections.main_product.blocks.size_guide.settings.page.label",
+          "info": "t:sections.main_product.blocks.size_guide.settings.page.info"
+        },
+        {
+          "type": "text",
+          "id": "metafield",
+          "label": "t:sections.main_product.blocks.size_guide.settings.metafield.label",
+          "info": "t:sections.main_product.blocks.size_guide.settings.metafield.info"
+        },
+        {
+          "type": "textarea",
+          "id": "chart",
+          "label": "t:sections.main_product.blocks.size_guide.settings.chart.label",
+          "info": "t:sections.main_product.blocks.size_guide.settings.chart.info",
+          "default": "Size, Chest (cm), Length (cm), Sleeve (cm)\nS, 52, 68, 60\nM, 55, 70, 62\nL, 58, 72, 64\nXL, 61, 74, 66"
+        },
+        {
+          "type": "richtext",
+          "id": "note",
+          "label": "t:sections.main_product.blocks.size_guide.settings.note.label",
+          "default": "<p>Garments are measured flat. For the chest, measure across just under the arms and double it. Between sizes? Size up for the intended relaxed fit.</p>"
+        }
+      ]
+    },
     { "type": "quantity_selector", "name": "t:sections.main_product.blocks.quantity_selector.name", "limit": 1 },
     {
       "type": "buy_buttons",

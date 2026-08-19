@@ -99,9 +99,10 @@ guards for the elements it needs before doing anything.
 | `assets/product-form.js` | Variant matching from the option inputs, price/availability swap, media sync, add-to-cart |
 
 Custom elements used: `<cart-drawer>`, `<product-form>`, `<countdown-timer>`,
-`<quantity-input>`, `<menu-drawer>`. All degrade to working HTML when JS fails —
-the product form is a real `<form action="/cart/add">`, and the cart page works
-without the drawer.
+`<quantity-input>`, `<menu-drawer>`, `<video-strip>`, `<product-recommendations>`.
+All degrade to working HTML when JS fails — the product form is a real
+`<form action="/cart/add">`, the cart page works without the drawer, and the
+recommendations section simply stays empty.
 
 ## Sections
 
@@ -116,7 +117,9 @@ without the drawer.
 | `image-with-text` | index, pages | Editorial split block |
 | `newsletter` | index, footer | Shopify customer form, `contact` type |
 | `rich-text` | index, pages | Free text block |
-| `main-product` | product | Gallery, variant picker, form, accordions |
+| `main-product` | product | Gallery (stacked/thumbnails/grid), variant picker, size-guide modal, form, accordions |
+| `video-showcase` | product, index | Horizontal strip of 9:16 videos; autoplay muted in view, per-clip sound toggle, optional linked-product shop card |
+| `product-recommendations` | product | "You may also like" via Shopify's recommendations API, lazy-loaded |
 | `main-collection` | collection | Filters, sort, grid, pagination |
 | `main-cart` | cart | Full cart page fallback for the drawer |
 | `main-search`, `main-404`, `main-page`, `main-blog`, `main-article`, `main-list-collections`, `main-password` | respective templates | |
@@ -151,7 +154,7 @@ Product metafields read by the theme (all optional, namespace `custom`):
 | --- | --- | --- |
 | `custom.fabric` | single line text | Materials accordion |
 | `custom.fit` | single line text | Fit accordion, e.g. "Boxy, oversized" |
-| `custom.size_guide` | rich text | Size guide accordion |
+| `custom.size_guide` | rich text | Size guide modal (falls back to a picked page, then the manual chart typed into the block) |
 | `custom.drop_date` | date and time | Hero + product countdown |
 
 ## Deploying

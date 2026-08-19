@@ -219,6 +219,277 @@
     customElements.define('quantity-input', QuantityInput);
   }
 
+  /* ----------------------------------------------------------------- modal */
+
+  // Generic dialog. Openers carry data-modal-open="<id>"; anything inside the
+  // modal with data-modal-close dismisses it, as do Escape and the overlay.
+
+  const modalState = { release: null, opener: null, current: null };
+
+  function openModal(modal, opener) {
+    if (!modal || modalState.current === modal) return;
+    closeModal(modalState.current);
+
+    modal.hidden = false;
+    // Two frames so the transition runs after display flips from none.
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => modal.classList.add('is-open'));
+    });
+
+    modalState.current = modal;
+    modalState.opener = opener || null;
+    lockScroll(true);
+    modalState.release = trapFocus(modal.querySelector('.modal__panel') || modal, () =>
+      closeModal(modal)
+    );
+  }
+
+  function closeModal(modal) {
+    if (!modal || modalState.current !== modal) return;
+
+    modal.classList.remove('is-open');
+    // Let the exit transition finish before display: none kicks in; the
+    // guard aborts the hide if the modal was reopened meanwhile.
+    window.setTimeout(() => {
+      if (modalState.current !== modal) modal.hidden = true;
+    }, REDUCED_MOTION ? 0 : 220);
+
+    modalState.current = null;
+    lockScroll(false);
+    if (modalState.release) modalState.release();
+    modalState.release = null;
+    if (modalState.opener && document.body.contains(modalState.opener)) {
+      modalState.opener.focus();
+    }
+    modalState.opener = null;
+  }
+
+  document.addEventListener('click', (event) => {
+    const opener = event.target.closest('[data-modal-open]');
+    if (opener) {
+      openModal(document.getElementById(opener.dataset.modalOpen), opener);
+      return;
+    }
+
+    const closer = event.target.closest('[data-modal-close]');
+    if (closer) closeModal(closer.closest('[data-modal]'));
+  });
+
+  // The theme editor re-renders a section while its modal is open: the node
+  // vanishes, so release the scroll lock and trap state it left behind.
+  document.addEventListener('shopify:section:unload', () => {
+    if (modalState.current && !document.body.contains(modalState.current)) {
+      modalState.current = null;
+      modalState.opener = null;
+      lockScroll(false);
+      if (modalState.release) modalState.release();
+      modalState.release = null;
+    }
+  });
+
+  window.HOG = Object.assign(window.HOG || {}, { openModal, closeModal });
+
+  /* ----------------------------------------------------------- <video-strip> */
+
+  // Videos play muted while at least 40% visible and pause off-screen. One
+  // video can be unmuted at a time; arrows page the strip on desktop.
+
+  class VideoStrip extends HTMLElement {
+    connectedCallback() {
+      // The theme editor can detach and re-attach the element; abort the old
+      // bindings first so listeners and observers never stack.
+      this.teardown();
+      this.abort = new AbortController();
+      const { signal } = this.abort;
+
+      this.track = this.querySelector('[data-strip-track]');
+      this.videos = Array.from(this.querySelectorAll('video'));
+      this.autoplay = this.dataset.autoplay === 'true' && !REDUCED_MOTION;
+
+      if (this.autoplay && 'IntersectionObserver' in window) {
+        this.observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                if (entry.target.dataset.userPaused !== 'true') {
+                  entry.target.play().catch(() => {});
+                }
+              } else {
+                entry.target.pause();
+              }
+            });
+          },
+          { threshold: 0.4 }
+        );
+        this.videos.forEach((video) => this.observer.observe(video));
+      }
+
+      // Play/pause is always available — it is the only way to start
+      // playback when autoplay is off or the visitor prefers reduced motion.
+      this.querySelectorAll('[data-play-toggle]').forEach((button) => {
+        button.addEventListener('click', () => this.togglePlay(button), { signal });
+      });
+
+      this.videos.forEach((video) => {
+        video.addEventListener('play', () => this.reflectPlayState(video, true), { signal });
+        video.addEventListener('pause', () => this.reflectPlayState(video, false), { signal });
+      });
+
+      this.querySelectorAll('[data-sound-toggle]').forEach((button) => {
+        button.addEventListener('click', () => this.toggleSound(button), { signal });
+      });
+
+      const prev = this.parentElement.querySelector('[data-strip-prev]');
+      const next = this.parentElement.querySelector('[data-strip-next]');
+      if (prev) prev.addEventListener('click', () => this.page(-1), { signal });
+      if (next) next.addEventListener('click', () => this.page(1), { signal });
+    }
+
+    disconnectedCallback() {
+      this.teardown();
+    }
+
+    teardown() {
+      if (this.observer) this.observer.disconnect();
+      this.observer = null;
+      if (this.abort) this.abort.abort();
+      this.abort = null;
+    }
+
+    togglePlay(button) {
+      const item = button.closest('[data-strip-item]');
+      const video = item && item.querySelector('video');
+      if (!video) return;
+
+      if (video.paused) {
+        delete video.dataset.userPaused;
+        video.play().catch(() => {});
+      } else {
+        // Remember the choice so the autoplay observer doesn't restart it.
+        video.dataset.userPaused = 'true';
+        video.pause();
+      }
+    }
+
+    reflectPlayState(video, playing) {
+      const item = video.closest('[data-strip-item]');
+      const button = item && item.querySelector('[data-play-toggle]');
+      if (!button) return;
+
+      const strings = (window.theme && window.theme.strings) || {};
+      button.setAttribute(
+        'aria-label',
+        playing ? strings.pauseVideo || 'Pause video' : strings.playVideo || 'Play video'
+      );
+      const playIcon = button.querySelector('.video-strip__play-icon');
+      const pauseIcon = button.querySelector('.video-strip__pause-icon');
+      if (playIcon) playIcon.hidden = playing;
+      if (pauseIcon) pauseIcon.hidden = !playing;
+    }
+
+    toggleSound(button) {
+      const item = button.closest('[data-strip-item]');
+      const video = item && item.querySelector('video');
+      if (!video) return;
+
+      const unmuting = video.muted;
+
+      // Only one voice at a time.
+      this.querySelectorAll('[data-sound-toggle]').forEach((other) => {
+        if (other !== button) this.setSound(other, false);
+      });
+
+      this.setSound(button, unmuting);
+      if (unmuting) {
+        delete video.dataset.userPaused;
+        video.play().catch(() => {});
+      }
+    }
+
+    setSound(button, on) {
+      const item = button.closest('[data-strip-item]');
+      const video = item && item.querySelector('video');
+      if (!video) return;
+
+      // The label stays constant — aria-pressed carries the state.
+      video.muted = !on;
+      button.setAttribute('aria-pressed', String(on));
+      const offIcon = button.querySelector('.video-strip__sound-off');
+      const onIcon = button.querySelector('.video-strip__sound-on');
+      if (offIcon) offIcon.hidden = on;
+      if (onIcon) onIcon.hidden = !on;
+    }
+
+    page(direction) {
+      if (!this.track) return;
+      const item = this.track.querySelector('[data-strip-item]');
+      const step = item ? item.getBoundingClientRect().width + 16 : this.track.clientWidth;
+      this.track.scrollBy({
+        left: step * direction,
+        behavior: REDUCED_MOTION ? 'auto' : 'smooth'
+      });
+    }
+  }
+
+  if (!customElements.get('video-strip')) {
+    customElements.define('video-strip', VideoStrip);
+  }
+
+  /* ------------------------------------------- <product-recommendations> */
+
+  // Fetches its own section back from the recommendations endpoint once it
+  // nears the viewport, then swaps in the rendered grid. Stays empty on
+  // failure — the product page works without it.
+
+  class ProductRecommendations extends HTMLElement {
+    connectedCallback() {
+      const url = this.dataset.url;
+      if (!url || this.dataset.loaded === 'true') return;
+
+      const load = async () => {
+        // Reconnection can leave two live observers; only the first wins.
+        if (this.dataset.loaded === 'true') return;
+        this.dataset.loaded = 'true';
+        try {
+          const response = await fetch(url);
+          const text = await response.text();
+          const parsed = new DOMParser().parseFromString(text, 'text/html');
+          const fresh = parsed.querySelector('product-recommendations');
+          if (fresh && fresh.innerHTML.trim().length) {
+            this.innerHTML = fresh.innerHTML;
+            this.querySelectorAll('.reveal').forEach((el) => el.classList.add('is-visible'));
+          }
+        } catch (error) {
+          // Recommendations are decoration; never surface a failure.
+        }
+      };
+
+      if ('IntersectionObserver' in window) {
+        if (this.observer) this.observer.disconnect();
+        this.observer = new IntersectionObserver(
+          (entries) => {
+            if (!entries.some((entry) => entry.isIntersecting)) return;
+            this.observer.disconnect();
+            load();
+          },
+          { rootMargin: '0px 0px 400px 0px' }
+        );
+        this.observer.observe(this);
+      } else {
+        load();
+      }
+    }
+
+    disconnectedCallback() {
+      if (this.observer) this.observer.disconnect();
+      this.observer = null;
+    }
+  }
+
+  if (!customElements.get('product-recommendations')) {
+    customElements.define('product-recommendations', ProductRecommendations);
+  }
+
   /* ------------------------------------------------------ reveal on scroll */
 
   function initReveal() {

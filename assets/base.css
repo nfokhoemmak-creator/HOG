@@ -816,6 +816,9 @@ textarea::placeholder {
   z-index: 2;
   opacity: 0;
   transform: translateY(0.6rem);
+  /* Hidden must also mean untappable: opacity alone keeps hit-testing on,
+     so a phone tap on the image would hit an invisible add-to-cart. */
+  pointer-events: none;
   transition: opacity var(--duration) var(--ease), transform var(--duration) var(--ease);
 }
 
@@ -823,6 +826,17 @@ textarea::placeholder {
 .card__quick-add:focus-within {
   opacity: 1;
   transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* No hover, no reveal — show quick add inline between image and title. */
+@media (hover: none) {
+  .card__quick-add {
+    position: static;
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
 }
 
 .price {
@@ -1448,6 +1462,322 @@ body.is-locked {
   .marquee__track { animation: none; }
 }
 
+/* 19. Modal + size guide --------------------------------------------------- */
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: var(--gutter);
+}
+
+.modal[hidden] { display: none; }
+
+.modal__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgb(0 0 0 / 0.6);
+  opacity: 0;
+  transition: opacity var(--duration) var(--ease);
+}
+
+.modal.is-open .modal__overlay { opacity: 1; }
+
+.modal__panel {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  width: min(56rem, 100%);
+  max-height: min(80svh, 72rem);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  transform: translateY(1.2rem);
+  opacity: 0;
+  transition: transform var(--duration) var(--ease), opacity var(--duration) var(--ease);
+}
+
+.modal.is-open .modal__panel {
+  transform: none;
+  opacity: 1;
+}
+
+.modal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.modal__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.4rem;
+  height: 4.4rem;
+}
+
+.modal__close svg { width: 1.6rem; height: 1.6rem; }
+
+.modal__body {
+  overflow-y: auto;
+  padding: var(--space-5);
+  font-size: 1.4rem;
+}
+
+.size-guide__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0;
+  font-size: 1.2rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  transition: color var(--duration) var(--ease);
+}
+
+.size-guide__trigger:hover { color: var(--color-fg); }
+
+.size-guide__trigger svg { width: 1.8rem; height: 1.8rem; }
+
+.size-chart-wrap { overflow-x: auto; }
+
+.size-chart,
+.modal__body table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1.3rem;
+  font-variant-numeric: tabular-nums;
+  text-align: left;
+}
+
+.size-chart th,
+.size-chart td,
+.modal__body table th,
+.modal__body table td {
+  padding: var(--space-3) var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.size-chart thead th,
+.modal__body table thead th {
+  font-family: var(--font-heading-family);
+  font-size: 1.1rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.size-chart tbody th {
+  font-family: var(--font-heading-family);
+  font-size: 1.2rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.size-guide__note {
+  margin-top: var(--space-4);
+  font-size: 1.3rem;
+}
+
+/* 20. Video showcase ------------------------------------------------------- */
+
+video-strip { display: block; }
+
+.video-strip__track {
+  display: flex;
+  gap: var(--grid-gap);
+  overflow-x: auto;
+  padding-inline: var(--gutter);
+  padding-bottom: var(--space-3);
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.video-strip__track::-webkit-scrollbar { display: none; }
+
+.video-strip__item {
+  position: relative;
+  flex: 0 0 auto;
+  width: min(30rem, 72vw);
+  scroll-snap-align: start;
+  display: grid;
+  gap: var(--space-3);
+  align-content: start;
+}
+
+.video-strip__media {
+  position: relative;
+  aspect-ratio: 9 / 16;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--color-bg-alt);
+}
+
+.video-strip__media video,
+.video-strip__media img,
+.video-strip__media .video-strip__placeholder {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video-strip__sound,
+.video-strip__play {
+  position: absolute;
+  top: var(--space-2);
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.6rem;
+  height: 3.6rem;
+  border-radius: 999px;
+  background: rgb(0 0 0 / 0.55);
+  color: #fff;
+}
+
+.video-strip__sound { right: var(--space-2); }
+.video-strip__play { left: var(--space-2); }
+
+.video-strip__sound svg,
+.video-strip__play svg { width: 1.8rem; height: 1.8rem; }
+
+.video-strip__product {
+  position: absolute;
+  left: var(--space-2);
+  right: var(--space-2);
+  bottom: var(--space-2);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+}
+
+.video-strip__product > img {
+  width: 4rem;
+  height: 5.2rem;
+  object-fit: cover;
+  border-radius: var(--radius);
+  flex-shrink: 0;
+}
+
+.video-strip__product-info {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.video-strip__product .card__title {
+  font-size: 1.1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.video-strip__product .price { font-size: 1.2rem; }
+
+.video-strip__product > svg {
+  width: 1.4rem;
+  height: 1.4rem;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.video-strip__caption { padding-inline: var(--space-1); }
+
+.video-strip__nav {
+  display: none;
+  gap: var(--space-2);
+}
+
+.video-strip__arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.4rem;
+  height: 4.4rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  transition: border-color var(--duration) var(--ease), color var(--duration) var(--ease);
+}
+
+.video-strip__arrow svg { width: 1.6rem; height: 1.6rem; }
+
+.video-strip__arrow:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+/* 21. Quick-add sizes + recommendations + media grid ----------------------- */
+
+.card__sizes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  justify-content: center;
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+}
+
+.card__sizes form { display: contents; }
+
+.card__size {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3.6rem;
+  min-height: 3.2rem;
+  padding-inline: var(--space-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  font-family: var(--font-heading-family);
+  font-size: 1.1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: background var(--duration) var(--ease), color var(--duration) var(--ease);
+}
+
+button.card__size:hover {
+  background: var(--color-fg);
+  color: var(--color-bg);
+}
+
+.card__size.is-busy { opacity: 0.5; }
+
+.card__size.is-error {
+  border-color: var(--color-sale);
+  color: var(--color-sale);
+}
+
+.card__size--disabled {
+  color: var(--color-muted);
+  text-decoration: line-through;
+  cursor: not-allowed;
+}
+
+product-recommendations { display: block; }
+
+.collection-banner--center {
+  justify-items: center;
+  text-align: center;
+}
+
+.collection-banner__description { max-width: 60ch; }
+
 /* --- Breakpoints --------------------------------------------------------- */
 
 @media screen and (min-width: 750px) {
@@ -1474,6 +1804,37 @@ body.is-locked {
     grid-template-columns: 1fr 42rem;
     gap: var(--space-7);
     align-items: start;
+  }
+
+  .product__media-list--grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .product__media-list--grid > :first-child {
+    grid-column: 1 / -1;
+  }
+
+  /* Mixed source ratios would leave ragged rows in the 2-up grid; crop the
+     paired tiles to a uniform 4:5 instead. The lead image stays natural. */
+  .product__media-list--grid > :not(:first-child) {
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border-radius: var(--radius);
+  }
+
+  .product__media-list--grid > :not(:first-child) img,
+  .product__media-list--grid > :not(:first-child) video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .video-strip__nav { display: flex; }
+
+  .video-strip__track {
+    /* 100% (body width) rather than 100vw — the viewport unit includes the
+       scrollbar and would push the strip out of line with .container. */
+    padding-inline: max(var(--gutter), calc((100% - var(--container)) / 2 + var(--gutter)));
   }
 
   .product__info--sticky {

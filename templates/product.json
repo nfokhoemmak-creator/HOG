@@ -7,6 +7,15 @@
         "title": { "type": "title", "settings": {} },
         "price": { "type": "price", "settings": {} },
         "variant_picker": { "type": "variant_picker", "settings": {} },
+        "size_guide": {
+          "type": "size_guide",
+          "settings": {
+            "label": "Size guide",
+            "metafield": "custom.size_guide",
+            "chart": "Size, Chest (cm), Length (cm), Sleeve (cm)\nS, 52, 68, 60\nM, 55, 70, 62\nL, 58, 72, 64\nXL, 61, 74, 66",
+            "note": "<p>Garments are measured flat. For the chest, measure across just under the arms and double it. Between sizes? Size up for the intended relaxed fit.</p>"
+          }
+        },
         "quantity": { "type": "quantity_selector", "settings": {} },
         "buy_buttons": {
           "type": "buy_buttons",
@@ -29,13 +38,6 @@
             "metafield": "custom.fit"
           }
         },
-        "size_guide": {
-          "type": "accordion",
-          "settings": {
-            "heading": "Size guide",
-            "metafield": "custom.size_guide"
-          }
-        },
         "shipping": {
           "type": "accordion",
           "settings": {
@@ -50,12 +52,12 @@
         "title",
         "price",
         "variant_picker",
+        "size_guide",
         "quantity",
         "buy_buttons",
         "description",
         "fabric",
         "fit",
-        "size_guide",
         "shipping",
         "share"
       ],
@@ -64,16 +66,29 @@
         "enable_sticky_info": true
       }
     },
-    "related": {
-      "type": "featured-collection",
+    "videos": {
+      "type": "video-showcase",
+      "blocks": {
+        "video-1": { "type": "video", "settings": {} },
+        "video-2": { "type": "video", "settings": {} },
+        "video-3": { "type": "video", "settings": {} }
+      },
+      "block_order": ["video-1", "video-2", "video-3"],
       "settings": {
-        "title": "You might also like",
+        "eyebrow": "As worn",
+        "heading": "In motion",
+        "autoplay": true
+      }
+    },
+    "recommendations": {
+      "type": "product-recommendations",
+      "settings": {
+        "heading": "You may also like",
         "products_to_show": 4,
         "columns_desktop": 4,
-        "columns_mobile": "2",
-        "show_view_all": true
+        "columns_mobile": "2"
       }
     }
   },
-  "order": ["main", "related"]
+  "order": ["main", "videos", "recommendations"]
 }

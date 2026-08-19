@@ -90,7 +90,9 @@
           unavailable: {{ 'products.product.unavailable' | t | json }},
           lowStock: {{ 'products.product.low_stock' | t: count: '{{ count }}' | json }},
           cartError: {{ 'sections.cart.error' | t | json }},
-          itemAdded: {{ 'sections.cart.item_added' | t | json }}
+          itemAdded: {{ 'sections.cart.item_added' | t | json }},
+          playVideo: {{ 'general.video.play' | t | json }},
+          pauseVideo: {{ 'general.video.pause' | t | json }}
         },
         routes: {
           root: {{ routes.root_url | json }},

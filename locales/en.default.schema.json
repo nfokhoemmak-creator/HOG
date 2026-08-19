@@ -218,12 +218,51 @@
         "featured_collection": { "name": "Collection", "settings": { "collection": { "label": "Collection" } } }
       }
     },
+    "video_showcase": {
+      "name": "Video showcase",
+      "settings": {
+        "eyebrow": { "label": "Eyebrow" },
+        "heading": { "label": "Heading" },
+        "autoplay": { "label": "Autoplay videos", "info": "Videos play muted while on screen. Respects the visitor's reduced-motion preference." }
+      },
+      "blocks": {
+        "video": {
+          "name": "Video",
+          "settings": {
+            "video": { "label": "Video" },
+            "video_url": { "label": "Video URL", "info": "MP4 hosted in Files. Used when no video is picked above." },
+            "poster": { "label": "Cover image" },
+            "product": { "label": "Linked product", "info": "Shows a small shop card over the video." },
+            "caption": { "label": "Caption", "info": "Shown when no product is linked." }
+          }
+        }
+      }
+    },
+    "product_recommendations": {
+      "name": "Related products",
+      "settings": {
+        "heading": { "label": "Heading" },
+        "products_to_show": { "label": "Products to show" },
+        "columns_desktop": { "label": "Columns on desktop" },
+        "columns_mobile": { "label": "Columns on mobile", "options__1": "1 column", "options__2": "2 columns" }
+      }
+    },
     "main_product": {
       "name": "Product information",
       "blocks": {
         "title": { "name": "Title" },
         "price": { "name": "Price" },
         "variant_picker": { "name": "Variant picker" },
+        "size_guide": {
+          "name": "Size guide",
+          "settings": {
+            "label": { "label": "Link label" },
+            "page": { "label": "Size guide page", "info": "Page content shown in the pop-up. Overridden by the metafield when set on the product." },
+            "metafield": { "label": "Metafield key", "info": "Optional, e.g. custom.size_guide — a per-product rich text metafield that wins over the page and chart." },
+            "chart": { "label": "Size chart", "info": "One row per line, cells separated by commas. The first line is the header row. Used when no page or metafield applies." },
+            "note": { "label": "Measuring note" }
+          }
+        },
         "quantity_selector": { "name": "Quantity selector" },
         "buy_buttons": { "name": "Buy buttons", "settings": { "show_dynamic_checkout": { "label": "Show dynamic checkout buttons" } } },
         "description": { "name": "Description" },
@@ -232,7 +271,7 @@
         "text": { "name": "Text", "settings": { "text": { "label": "Text" } } }
       },
       "settings": {
-        "media_layout": { "label": "Gallery layout", "options__1": "Stacked", "options__2": "Thumbnails" },
+        "media_layout": { "label": "Gallery layout", "options__1": "Stacked", "options__2": "Thumbnails", "options__3": "Grid" },
         "enable_sticky_info": { "label": "Sticky product info on desktop" }
       }
     },
@@ -249,6 +288,8 @@
     "main_collection_banner": {
       "name": "Collection banner",
       "settings": {
+        "text_alignment": { "label": "Alignment", "options__1": "Left", "options__2": "Center" },
+        "show_count": { "label": "Show product count" },
         "show_image": { "label": "Show collection image" },
         "show_description": { "label": "Show collection description" }
       }

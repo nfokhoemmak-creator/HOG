@@ -1,0 +1,256 @@
+{%- comment -%}
+  Horizontally scrolling strip of vertical (9:16) videos — campaign clips,
+  fit checks, UGC. Videos autoplay muted when scrolled into view; each item
+  gets a sound toggle and can link a product with a mini shop card.
+{%- endcomment -%}
+
+{%- liquid
+  # Blocks with no media yet render as placeholders in the editor only;
+  # on the storefront the whole section stays out until a video is set.
+  assign printable_blocks = 0
+  for block in section.blocks
+    if block.settings.video != blank or block.settings.video_url != blank or block.settings.poster != blank
+      assign printable_blocks = printable_blocks | plus: 1
+    endif
+  endfor
+-%}
+
+{%- if printable_blocks > 0 or request.design_mode and section.blocks.size > 0 -%}
+  <div class="section section--tight video-showcase">
+    <div class="container">
+      <div class="section__head">
+        <div>
+          {%- if section.settings.eyebrow != blank -%}
+            <p class="eyebrow" style="margin-bottom: var(--space-2);">{{ section.settings.eyebrow }}</p>
+          {%- endif -%}
+          {%- if section.settings.heading != blank -%}
+            <h2 class="h2">{{ section.settings.heading }}</h2>
+          {%- endif -%}
+        </div>
+
+        {%- assign nav_count = printable_blocks -%}
+        {%- if request.design_mode -%}
+          {%- assign nav_count = section.blocks.size -%}
+        {%- endif -%}
+        {%- if nav_count > 2 -%}
+          <div class="video-strip__nav">
+            <button type="button" class="video-strip__arrow" data-strip-prev aria-label="{{ 'accessibility.previous_slide' | t }}">
+              {% render 'icon', name: 'chevron-left' %}
+            </button>
+            <button type="button" class="video-strip__arrow" data-strip-next aria-label="{{ 'accessibility.next_slide' | t }}">
+              {% render 'icon', name: 'chevron-right' %}
+            </button>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+
+    {%- liquid
+      assign strip_label = section.settings.heading
+      if strip_label == blank
+        assign strip_label = 'sections.video_showcase.label' | t
+      endif
+    -%}
+    <video-strip
+      class="video-strip"
+      data-autoplay="{{ section.settings.autoplay }}"
+    >
+      <div
+        class="video-strip__track"
+        data-strip-track
+        tabindex="0"
+        role="region"
+        aria-label="{{ strip_label | escape }}"
+      >
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign linked_product = block.settings.product
+            assign poster = block.settings.poster | default: block.settings.video.preview_image
+
+            if request.design_mode == false and block.settings.video == blank and block.settings.video_url == blank and poster == blank
+              continue
+            endif
+          -%}
+          <div class="video-strip__item" data-strip-item {{ block.shopify_attributes }}>
+            <div class="video-strip__media">
+              {%- if block.settings.video != blank -%}
+                {%- if block.settings.poster != blank -%}
+                  {%- assign poster_url = block.settings.poster | image_url: width: 800 -%}
+                  {{
+                    block.settings.video
+                    | video_tag:
+                      image_size: '800x',
+                      poster: poster_url,
+                      autoplay: false,
+                      loop: true,
+                      muted: true,
+                      controls: false,
+                      playsinline: true,
+                      preload: 'metadata'
+                  }}
+                {%- else -%}
+                  {{
+                    block.settings.video
+                    | video_tag:
+                      image_size: '800x',
+                      autoplay: false,
+                      loop: true,
+                      muted: true,
+                      controls: false,
+                      playsinline: true,
+                      preload: 'metadata'
+                  }}
+                {%- endif -%}
+              {%- elsif block.settings.video_url != blank -%}
+                <video
+                  src="{{ block.settings.video_url }}"
+                  {% if poster != blank %}poster="{{ poster | image_url: width: 800 }}"{% endif %}
+                  muted
+                  loop
+                  playsinline
+                  preload="metadata"
+                ></video>
+              {%- elsif poster != blank -%}
+                <img
+                  src="{{ poster | image_url: width: 800 }}"
+                  srcset="{{ poster | image_url: width: 400 }} 400w, {{ poster | image_url: width: 800 }} 800w"
+                  sizes="(min-width: 990px) 30rem, 70vw"
+                  alt="{{ poster.alt | escape }}"
+                  width="{{ poster.width }}"
+                  height="{{ poster.height }}"
+                  loading="lazy"
+                >
+              {%- else -%}
+                {{ 'lifestyle-1' | placeholder_svg_tag: 'video-strip__placeholder' }}
+              {%- endif -%}
+
+              {%- if block.settings.video != blank or block.settings.video_url != blank -%}
+                <button
+                  type="button"
+                  class="video-strip__play"
+                  data-play-toggle
+                  aria-label="{{ 'general.video.play' | t }}"
+                >
+                  <span class="video-strip__play-icon">{% render 'icon', name: 'play' %}</span>
+                  <span class="video-strip__pause-icon" hidden>{% render 'icon', name: 'pause' %}</span>
+                </button>
+                <button
+                  type="button"
+                  class="video-strip__sound"
+                  data-sound-toggle
+                  aria-pressed="false"
+                  aria-label="{{ 'general.video.sound' | t }}"
+                >
+                  <span class="video-strip__sound-off">{% render 'icon', name: 'volume-off' %}</span>
+                  <span class="video-strip__sound-on" hidden>{% render 'icon', name: 'volume-on' %}</span>
+                </button>
+              {%- endif -%}
+            </div>
+
+            {%- if linked_product != blank -%}
+              <a class="video-strip__product" href="{{ linked_product.url }}">
+                {%- if linked_product.featured_media -%}
+                  <img
+                    src="{{ linked_product.featured_media | image_url: width: 120 }}"
+                    alt=""
+                    width="48"
+                    height="64"
+                    loading="lazy"
+                  >
+                {%- endif -%}
+                <span class="video-strip__product-info">
+                  <span class="card__title">{{ linked_product.title | escape }}</span>
+                  {% render 'price', product: linked_product %}
+                </span>
+                {% render 'icon', name: 'arrow-right' %}
+              </a>
+            {%- elsif block.settings.caption != blank -%}
+              <p class="video-strip__caption eyebrow">{{ block.settings.caption }}</p>
+            {%- endif -%}
+          </div>
+        {%- endfor -%}
+      </div>
+    </video-strip>
+  </div>
+{%- elsif request.design_mode -%}
+  <div class="container section--tight">
+    <p class="muted center" style="padding-block: var(--space-5);">
+      {{ 'sections.video_showcase.empty' | t }}
+    </p>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.video_showcase.name",
+  "tag": "section",
+  "class": "video-showcase-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:sections.video_showcase.settings.eyebrow.label",
+      "default": "As worn"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.video_showcase.settings.heading.label",
+      "default": "In motion"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "t:sections.video_showcase.settings.autoplay.label",
+      "info": "t:sections.video_showcase.settings.autoplay.info",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "video",
+      "name": "t:sections.video_showcase.blocks.video.name",
+      "settings": [
+        {
+          "type": "video",
+          "id": "video",
+          "label": "t:sections.video_showcase.blocks.video.settings.video.label"
+        },
+        {
+          "type": "text",
+          "id": "video_url",
+          "label": "t:sections.video_showcase.blocks.video.settings.video_url.label",
+          "info": "t:sections.video_showcase.blocks.video.settings.video_url.info"
+        },
+        {
+          "type": "image_picker",
+          "id": "poster",
+          "label": "t:sections.video_showcase.blocks.video.settings.poster.label"
+        },
+        {
+          "type": "product",
+          "id": "product",
+          "label": "t:sections.video_showcase.blocks.video.settings.product.label",
+          "info": "t:sections.video_showcase.blocks.video.settings.product.info"
+        },
+        {
+          "type": "text",
+          "id": "caption",
+          "label": "t:sections.video_showcase.blocks.video.settings.caption.label"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 10,
+  "presets": [
+    {
+      "name": "t:sections.video_showcase.name",
+      "blocks": [
+        { "type": "video" },
+        { "type": "video" },
+        { "type": "video" }
+      ]
+    }
+  ]
+}
+{% endschema %}

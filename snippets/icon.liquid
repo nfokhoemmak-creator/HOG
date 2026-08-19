@@ -48,6 +48,44 @@
       <path d="m6 9 6 6 6-6"/>
     </svg>
 
+  {%- when 'chevron-left' -%}
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
+      <path d="m15 5-7 7 7 7"/>
+    </svg>
+
+  {%- when 'chevron-right' -%}
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
+      <path d="m9 5 7 7-7 7"/>
+    </svg>
+
+  {%- when 'ruler' -%}
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
+      <rect x="2.5" y="9" width="19" height="6" rx="1"/>
+      <path d="M6.5 9v3M10.5 9v2M14.5 9v3M18.5 9v2"/>
+    </svg>
+
+  {%- when 'volume-on' -%}
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
+      <path d="M4 9v6h3.5L12 19V5L7.5 9H4z"/>
+      <path d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11"/>
+    </svg>
+
+  {%- when 'volume-off' -%}
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
+      <path d="M4 9v6h3.5L12 19V5L7.5 9H4z"/>
+      <path d="m15.5 9.5 5 5m0-5-5 5"/>
+    </svg>
+
+  {%- when 'play' -%}
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+      <path d="M8 5.5v13l10-6.5-10-6.5z"/>
+    </svg>
+
+  {%- when 'pause' -%}
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+      <path d="M7.5 5h3v14h-3zM13.5 5h3v14h-3z"/>
+    </svg>
+
   {%- when 'arrow-right' -%}
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
       <path d="M4 12h16m-6-6 6 6-6 6"/>
