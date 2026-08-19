@@ -117,6 +117,119 @@
             </div>
           </details>
         {%- endif -%}
+
+        {%- liquid
+          # Cross-sell strip: merchant-picked collection first, otherwise the
+          # collection the most recent cart item lives in. Products already
+          # in the cart (and sold-out ones) are skipped.
+          assign upsell_source = blank
+          if section.settings.show_upsells
+            assign upsell_source = section.settings.upsell_collection
+            if upsell_source == blank or upsell_source.products.size == 0
+              assign upsell_source = cart.items.first.product.collections.first
+            endif
+          endif
+
+          assign cart_product_ids = ','
+          for item in cart.items
+            assign cart_product_ids = cart_product_ids | append: item.product_id | append: ','
+          endfor
+
+          assign upsell_matches = 0
+          if upsell_source != blank
+            for candidate in upsell_source.products limit: 12
+              assign probe = ',' | append: candidate.id | append: ','
+              if candidate.available and cart_product_ids contains probe
+                continue
+              elsif candidate.available
+                assign upsell_matches = upsell_matches | plus: 1
+              endif
+            endfor
+          endif
+        -%}
+
+        {%- if upsell_matches > 0 -%}
+          <div class="cart-upsell">
+            <p class="eyebrow">{{ section.settings.upsell_heading }}</p>
+
+            <div class="cart-upsell__list">
+              {%- liquid
+                assign upsell_shown = 0
+              -%}
+              {%- for candidate in upsell_source.products limit: 12 -%}
+                {%- liquid
+                  if upsell_shown >= section.settings.upsell_count
+                    break
+                  endif
+                  assign probe = ',' | append: candidate.id | append: ','
+                  if candidate.available == false or cart_product_ids contains probe
+                    continue
+                  endif
+                  assign upsell_shown = upsell_shown | plus: 1
+                -%}
+
+                <div class="cart-upsell__card">
+                  <a class="cart-upsell__media" href="{{ candidate.url }}" tabindex="-1" aria-hidden="true">
+                    {%- if candidate.featured_media -%}
+                      <img
+                        src="{{ candidate.featured_media | image_url: width: 400 }}"
+                        alt="{{ candidate.featured_media.alt | escape }}"
+                        width="{{ candidate.featured_media.width }}"
+                        height="{{ candidate.featured_media.height }}"
+                        loading="lazy"
+                      >
+                    {%- endif -%}
+                  </a>
+
+                  <a class="cart-upsell__title" href="{{ candidate.url }}">{{ candidate.title | escape }}</a>
+
+                  {% render 'price', product: candidate %}
+
+                  {%- if candidate.variants.size == 1 -%}
+                    <form method="post" action="{{ routes.cart_add_url }}" data-quick-add-form>
+                      <input type="hidden" name="form_type" value="product">
+                      <input type="hidden" name="utf8" value="✓">
+                      <input type="hidden" name="id" value="{{ candidate.variants.first.id }}">
+                      <input type="hidden" name="quantity" value="1">
+                      <button
+                        type="submit"
+                        class="btn btn--small btn--full"
+                        aria-label="{{ 'products.product.quick_add_for' | t: product: candidate.title }}"
+                      >
+                        {{ 'products.product.quick_add' | t }}
+                      </button>
+                    </form>
+                  {%- elsif candidate.options.size == 1 and candidate.variants.size <= 8 -%}
+                    <div class="cart-upsell__sizes" role="group" aria-label="{{ 'products.product.quick_add_for' | t: product: candidate.title }}">
+                      {%- for variant in candidate.variants -%}
+                        {%- if variant.available -%}
+                          <form method="post" action="{{ routes.cart_add_url }}" data-quick-add-form>
+                            <input type="hidden" name="form_type" value="product">
+                            <input type="hidden" name="utf8" value="✓">
+                            <input type="hidden" name="id" value="{{ variant.id }}">
+                            <input type="hidden" name="quantity" value="1">
+                            <button
+                              type="submit"
+                              class="card__size"
+                              data-quick-add-quiet
+                              aria-label="{{ 'products.product.quick_add_size' | t: product: candidate.title, size: variant.title }}"
+                            >
+                              {{ variant.title }}
+                            </button>
+                          </form>
+                        {%- endif -%}
+                      {%- endfor -%}
+                    </div>
+                  {%- else -%}
+                    <a class="btn btn--small btn--outline btn--full" href="{{ candidate.url }}">
+                      {{ 'products.product.choose_options' | t }}
+                    </a>
+                  {%- endif -%}
+                </div>
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- endif -%}
       {%- endif -%}
     </div>
 
@@ -163,6 +276,35 @@
 {% schema %}
 {
   "name": "Cart drawer",
-  "settings": []
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_upsells",
+      "label": "Show cross-sell products",
+      "info": "Suggests products the visitor doesn't have in the cart yet, with one-tap add.",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "upsell_heading",
+      "label": "Cross-sell heading",
+      "default": "Complete the look"
+    },
+    {
+      "type": "collection",
+      "id": "upsell_collection",
+      "label": "Cross-sell collection",
+      "info": "Leave empty to suggest products from the same collection as the items in the cart."
+    },
+    {
+      "type": "range",
+      "id": "upsell_count",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "label": "Products to suggest",
+      "default": 4
+    }
+  ]
 }
 {% endschema %}
