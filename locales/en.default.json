@@ -182,8 +182,11 @@
         "gallery_viewer": "Gallery viewer",
         "load_image": "Load image {{ index }} in gallery view",
         "image_available": "Image {{ index }} is now available in gallery view",
-        "play_video": "Play video"
+        "play_video": "Play video",
+        "previous": "Previous image",
+        "next": "Next image"
       },
+      "back": "Back",
       "share": "Share",
       "drop_countdown": {
         "heading": "Drops in",

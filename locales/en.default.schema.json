@@ -236,7 +236,9 @@
         "text": { "name": "Text", "settings": { "text": { "label": "Text" } } }
       },
       "settings": {
+        "color_scheme": { "label": "Color scheme", "options__1": "Default", "options__2": "Inverse" },
         "media_layout": { "label": "Gallery layout", "options__1": "Stacked", "options__2": "Thumbnails" },
+        "show_back_link": { "label": "Show back link" },
         "enable_sticky_info": { "label": "Sticky product info on desktop" }
       }
     },

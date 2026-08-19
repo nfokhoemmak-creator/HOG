@@ -14,6 +14,7 @@
   assign form_id = 'ProductForm-' | append: section.id
 -%}
 
+<div class="product-main{% if section.settings.color_scheme == 'inverse' %} scheme-inverse{% endif %}">
 <div class="container">
   <div class="product">
     {%- comment -%} ------------------------------------------------ gallery {%- endcomment -%}
@@ -58,30 +59,58 @@
       </div>
 
       {%- if product.media.size > 1 and section.settings.media_layout == 'thumbnails' -%}
-        <div class="product__thumbs">
-          {%- for media in product.media -%}
-            <button
-              type="button"
-              class="product__thumb"
-              data-thumb="{{ media.id }}"
-              aria-current="{% if forloop.first %}true{% else %}false{% endif %}"
-              aria-label="{{ 'products.product.media.load_image' | t: index: forloop.index }}"
-            >
-              <img
-                src="{{ media.preview_image | image_url: width: 200 }}"
-                alt=""
-                width="72"
-                height="96"
-                loading="lazy"
+        <div class="product__rail">
+          <button
+            type="button"
+            class="product__rail-arrow"
+            data-gallery-step="-1"
+            aria-label="{{ 'products.product.media.previous' | t }}"
+          >
+            {% render 'icon', name: 'chevron-up' %}
+          </button>
+
+          <div class="product__thumbs">
+            {%- for media in product.media -%}
+              <button
+                type="button"
+                class="product__thumb"
+                data-thumb="{{ media.id }}"
+                aria-current="{% if forloop.first %}true{% else %}false{% endif %}"
+                aria-label="{{ 'products.product.media.load_image' | t: index: forloop.index }}"
               >
-            </button>
-          {%- endfor -%}
+                <img
+                  src="{{ media.preview_image | image_url: width: 200 }}"
+                  alt=""
+                  width="72"
+                  height="96"
+                  loading="lazy"
+                >
+              </button>
+            {%- endfor -%}
+          </div>
+
+          <button
+            type="button"
+            class="product__rail-arrow"
+            data-gallery-step="1"
+            aria-label="{{ 'products.product.media.next' | t }}"
+          >
+            {% render 'icon', name: 'chevron-down' %}
+          </button>
         </div>
       {%- endif -%}
     </div>
 
     {%- comment -%} --------------------------------------------------- info {%- endcomment -%}
     <div class="product__info{% if section.settings.enable_sticky_info %} product__info--sticky{% endif %}">
+      {%- if section.settings.show_back_link -%}
+        {%- assign back_url = product.collections.first.url | default: routes.all_products_collection_url -%}
+        <a class="product__back" href="{{ back_url }}">
+          {% render 'icon', name: 'chevron-left' %}
+          {{ 'products.product.back' | t }}
+        </a>
+      {%- endif -%}
+
       {%- for block in section.blocks -%}
         {%- case block.type -%}
           {%- when 'badges' -%}
@@ -119,7 +148,7 @@
                 {%- for option in product.options_with_values -%}
                   <fieldset style="border: 0; margin: 0; padding: 0;">
                     <legend class="variant-option__label" style="width: 100%;">
-                      <span>{{ option.name }}</span>
+                      <span>{{ option.name }}: <span class="variant-option__selected">{{ option.selected_value }}</span></span>
                     </legend>
 
                     <div class="variant-option__values">
@@ -177,7 +206,7 @@
                 <button
                   type="submit"
                   name="add"
-                  class="btn btn--accent btn--full"
+                  class="product__submit"
                   {% unless current_variant.available %}disabled aria-disabled="true"{% endunless %}
                 >
                   <span data-button-text>
@@ -255,6 +284,7 @@
     </div>
   </div>
 </div>
+</div>
 
 <script type="application/ld+json">
   {
@@ -291,13 +321,29 @@
   "settings": [
     {
       "type": "select",
+      "id": "color_scheme",
+      "label": "t:sections.main_product.settings.color_scheme.label",
+      "options": [
+        { "value": "default", "label": "t:sections.main_product.settings.color_scheme.options__1" },
+        { "value": "inverse", "label": "t:sections.main_product.settings.color_scheme.options__2" }
+      ],
+      "default": "inverse"
+    },
+    {
+      "type": "select",
       "id": "media_layout",
       "label": "t:sections.main_product.settings.media_layout.label",
       "options": [
         { "value": "stacked", "label": "t:sections.main_product.settings.media_layout.options__1" },
         { "value": "thumbnails", "label": "t:sections.main_product.settings.media_layout.options__2" }
       ],
-      "default": "stacked"
+      "default": "thumbnails"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_back_link",
+      "label": "t:sections.main_product.settings.show_back_link.label",
+      "default": true
     },
     {
       "type": "checkbox",

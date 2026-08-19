@@ -74,6 +74,20 @@
 
         --grid-gap: {{ settings.grid_gap }}px;
       }
+
+      /* Token flip for ink-on-dark surfaces (e.g. the product page).
+         Everything nested keeps working because components only ever read
+         the custom properties. */
+      .scheme-inverse {
+        --color-bg: {{ settings.color_text }};
+        --color-bg-alt: {{ settings.color_text | color_lighten: 5 }};
+        --color-fg: {{ settings.color_background }};
+        --color-muted: {{ settings.color_background | color_darken: 22 }};
+        --color-border: {{ settings.color_text | color_lighten: 14 }};
+        --color-sale: {{ settings.color_sale | color_lighten: 18 }};
+        --color-btn-bg: {{ settings.color_background }};
+        --color-btn-fg: {{ settings.color_text }};
+      }
     </style>
 
     {{ 'base.css' | asset_url | stylesheet_tag }}

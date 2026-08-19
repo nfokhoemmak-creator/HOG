@@ -48,11 +48,10 @@
       "block_order": [
         "badges",
         "title",
+        "description",
         "price",
         "variant_picker",
-        "quantity",
         "buy_buttons",
-        "description",
         "fabric",
         "fit",
         "size_guide",
@@ -60,7 +59,9 @@
         "share"
       ],
       "settings": {
-        "media_layout": "stacked",
+        "color_scheme": "inverse",
+        "media_layout": "thumbnails",
+        "show_back_link": true,
         "enable_sticky_info": true
       }
     },

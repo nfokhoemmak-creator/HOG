@@ -245,20 +245,60 @@
 
   function initGalleries() {
     document.querySelectorAll('[data-gallery]').forEach((gallery) => {
-      const thumbs = gallery.querySelectorAll('[data-thumb]');
-      const mediaItems = gallery.querySelectorAll('[data-media-id]');
+      const thumbs = Array.from(gallery.querySelectorAll('[data-thumb]'));
+      const mediaItems = Array.from(gallery.querySelectorAll('[data-media-id]'));
+      let index = 0;
 
-      thumbs.forEach((thumb) => {
-        thumb.addEventListener('click', () => {
-          const id = thumb.dataset.thumb;
-          thumbs.forEach((node) => node.setAttribute('aria-current', String(node === thumb)));
-          mediaItems.forEach((media) => {
-            if (media.dataset.mediaId !== id) return;
-            media.scrollIntoView({ behavior: REDUCED_MOTION ? 'auto' : 'smooth', block: 'center' });
-          });
+      function show(nextIndex) {
+        if (mediaItems.length === 0) return;
+        index = Math.max(0, Math.min(mediaItems.length - 1, nextIndex));
+        mediaItems[index].scrollIntoView({ behavior: REDUCED_MOTION ? 'auto' : 'smooth', block: 'center' });
+        thumbs.forEach((node, i) => node.setAttribute('aria-current', String(i === index)));
+      }
+
+      thumbs.forEach((thumb, i) => {
+        thumb.addEventListener('click', () => show(i));
+      });
+
+      gallery.querySelectorAll('[data-gallery-step]').forEach((button) => {
+        button.addEventListener('click', () => {
+          show(index + (parseInt(button.dataset.galleryStep, 10) || 0));
         });
       });
     });
+  }
+
+  /* ---------------------------------------------------- fit-to-width text */
+
+  function fitText(el) {
+    el.style.transform = 'none';
+    const parent = el.parentElement;
+    if (!parent) return;
+    const available = parent.clientWidth;
+    const natural = el.getBoundingClientRect().width;
+    if (natural > 0 && available > 0) {
+      el.style.transform = 'scaleX(' + available / natural + ')';
+    }
+  }
+
+  function initFitText() {
+    const nodes = document.querySelectorAll('[data-fit-text]');
+    if (nodes.length === 0) return;
+
+    nodes.forEach(fitText);
+
+    if ('ResizeObserver' in window) {
+      const observer = new ResizeObserver((entries) => {
+        entries.forEach((entry) => {
+          entry.target.querySelectorAll('[data-fit-text]').forEach(fitText);
+        });
+      });
+      nodes.forEach((el) => {
+        if (el.parentElement) observer.observe(el.parentElement);
+      });
+    } else {
+      window.addEventListener('resize', () => nodes.forEach(fitText));
+    }
   }
 
   /* -------------------------------------------------- marquee pause toggle */
@@ -302,6 +342,7 @@
     initGalleries();
     initDetailsDismiss();
     initMarqueePause();
+    initFitText();
   }
 
   if (document.readyState === 'loading') {
