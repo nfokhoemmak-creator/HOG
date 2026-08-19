@@ -3,7 +3,7 @@
 -%}
 
 <header class="header{% if section.settings.sticky %} header--sticky{% endif %}">
-  <div class="container header__inner">
+  <div class="container header__inner{% if section.settings.logo_position == 'center' %} header__inner--center{% endif %}">
     <menu-drawer class="menu-toggle">
       <button
         type="button"
@@ -131,6 +131,16 @@
       "id": "menu",
       "label": "t:sections.header.settings.menu.label",
       "default": "main-menu"
+    },
+    {
+      "type": "select",
+      "id": "logo_position",
+      "label": "t:sections.header.settings.logo_position.label",
+      "options": [
+        { "value": "left", "label": "t:sections.header.settings.logo_position.options__1" },
+        { "value": "center", "label": "t:sections.header.settings.logo_position.options__2" }
+      ],
+      "default": "center"
     },
     {
       "type": "checkbox",

@@ -123,6 +123,7 @@
       "name": "Header",
       "settings": {
         "menu": { "label": "Menu" },
+        "logo_position": { "label": "Logo position", "options__1": "Left", "options__2": "Center" },
         "sticky": { "label": "Sticky header" },
         "show_search": { "label": "Show search" },
         "show_account": { "label": "Show account link" }
