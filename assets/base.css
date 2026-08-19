@@ -117,7 +117,7 @@ p:last-child {
   --focus-ring: 2px solid var(--color-accent);
 }
 
-.h0 { font-size: clamp(4rem, 12vw, 11rem); letter-spacing: -0.01em; }
+.h0 { font-size: clamp(3.6rem, 9vw, 9.6rem); letter-spacing: -0.01em; }
 .h1 { font-size: calc(clamp(3.2rem, 6vw, 5.6rem) * var(--font-heading-scale)); }
 .h2 { font-size: calc(clamp(2.4rem, 4vw, 3.6rem) * var(--font-heading-scale)); }
 .h3 { font-size: calc(clamp(2rem, 3vw, 2.6rem) * var(--font-heading-scale)); }
@@ -512,8 +512,8 @@ textarea::placeholder {
   align-items: center;
   justify-content: center;
   font-family: var(--font-heading-family);
-  font-size: 2.2rem;
-  letter-spacing: 0.06em;
+  font-size: 1.9rem;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
@@ -822,8 +822,8 @@ textarea::placeholder {
 .hero--right .hero__content { justify-items: end; text-align: right; margin-left: auto; }
 
 .hero__heading {
-  font-size: clamp(4.8rem, 13vw, 14rem);
-  line-height: 0.88;
+  font-size: clamp(4rem, 9.5vw, 10.4rem);
+  line-height: 0.92;
 }
 
 .hero__subheading {
@@ -1204,7 +1204,7 @@ textarea::placeholder {
 .product__back:hover { opacity: 1; }
 .product__back svg { width: 1.4rem; height: 1.4rem; }
 
-.product__title { font-size: clamp(3rem, 4.5vw, 4.8rem); }
+.product__title { font-size: clamp(2.6rem, 3vw, 3.8rem); }
 
 .product__price {
   font-family: var(--font-heading-family);
@@ -1307,6 +1307,61 @@ textarea::placeholder {
   opacity: 0.5;
 }
 
+/* Star size picker: outline star with the size inside; the selected size
+   fills solid with inverted text. Applied to size-type options only. */
+.variant-option__values--stars { gap: var(--space-1); }
+
+.variant-option__value--star {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  width: 5.8rem;
+  height: 5.8rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  font-size: 1.05rem;
+  letter-spacing: 0.02em;
+}
+
+.variant-option__value--star .variant-star {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.variant-option__value--star .variant-star path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+  transition: fill var(--duration) var(--ease), stroke-width var(--duration) var(--ease);
+}
+
+.variant-option__value--star span {
+  position: relative;
+  z-index: 1;
+}
+
+.variant-option__value--star:hover .variant-star path { stroke-width: 3.5; }
+
+.variant-option__input:checked + .variant-option__value--star {
+  border: 0;
+  background: none;
+  color: var(--color-bg);
+}
+
+.variant-option__input:checked + .variant-option__value--star .variant-star path {
+  fill: var(--color-fg);
+  stroke: var(--color-fg);
+}
+
+.variant-option__value--star.variant-option__value--unavailable .variant-star path {
+  stroke-width: 1.5;
+}
+
 .quantity-input {
   display: inline-flex;
   align-items: center;
@@ -1347,9 +1402,10 @@ textarea::placeholder {
 
 .product__inventory--low { color: var(--color-accent); }
 
-/* Spec-sheet treatment: all-caps, tight, bulleted. */
+/* Spec-sheet treatment: all-caps, bold, bulleted. */
 .product__description {
   font-size: 1.4rem;
+  font-weight: var(--font-body-weight-bold);
   line-height: 1.7;
   letter-spacing: 0.02em;
   text-transform: uppercase;

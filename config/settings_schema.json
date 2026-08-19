@@ -138,7 +138,7 @@
         "type": "font_picker",
         "id": "type_heading_font",
         "label": "t:settings_schema.typography.settings.type_heading_font.label",
-        "default": "anton_n4"
+        "default": "archivo_black_n4"
       },
       {
         "type": "range",

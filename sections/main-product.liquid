@@ -146,12 +146,23 @@
             {%- unless product.has_only_default_variant -%}
               <div class="variant-picker" {{ block.shopify_attributes }}>
                 {%- for option in product.options_with_values -%}
+                  {%- liquid
+                    comment
+                      Size-type options render as the star picker; anything
+                      else (color, material, ...) keeps the pill chips.
+                    endcomment
+                    assign option_name_down = option.name | downcase
+                    assign is_star_option = false
+                    if option_name_down contains 'size'
+                      assign is_star_option = true
+                    endif
+                  -%}
                   <fieldset style="border: 0; margin: 0; padding: 0;">
                     <legend class="variant-option__label" style="width: 100%;">
                       <span>{{ option.name }}: <span class="variant-option__selected">{{ option.selected_value }}</span></span>
                     </legend>
 
-                    <div class="variant-option__values">
+                    <div class="variant-option__values{% if is_star_option %} variant-option__values--stars{% endif %}">
                       {%- for value in option.values -%}
                         {%- assign input_id = section.id | append: '-' | append: option.position | append: '-' | append: forloop.index -%}
                         <input
@@ -163,7 +174,16 @@
                           data-option-index="{{ forloop.parentloop.index0 }}"
                           {% if option.selected_value == value %}checked{% endif %}
                         >
-                        <label class="variant-option__value" for="{{ input_id }}">{{ value }}</label>
+                        {%- if is_star_option -%}
+                          <label class="variant-option__value variant-option__value--star" for="{{ input_id }}">
+                            <svg class="variant-star" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+                              <path d="M24 4 30.2 16.5 44 18.5 34 28.2 36.3 42 24 35.5 11.7 42 14 28.2 4 18.5 17.8 16.5 Z"/>
+                            </svg>
+                            <span>{{ value }}</span>
+                          </label>
+                        {%- else -%}
+                          <label class="variant-option__value" for="{{ input_id }}">{{ value }}</label>
+                        {%- endif -%}
                       {%- endfor -%}
                     </div>
                   </fieldset>
