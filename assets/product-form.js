@@ -33,7 +33,10 @@
       this.sectionId = this.dataset.sectionId;
 
       this.variants = this.readVariants();
-      this.optionInputs = Array.from(this.querySelectorAll('[data-option-index]'));
+      // The variant picker is a sibling block, not a child of this element —
+      // scope the lookup to the whole product section.
+      this.section = this.closest('.main-product-section') || document;
+      this.optionInputs = Array.from(this.section.querySelectorAll('[data-option-index]'));
 
       this.optionInputs.forEach((input) => {
         input.addEventListener('change', () => this.onOptionChange());
@@ -73,10 +76,21 @@
     }
 
     onOptionChange(config) {
-      const options = this.selectedOptions();
-      const variant = this.matchVariant(options);
+      let variant;
 
-      this.markUnavailableOptions(options);
+      if (this.optionInputs.length === 0) {
+        // No picker on the page (default-title products): resolve from the
+        // form's variant id instead of option matching.
+        const currentId = this.idInput ? String(this.idInput.value) : '';
+        variant =
+          this.variants.find((candidate) => String(candidate.id) === currentId) ||
+          this.variants.find((candidate) => candidate.available) ||
+          this.variants[0];
+      } else {
+        const options = this.selectedOptions();
+        variant = this.matchVariant(options);
+        this.markUnavailableOptions(options);
+      }
 
       if (!variant) {
         this.setButton(strings.unavailable || 'Unavailable', true);
