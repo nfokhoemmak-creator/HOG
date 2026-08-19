@@ -223,7 +223,8 @@
       "settings": {
         "eyebrow": { "label": "Eyebrow" },
         "heading": { "label": "Heading" },
-        "autoplay": { "label": "Autoplay videos", "info": "Videos play muted while on screen. Respects the visitor's reduced-motion preference." }
+        "autoplay": { "label": "Autoplay videos", "info": "Videos play muted while on screen. Respects the visitor's reduced-motion preference." },
+        "metafield": { "label": "Product videos metafield", "info": "On product pages, clips from this product metafield (e.g. custom.videos) replace the blocks below, so each product shows its own videos. The blocks act as a fallback." }
       },
       "blocks": {
         "video": {

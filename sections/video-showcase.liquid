@@ -5,6 +5,18 @@
 {%- endcomment -%}
 
 {%- liquid
+  # On product pages, videos come from the product's own metafield (e.g.
+  # custom.videos) so every product carries its own clips; the section's
+  # blocks are the fallback for products without any.
+  assign meta_items = blank
+  if product != blank and section.settings.metafield != blank
+    assign meta_parts = section.settings.metafield | split: '.'
+    assign meta_field = product.metafields[meta_parts[0]][meta_parts[1]]
+    if meta_field != blank and meta_field.value.size > 0
+      assign meta_items = meta_field.value
+    endif
+  endif
+
   # Blocks with no media yet render as placeholders in the editor only;
   # on the storefront the whole section stays out until a video is set.
   assign printable_blocks = 0
@@ -13,9 +25,14 @@
       assign printable_blocks = printable_blocks | plus: 1
     endif
   endfor
+
+  assign item_count = printable_blocks
+  if meta_items != blank
+    assign item_count = meta_items.size
+  endif
 -%}
 
-{%- if printable_blocks > 0 or request.design_mode and section.blocks.size > 0 -%}
+{%- if item_count > 0 or request.design_mode and section.blocks.size > 0 -%}
   <div class="section section--tight video-showcase">
     <div class="container">
       <div class="section__head">
@@ -28,8 +45,8 @@
           {%- endif -%}
         </div>
 
-        {%- assign nav_count = printable_blocks -%}
-        {%- if request.design_mode -%}
+        {%- assign nav_count = item_count -%}
+        {%- if request.design_mode and meta_items == blank and section.blocks.size > nav_count -%}
           {%- assign nav_count = section.blocks.size -%}
         {%- endif -%}
         {%- if nav_count > 2 -%}
@@ -62,6 +79,58 @@
         role="region"
         aria-label="{{ strip_label | escape }}"
       >
+        {%- if meta_items != blank -%}
+          {%- for file in meta_items limit: 10 -%}
+            {%- if file.media_type == 'video' -%}
+              <div class="video-strip__item" data-strip-item>
+                <div class="video-strip__media">
+                  {{
+                    file
+                    | video_tag:
+                      image_size: '800x',
+                      autoplay: false,
+                      loop: true,
+                      muted: true,
+                      controls: false,
+                      playsinline: true,
+                      preload: 'metadata'
+                  }}
+                  <button
+                    type="button"
+                    class="video-strip__play"
+                    data-play-toggle
+                    aria-label="{{ 'general.video.play' | t }}"
+                  >
+                    <span class="video-strip__play-icon">{% render 'icon', name: 'play' %}</span>
+                    <span class="video-strip__pause-icon" hidden>{% render 'icon', name: 'pause' %}</span>
+                  </button>
+                  <button
+                    type="button"
+                    class="video-strip__sound"
+                    data-sound-toggle
+                    aria-pressed="false"
+                    aria-label="{{ 'general.video.sound' | t }}"
+                  >
+                    <span class="video-strip__sound-off">{% render 'icon', name: 'volume-off' %}</span>
+                    <span class="video-strip__sound-on" hidden>{% render 'icon', name: 'volume-on' %}</span>
+                  </button>
+                </div>
+              </div>
+            {%- elsif file.media_type == 'image' -%}
+              <div class="video-strip__item" data-strip-item>
+                <div class="video-strip__media">
+                  <img
+                    src="{{ file | image_url: width: 800 }}"
+                    srcset="{{ file | image_url: width: 400 }} 400w, {{ file | image_url: width: 800 }} 800w"
+                    sizes="(min-width: 990px) 30rem, 70vw"
+                    alt="{{ file.alt | escape }}"
+                    loading="lazy"
+                  >
+                </div>
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        {%- else -%}
         {%- for block in section.blocks -%}
           {%- liquid
             assign linked_product = block.settings.product
@@ -169,6 +238,7 @@
             {%- endif -%}
           </div>
         {%- endfor -%}
+        {%- endif -%}
       </div>
     </video-strip>
   </div>
@@ -204,6 +274,13 @@
       "label": "t:sections.video_showcase.settings.autoplay.label",
       "info": "t:sections.video_showcase.settings.autoplay.info",
       "default": true
+    },
+    {
+      "type": "text",
+      "id": "metafield",
+      "label": "t:sections.video_showcase.settings.metafield.label",
+      "info": "t:sections.video_showcase.settings.metafield.info",
+      "default": "custom.videos"
     }
   ],
   "blocks": [

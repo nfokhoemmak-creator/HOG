@@ -100,7 +100,7 @@
     },
     "video_showcase": {
       "label": "Videos",
-      "empty": "Add video blocks to this section to build the video strip."
+      "empty": "Add clips to the product's “Product videos” metafield, or add video blocks to this section."
     },
     "collection_list": {
       "view_all": "View all collections"
