@@ -2,46 +2,42 @@
   <div class="container">
     <div class="section__head">
       <h2 class="h2">{{ section.settings.title }}</h2>
-      <a class="underline eyebrow" href="{{ routes.collections_url }}">
+      <a class="btn btn--outline btn--small" href="{{ routes.collections_url }}">
         {{ 'sections.collection_list.view_all' | t }}
       </a>
     </div>
 
-    <div class="product-grid" style="--cols-desktop: {{ section.settings.columns_desktop }}; --cols-mobile: 2;">
+    <div class="tile-row" style="--tile-cols: {{ section.settings.columns_desktop }};">
       {%- assign fallback_title = 'onboarding.collection_title' | t -%}
       {%- for block in section.blocks -%}
         {%- assign block_collection = collections[block.settings.collection] -%}
-        <div class="card" {{ block.shopify_attributes }}>
-          <a class="card__media card__media--portrait" href="{{ block_collection.url | default: routes.collections_url }}">
-            {%- if block_collection.image -%}
-              <img
-                class="card__image card__image--primary"
-                src="{{ block_collection.image | image_url: width: 800 }}"
-                alt="{{ block_collection.image.alt | escape }}"
-                width="{{ block_collection.image.width }}"
-                height="{{ block_collection.image.height }}"
-                loading="lazy"
-              >
-            {%- elsif block_collection.products.first.featured_media -%}
-              <img
-                class="card__image card__image--primary"
-                src="{{ block_collection.products.first.featured_media | image_url: width: 800 }}"
-                alt=""
-                width="800"
-                height="1067"
-                loading="lazy"
-              >
-            {%- else -%}
-              {{ 'collection-1' | placeholder_svg_tag: 'card__image' }}
-            {%- endif -%}
-          </a>
+        <a
+          class="tile{% if settings.animations_enabled %} reveal{% endif %}"
+          href="{{ block_collection.url | default: routes.collections_url }}"
+          {{ block.shopify_attributes }}
+        >
+          {%- if block_collection.image -%}
+            <img
+              src="{{ block_collection.image | image_url: width: 800 }}"
+              alt="{{ block_collection.image.alt | escape }}"
+              width="{{ block_collection.image.width }}"
+              height="{{ block_collection.image.height }}"
+              loading="lazy"
+            >
+          {%- elsif block_collection.products.first.featured_media -%}
+            <img
+              src="{{ block_collection.products.first.featured_media | image_url: width: 800 }}"
+              alt=""
+              width="800"
+              height="1067"
+              loading="lazy"
+            >
+          {%- else -%}
+            {{ 'collection-1' | placeholder_svg_tag: '' }}
+          {%- endif -%}
 
-          <div class="card__info">
-            <a class="card__title" href="{{ block_collection.url | default: routes.collections_url }}">
-              {{ block_collection.title | default: fallback_title }}
-            </a>
-          </div>
-        </div>
+          <span class="tile__label">{{ block_collection.title | default: fallback_title }}</span>
+        </a>
       {%- endfor -%}
     </div>
   </div>
@@ -64,10 +60,10 @@
       "type": "range",
       "id": "columns_desktop",
       "min": 2,
-      "max": 4,
+      "max": 5,
       "step": 1,
       "label": "t:sections.collection_list.settings.columns_desktop.label",
-      "default": 3
+      "default": 4
     }
   ],
   "blocks": [

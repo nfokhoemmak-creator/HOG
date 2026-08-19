@@ -2,8 +2,23 @@
   assign menu = linklists[section.settings.menu]
 -%}
 
+{%- if section.settings.sticky -%}
+  {%- comment -%}
+    Sticky must sit on the section wrapper: the wrapper is only as tall as
+    the header, so sticky on the <header> itself has no room to travel.
+  {%- endcomment -%}
+  {% style %}
+    #shopify-section-{{ section.id }} {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+  {% endstyle %}
+{%- endif -%}
+
 <header class="header{% if section.settings.sticky %} header--sticky{% endif %}">
   <div class="container header__inner">
+    <div class="header__left">
     <menu-drawer class="menu-toggle">
       <button
         type="button"
@@ -41,6 +56,13 @@
       </div>
     </menu-drawer>
 
+      <nav class="header__nav" aria-label="{{ 'general.menu' | t }}">
+        {%- for link in menu.links -%}
+          <a href="{{ link.url }}" {% if link.active %}aria-current="page"{% endif %}>{{ link.title }}</a>
+        {%- endfor -%}
+      </nav>
+    </div>
+
     {%- if request.page_type == 'index' -%}
       <h1 class="header__logo">
     {%- else -%}
@@ -64,12 +86,6 @@
     {%- else -%}
       </div>
     {%- endif -%}
-
-    <nav class="header__nav" aria-label="{{ 'general.menu' | t }}">
-      {%- for link in menu.links -%}
-        <a href="{{ link.url }}" {% if link.active %}aria-current="page"{% endif %}>{{ link.title }}</a>
-      {%- endfor -%}
-    </nav>
 
     <div class="header__actions">
       {%- if section.settings.show_search -%}

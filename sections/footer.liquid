@@ -1,4 +1,4 @@
-<footer class="footer">
+<footer class="footer{% if section.settings.color_scheme == 'inverse' %} footer--inverse{% endif %}">
   <div class="container">
     <div class="footer__grid">
       {%- for block in section.blocks -%}
@@ -78,6 +78,18 @@
       {%- endif -%}
     </div>
 
+    {%- if section.settings.show_wordmark -%}
+      {%- comment -%}
+        textLength stretches the name to the exact container width, so the
+        wordmark runs edge to edge no matter how long the shop name is.
+      {%- endcomment -%}
+      <svg class="footer__wordmark" viewBox="0 0 400 46" aria-hidden="true" focusable="false">
+        <text x="200" y="40" text-anchor="middle" textLength="398" lengthAdjust="spacingAndGlyphs">
+          {{- shop.name | escape -}}
+        </text>
+      </svg>
+    {%- endif -%}
+
     <div class="footer__bottom">
       <span>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. {{ settings.brand_tagline }}</span>
 
@@ -102,6 +114,22 @@
   "class": "footer-section",
   "max_blocks": 4,
   "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:sections.footer.settings.color_scheme.label",
+      "options": [
+        { "value": "default", "label": "t:sections.footer.settings.color_scheme.options__1" },
+        { "value": "inverse", "label": "t:sections.footer.settings.color_scheme.options__2" }
+      ],
+      "default": "inverse"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_wordmark",
+      "label": "t:sections.footer.settings.show_wordmark.label",
+      "default": true
+    },
     {
       "type": "checkbox",
       "id": "show_newsletter",

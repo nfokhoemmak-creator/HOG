@@ -9,29 +9,107 @@
 -%}
 
 {%- if section.blocks.size > 0 -%}
-  <announcement-rotator
-    class="announcement-bar {{ scheme_class }}"
-    data-speed="{{ section.settings.rotate_speed }}"
-    {% unless section.settings.rotate %}data-static{% endunless %}
-    role="region"
-    aria-label="{{ 'sections.announcements.announcement' | t }}"
-  >
-    <div class="announcement-bar__list">
-      {%- for block in section.blocks -%}
-        <div
-          class="announcement-bar__item"
-          {% if forloop.index > 1 and section.settings.rotate %}hidden{% endif %}
-          {{ block.shopify_attributes }}
-        >
-          {%- if block.settings.link != blank -%}
-            <a href="{{ block.settings.link }}">{{ block.settings.text }}</a>
-          {%- else -%}
-            {{ block.settings.text }}
-          {%- endif -%}
-        </div>
-      {%- endfor -%}
+  {%- if section.settings.display == 'marquee' -%}
+    {%- liquid
+      comment
+        Repeats are computed from the message length so the two identical
+        track halves each cover the widest screens (~3840px); a fixed count
+        leaves a blank gap in the loop whenever the half-track is narrower
+        than the viewport. ~10px per character overestimates 1.1rem type
+        with wide tracking; 64px covers each item's padding and separator.
+      endcomment
+      assign marquee_chars = 0
+      for block in section.blocks
+        assign marquee_chars = marquee_chars | plus: block.settings.text.size
+      endfor
+      assign group_width = marquee_chars | times: 10
+      assign extras = section.blocks.size | times: 64
+      assign group_width = group_width | plus: extras
+      if group_width < 200
+        assign group_width = 200
+      endif
+      assign repeats = 7680 | divided_by: group_width | plus: 2
+      assign remainder = repeats | modulo: 2
+      assign repeats = repeats | plus: remainder
+    -%}
+    <div
+      class="announcement-bar {{ scheme_class }} announcement-bar--marquee"
+      style="--announcement-speed: {{ section.settings.marquee_speed }}s;"
+      role="region"
+      aria-label="{{ 'sections.announcements.announcement' | t }}"
+    >
+      {%- comment -%}
+        The accessible copy: read by assistive tech, focusable, and shown
+        statically when the user prefers reduced motion. The moving track
+        below is presentation only.
+      {%- endcomment -%}
+      <ul class="announcement-bar__fallback">
+        {%- for block in section.blocks -%}
+          <li>
+            {%- if block.settings.link != blank -%}
+              <a href="{{ block.settings.link }}">{{ block.settings.text }}</a>
+            {%- else -%}
+              {{ block.settings.text }}
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+
+      {%- comment -%}
+        The keyframe shifts the track -50%, so an even repeat count keeps
+        the two halves identical and the loop seamless.
+      {%- endcomment -%}
+      <div class="announcement-bar__track" aria-hidden="true">
+        {%- for i in (1..repeats) -%}
+          {%- for block in section.blocks -%}
+            <span class="announcement-bar__item" {% if i == 1 %}{{ block.shopify_attributes }}{% endif %}>
+              {%- if block.settings.link != blank -%}
+                <a href="{{ block.settings.link }}" tabindex="-1">{{ block.settings.text }}</a>
+              {%- else -%}
+                {{ block.settings.text }}
+              {%- endif -%}
+            </span>
+            <span class="announcement-bar__sep">&#10022;</span>
+          {%- endfor -%}
+        {%- endfor -%}
+      </div>
+
+      <button
+        type="button"
+        class="announcement-bar__pause"
+        data-marquee-toggle
+        aria-pressed="false"
+      >
+        <svg class="announcement-bar__pause-icon announcement-bar__pause-icon--pause" viewBox="0 0 10 10" aria-hidden="true" focusable="false"><rect x="1" y="1" width="3" height="8" fill="currentColor"/><rect x="6" y="1" width="3" height="8" fill="currentColor"/></svg>
+        <svg class="announcement-bar__pause-icon announcement-bar__pause-icon--play" viewBox="0 0 10 10" aria-hidden="true" focusable="false"><path d="M2 1l7 4-7 4z" fill="currentColor"/></svg>
+        <span class="visually-hidden">{{ 'sections.announcements.pause' | t }}</span>
+      </button>
     </div>
-  </announcement-rotator>
+  {%- else -%}
+    <announcement-rotator
+      class="announcement-bar {{ scheme_class }}"
+      data-speed="{{ section.settings.rotate_speed }}"
+      {% unless section.settings.rotate %}data-static{% endunless %}
+      role="region"
+      aria-label="{{ 'sections.announcements.announcement' | t }}"
+    >
+      <div class="announcement-bar__list">
+        {%- for block in section.blocks -%}
+          <div
+            class="announcement-bar__item"
+            {% if forloop.index > 1 and section.settings.rotate %}hidden{% endif %}
+            {{ block.shopify_attributes }}
+          >
+            {%- if block.settings.link != blank -%}
+              <a href="{{ block.settings.link }}">{{ block.settings.text }}</a>
+            {%- else -%}
+              {{ block.settings.text }}
+            {%- endif -%}
+          </div>
+        {%- endfor -%}
+      </div>
+    </announcement-rotator>
+  {%- endif -%}
 {%- endif -%}
 
 {% schema %}
@@ -51,6 +129,26 @@
         { "value": "default", "label": "t:sections.announcement_bar.settings.color_scheme.options__3" }
       ],
       "default": "accent"
+    },
+    {
+      "type": "select",
+      "id": "display",
+      "label": "t:sections.announcement_bar.settings.display.label",
+      "options": [
+        { "value": "marquee", "label": "t:sections.announcement_bar.settings.display.options__1" },
+        { "value": "rotate", "label": "t:sections.announcement_bar.settings.display.options__2" }
+      ],
+      "default": "marquee"
+    },
+    {
+      "type": "range",
+      "id": "marquee_speed",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "s",
+      "label": "t:sections.announcement_bar.settings.marquee_speed.label",
+      "default": 30
     },
     {
       "type": "checkbox",

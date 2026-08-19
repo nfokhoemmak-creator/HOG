@@ -71,7 +71,7 @@
     {%- endif -%}
 
     {%- if section.settings.button_label != blank -%}
-      <a class="btn btn--accent" href="{{ section.settings.button_link | default: routes.all_products_collection_url }}">
+      <a class="btn btn--light" href="{{ section.settings.button_link | default: routes.all_products_collection_url }}">
         {{ section.settings.button_label }}
       </a>
     {%- endif -%}

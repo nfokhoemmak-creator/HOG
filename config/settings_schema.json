@@ -56,19 +56,19 @@
         "type": "color",
         "id": "color_background",
         "label": "t:settings_schema.colors.settings.color_background.label",
-        "default": "#0a0a0a"
+        "default": "#efede6"
       },
       {
         "type": "color",
         "id": "color_background_alt",
         "label": "t:settings_schema.colors.settings.color_background_alt.label",
-        "default": "#151515"
+        "default": "#e5e1d6"
       },
       {
         "type": "color",
         "id": "color_border",
         "label": "t:settings_schema.colors.settings.color_border.label",
-        "default": "#2a2a2a"
+        "default": "#d4cfc2"
       },
       {
         "type": "header",
@@ -78,13 +78,13 @@
         "type": "color",
         "id": "color_text",
         "label": "t:settings_schema.colors.settings.color_text.label",
-        "default": "#f5f5f5"
+        "default": "#1a1917"
       },
       {
         "type": "color",
         "id": "color_text_muted",
         "label": "t:settings_schema.colors.settings.color_text_muted.label",
-        "default": "#8a8a8a"
+        "default": "#676257"
       },
       {
         "type": "header",
@@ -94,20 +94,20 @@
         "type": "color",
         "id": "color_accent",
         "label": "t:settings_schema.colors.settings.color_accent.label",
-        "default": "#d6ff3f",
+        "default": "#8a4a24",
         "info": "t:settings_schema.colors.settings.color_accent.info"
       },
       {
         "type": "color",
         "id": "color_accent_contrast",
         "label": "t:settings_schema.colors.settings.color_accent_contrast.label",
-        "default": "#0a0a0a"
+        "default": "#efede6"
       },
       {
         "type": "color",
         "id": "color_sale",
         "label": "t:settings_schema.colors.settings.color_sale.label",
-        "default": "#ff4d4d"
+        "default": "#b3311e"
       },
       {
         "type": "header",
@@ -117,13 +117,13 @@
         "type": "color",
         "id": "color_button_background",
         "label": "t:settings_schema.colors.settings.color_button_background.label",
-        "default": "#f5f5f5"
+        "default": "#1a1917"
       },
       {
         "type": "color",
         "id": "color_button_text",
         "label": "t:settings_schema.colors.settings.color_button_text.label",
-        "default": "#0a0a0a"
+        "default": "#efede6"
       }
     ]
   },
@@ -138,7 +138,7 @@
         "type": "font_picker",
         "id": "type_heading_font",
         "label": "t:settings_schema.typography.settings.type_heading_font.label",
-        "default": "archivo_n6"
+        "default": "anton_n4"
       },
       {
         "type": "range",
@@ -174,7 +174,7 @@
         "type": "font_picker",
         "id": "type_body_font",
         "label": "t:settings_schema.typography.settings.type_body_font.label",
-        "default": "assistant_n4"
+        "default": "archivo_n4"
       },
       {
         "type": "range",
@@ -219,7 +219,7 @@
         "step": 1,
         "unit": "px",
         "label": "t:settings_schema.layout.settings.layout_corner_radius.label",
-        "default": 0,
+        "default": 16,
         "info": "t:settings_schema.layout.settings.layout_corner_radius.info"
       },
       {
@@ -230,7 +230,7 @@
         "step": 2,
         "unit": "px",
         "label": "t:settings_schema.layout.settings.grid_gap.label",
-        "default": 8
+        "default": 12
       },
       {
         "type": "checkbox",

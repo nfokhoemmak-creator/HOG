@@ -20,7 +20,9 @@
       },
       "block_order": ["announcement-1", "announcement-2"],
       "settings": {
-        "color_scheme": "accent",
+        "color_scheme": "inverse",
+        "display": "marquee",
+        "marquee_speed": 30,
         "rotate": true,
         "rotate_speed": 5
       }

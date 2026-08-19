@@ -261,6 +261,21 @@
     });
   }
 
+  /* -------------------------------------------------- marquee pause toggle */
+
+  function initMarqueePause() {
+    document.querySelectorAll('[data-marquee-toggle]').forEach((button) => {
+      if (button.dataset.bound) return;
+      button.dataset.bound = 'true';
+      button.addEventListener('click', () => {
+        const bar = button.closest('.announcement-bar');
+        if (!bar) return;
+        const paused = bar.classList.toggle('is-paused');
+        button.setAttribute('aria-pressed', String(paused));
+      });
+    });
+  }
+
   /* ------------------------------------------ close details on outside click */
 
   function initDetailsDismiss() {
@@ -286,6 +301,7 @@
     initReveal();
     initGalleries();
     initDetailsDismiss();
+    initMarqueePause();
   }
 
   if (document.readyState === 'loading') {

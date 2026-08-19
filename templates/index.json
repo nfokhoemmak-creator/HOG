@@ -4,11 +4,11 @@
       "type": "hero",
       "settings": {
         "height": "full",
-        "overlay_opacity": 45,
+        "overlay_opacity": 35,
         "heading": "NEW DROP",
         "subheading": "Limited pieces, made in Lebanon. Once they're gone, they're gone.",
         "text_alignment": "left",
-        "button_label": "Shop the drop",
+        "button_label": "Shop now",
         "show_countdown": false,
         "countdown_heading": "Drops in"
       }
@@ -16,11 +16,25 @@
     "featured": {
       "type": "featured-collection",
       "settings": {
-        "title": "New drop",
+        "title": "New arrivals",
         "products_to_show": 8,
         "columns_desktop": 4,
         "columns_mobile": "2",
         "show_view_all": true
+      }
+    },
+    "categories": {
+      "type": "collection-list",
+      "blocks": {
+        "col-1": { "type": "featured_collection", "settings": {} },
+        "col-2": { "type": "featured_collection", "settings": {} },
+        "col-3": { "type": "featured_collection", "settings": {} },
+        "col-4": { "type": "featured_collection", "settings": {} }
+      },
+      "block_order": ["col-1", "col-2", "col-3", "col-4"],
+      "settings": {
+        "title": "Shop by category",
+        "columns_desktop": 4
       }
     },
     "drop-banner": {
@@ -30,20 +44,17 @@
         "heading": "NO RESTOCKS",
         "text": "<p>Every piece is made in a small batch. When a size sells out, that's it.</p>",
         "button_label": "Shop the catalog",
-        "marquee": "EVERYBODY CAN'T HAVE LIMITED ITEMS ·"
+        "marquee": "EVERYBODY CAN'T HAVE LIMITED ITEMS"
       }
     },
-    "categories": {
-      "type": "collection-list",
-      "blocks": {
-        "col-1": { "type": "featured_collection", "settings": {} },
-        "col-2": { "type": "featured_collection", "settings": {} },
-        "col-3": { "type": "featured_collection", "settings": {} }
-      },
-      "block_order": ["col-1", "col-2", "col-3"],
+    "best-sellers": {
+      "type": "featured-collection",
       "settings": {
-        "title": "Shop by category",
-        "columns_desktop": 3
+        "title": "Most wanted",
+        "products_to_show": 4,
+        "columns_desktop": 4,
+        "columns_mobile": "2",
+        "show_view_all": true
       }
     },
     "image-with-text": {
@@ -67,8 +78,9 @@
   "order": [
     "hero",
     "featured",
-    "drop-banner",
     "categories",
+    "drop-banner",
+    "best-sellers",
     "image-with-text",
     "newsletter"
   ]

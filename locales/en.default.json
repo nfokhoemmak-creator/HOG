@@ -59,7 +59,8 @@
     "announcements": {
       "announcement": "Announcement",
       "previous_announcement": "Previous announcement",
-      "next_announcement": "Next announcement"
+      "next_announcement": "Next announcement",
+      "pause": "Pause scrolling announcements"
     },
     "header": {
       "announcement": "Announcement",
