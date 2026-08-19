@@ -124,6 +124,8 @@
                     srcset="{{ file | image_url: width: 400 }} 400w, {{ file | image_url: width: 800 }} 800w"
                     sizes="(min-width: 990px) 30rem, 70vw"
                     alt="{{ file.alt | escape }}"
+                    width="{{ file.width | default: 800 }}"
+                    height="{{ file.height | default: 1422 }}"
                     loading="lazy"
                   >
                 </div>
