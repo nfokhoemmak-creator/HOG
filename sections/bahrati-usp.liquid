@@ -1,0 +1,184 @@
+{%- liquid
+  assign style = section.settings.style | default: 'strip'
+  assign scheme = section.settings.scheme | default: 'light'
+-%}
+
+<section class="bhr-usp bhr-usp--{{ style }} bhr-usp--{{ scheme }}">
+  <div class="container">
+    {%- if section.settings.heading != blank or section.settings.subheading != blank -%}
+      <div class="bhr-usp__head">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="bhr-usp__eyebrow">{{ section.settings.eyebrow }}</p>
+        {%- endif -%}
+        {%- if section.settings.heading != blank -%}
+          <h2 class="bhr-usp__heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.subheading != blank -%}
+          <p class="bhr-usp__subheading">{{ section.settings.subheading }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="bhr-usp__grid bhr-usp__grid--{{ section.blocks.size }}">
+      {%- for block in section.blocks -%}
+        <div class="bhr-usp__item" {{ block.shopify_attributes }}>
+          <span class="bhr-usp__icon">{% render 'icon', name: block.settings.icon %}</span>
+          <div class="bhr-usp__copy">
+            {%- if block.settings.title != blank -%}
+              <p class="bhr-usp__title">{{ block.settings.title }}</p>
+            {%- endif -%}
+            {%- if block.settings.highlight != blank -%}
+              <p class="bhr-usp__highlight">{{ block.settings.highlight }}</p>
+            {%- endif -%}
+            {%- if block.settings.text != blank -%}
+              <p class="bhr-usp__text">{{ block.settings.text }}</p>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- if section.settings.footnote != blank -%}
+      <p class="bhr-usp__footnote">{% render 'icon', name: 'sparkle' %} {{ section.settings.footnote }}</p>
+    {%- endif -%}
+  </div>
+</section>
+
+<style>
+  .bhr-usp--light { background: var(--color-bg-alt); }
+  .bhr-usp--dark { background: var(--color-fg); color: var(--color-bg-alt); }
+  .bhr-usp--strip { border-block: 1px solid var(--color-border); }
+  .bhr-usp--strip .container { padding-block: 0; }
+  .bhr-usp--cards .container { padding-block: var(--space-8); }
+
+  .bhr-usp__head { text-align: center; max-width: 620px; margin: 0 auto var(--space-6); }
+  .bhr-usp__eyebrow {
+    font-size: 1.2rem; letter-spacing: 0.32em; text-transform: uppercase;
+    color: var(--color-accent); margin: 0 0 var(--space-2);
+  }
+  .bhr-usp--dark .bhr-usp__eyebrow { color: var(--color-accent); }
+  .bhr-usp__heading { margin: 0; font-size: calc(3.2rem * var(--font-heading-scale)); }
+  .bhr-usp__subheading { color: var(--color-muted); margin: var(--space-2) 0 0; }
+  .bhr-usp--dark .bhr-usp__subheading { color: var(--color-bg-alt); opacity: 0.65; }
+
+  .bhr-usp__grid { display: grid; grid-template-columns: repeat(4, 1fr); }
+  .bhr-usp__grid--3 { grid-template-columns: repeat(3, 1fr); gap: var(--space-4); }
+  .bhr-usp--cards .bhr-usp__grid { gap: var(--space-4); }
+
+  .bhr-usp--strip .bhr-usp__item {
+    display: flex; align-items: center; justify-content: center; gap: var(--space-3);
+    padding: var(--space-5) var(--space-3); text-align: left;
+  }
+  .bhr-usp--strip .bhr-usp__item + .bhr-usp__item { border-left: 1px solid var(--color-border); }
+
+  .bhr-usp--cards .bhr-usp__item {
+    text-align: center; padding: var(--space-6) var(--space-5);
+    border-radius: var(--radius); border: 1px solid var(--color-border);
+    background: var(--color-bg-alt);
+  }
+  .bhr-usp--cards.bhr-usp--dark .bhr-usp__item {
+    background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.14);
+  }
+
+  .bhr-usp__icon svg { width: 26px; height: 26px; color: var(--color-accent); }
+  .bhr-usp--cards .bhr-usp__icon svg { width: 32px; height: 32px; margin-bottom: var(--space-3); }
+
+  .bhr-usp__title { margin: 0; font-weight: var(--font-body-weight-bold); font-size: 1.4rem; letter-spacing: 0.04em; }
+  .bhr-usp--cards .bhr-usp__title { font-family: var(--font-heading-family); font-weight: var(--font-heading-weight); font-size: 1.9rem; letter-spacing: 0.02em; }
+  .bhr-usp__highlight { margin: var(--space-1) 0 0; color: var(--color-accent); font-weight: var(--font-body-weight-bold); font-size: 1.4rem; }
+  .bhr-usp--dark .bhr-usp__highlight { color: var(--color-accent); }
+  .bhr-usp__text { margin: var(--space-1) 0 0; color: var(--color-muted); font-size: 1.3rem; }
+  .bhr-usp--dark .bhr-usp__text { color: var(--color-bg-alt); opacity: 0.65; }
+
+  .bhr-usp__footnote {
+    margin: var(--space-6) auto 0; text-align: center; font-size: 1.4rem; color: var(--color-muted);
+    display: flex; align-items: center; justify-content: center; gap: var(--space-2); flex-wrap: wrap;
+  }
+  .bhr-usp__footnote svg { width: 17px; height: 17px; color: var(--color-accent); }
+  .bhr-usp--dark .bhr-usp__footnote { color: var(--color-bg-alt); opacity: 0.75; }
+
+  @media (max-width: 989px) {
+    .bhr-usp__grid, .bhr-usp__grid--3 { grid-template-columns: repeat(2, 1fr); }
+    .bhr-usp--strip .bhr-usp__item:nth-child(odd) { border-left: none; }
+    .bhr-usp--strip .bhr-usp__item { border-top: 1px solid var(--color-border); }
+    .bhr-usp--strip .bhr-usp__item:nth-child(-n + 2) { border-top: none; }
+  }
+  @media (max-width: 599px) {
+    .bhr-usp--cards .bhr-usp__grid, .bhr-usp--cards .bhr-usp__grid--3 { grid-template-columns: 1fr; }
+    .bhr-usp--strip .bhr-usp__item { flex-direction: column; text-align: center; gap: var(--space-2); padding: var(--space-4) var(--space-2); }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "USP columns",
+  "tag": "section",
+  "class": "bhr-usp-section",
+  "max_blocks": 4,
+  "settings": [
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Style",
+      "options": [
+        { "value": "strip", "label": "Icon strip" },
+        { "value": "cards", "label": "Cards" }
+      ],
+      "default": "strip"
+    },
+    {
+      "type": "select",
+      "id": "scheme",
+      "label": "Color scheme",
+      "options": [
+        { "value": "light", "label": "Light" },
+        { "value": "dark", "label": "Dark" }
+      ],
+      "default": "light"
+    },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow" },
+    { "type": "text", "id": "heading", "label": "Heading" },
+    { "type": "text", "id": "subheading", "label": "Subheading" },
+    { "type": "text", "id": "footnote", "label": "Footnote" }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Item",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "truck", "label": "Truck" },
+            { "value": "medal", "label": "Medal" },
+            { "value": "droplet", "label": "Droplet" },
+            { "value": "undo", "label": "Returns" },
+            { "value": "lock", "label": "Lock" },
+            { "value": "shield", "label": "Shield" },
+            { "value": "globe", "label": "Globe" },
+            { "value": "box", "label": "Box" },
+            { "value": "sparkle", "label": "Sparkle" }
+          ],
+          "default": "truck"
+        },
+        { "type": "text", "id": "title", "label": "Title", "default": "Free Worldwide Shipping" },
+        { "type": "text", "id": "highlight", "label": "Highlight line" },
+        { "type": "text", "id": "text", "label": "Text", "default": "On all orders over $50" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "USP columns",
+      "blocks": [
+        { "type": "item" },
+        { "type": "item" },
+        { "type": "item" },
+        { "type": "item" }
+      ]
+    }
+  ]
+}
+{% endschema %}

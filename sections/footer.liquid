@@ -79,7 +79,7 @@
     </div>
 
     <div class="footer__bottom">
-      <span>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. {{ settings.brand_tagline }}</span>
+      <span>&copy; {{ 'now' | date: '%Y' }} {{ settings.brand_name_override | default: shop.name }}. {{ settings.brand_tagline }}</span>
 
       {%- if section.settings.show_payment_icons and shop.enabled_payment_types.size > 0 -%}
         <ul class="payment-list">

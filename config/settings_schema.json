@@ -1,9 +1,9 @@
 [
   {
     "name": "theme_info",
-    "theme_name": "House of Garments",
+    "theme_name": "Bahrati",
     "theme_version": "1.0.0",
-    "theme_author": "House of Garments",
+    "theme_author": "BAHRATI",
     "theme_documentation_url": "https://houseofgarments.co",
     "theme_support_url": "https://houseofgarments.co/pages/contact"
   },
@@ -36,6 +36,12 @@
         "id": "brand_tagline",
         "label": "t:settings_schema.brand.settings.brand_tagline.label",
         "default": "EVERYBODY CAN'T HAVE LIMITED ITEMS"
+      },
+      {
+        "type": "text",
+        "id": "brand_name_override",
+        "label": "Brand name override",
+        "info": "Shown as a text wordmark in the header and footer instead of the store name. Leave empty to use the store name."
       },
       {
         "type": "image_picker",

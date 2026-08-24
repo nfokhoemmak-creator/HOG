@@ -1,0 +1,80 @@
+<section class="bhr-faq">
+  <div class="container bhr-faq__container">
+    <div class="bhr-faq__head">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="bhr-faq__eyebrow">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="bhr-faq__heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+    </div>
+
+    <div class="bhr-faq__list">
+      {%- for block in section.blocks -%}
+        <details class="bhr-faq__item" {{ block.shopify_attributes }}>
+          <summary class="bhr-faq__question">
+            {{ block.settings.question }}
+            <span class="bhr-faq__icon">{% render 'icon', name: 'plus' %}</span>
+          </summary>
+          <div class="bhr-faq__answer">{{ block.settings.answer }}</div>
+        </details>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+<style>
+  .bhr-faq { background: var(--color-bg); }
+  .bhr-faq__container { max-width: 880px; padding-block: var(--space-8); }
+  .bhr-faq__head { text-align: center; margin-bottom: var(--space-6); }
+  .bhr-faq__eyebrow {
+    font-size: 1.2rem; letter-spacing: 0.32em; text-transform: uppercase;
+    color: var(--color-accent); margin: 0 0 var(--space-2);
+  }
+  .bhr-faq__heading { margin: 0; font-size: calc(3.2rem * var(--font-heading-scale)); }
+  .bhr-faq__list { border-top: 1px solid var(--color-border); }
+  .bhr-faq__item { border-bottom: 1px solid var(--color-border); }
+  .bhr-faq__question {
+    display: flex; align-items: center; justify-content: space-between; gap: var(--space-4);
+    padding: var(--space-4) 2px; cursor: pointer; list-style: none;
+    font-size: 1.6rem; font-weight: var(--font-body-weight-bold);
+  }
+  .bhr-faq__question::-webkit-details-marker { display: none; }
+  .bhr-faq__icon svg { width: 16px; height: 16px; color: var(--color-accent); transition: transform 0.3s ease; }
+  .bhr-faq__item[open] .bhr-faq__icon svg { transform: rotate(45deg); }
+  .bhr-faq__answer { padding: 0 2px var(--space-4); color: var(--color-fg); opacity: 0.85; font-size: 1.5rem; max-width: 68ch; }
+  .bhr-faq__answer p { margin: 0 0 var(--space-2); }
+</style>
+
+{% schema %}
+{
+  "name": "FAQ",
+  "tag": "section",
+  "class": "bhr-faq-section",
+  "max_blocks": 12,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "FAQ" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Questions, answered." }
+  ],
+  "blocks": [
+    {
+      "type": "question",
+      "name": "Question",
+      "settings": [
+        { "type": "text", "id": "question", "label": "Question", "default": "How long does shipping take?" },
+        { "type": "richtext", "id": "answer", "label": "Answer", "default": "<p>We dispatch within 24 hours on business days, with tracking sent to your inbox.</p>" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQ",
+      "blocks": [
+        { "type": "question" },
+        { "type": "question" },
+        { "type": "question" }
+      ]
+    }
+  ]
+}
+{% endschema %}

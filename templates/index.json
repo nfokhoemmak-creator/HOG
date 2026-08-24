@@ -3,73 +3,318 @@
     "hero": {
       "type": "hero",
       "settings": {
+        "image": "shopify://shop_images/bahrati-hero.jpg",
         "height": "full",
-        "overlay_opacity": 45,
-        "heading": "NEW DROP",
-        "subheading": "Limited pieces, made in Lebanon. Once they're gone, they're gone.",
+        "overlay_opacity": 15,
+        "heading": "Made to be worn. Every single day.",
+        "subheading": "Minimal, waterproof accessories in 18K Gold and Sterling Silver finishes — designed to move through life with you.",
         "text_alignment": "left",
-        "button_label": "Shop the drop",
-        "show_countdown": false,
-        "countdown_heading": "Drops in"
+        "button_label": "Shop the Cross Bracelet",
+        "button_link": "shopify://products/the-cross-bracelet",
+        "show_countdown": false
+      }
+    },
+    "usp-strip": {
+      "type": "bahrati-usp",
+      "blocks": {
+        "usp-1": {
+          "type": "item",
+          "settings": {
+            "icon": "truck",
+            "title": "Free Worldwide Shipping",
+            "text": "On all orders over $50"
+          }
+        },
+        "usp-2": {
+          "type": "item",
+          "settings": {
+            "icon": "medal",
+            "title": "2-Year Warranty",
+            "text": "On every single piece"
+          }
+        },
+        "usp-3": {
+          "type": "item",
+          "settings": {
+            "icon": "droplet",
+            "title": "Waterproof & Anti-Tarnish",
+            "text": "Shower, swim, train — it stays"
+          }
+        },
+        "usp-4": {
+          "type": "item",
+          "settings": {
+            "icon": "undo",
+            "title": "30-Day Easy Returns",
+            "text": "Not in love? Money back"
+          }
+        }
+      },
+      "block_order": ["usp-1", "usp-2", "usp-3", "usp-4"],
+      "settings": {
+        "style": "strip",
+        "scheme": "light"
       }
     },
     "featured": {
       "type": "featured-collection",
       "settings": {
-        "title": "New drop",
-        "products_to_show": 8,
+        "title": "The signature piece",
+        "collection": "bahrati",
+        "products_to_show": 4,
         "columns_desktop": 4,
-        "columns_mobile": "2",
-        "show_view_all": true
+        "columns_mobile": "1",
+        "show_view_all": false
       }
     },
-    "drop-banner": {
-      "type": "drop-banner",
+    "film": {
+      "type": "bahrati-film",
       "settings": {
-        "eyebrow": "Limited run",
-        "heading": "NO RESTOCKS",
-        "text": "<p>Every piece is made in a small batch. When a size sells out, that's it.</p>",
-        "button_label": "Shop the catalog",
-        "marquee": "EVERYBODY CAN'T HAVE LIMITED ITEMS ·"
+        "height": "large",
+        "eyebrow": "The Bahrati film",
+        "heading": "Crafted for the everyday ritual.",
+        "button_label": "Discover the bracelet",
+        "button_link": "shopify://products/the-cross-bracelet"
       }
     },
-    "categories": {
-      "type": "collection-list",
-      "blocks": {
-        "col-1": { "type": "featured_collection", "settings": {} },
-        "col-2": { "type": "featured_collection", "settings": {} },
-        "col-3": { "type": "featured_collection", "settings": {} }
-      },
-      "block_order": ["col-1", "col-2", "col-3"],
-      "settings": {
-        "title": "Shop by category",
-        "columns_desktop": 3
-      }
-    },
-    "image-with-text": {
+    "story": {
       "type": "image-with-text",
       "settings": {
+        "image": "shopify://shop_images/bahrati-duo-still.jpg",
         "layout": "left",
-        "heading": "Made in limited runs",
-        "text": "<p>Heavyweight fabric, boxy fits, and nothing that gets remade. House of Garments releases in drops — follow along on Instagram so you don't miss one.</p>",
-        "button_label": "Follow @houseofgarments.co",
-        "button_link": "https://www.instagram.com/houseofgarments.co/"
+        "heading": "Quiet luxury, at an honest price.",
+        "text": "<p>BAHRATI began with a simple frustration: accessories either looked beautiful and fell apart, or lasted forever and looked like hardware. We wanted both — pieces refined enough for a dinner table and tough enough for salt water.</p><p>So we build every piece from premium 316L stainless steel, seal it in thick 18K gold or sterling silver plating, and back it with a 2-year warranty.</p>",
+        "button_label": "Shop the collection",
+        "button_link": "shopify://collections/bahrati"
+      }
+    },
+    "reviews": {
+      "type": "bahrati-reviews",
+      "blocks": {
+        "rev-1": {
+          "type": "review",
+          "settings": {
+            "stars": 5,
+            "title": "Wears like nothing, looks like everything",
+            "text": "I've had the silver on for three months straight — showers, gym, the sea in July. Still looks the way it did out of the box. It's become part of my hand, honestly.",
+            "author": "Daniel M.",
+            "detail": "Silver\nAug 2026"
+          }
+        },
+        "rev-2": {
+          "type": "review",
+          "settings": {
+            "stars": 5,
+            "title": "Bought it as a gift, kept it for myself",
+            "text": "Ordered the gold for my brother's confirmation… then ordered a second one because I couldn't hand it over. The sideways cross is subtle — people notice it without it shouting.",
+            "author": "Samuel O.",
+            "detail": "Gold\nJul 2026"
+          }
+        },
+        "rev-3": {
+          "type": "review",
+          "settings": {
+            "stars": 5,
+            "title": "Finally one that doesn't turn green",
+            "text": "I have sensitive skin and every \"gold\" bracelet I've owned left marks within weeks. This one hasn't — no irritation, no fading. The adjustable chain means it actually fits.",
+            "author": "Amara K.",
+            "detail": "Gold\nJul 2026"
+          }
+        },
+        "rev-4": {
+          "type": "review",
+          "settings": {
+            "stars": 5,
+            "title": "Quality far above the price",
+            "text": "The clasp is solid, the chain has real weight to it, and the finish is flawless. It arrived in a beautiful box with a card — felt like a much more expensive purchase.",
+            "author": "Jesse V.",
+            "detail": "Silver\nJun 2026"
+          }
+        },
+        "rev-5": {
+          "type": "review",
+          "settings": {
+            "stars": 4,
+            "title": "Beautiful — wish I'd sized down",
+            "text": "Gorgeous bracelet and fast shipping to Canada. I wear it on the tightest setting; if you have a slim wrist you'll still be fine thanks to the extender. Would buy again.",
+            "author": "Lena T.",
+            "detail": "Silver\nJun 2026"
+          }
+        },
+        "rev-6": {
+          "type": "review",
+          "settings": {
+            "stars": 5,
+            "title": "My daily reminder",
+            "text": "I wanted something meaningful I could wear everywhere, even where jewelry feels out of place. This is exactly that — quiet, elegant, personal. Customer service was lovely too.",
+            "author": "Mateo R.",
+            "detail": "Gold\nMay 2026"
+          }
+        }
+      },
+      "block_order": ["rev-1", "rev-2", "rev-3", "rev-4", "rev-5", "rev-6"],
+      "settings": {
+        "eyebrow": "Reviews",
+        "heading": "Worn & loved, worldwide.",
+        "rating_value": "4.9",
+        "rating_caption": "based on 1,247 verified reviews"
+      }
+    },
+    "trust": {
+      "type": "bahrati-usp",
+      "blocks": {
+        "trust-1": {
+          "type": "item",
+          "settings": {
+            "icon": "lock",
+            "title": "Secure Checkout",
+            "text": "Payments are processed over 256-bit SSL encryption. We never see or store your card details."
+          }
+        },
+        "trust-2": {
+          "type": "item",
+          "settings": {
+            "icon": "shield",
+            "title": "Buyer Protection",
+            "text": "Order lost or damaged in transit? We reship or refund in full — every parcel is tracked and insured."
+          }
+        },
+        "trust-3": {
+          "type": "item",
+          "settings": {
+            "icon": "medal",
+            "title": "2-Year Warranty",
+            "text": "If your piece fades, discolours or breaks under normal wear within two years, we replace it free of charge."
+          }
+        }
+      },
+      "block_order": ["trust-1", "trust-2", "trust-3"],
+      "settings": {
+        "style": "cards",
+        "scheme": "dark",
+        "eyebrow": "Shop with confidence",
+        "heading": "Protected, from checkout to wrist.",
+        "subheading": "Every order is covered — your payment, your delivery and your bracelet itself."
+      }
+    },
+    "shipping": {
+      "type": "bahrati-usp",
+      "blocks": {
+        "ship-1": {
+          "type": "item",
+          "settings": {
+            "icon": "truck",
+            "title": "United States & Canada",
+            "highlight": "4–7 business days",
+            "text": "Free over $50 · tracked & insured"
+          }
+        },
+        "ship-2": {
+          "type": "item",
+          "settings": {
+            "icon": "box",
+            "title": "Europe & United Kingdom",
+            "highlight": "3–6 business days",
+            "text": "Free over $50 · tracked & insured"
+          }
+        },
+        "ship-3": {
+          "type": "item",
+          "settings": {
+            "icon": "globe",
+            "title": "Rest of the World",
+            "highlight": "7–12 business days",
+            "text": "Free over $50 · tracked & insured"
+          }
+        }
+      },
+      "block_order": ["ship-1", "ship-2", "ship-3"],
+      "settings": {
+        "style": "cards",
+        "scheme": "light",
+        "eyebrow": "Delivery",
+        "heading": "From our studio to your door.",
+        "subheading": "Orders placed on business days are packed and dispatched within 24 hours, with tracking sent to your inbox.",
+        "footnote": "Every order arrives in a BAHRATI gift box with a polishing cloth — ready to give, or to keep."
+      }
+    },
+    "faq": {
+      "type": "bahrati-faq",
+      "blocks": {
+        "faq-1": {
+          "type": "question",
+          "settings": {
+            "question": "Will the bracelet tarnish, fade or turn my skin green?",
+            "answer": "<p>No. Each bracelet is built on a 316L stainless steel core with a thick 18K gold or sterling silver plating. It's engineered to resist tarnishing, fading and discolouration — and it's covered by our 2-year warranty if it ever lets you down.</p>"
+          }
+        },
+        "faq-2": {
+          "type": "question",
+          "settings": {
+            "question": "Can I wear it in the shower, sea or gym?",
+            "answer": "<p>Yes — that's the point. The bracelet is fully waterproof and sweat-proof. Put it on and forget about it: shower, swim, train, repeat.</p>"
+          }
+        },
+        "faq-3": {
+          "type": "question",
+          "settings": {
+            "question": "What size is it? Will it fit my wrist?",
+            "answer": "<p>One size fits nearly all. The chain adjusts from 16.5 cm to 21 cm using the extender, which covers slim to larger wrists. It's designed to be unisex.</p>"
+          }
+        },
+        "faq-4": {
+          "type": "question",
+          "settings": {
+            "question": "How long does shipping take?",
+            "answer": "<p>We dispatch within 24 hours on business days. Delivery typically takes 4–7 business days to the US &amp; Canada, 3–6 to Europe &amp; the UK, and 7–12 to the rest of the world. Every order includes tracking.</p>"
+          }
+        },
+        "faq-5": {
+          "type": "question",
+          "settings": {
+            "question": "What if it doesn't suit me?",
+            "answer": "<p>You have 30 days to return unworn items for a full refund — no questions asked. Just reach out and we'll guide you through it.</p>"
+          }
+        },
+        "faq-6": {
+          "type": "question",
+          "settings": {
+            "question": "How does the 2-year warranty work?",
+            "answer": "<p>If your bracelet fades, discolours or breaks under normal wear within two years of purchase, send us a photo and your order number — we'll ship a replacement free of charge.</p>"
+          }
+        },
+        "faq-7": {
+          "type": "question",
+          "settings": {
+            "question": "Is it gift-ready?",
+            "answer": "<p>Yes. Every order arrives in a BAHRATI gift box with a polishing cloth and care card — no extra wrapping needed.</p>"
+          }
+        }
+      },
+      "block_order": ["faq-1", "faq-2", "faq-3", "faq-4", "faq-5", "faq-6", "faq-7"],
+      "settings": {
+        "eyebrow": "FAQ",
+        "heading": "Questions, answered."
       }
     },
     "newsletter": {
       "type": "newsletter",
       "settings": {
-        "heading": "Get the drop first",
-        "text": "<p>New releases go to the list before anywhere else. Delivery all over Lebanon.</p>"
+        "heading": "10% off your first order.",
+        "text": "<p>Early access to new pieces, restocks and stories — no noise, unsubscribe anytime.</p>"
       }
     }
   },
   "order": [
     "hero",
+    "usp-strip",
     "featured",
-    "drop-banner",
-    "categories",
-    "image-with-text",
+    "film",
+    "story",
+    "reviews",
+    "trust",
+    "shipping",
+    "faq",
     "newsletter"
   ]
 }

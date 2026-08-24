@@ -55,6 +55,9 @@
             height="{{ settings.logo.height }}"
             style="width: {{ settings.logo_width }}px;"
           >
+        {%- elsif settings.brand_name_override != blank -%}
+          <span class="header__wordmark">{{ settings.brand_name_override }}</span>
+          <svg class="header__wordmark-waves" viewBox="0 0 74 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M2 4c4.4-3 8.4-3 12.5 0s8.1 3 12.5 0 8.4-3 12.5 0 8.1 3 12.5 0 8.4-3 12.5 0 5.4 2 7 2" transform="scale(0.82) translate(2 0)"/><path d="M2 11c4.4-3 8.4-3 12.5 0s8.1 3 12.5 0 8.4-3 12.5 0 8.1 3 12.5 0 8.4-3 12.5 0 5.4 2 7 2" transform="scale(0.82) translate(2 0)"/></svg>
         {%- else -%}
           {{ shop.name }}
         {%- endif -%}

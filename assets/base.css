@@ -1487,3 +1487,26 @@ body.is-locked {
 
   .section { padding-block: var(--space-8); }
 }
+
+/* Text wordmark (brand name override) */
+.header__wordmark {
+  display: block;
+  font-family: var(--font-heading-family);
+  font-weight: var(--font-heading-weight);
+  font-size: 2.2rem;
+  line-height: 1;
+  letter-spacing: 0.3em;
+  margin-right: -0.3em;
+  color: var(--color-accent);
+  text-align: center;
+}
+.header__wordmark-waves {
+  display: block;
+  width: 62px;
+  margin: 5px auto 0;
+  color: var(--color-accent);
+}
+@media (max-width: 749px) {
+  .header__wordmark { font-size: 1.8rem; }
+  .header__wordmark-waves { width: 52px; margin-top: 4px; }
+}

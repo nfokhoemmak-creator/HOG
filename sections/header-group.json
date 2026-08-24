@@ -8,21 +8,27 @@
         "announcement-1": {
           "type": "announcement",
           "settings": {
-            "text": "DELIVERY ALL OVER LEBANON"
+            "text": "★★★★★ Rated 4.9/5 by 1,200+ verified customers"
           }
         },
         "announcement-2": {
           "type": "announcement",
           "settings": {
-            "text": "EVERYBODY CAN'T HAVE LIMITED ITEMS"
+            "text": "Free worldwide shipping on orders over $50"
+          }
+        },
+        "announcement-3": {
+          "type": "announcement",
+          "settings": {
+            "text": "2-year warranty · 30-day easy returns"
           }
         }
       },
-      "block_order": ["announcement-1", "announcement-2"],
+      "block_order": ["announcement-1", "announcement-2", "announcement-3"],
       "settings": {
-        "color_scheme": "accent",
+        "color_scheme": "inverse",
         "rotate": true,
-        "rotate_speed": 5
+        "rotate_speed": 4
       }
     },
     "header": {
