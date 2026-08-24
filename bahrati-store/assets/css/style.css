@@ -1037,6 +1037,7 @@ section { padding: 96px 0; }
 }
 
 @media (max-width: 560px) {
+  .announce__item { font-size: 10px; letter-spacing: 0.08em; padding: 0 10px; }
   .usp__grid { grid-template-columns: 1fr 1fr; }
   .usp__item { padding: 18px 12px; gap: 10px; flex-direction: column; text-align: center; }
   .usp__item + .usp__item { border-left: none; }
