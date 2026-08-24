@@ -56,7 +56,7 @@
             style="width: {{ settings.logo_width }}px;"
           >
         {%- else -%}
-          {{ shop.name }}
+          {% render 'brand-wordmark' %}
         {%- endif -%}
       </a>
     {%- if request.page_type == 'index' -%}
@@ -89,13 +89,13 @@
       {%- endif -%}
 
       <a
-        class="header__icon"
+        class="header__bag"
         href="{{ routes.cart_url }}"
         aria-label="{{ 'general.cart' | t }}"
         {% if settings.cart_type == 'drawer' %}data-cart-trigger{% endif %}
       >
-        {% render 'icon', name: 'cart' %}
-        <span class="cart-count" data-cart-count {% if cart.item_count == 0 %}hidden{% endif %}>
+        {{ 'general.bag' | t }}
+        <span class="cart-count cart-count--bag" data-cart-count>
           {{- cart.item_count -}}
         </span>
       </a>

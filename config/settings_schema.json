@@ -26,6 +26,19 @@
         "default": 140
       },
       {
+        "type": "text",
+        "id": "brand_logo_text",
+        "label": "t:settings_schema.brand.settings.brand_logo_text.label",
+        "info": "t:settings_schema.brand.settings.brand_logo_text.info"
+      },
+      {
+        "type": "checkbox",
+        "id": "brand_logo_star",
+        "label": "t:settings_schema.brand.settings.brand_logo_star.label",
+        "info": "t:settings_schema.brand.settings.brand_logo_star.info",
+        "default": true
+      },
+      {
         "type": "image_picker",
         "id": "favicon",
         "label": "t:settings_schema.brand.settings.favicon.label",

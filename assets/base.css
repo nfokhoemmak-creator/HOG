@@ -22,6 +22,8 @@
    16. Customer account
    17. Password page
    18. Motion
+   19. Brand type (bundled Archivo variable) + wordmark
+   20. Landing takeover
    ========================================================================== */
 
 /* 1. Reset ---------------------------------------------------------------- */
@@ -1486,4 +1488,273 @@ body.is-locked {
   .article-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
   .section { padding-block: var(--space-8); }
+}
+
+/* 19. Brand type (bundled Archivo variable) + wordmark --------------------- */
+
+/* Archivo (Omnibus-Type), SIL Open Font License 1.1 — see FONT-LICENSE in the
+   repo root. Bundled so the expanded-width black italic brand look doesn't
+   depend on a third-party font CDN. */
+@font-face {
+  font-family: 'Archivo Var';
+  font-style: normal;
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  font-display: swap;
+  src: url('archivo-var.woff2') format('woff2-variations');
+}
+
+@font-face {
+  font-family: 'Archivo Var';
+  font-style: italic;
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  font-display: swap;
+  src: url('archivo-var-italic.woff2') format('woff2-variations');
+}
+
+/* Brand lock: display type is Archivo expanded black italic. Declared after
+   the theme-setting variables from layout/theme.liquid so it wins; remove
+   this block to hand font control back to the editor's font pickers. */
+:root {
+  --font-brand-family: 'Archivo Var', Archivo, 'Arial Black', Arial, sans-serif;
+  --font-heading-family: var(--font-brand-family);
+  --font-heading-style: italic;
+  --font-heading-weight: 830;
+  --font-heading-stretch: 125%;
+}
+
+h1, h2, h3, h4, h5, h6,
+.h0, .h1, .h2, .h3, .h4,
+.eyebrow,
+.btn,
+.badge,
+.header__logo,
+.header__nav a,
+.card__title,
+.countdown__value {
+  font-stretch: var(--font-heading-stretch, 100%);
+}
+
+.btn { font-style: var(--font-heading-style); }
+
+/* Utility text stays upright, like the reference shop pages. */
+.header__nav a,
+.card__title,
+.badge,
+.eyebrow { font-style: normal; }
+
+/* Reference look: product titles + prices centered under the image. */
+.card__info { justify-items: center; text-align: center; }
+.card__title { font-weight: 700; }
+
+.wordmark {
+  letter-spacing: -0.045em;
+  text-transform: lowercase;
+}
+
+.wordmark__star {
+  display: inline-block;
+  width: 0.68em;
+  height: 0.68em;
+  margin: 0 -0.01em;
+  vertical-align: -0.04em;
+  transform: rotate(8deg);
+}
+
+.header__logo { font-style: var(--font-heading-style); letter-spacing: -0.045em; }
+
+/* Header BAG link: text + always-visible round count, replaces the cart icon */
+.header__bag {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 4.4rem;
+  font-family: var(--font-heading-family);
+  font-style: var(--font-heading-style);
+  font-weight: var(--font-heading-weight);
+  font-stretch: var(--font-heading-stretch);
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+
+.cart-count--bag {
+  position: static;
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.75em;
+  height: 1.75em;
+  padding: 0 0.3em;
+  border-radius: 999px;
+  background: var(--color-fg);
+  color: var(--color-bg);
+  font-size: 0.62em;
+  font-style: normal;
+  line-height: 1;
+  margin-left: 0.18em;
+  transform: translateY(-0.55em);
+}
+
+/* cart-drawer.js hides the count at zero for the icon badge; in the brand
+   look the zero is part of the design, so keep it visible. */
+.cart-count--bag[hidden] { display: inline-grid; }
+
+/* 20. Landing takeover ----------------------------------------------------- */
+
+.landing {
+  position: relative;
+  height: 100svh;
+  min-height: 48rem;
+  overflow: hidden;
+  background: #000;
+  /* Over-media UI: fixed white regardless of palette — it always sits on
+     photographic media behind a near-black frame. */
+  color: #fff;
+  font-family: var(--font-brand-family);
+  font-stretch: 125%;
+  font-style: italic;
+}
+
+.landing a { color: inherit; text-decoration: none; }
+
+.landing__media,
+.landing__media img,
+.landing__media video,
+.landing__media picture,
+.landing__placeholder {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Stand-in until media is uploaded: soft sky-to-greenery wash */
+.landing__placeholder {
+  background:
+    radial-gradient(52% 42% at 24% 88%, rgb(203 74 145 / 0.55), transparent 70%),
+    radial-gradient(60% 48% at 82% 84%, rgb(34 118 74 / 0.65), transparent 72%),
+    radial-gradient(46% 38% at 62% 78%, rgb(228 236 224 / 0.8), transparent 70%),
+    radial-gradient(90% 60% at 50% 100%, rgb(21 96 63 / 0.75), transparent 75%),
+    linear-gradient(180deg, #7fc4e8 0%, #a8d9ef 38%, #cfe9dd 60%, #74a98a 100%);
+}
+
+.landing__overlay {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  opacity: 0.1;
+}
+
+.landing__frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  pointer-events: none;
+}
+
+.landing__top {
+  position: absolute;
+  z-index: 4;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: clamp(1.8rem, 2.6vw, 3.4rem) clamp(1.8rem, 3vw, 4rem);
+}
+
+.landing__logo {
+  font-size: clamp(2rem, 2.7vw, 3.4rem);
+  font-weight: 830;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  white-space: nowrap;
+  text-shadow: 0 2px 26px rgb(0 0 0 / 0.55);
+}
+
+.landing__bag {
+  font-size: clamp(1.6rem, 2vw, 2.4rem);
+  font-weight: 830;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  text-transform: uppercase;
+  text-shadow: 0 2px 26px rgb(0 0 0 / 0.55);
+  transition: opacity var(--duration) var(--ease);
+}
+
+.landing__bag:hover { opacity: 0.72; }
+
+.landing__bag-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.75em;
+  height: 1.75em;
+  padding: 0 0.3em;
+  border-radius: 999px;
+  background: #fff;
+  color: #101013;
+  font-size: 0.42em;
+  font-style: normal;
+  line-height: 1;
+  vertical-align: 0.9em;
+  margin-left: 0.18em;
+}
+
+/* Same zero-stays-visible override as .cart-count--bag above. */
+.landing__bag-count[hidden] { display: inline-grid; }
+
+.landing__cta {
+  position: absolute;
+  z-index: 3;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  font-size: clamp(2.6rem, 3.4vw, 5rem);
+  font-weight: 870;
+  letter-spacing: -0.02em;
+  line-height: 0.95;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-align: center;
+  text-shadow: 0 4px 44px rgb(0 0 0 / 0.45);
+  transition: scale 250ms var(--ease);
+}
+
+.landing__cta:hover,
+.landing__cta:focus-visible { scale: 1.05; }
+
+.landing__nav {
+  position: absolute;
+  z-index: 4;
+  left: clamp(1.8rem, 3vw, 4rem);
+  bottom: clamp(2rem, 3vw, 4.2rem);
+  display: grid;
+  justify-items: start;
+  gap: clamp(0.2rem, 0.35vw, 0.5rem);
+}
+
+.landing__nav a {
+  font-size: clamp(1.7rem, 1.75vw, 2.5rem);
+  font-weight: 830;
+  letter-spacing: -0.005em;
+  line-height: 1.12;
+  text-transform: uppercase;
+  text-shadow: 0 2px 22px rgb(0 0 0 / 0.6);
+  transition: translate 180ms var(--ease), opacity 180ms var(--ease);
+}
+
+.landing__nav a:hover,
+.landing__nav a:focus-visible {
+  translate: 0.8rem 0;
+  opacity: 0.78;
+}
+
+@media (max-width: 749px) {
+  .landing__cta { font-size: clamp(2rem, 7.4vw, 3.4rem); }
+  .landing__nav a { font-size: 1.55rem; line-height: 1.3; }
 }

@@ -39,7 +39,8 @@
     "close": "Close",
     "menu": "Menu",
     "cart": "Cart",
-    "account": "Account"
+    "account": "Account",
+    "bag": "Bag"
   },
   "accessibility": {
     "skip_to_text": "Skip to content",

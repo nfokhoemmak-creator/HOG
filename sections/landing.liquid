@@ -1,0 +1,286 @@
+{%- comment -%}
+  Full-screen landing takeover: background media viewed through a stylised
+  car-window frame, wordmark top-left, BAG top-right, one big CTA in the
+  middle and a stacked link list bottom-left. Designed to be the only
+  section on the homepage.
+
+  The BAG link reuses the theme's cart drawer ([data-cart-trigger] +
+  [data-cart-count] are wired up by assets/cart-drawer.js) and falls back
+  to a plain link to /cart without JS.
+{%- endcomment -%}
+
+{%- liquid
+  assign sid = section.id
+-%}
+
+{%- style -%}
+  {%- if section.settings.takeover -%}
+    .announcement-bar-section,
+    .header-section,
+    .footer-section { display: none; }
+    .main { min-height: 0; }
+  {%- endif -%}
+  #Landing-{{ sid }} .landing__overlay { opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }}; }
+{%- endstyle -%}
+
+<div id="Landing-{{ sid }}" class="landing">
+  <div class="landing__media">
+    {%- if section.settings.video_url != blank -%}
+      <video
+        autoplay
+        muted
+        loop
+        playsinline
+        {% if section.settings.image != blank %}poster="{{ section.settings.image | image_url: width: 1600 }}"{% endif %}
+      >
+        <source src="{{ section.settings.video_url }}" type="video/mp4">
+      </video>
+    {%- elsif section.settings.image != blank -%}
+      <picture>
+        {%- if section.settings.image_mobile != blank -%}
+          <source
+            media="(max-width: 749px)"
+            srcset="{{ section.settings.image_mobile | image_url: width: 800 }} 800w, {{ section.settings.image_mobile | image_url: width: 1100 }} 1100w"
+          >
+        {%- endif -%}
+        <img
+          src="{{ section.settings.image | image_url: width: 2400 }}"
+          srcset="
+            {{ section.settings.image | image_url: width: 1000 }} 1000w,
+            {{ section.settings.image | image_url: width: 1600 }} 1600w,
+            {{ section.settings.image | image_url: width: 2000 }} 2000w,
+            {{ section.settings.image | image_url: width: 2400 }} 2400w
+          "
+          sizes="100vw"
+          alt="{{ section.settings.image.alt | escape }}"
+          width="{{ section.settings.image.width }}"
+          height="{{ section.settings.image.height }}"
+          fetchpriority="high"
+        >
+      </picture>
+    {%- else -%}
+      <div class="landing__placeholder" role="presentation"></div>
+    {%- endif -%}
+  </div>
+
+  <div class="landing__overlay"></div>
+
+  {%- if section.settings.car_frame -%}
+    <svg class="landing__frame" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+      <defs>
+        <filter id="LandingSoft-{{ sid }}" x="-10%" y="-10%" width="120%" height="120%">
+          <feGaussianBlur stdDeviation="5"/>
+        </filter>
+        <filter id="LandingSofter-{{ sid }}" x="-15%" y="-15%" width="130%" height="130%">
+          <feGaussianBlur stdDeviation="14"/>
+        </filter>
+        <filter id="LandingTrim-{{ sid }}" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="2.2"/>
+        </filter>
+        <radialGradient id="LandingVignette-{{ sid }}" cx="50%" cy="46%" r="72%">
+          <stop offset="60%" stop-color="#000" stop-opacity="0"/>
+          <stop offset="100%" stop-color="#000" stop-opacity=".55"/>
+        </radialGradient>
+        <filter id="LandingGrain-{{ sid }}">
+          <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/>
+          <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .06 0"/>
+        </filter>
+
+        <path id="LandingCut-{{ sid }}" d="
+          M0,0 H1600 V900 H0 Z
+          M175,640
+          C150,545 130,380 140,262
+          C148,170 205,128 350,106
+          C565,74 945,62 1210,68
+          C1330,71 1408,86 1442,132
+          C1478,180 1492,340 1490,470
+          C1488,590 1468,662 1395,704
+          C1300,754 1060,766 810,762
+          C540,758 300,724 175,640
+          Z"/>
+        <clipPath id="LandingClip-{{ sid }}">
+          <use href="#LandingCut-{{ sid }}" clip-rule="evenodd"/>
+        </clipPath>
+      </defs>
+
+      <use href="#LandingCut-{{ sid }}" fill="#0a0705" fill-rule="evenodd" filter="url(#LandingSofter-{{ sid }})"/>
+      <use href="#LandingCut-{{ sid }}" fill="#070503" fill-rule="evenodd" filter="url(#LandingSoft-{{ sid }})"/>
+
+      <g clip-path="url(#LandingClip-{{ sid }})">
+        <path d="
+          M158,612
+          C128,520 116,372 126,255
+          C115,158 180,112 335,89
+          C558,56 940,44 1212,50
+          C1336,53 1418,69 1456,118"
+          fill="none" stroke="#9e2129" stroke-width="9" filter="url(#LandingTrim-{{ sid }})" opacity=".85"/>
+        <path d="
+          M142,600
+          C112,510 102,368 112,246
+          C104,144 172,94 332,70
+          C558,36 942,24 1214,30
+          C1340,33 1428,50 1470,102"
+          fill="none" stroke="#38302d" stroke-width="12" filter="url(#LandingTrim-{{ sid }})" opacity=".7"/>
+
+        <path d="M1462,-20 L1532,-30 L1640,300 L1580,320 Z" fill="#131010" filter="url(#LandingSoft-{{ sid }})"/>
+
+        <g filter="url(#LandingSoft-{{ sid }})" transform="rotate(-6 1290 830)">
+          <rect x="1180" y="808" width="210" height="48" rx="24" fill="#181310"/>
+          <rect x="1194" y="817" width="182" height="13" rx="6" fill="#2c2522" opacity=".8"/>
+        </g>
+        <path d="M200,880 C640,822 1120,818 1600,862 L1600,900 L200,900 Z" fill="#0c0807" filter="url(#LandingSofter-{{ sid }})"/>
+      </g>
+
+      <rect width="1600" height="900" fill="url(#LandingVignette-{{ sid }})"/>
+      <rect width="1600" height="900" filter="url(#LandingGrain-{{ sid }})" opacity=".5"/>
+    </svg>
+  {%- endif -%}
+
+  <header class="landing__top">
+    {%- if request.page_type == 'index' -%}
+      <h1 class="landing__logo">
+    {%- else -%}
+      <div class="landing__logo">
+    {%- endif -%}
+      <a href="{{ routes.root_url }}">{% render 'brand-wordmark' %}</a>
+    {%- if request.page_type == 'index' -%}
+      </h1>
+    {%- else -%}
+      </div>
+    {%- endif -%}
+
+    {%- if section.settings.show_bag -%}
+      <a
+        class="landing__bag"
+        href="{{ routes.cart_url }}"
+        {% if settings.cart_type == 'drawer' %}data-cart-trigger{% endif %}
+      >
+        {{ 'general.bag' | t }}
+        {%- comment -%} The zero is part of the look, so the count stays visible. {%- endcomment -%}
+        <span class="landing__bag-count" data-cart-count>{{ cart.item_count }}</span>
+        <span class="visually-hidden">{{ 'general.cart' | t }}</span>
+      </a>
+    {%- endif -%}
+  </header>
+
+  {%- if section.settings.cta_label != blank -%}
+    <a class="landing__cta" href="{{ section.settings.cta_link | default: routes.all_products_collection_url }}">
+      {{ section.settings.cta_label }}
+    </a>
+  {%- endif -%}
+
+  {%- if section.blocks.size > 0 -%}
+    <nav class="landing__nav" aria-label="{{ 'general.menu' | t }}">
+      {%- for block in section.blocks -%}
+        {%- if block.settings.label != blank -%}
+          <a href="{{ block.settings.url | default: '#' }}" {{ block.shopify_attributes }}>
+            {{- block.settings.label -}}
+          </a>
+        {%- endif -%}
+      {%- endfor -%}
+    </nav>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.landing.name",
+  "tag": "section",
+  "class": "landing-section",
+  "limit": 1,
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.landing.settings.image.label"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "t:sections.landing.settings.image_mobile.label"
+    },
+    {
+      "type": "url",
+      "id": "video_url",
+      "label": "t:sections.landing.settings.video_url.label",
+      "info": "t:sections.landing.settings.video_url.info"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 90,
+      "step": 5,
+      "unit": "%",
+      "label": "t:sections.landing.settings.overlay_opacity.label",
+      "default": 10
+    },
+    {
+      "type": "checkbox",
+      "id": "car_frame",
+      "label": "t:sections.landing.settings.car_frame.label",
+      "info": "t:sections.landing.settings.car_frame.info",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "takeover",
+      "label": "t:sections.landing.settings.takeover.label",
+      "info": "t:sections.landing.settings.takeover.info",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "t:sections.landing.settings.cta_label.label",
+      "default": "SHOP HERE"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "t:sections.landing.settings.cta_link.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_bag",
+      "label": "t:sections.landing.settings.show_bag.label",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "link",
+      "name": "t:sections.landing.blocks.link.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "t:sections.landing.blocks.link.settings.label.label"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "t:sections.landing.blocks.link.settings.url.label"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "presets": [
+    {
+      "name": "t:sections.landing.name",
+      "blocks": [
+        { "type": "link", "settings": { "label": "Products" } },
+        { "type": "link", "settings": { "label": "Sign up" } },
+        { "type": "link", "settings": { "label": "Size guide" } },
+        { "type": "link", "settings": { "label": "Sustainability" } },
+        { "type": "link", "settings": { "label": "Terms" } },
+        { "type": "link", "settings": { "label": "Privacy policy" } }
+      ]
+    }
+  ],
+  "enabled_on": {
+    "templates": ["index"]
+  }
+}
+{% endschema %}

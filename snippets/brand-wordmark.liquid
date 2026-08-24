@@ -1,0 +1,36 @@
+{%- comment -%}
+  Text wordmark with an optional star glyph swapped in for the first "o"
+  (e.g. "broken planet" renders as "br✶ken planet"). Driven by the Brand
+  theme settings so the merchant can change the text or turn the star off
+  without touching code. Screen readers get the plain text.
+
+  Usage: {% render 'brand-wordmark' %}
+{%- endcomment -%}
+
+{%- liquid
+  assign wordmark_text = settings.brand_logo_text
+  if wordmark_text == blank
+    assign wordmark_text = shop.name
+  endif
+  assign wordmark_display = wordmark_text | escape
+
+  assign star_target = ''
+  if settings.brand_logo_star
+    if wordmark_display contains 'o'
+      assign star_target = 'o'
+    elsif wordmark_display contains 'O'
+      assign star_target = 'O'
+    endif
+  endif
+-%}
+
+{%- capture wordmark_star -%}<svg class="wordmark__star" viewBox="0 0 100 100" fill="currentColor" aria-hidden="true" focusable="false"><path d="M50 2 L57 36 L86 14 L64 43 L98 50 L64 57 L86 86 L57 64 L50 98 L43 64 L14 86 L36 57 L2 50 L36 43 L14 14 L43 36 Z"/></svg>{%- endcapture -%}
+
+<span class="wordmark" aria-hidden="true">
+  {%- if star_target != blank -%}
+    {{- wordmark_display | replace_first: star_target, wordmark_star -}}
+  {%- else -%}
+    {{- wordmark_display -}}
+  {%- endif -%}
+</span>
+<span class="visually-hidden">{{ wordmark_text | escape }}</span>

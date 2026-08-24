@@ -87,6 +87,13 @@ Everything is driven by CSS custom properties emitted from theme settings in
 Layout is CSS grid + `clamp()` for fluid type. There is no CSS framework and no
 build step for styles — `base.css` is served as-is by Shopify's CDN.
 
+Display type is **Archivo** (variable: weight + width axes), bundled in
+`assets/` under the SIL Open Font License (see `FONT-LICENSE`) and locked in
+at expanded-width black italic at the end of `base.css` — remove that block to
+hand font control back to the editor's font pickers. The text wordmark
+(`snippets/brand-wordmark.liquid`) renders the **Wordmark text** brand setting
+and can swap the first "o" for a star glyph (**Star in wordmark** setting).
+
 ## JavaScript
 
 Three ES modules, no dependencies, no bundler. Each is loaded with `defer` and
@@ -110,6 +117,7 @@ without the drawer.
 | `announcement-bar` | all | Rotating messages. Default: *DELIVERY ALL OVER LEBANON* |
 | `header` | all | Sticky, logo, nav, search, account, cart count |
 | `footer` | all | Menus, Instagram, payment icons, newsletter opt-in |
+| `landing` | index | Full-screen splash: media framed as a car-window view, text wordmark, BAG link (opens the cart drawer), one big CTA, stacked link list. Its "takeover" setting hides header + footer so it owns the page |
 | `hero` | index | Full-bleed image/video, optional drop countdown |
 | `featured-collection` | index | Grid of N products from a chosen collection |
 | `drop-banner` | index | Large type + CTA for the current release |

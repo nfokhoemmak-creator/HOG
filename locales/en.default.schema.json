@@ -5,6 +5,8 @@
       "settings": {
         "logo": { "label": "Logo" },
         "logo_width": { "label": "Logo width" },
+        "brand_logo_text": { "label": "Wordmark text", "info": "Text logo used when no logo image is set. Leave blank to use the store name." },
+        "brand_logo_star": { "label": "Star in wordmark", "info": "Replaces the first “o” in the wordmark with a star glyph." },
         "favicon": { "label": "Favicon", "info": "Will be scaled down to 32 x 32px" },
         "brand_tagline": { "label": "Tagline" },
         "share_image": { "label": "Social sharing image", "info": "Shown when a link to the store is shared. 1200 x 630px works best." }
@@ -139,6 +141,29 @@
       "blocks": {
         "menu": { "name": "Menu", "settings": { "heading": { "label": "Heading" }, "menu": { "label": "Menu" } } },
         "text": { "name": "Text", "settings": { "heading": { "label": "Heading" }, "text": { "label": "Text" } } }
+      }
+    },
+    "landing": {
+      "name": "Landing takeover",
+      "settings": {
+        "image": { "label": "Image" },
+        "image_mobile": { "label": "Mobile image" },
+        "video_url": { "label": "Video URL", "info": "MP4 hosted in Files. Overrides the image." },
+        "overlay_opacity": { "label": "Media overlay opacity" },
+        "car_frame": { "label": "Car window frame", "info": "Frames the media as a view out of a car window." },
+        "takeover": { "label": "Hide header and footer", "info": "Makes this section the whole page, like a splash screen." },
+        "cta_label": { "label": "Center link label" },
+        "cta_link": { "label": "Center link" },
+        "show_bag": { "label": "Show bag link" }
+      },
+      "blocks": {
+        "link": {
+          "name": "Link",
+          "settings": {
+            "label": { "label": "Label" },
+            "url": { "label": "Link" }
+          }
+        }
       }
     },
     "hero": {
