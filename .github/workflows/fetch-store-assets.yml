@@ -1,0 +1,63 @@
+name: Fetch store assets
+
+on:
+  push:
+    branches: [claude/bharati-accessories-store-ne0m6v]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Skip if assets already committed
+        id: guard
+        run: |
+          if [ -f bahrati-store/assets/img/product-silver.jpg ] && [ -f bahrati-store/assets/video/bahrati-film.mp4 ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Fetch and optimize assets
+        if: steps.guard.outputs.skip == 'false'
+        run: |
+          set -euo pipefail
+          B="https://d8j0ntlcm91z4.cloudfront.net/user_39AOETmo9OmsUdMO7KDKiyWA7Sz"
+          IMG=bahrati-store/assets/img
+          VID=bahrati-store/assets/video
+          mkdir -p "$IMG" "$VID" /tmp/raw
+          cd /tmp/raw
+          curl -fsS -o raw0.png "$B/hf_20260824_141915_fa6464ea-d832-440d-a7c1-3f66af233e3a.png"
+          curl -fsS -o raw1.png "$B/hf_20260824_141915_58e964d0-ac43-4c4b-96e9-e84d192d3001.png"
+          curl -fsS -o raw2.png "$B/hf_20260824_141915_b56c6393-12f4-4e21-b7c9-6fcb432d2b7d.png"
+          curl -fsS -o raw3.png "$B/hf_20260824_141915_f0900614-c27c-417d-8e45-0de5cb8db309.png"
+          curl -fsS -o raw4.png "$B/hf_20260824_141915_c77e0191-acb9-449b-9628-40e1c11c3887.png"
+          curl -fsS -o raw5.png "$B/hf_20260824_141915_ec276e3f-a4c6-41fe-953f-6168e1f182fa.png"
+          curl -fsS -o raw6.png "$B/hf_20260824_141915_039b8a58-bf9c-4add-bce9-a1ebb4d5ef09.png"
+          curl -fsS -o film.mp4 "$B/hf_20260824_143409_61f57403-c462-4c0b-b401-4d7022fee5de.mp4"
+          cd "$GITHUB_WORKSPACE"
+          convert /tmp/raw/raw0.png -resize "1600x1600>" -strip -interlace Plane -quality 78 "$IMG/product-silver.jpg"
+          convert /tmp/raw/raw1.png -resize "1600x1600>" -strip -interlace Plane -quality 78 "$IMG/product-gold.jpg"
+          convert /tmp/raw/raw2.png -resize "1600x1600>" -strip -interlace Plane -quality 78 "$IMG/lifestyle-silver-cuff.jpg"
+          convert /tmp/raw/raw3.png -resize "1600x1600>" -strip -interlace Plane -quality 78 "$IMG/lifestyle-silver-chest.jpg"
+          convert /tmp/raw/raw4.png -resize "1600x1600>" -strip -interlace Plane -quality 78 "$IMG/lifestyle-gold-wrist.jpg"
+          convert /tmp/raw/raw5.png -resize "1920x1920>" -strip -interlace Plane -quality 78 "$IMG/hero.jpg"
+          convert /tmp/raw/raw6.png -resize "1600x1600>" -strip -interlace Plane -quality 78 "$IMG/duo-still.jpg"
+          ffmpeg -y -i /tmp/raw/film.mp4 -vf "scale=1600:-2" -c:v libx264 -preset slow -crf 26 -pix_fmt yuv420p -movflags +faststart -c:a aac -b:a 96k "$VID/bahrati-film.mp4"
+          ffmpeg -y -i "$VID/bahrati-film.mp4" -frames:v 1 -q:v 3 /tmp/raw/poster.png
+          convert /tmp/raw/poster.png -resize "1600x1600>" -strip -quality 78 "$IMG/film-poster.jpg"
+          ls -la "$IMG" "$VID"
+
+      - name: Commit assets
+        if: steps.guard.outputs.skip == 'false'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add bahrati-store/assets
+          git commit -m "Add optimized product images and brand film"
+          git push
