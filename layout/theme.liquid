@@ -36,10 +36,12 @@
       assign heading_font = settings.type_heading_font
     -%}
 
-    {{ body_font | font_face: font_display: 'swap' }}
-    {{ body_font_bold | font_face: font_display: 'swap' }}
-    {{ body_font_italic | font_face: font_display: 'swap' }}
-    {{ heading_font | font_face: font_display: 'swap' }}
+    <style>
+      {{ body_font | font_face: font_display: 'swap' }}
+      {{ body_font_bold | font_face: font_display: 'swap' }}
+      {{ body_font_italic | font_face: font_display: 'swap' }}
+      {{ heading_font | font_face: font_display: 'swap' }}
+    </style>
 
     <style>
       :root {
@@ -52,6 +54,7 @@
         --font-heading-style: {{ heading_font.style }};
         --font-heading-weight: {{ heading_font.weight }};
         --font-heading-tracking: {{ settings.type_heading_tracking }}px;
+        --font-heading-transform: {% if settings.type_heading_uppercase %}uppercase{% else %}none{% endif %};
 
         --font-body-scale: {{ settings.type_body_scale | divided_by: 100.0 }};
         --font-heading-scale: {{ settings.type_heading_scale | divided_by: 100.0 }};

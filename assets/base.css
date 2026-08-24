@@ -84,8 +84,8 @@ h1, h2, h3, h4, h5, h6 {
   font-style: var(--font-heading-style);
   font-weight: var(--font-heading-weight);
   letter-spacing: var(--font-heading-tracking);
-  line-height: 1.05;
-  text-transform: uppercase;
+  line-height: 1.15;
+  text-transform: var(--font-heading-transform, uppercase);
 }
 
 p {

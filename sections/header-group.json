@@ -34,7 +34,7 @@
     "header": {
       "type": "header",
       "settings": {
-        "menu": "main-menu",
+        "menu": "bahrati-main",
         "sticky": true,
         "show_search": true,
         "show_account": true
