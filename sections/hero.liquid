@@ -4,7 +4,9 @@
 
 <section class="hero hero--{{ section.settings.height }} hero--{{ alignment }}">
   <div class="hero__media">
-    {%- if section.settings.video_url != blank -%}
+    {%- if section.settings.video != blank -%}
+      {{ section.settings.video | video_tag: autoplay: true, loop: true, muted: true, controls: false, image_size: '1600x' }}
+    {%- elsif section.settings.video_url != blank -%}
       <video autoplay muted loop playsinline poster="{{ section.settings.image | image_url: width: 1600 }}">
         <source src="{{ section.settings.video_url }}" type="video/mp4">
       </video>
@@ -84,6 +86,12 @@
   "tag": "section",
   "class": "hero-section",
   "settings": [
+    {
+      "type": "video",
+      "id": "video",
+      "label": "Background video",
+      "info": "Uploaded video — overrides the video URL and image below."
+    },
     {
       "type": "image_picker",
       "id": "image",

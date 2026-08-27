@@ -1,0 +1,393 @@
+{% style %}
+  .testimonials__head {
+    flex-wrap: wrap;
+    align-items: flex-end;
+  }
+
+  .testimonials__intro {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .testimonials__intro .muted {
+    margin: 0;
+  }
+
+  .testimonials__overall {
+    display: grid;
+    gap: var(--space-1);
+    justify-items: end;
+    text-align: right;
+  }
+
+  .testimonials__overall-note {
+    margin: 0;
+    font-size: 1.4rem;
+  }
+
+  testimonial-slider {
+    display: block;
+    position: relative;
+  }
+
+  .testimonials__track {
+    display: flex;
+    gap: var(--grid-gap);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: var(--space-2);
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .testimonials__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .testimonials__track:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 4px;
+  }
+
+  .testimonials__card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    flex: 0 0 min(30rem, 86%);
+    scroll-snap-align: start;
+    padding: var(--space-5);
+    background: var(--color-bg-alt);
+    border-radius: var(--radius);
+  }
+
+  @media (min-width: 990px) {
+    .testimonials__card {
+      flex-basis: calc((100% - 2 * var(--grid-gap)) / 3);
+    }
+  }
+
+  .testimonials__quote {
+    margin: 0;
+    flex: 1 1 auto;
+    line-height: 1.6;
+  }
+
+  .testimonials__author {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .testimonials__avatar {
+    width: 4.4rem;
+    height: 4.4rem;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .testimonials__name {
+    display: block;
+    font-weight: var(--font-body-weight-bold, 600);
+  }
+
+  .testimonials__detail {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 1.3rem;
+  }
+
+  .testimonials__detail svg {
+    width: 1.4rem;
+    height: 1.4rem;
+    flex: 0 0 auto;
+  }
+
+  .testimonials__nav {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+  }
+
+  .testimonials__nav[hidden] {
+    display: none;
+  }
+
+  .testimonials__arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 4.4rem;
+    height: 4.4rem;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: var(--color-bg);
+    color: var(--color-fg);
+    cursor: pointer;
+    transition: background var(--duration) var(--ease), color var(--duration) var(--ease);
+  }
+
+  .testimonials__arrow:hover {
+    background: var(--color-fg);
+    color: var(--color-bg);
+  }
+
+  .testimonials__arrow svg {
+    width: 1.6rem;
+    height: 1.6rem;
+  }
+{% endstyle %}
+
+<div class="section">
+  <div class="container">
+    <div class="section__head testimonials__head">
+      <div class="testimonials__intro{% if settings.animations_enabled %} reveal{% endif %}">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="h2">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.subheading != blank -%}
+          <p class="muted">{{ section.settings.subheading }}</p>
+        {%- endif -%}
+      </div>
+
+      {%- if section.settings.show_overall -%}
+        <div class="testimonials__overall">
+          {% render 'star-rating', rating: section.settings.overall_rating %}
+          <p class="muted testimonials__overall-note">
+            {{ section.settings.overall_rating }}/5 from {{ section.settings.overall_count }}+ verified customers
+          </p>
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- if section.blocks.size > 0 -%}
+      <testimonial-slider>
+        <div
+          class="testimonials__track"
+          data-track
+          role="region"
+          aria-label="Customer reviews"
+          tabindex="0"
+        >
+          {%- for block in section.blocks -%}
+            <article class="testimonials__card" {{ block.shopify_attributes }}>
+              {% render 'star-rating', rating: block.settings.stars, size: 'small' %}
+
+              {%- if block.settings.quote != blank -%}
+                <blockquote class="testimonials__quote">{{ block.settings.quote }}</blockquote>
+              {%- endif -%}
+
+              <div class="testimonials__author">
+                {%- if block.settings.image != blank -%}
+                  <img
+                    class="testimonials__avatar"
+                    src="{{ block.settings.image | image_url: width: 88, height: 88, crop: 'center' }}"
+                    srcset="{{ block.settings.image | image_url: width: 44, height: 44, crop: 'center' }} 44w, {{ block.settings.image | image_url: width: 88, height: 88, crop: 'center' }} 88w"
+                    sizes="44px"
+                    alt="{{ block.settings.author | default: 'Customer photo' | escape }}"
+                    width="44"
+                    height="44"
+                    loading="lazy"
+                  >
+                {%- endif -%}
+
+                <div>
+                  {%- if block.settings.author != blank -%}
+                    <span class="testimonials__name">{{ block.settings.author }}</span>
+                  {%- endif -%}
+                  {%- if block.settings.detail != blank -%}
+                    <span class="testimonials__detail muted">
+                      {% render 'icon-benefit', name: 'check' %}
+                      {{ block.settings.detail }}
+                    </span>
+                  {%- endif -%}
+                </div>
+              </div>
+            </article>
+          {%- endfor -%}
+        </div>
+
+        <div class="testimonials__nav" data-nav hidden>
+          <button type="button" class="testimonials__arrow" data-prev aria-label="Previous reviews">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
+              <path d="M14.5 5.5 8 12l6.5 6.5"/>
+            </svg>
+          </button>
+          <button type="button" class="testimonials__arrow" data-next aria-label="Next reviews">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
+              <path d="M9.5 5.5 16 12l-6.5 6.5"/>
+            </svg>
+          </button>
+        </div>
+      </testimonial-slider>
+    {%- endif -%}
+  </div>
+</div>
+
+<script>
+  (function () {
+    'use strict';
+
+    if (customElements.get('testimonial-slider')) return;
+
+    class TestimonialSlider extends HTMLElement {
+      connectedCallback() {
+        this.track = this.querySelector('[data-track]');
+        this.nav = this.querySelector('[data-nav]');
+        if (!this.track || !this.nav) return;
+
+        if (!this.bound) {
+          this.bound = true;
+          this.onResize = this.updateNav.bind(this);
+
+          var prev = this.querySelector('[data-prev]');
+          var next = this.querySelector('[data-next]');
+          if (prev) prev.addEventListener('click', this.step.bind(this, -1));
+          if (next) next.addEventListener('click', this.step.bind(this, 1));
+        }
+
+        window.addEventListener('resize', this.onResize);
+        this.updateNav();
+      }
+
+      disconnectedCallback() {
+        window.removeEventListener('resize', this.onResize);
+      }
+
+      updateNav() {
+        if (!this.track || !this.nav) return;
+        this.nav.hidden = this.track.scrollWidth <= this.track.clientWidth + 1;
+      }
+
+      step(direction) {
+        var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        this.track.scrollBy({
+          left: this.track.clientWidth * 0.8 * direction,
+          behavior: reduced ? 'auto' : 'smooth'
+        });
+      }
+    }
+
+    customElements.define('testimonial-slider', TestimonialSlider);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Testimonials",
+  "tag": "section",
+  "class": "testimonials-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "What our customers say"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": ""
+    },
+    {
+      "type": "checkbox",
+      "id": "show_overall",
+      "label": "Show overall rating",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "overall_rating",
+      "min": 3.5,
+      "max": 5,
+      "step": 0.1,
+      "label": "Overall rating",
+      "default": 4.8
+    },
+    {
+      "type": "number",
+      "id": "overall_count",
+      "label": "Number of reviews",
+      "default": 2400
+    }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Testimonial",
+      "limit": 12,
+      "settings": [
+        {
+          "type": "range",
+          "id": "stars",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "label": "Stars",
+          "default": 5
+        },
+        {
+          "type": "textarea",
+          "id": "quote",
+          "label": "Quote",
+          "default": "Beautifully made and even better in person. The finish and weight feel far more expensive than the price."
+        },
+        {
+          "type": "text",
+          "id": "author",
+          "label": "Author",
+          "default": "Sarah M."
+        },
+        {
+          "type": "text",
+          "id": "detail",
+          "label": "Detail",
+          "default": "Verified buyer"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Author photo"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonials",
+      "blocks": [
+        {
+          "type": "testimonial",
+          "settings": {
+            "stars": 5,
+            "quote": "The craftsmanship surprised me. It has real weight in the hand, the finish is flawless, and it looks far more expensive than what I paid.",
+            "author": "Sarah M.",
+            "detail": "Verified buyer"
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "stars": 5,
+            "quote": "Ordered on a Tuesday, wearing it by the weekend. Tracked the whole way, and the unboxing felt like opening a gift.",
+            "author": "Daniel R.",
+            "detail": "Verified buyer"
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "stars": 5,
+            "quote": "I have worn it every day for a month and still get compliments every time I leave the house. Easily my favorite piece.",
+            "author": "Amira K.",
+            "detail": "Verified buyer"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

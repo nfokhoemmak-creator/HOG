@@ -1,0 +1,62 @@
+{%- comment -%}
+  Renders a 5-star rating as inline SVG. Base styles live in base.css (.stars).
+
+  Accepts:
+  - rating: {Number} 0-5, decimals allowed (required)
+  - size:   {String} 'small' | 'large' | blank (optional)
+  - class:  {String} extra class(es) on the wrapper (optional)
+
+  Half-star rule: a fraction of 0.25-0.74 renders a half star at the next
+  position; 0.75+ rounds that position up to a full star.
+
+  The half star is drawn with two overlapping paths (muted outline + filled
+  left half) so no <defs>/url(#id) references exist — safe to render this
+  snippet any number of times on one page.
+
+  Usage:
+  {% render 'star-rating', rating: 4.8, size: 'small' %}
+{%- endcomment -%}
+
+{%- liquid
+  assign r = rating | default: 0 | times: 1.0
+  if r > 5
+    assign r = 5.0
+  endif
+  if r < 0
+    assign r = 0.0
+  endif
+
+  assign whole = r | floor
+  assign fraction = r | minus: whole
+
+  assign full_count = whole
+  assign half_index = 0
+  if fraction >= 0.75
+    assign full_count = whole | plus: 1
+  elsif fraction >= 0.25
+    assign half_index = whole | plus: 1
+  endif
+-%}
+
+<div
+  class="stars{% if size %} stars--{{ size }}{% endif %}{% if class %} {{ class }}{% endif %}"
+  role="img"
+  aria-label="Rated {{ rating | default: 0 }} out of 5 stars"
+>
+  {%- for i in (1..5) -%}
+    {%- if i <= full_count -%}
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 2.5 14.6 8.4 21 9.1 16.2 13.4 17.6 19.7 12 16.4 6.4 19.7 7.8 13.4 3 9.1 9.4 8.4Z"/>
+      </svg>
+    {%- elsif i == half_index -%}
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 2.5 14.6 8.4 21 9.1 16.2 13.4 17.6 19.7 12 16.4 6.4 19.7 7.8 13.4 3 9.1 9.4 8.4Z" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.35"/>
+        <path d="M12 2.5 12 16.4 6.4 19.7 7.8 13.4 3 9.1 9.4 8.4Z"/>
+      </svg>
+    {%- else -%}
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 2.5 14.6 8.4 21 9.1 16.2 13.4 17.6 19.7 12 16.4 6.4 19.7 7.8 13.4 3 9.1 9.4 8.4Z" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.35"/>
+      </svg>
+    {%- endif -%}
+  {%- endfor -%}
+</div>

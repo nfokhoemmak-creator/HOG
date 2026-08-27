@@ -123,11 +123,13 @@ for (const file of liquidFiles) {
 
 /* ---- 5: balanced block tags ---------------------------------------------- */
 
-const PAIRS = ['if', 'unless', 'case', 'for', 'form', 'capture', 'style', 'schema', 'paginate', 'comment', 'javascript', 'stylesheet'];
-const TAG_RE = /\{%-?\s*(end)?(if|unless|case|for|form|capture|style|schema|paginate|comment|javascript|stylesheet)\b/g;
+const PAIRS = ['if', 'unless', 'case', 'for', 'form', 'capture', 'style', 'schema', 'paginate', 'javascript', 'stylesheet'];
+const TAG_RE = /\{%-?\s*(end)?(if|unless|case|for|form|capture|style|schema|paginate|javascript|stylesheet)\b/g;
+const COMMENT_RE = /\{%-?\s*comment\s*-?%\}[\s\S]*?\{%-?\s*endcomment\s*-?%\}/g;
+const RAW_RE = /\{%-?\s*raw\s*-?%\}[\s\S]*?\{%-?\s*endraw\s*-?%\}/g;
 
 for (const file of liquidFiles) {
-  const source = readFileSync(file, 'utf8');
+  const source = readFileSync(file, 'utf8').replace(COMMENT_RE, '').replace(RAW_RE, '');
   const counts = Object.fromEntries(PAIRS.map((t) => [t, 0]));
   for (const match of source.matchAll(TAG_RE)) {
     counts[match[2]] += match[1] ? -1 : 1;

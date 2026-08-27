@@ -1,0 +1,199 @@
+{%- comment -%}
+  Benefits / trust bar. A row of icon + heading + text items, either on the
+  page background ("plain") or as a tinted band ("tinted"). Icons come from
+  snippets/icon-benefit.liquid.
+{%- endcomment -%}
+
+{% style %}
+  .usp-bar {
+    padding-block: var(--space-6);
+  }
+
+  .usp-bar--tinted {
+    background: var(--color-bg-alt);
+  }
+
+  .usp-bar__heading {
+    margin-bottom: var(--space-5);
+    text-align: center;
+  }
+
+  .usp-bar__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-5) var(--space-4);
+  }
+
+  .usp-bar__item {
+    display: grid;
+    gap: var(--space-2);
+    justify-items: center;
+    text-align: center;
+  }
+
+  .usp-bar__icon {
+    color: var(--color-accent);
+  }
+
+  .usp-bar__icon svg {
+    width: 2.8rem;
+    height: 2.8rem;
+  }
+
+  .usp-bar__title {
+    margin: 0;
+    font-family: var(--font-heading-family);
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .usp-bar__text {
+    margin: 0;
+    font-size: 1.3rem;
+    color: var(--color-muted);
+  }
+
+  @media screen and (min-width: 990px) {
+    .usp-bar__grid {
+      grid-template-columns: repeat(var(--usp-cols, 4), minmax(0, 1fr));
+    }
+  }
+{% endstyle %}
+
+{%- liquid
+  assign desktop_cols = section.blocks.size | at_most: 4 | at_least: 1
+-%}
+
+<div class="usp-bar usp-bar--{{ section.settings.style }}">
+  <div class="container">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="h3 usp-bar__heading">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+
+    <div class="usp-bar__grid" style="--usp-cols: {{ desktop_cols }};">
+      {%- for block in section.blocks -%}
+        <div class="usp-bar__item{% if settings.animations_enabled %} reveal{% endif %}" {{ block.shopify_attributes }}>
+          <span class="usp-bar__icon">
+            {% render 'icon-benefit', name: block.settings.icon %}
+          </span>
+
+          {%- if block.settings.heading != blank -%}
+            <h3 class="usp-bar__title">{{ block.settings.heading }}</h3>
+          {%- endif -%}
+
+          {%- if block.settings.text != blank -%}
+            <p class="usp-bar__text">{{ block.settings.text }}</p>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Benefits bar",
+  "tag": "section",
+  "class": "usp-bar-section",
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": ""
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Style",
+      "options": [
+        { "value": "plain", "label": "Plain" },
+        { "value": "tinted", "label": "Tinted band" }
+      ],
+      "default": "tinted"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "usp",
+      "name": "Benefit",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "shipping", "label": "Shipping truck" },
+            { "value": "returns", "label": "Returns" },
+            { "value": "warranty", "label": "Warranty shield" },
+            { "value": "secure", "label": "Secure padlock" },
+            { "value": "support", "label": "Support headset" },
+            { "value": "box", "label": "Box" },
+            { "value": "star", "label": "Star" },
+            { "value": "check", "label": "Checkmark" },
+            { "value": "gift", "label": "Gift" },
+            { "value": "card", "label": "Payment card" },
+            { "value": "globe", "label": "Globe" },
+            { "value": "clock", "label": "Clock" },
+            { "value": "heart", "label": "Heart" },
+            { "value": "diamond", "label": "Diamond" }
+          ],
+          "default": "shipping"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Benefits bar",
+      "blocks": [
+        {
+          "type": "usp",
+          "settings": {
+            "icon": "shipping",
+            "heading": "Free Worldwide Shipping",
+            "text": "On every order — no minimum"
+          }
+        },
+        {
+          "type": "usp",
+          "settings": {
+            "icon": "warranty",
+            "heading": "24-Month Warranty",
+            "text": "Covered from day one"
+          }
+        },
+        {
+          "type": "usp",
+          "settings": {
+            "icon": "returns",
+            "heading": "30-Day Returns",
+            "text": "Easy and hassle-free"
+          }
+        },
+        {
+          "type": "usp",
+          "settings": {
+            "icon": "support",
+            "heading": "24/7 Support",
+            "text": "Real humans, fast replies"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

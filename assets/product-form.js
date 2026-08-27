@@ -88,6 +88,12 @@
       this.updateInventory(variant);
       this.updateAvailability(variant);
 
+      document.dispatchEvent(
+        new CustomEvent('variant:change', {
+          detail: { sectionId: this.sectionId, variant: variant }
+        })
+      );
+
       if (!config || !config.silent) {
         this.updateURL(variant);
         this.showMedia(variant);
@@ -203,6 +209,16 @@
 
       try {
         await window.HOG.addToCart(new FormData(this.form), this.submitButton);
+
+        // Pre-apply a bundle discount code when a quantity-break tier set one.
+        if (this.form.dataset.bundleCode && typeof window.HOG.applyDiscount === 'function') {
+          try {
+            await window.HOG.applyDiscount(this.form.dataset.bundleCode);
+          } catch (error) {
+            /* non-fatal */
+          }
+        }
+
         this.setButton(strings.added || 'Added', false);
         window.setTimeout(() => this.setButton(original, false), 1800);
       } catch (error) {

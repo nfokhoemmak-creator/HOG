@@ -1,0 +1,266 @@
+{%- comment -%}
+  Press / partner logo strip. Each block is an image or, when no image is
+  set, its title rendered in the heading font. Runs as an infinite marquee
+  (two identical halves, second one aria-hidden) or a centered static row.
+{%- endcomment -%}
+
+{% style %}
+  .logo-list {
+    padding-block: var(--space-6);
+  }
+
+  .logo-list__heading {
+    margin-bottom: var(--space-5);
+    text-align: center;
+  }
+
+  .logo-list .marquee__track {
+    gap: 0;
+  }
+
+  .logo-list__group {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-8);
+    padding-inline-end: var(--space-8);
+  }
+
+  .logo-list__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-5) var(--space-8);
+  }
+
+  .logo-list__item {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .logo-list__img {
+    width: auto;
+    height: 3.2rem;
+    object-fit: contain;
+  }
+
+  .logo-list--grayscale .logo-list__img {
+    filter: grayscale(1);
+    opacity: 0.6;
+    transition: filter var(--duration) var(--ease), opacity var(--duration) var(--ease);
+  }
+
+  .logo-list--grayscale a:hover .logo-list__img,
+  .logo-list--grayscale a:focus-visible .logo-list__img {
+    filter: none;
+    opacity: 1;
+  }
+
+  .logo-list__name {
+    font-family: var(--font-heading-family);
+    font-size: 1.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    white-space: nowrap;
+  }
+
+  a .logo-list__name:hover {
+    color: var(--color-fg);
+  }
+{% endstyle %}
+
+<div class="logo-list{% if section.settings.grayscale %} logo-list--grayscale{% endif %}">
+  {%- if section.settings.heading != blank -%}
+    <div class="container">
+      <p class="eyebrow logo-list__heading">{{ section.settings.heading }}</p>
+    </div>
+  {%- endif -%}
+
+  {%- if section.blocks.size > 0 -%}
+    {%- if section.settings.marquee -%}
+      <div class="marquee">
+        <div class="marquee__track">
+          <div class="logo-list__group">
+            {%- for block in section.blocks -%}
+              <span class="marquee__item logo-list__item" {{ block.shopify_attributes }}>
+                {%- if block.settings.link != blank -%}
+                  <a href="{{ block.settings.link }}">
+                    {%- if block.settings.image != blank -%}
+                      <img
+                        class="logo-list__img"
+                        src="{{ block.settings.image | image_url: width: 320 }}"
+                        srcset="
+                          {{ block.settings.image | image_url: width: 160 }} 160w,
+                          {{ block.settings.image | image_url: width: 320 }} 320w,
+                          {{ block.settings.image | image_url: width: 480 }} 480w
+                        "
+                        sizes="16rem"
+                        alt="{{ block.settings.title | default: block.settings.image.alt | escape }}"
+                        width="{{ block.settings.image.width }}"
+                        height="{{ block.settings.image.height }}"
+                        loading="lazy"
+                      >
+                    {%- else -%}
+                      <span class="logo-list__name">{{ block.settings.title }}</span>
+                    {%- endif -%}
+                  </a>
+                {%- elsif block.settings.image != blank -%}
+                  <img
+                    class="logo-list__img"
+                    src="{{ block.settings.image | image_url: width: 320 }}"
+                    srcset="
+                      {{ block.settings.image | image_url: width: 160 }} 160w,
+                      {{ block.settings.image | image_url: width: 320 }} 320w,
+                      {{ block.settings.image | image_url: width: 480 }} 480w
+                    "
+                    sizes="16rem"
+                    alt="{{ block.settings.title | default: block.settings.image.alt | escape }}"
+                    width="{{ block.settings.image.width }}"
+                    height="{{ block.settings.image.height }}"
+                    loading="lazy"
+                  >
+                {%- else -%}
+                  <span class="logo-list__name">{{ block.settings.title }}</span>
+                {%- endif -%}
+              </span>
+            {%- endfor -%}
+          </div>
+
+          <div class="logo-list__group" aria-hidden="true">
+            {%- for block in section.blocks -%}
+              <span class="marquee__item logo-list__item">
+                {%- if block.settings.image != blank -%}
+                  <img
+                    class="logo-list__img"
+                    src="{{ block.settings.image | image_url: width: 320 }}"
+                    alt=""
+                    width="{{ block.settings.image.width }}"
+                    height="{{ block.settings.image.height }}"
+                    loading="lazy"
+                  >
+                {%- else -%}
+                  <span class="logo-list__name">{{ block.settings.title }}</span>
+                {%- endif -%}
+              </span>
+            {%- endfor -%}
+          </div>
+        </div>
+      </div>
+    {%- else -%}
+      <div class="container">
+        <div class="logo-list__row">
+          {%- for block in section.blocks -%}
+            <span class="logo-list__item" {{ block.shopify_attributes }}>
+              {%- if block.settings.link != blank -%}
+                <a href="{{ block.settings.link }}">
+                  {%- if block.settings.image != blank -%}
+                    <img
+                      class="logo-list__img"
+                      src="{{ block.settings.image | image_url: width: 320 }}"
+                      srcset="
+                        {{ block.settings.image | image_url: width: 160 }} 160w,
+                        {{ block.settings.image | image_url: width: 320 }} 320w,
+                        {{ block.settings.image | image_url: width: 480 }} 480w
+                      "
+                      sizes="16rem"
+                      alt="{{ block.settings.title | default: block.settings.image.alt | escape }}"
+                      width="{{ block.settings.image.width }}"
+                      height="{{ block.settings.image.height }}"
+                      loading="lazy"
+                    >
+                  {%- else -%}
+                    <span class="logo-list__name">{{ block.settings.title }}</span>
+                  {%- endif -%}
+                </a>
+              {%- elsif block.settings.image != blank -%}
+                <img
+                  class="logo-list__img"
+                  src="{{ block.settings.image | image_url: width: 320 }}"
+                  srcset="
+                    {{ block.settings.image | image_url: width: 160 }} 160w,
+                    {{ block.settings.image | image_url: width: 320 }} 320w,
+                    {{ block.settings.image | image_url: width: 480 }} 480w
+                  "
+                  sizes="16rem"
+                  alt="{{ block.settings.title | default: block.settings.image.alt | escape }}"
+                  width="{{ block.settings.image.width }}"
+                  height="{{ block.settings.image.height }}"
+                  loading="lazy"
+                >
+              {%- else -%}
+                <span class="logo-list__name">{{ block.settings.title }}</span>
+              {%- endif -%}
+            </span>
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Logo list",
+  "tag": "section",
+  "class": "logo-list-section",
+  "max_blocks": 10,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "AS FEATURED IN"
+    },
+    {
+      "type": "checkbox",
+      "id": "marquee",
+      "label": "Scrolling marquee",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "grayscale",
+      "label": "Grayscale logos",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "logo",
+      "name": "Logo",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Logo image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Name",
+          "info": "Shown in the heading font when no image is set.",
+          "default": "PRESS NAME"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Press logos",
+      "blocks": [
+        { "type": "logo", "settings": { "title": "THE JOURNAL" } },
+        { "type": "logo", "settings": { "title": "STYLE WEEKLY" } },
+        { "type": "logo", "settings": { "title": "MODERN EDIT" } },
+        { "type": "logo", "settings": { "title": "DAILY LUXE" } },
+        { "type": "logo", "settings": { "title": "CITY PAPER" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

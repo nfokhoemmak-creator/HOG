@@ -1,0 +1,143 @@
+{% style %}
+  .trustpilot {
+    text-align: center;
+  }
+
+  .trustpilot__heading {
+    margin-bottom: var(--space-5);
+  }
+
+  .trustpilot__widget-wrap {
+    width: 100%;
+  }
+
+  .trustpilot__static {
+    display: grid;
+    gap: var(--space-3);
+    justify-items: center;
+  }
+
+  .trustpilot__caption {
+    margin: 0;
+    color: var(--color-muted);
+  }
+{% endstyle %}
+
+<div class="section">
+  <div class="container container--narrow trustpilot{% if settings.animations_enabled %} reveal{% endif %}">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="h2 trustpilot__heading">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+
+    {%- if section.settings.businessunit_id != blank -%}
+      <div class="trustpilot__widget-wrap">
+        <div
+          class="trustpilot-widget"
+          data-locale="{{ section.settings.widget_locale | default: 'en-US' | escape }}"
+          data-template-id="{{ section.settings.template_id | default: '53aa8912dec7e10d38f59f36' | escape }}"
+          data-businessunit-id="{{ section.settings.businessunit_id | escape }}"
+          data-style-height="{{ section.settings.widget_height | default: '240px' | escape }}"
+          data-style-width="100%"
+          data-theme="{{ section.settings.widget_theme | default: 'light' | escape }}"
+        >
+          <a href="{{ section.settings.trustpilot_url | escape }}" target="_blank" rel="noopener">Trustpilot</a>
+        </div>
+      </div>
+      <script async src="//widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js"></script>
+    {%- else -%}
+      <div class="trustpilot__static">
+        {% render 'star-rating', rating: section.settings.fallback_rating, size: 'large' %}
+        <p class="trustpilot__caption">
+          Rated {{ section.settings.fallback_rating }} out of 5 &mdash; {{ section.settings.fallback_count }} reviews, {{ section.settings.fallback_caption }}
+        </p>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Trustpilot",
+  "tag": "section",
+  "class": "trustpilot-section",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Add your Business unit ID to load the live TrustBox widget. Without it, storefront visitors see a clean static rating using the theme's own stars."
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Rated Excellent on Trustpilot"
+    },
+    {
+      "type": "text",
+      "id": "businessunit_id",
+      "label": "Business unit ID",
+      "info": "Trustpilot Business → Showcase → TrustBox → your Business unit ID. Leave empty to show the static rating instead."
+    },
+    {
+      "type": "text",
+      "id": "template_id",
+      "label": "TrustBox template ID",
+      "default": "53aa8912dec7e10d38f59f36",
+      "info": "TrustBox widget template ID — default is the Carousel."
+    },
+    {
+      "type": "text",
+      "id": "widget_height",
+      "label": "Widget height",
+      "default": "240px"
+    },
+    {
+      "type": "select",
+      "id": "widget_theme",
+      "label": "Widget theme",
+      "options": [
+        { "value": "light", "label": "Light" },
+        { "value": "dark", "label": "Dark" }
+      ],
+      "default": "light"
+    },
+    {
+      "type": "text",
+      "id": "widget_locale",
+      "label": "Widget locale",
+      "default": "en-US"
+    },
+    {
+      "type": "text",
+      "id": "trustpilot_url",
+      "label": "Trustpilot page URL",
+      "info": "Your public Trustpilot review page URL, e.g. https://www.trustpilot.com/review/your-domain.com"
+    },
+    {
+      "type": "range",
+      "id": "fallback_rating",
+      "min": 3.5,
+      "max": 5,
+      "step": 0.1,
+      "label": "Static rating",
+      "default": 4.8
+    },
+    {
+      "type": "number",
+      "id": "fallback_count",
+      "label": "Static review count",
+      "default": 1264
+    },
+    {
+      "type": "text",
+      "id": "fallback_caption",
+      "label": "Static caption",
+      "default": "based on verified customer reviews"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Trustpilot reviews"
+    }
+  ]
+}
+{% endschema %}

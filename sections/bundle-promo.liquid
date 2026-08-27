@@ -1,0 +1,420 @@
+{%- comment -%}
+  Homepage bundle offer: up to three hand-picked products shown as a set,
+  with a combined total and a one-click "add the set" button. The button
+  posts every available variant through window.HOG.addItems, then pre-applies
+  the bundle discount code. With fewer than two products picked the section
+  shows placeholder cards so the editor preview stays intact.
+{%- endcomment -%}
+
+{% style %}
+  .bundle-promo__head {
+    display: grid;
+    gap: var(--space-2);
+    justify-items: center;
+    margin-bottom: var(--space-6);
+    text-align: center;
+  }
+
+  .bundle-promo__subheading {
+    max-width: 52ch;
+    margin: 0;
+  }
+
+  .bundle-promo__layout {
+    display: grid;
+    gap: var(--space-6);
+    align-items: center;
+  }
+
+  .bundle-promo__products {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-4);
+  }
+
+  .bundle-promo__card {
+    display: grid;
+    gap: var(--space-2);
+    width: clamp(12rem, 34vw, 20rem);
+    text-align: center;
+  }
+
+  .bundle-promo__media {
+    display: block;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    border-radius: var(--radius);
+    background: var(--color-bg-alt);
+  }
+
+  .bundle-promo__media img,
+  .bundle-promo__media svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 600ms var(--ease);
+  }
+
+  .bundle-promo__card:hover .bundle-promo__media img {
+    transform: scale(1.03);
+  }
+
+  .bundle-promo__title {
+    margin: 0;
+    font-family: var(--font-heading-family);
+    font-size: 1.2rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .bundle-promo__card .price {
+    justify-content: center;
+  }
+
+  .bundle-promo__plus {
+    font-family: var(--font-heading-family);
+    font-size: 2.6rem;
+    line-height: 1;
+    color: var(--color-accent);
+  }
+
+  .bundle-promo__summary {
+    display: grid;
+    gap: var(--space-3);
+    justify-items: center;
+    text-align: center;
+  }
+
+  .bundle-promo__total-label {
+    font-size: 1.2rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .bundle-promo__total {
+    font-family: var(--font-heading-family);
+    font-size: 2.8rem;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .bundle-promo__code {
+    font-size: 1.2rem;
+    color: var(--color-muted);
+  }
+
+  bundle-promo-cta {
+    display: block;
+    width: 100%;
+    max-width: 32rem;
+  }
+
+  @media screen and (min-width: 990px) {
+    .bundle-promo__layout {
+      grid-template-columns: minmax(0, 1fr) 30rem;
+    }
+
+    .bundle-promo__summary {
+      justify-items: start;
+      text-align: left;
+    }
+  }
+{% endstyle %}
+
+{%- liquid
+  assign picked_count = 0
+  assign available_count = 0
+  assign total_cents = 0
+  assign items_json = ''
+
+  for i in (1..3)
+    assign product_key = 'product_' | append: i
+    assign bundle_product = section.settings[product_key]
+    if bundle_product == blank
+      continue
+    endif
+
+    assign picked_count = picked_count | plus: 1
+    assign bundle_variant = bundle_product.selected_or_first_available_variant
+    assign total_cents = total_cents | plus: bundle_variant.price
+
+    if bundle_variant.available
+      assign available_count = available_count | plus: 1
+      assign item = '{"id":' | append: bundle_variant.id | append: ',"quantity":1}'
+      if items_json == ''
+        assign items_json = item
+      else
+        assign items_json = items_json | append: ',' | append: item
+      endif
+    endif
+  endfor
+
+  assign items_json = '[' | append: items_json | append: ']'
+
+  assign cta_disabled = false
+  if picked_count < 2 or available_count == 0
+    assign cta_disabled = true
+  endif
+-%}
+
+<div class="section bundle-promo">
+  <div class="container">
+    <div class="bundle-promo__head{% if settings.animations_enabled %} reveal{% endif %}">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="eyebrow accent">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="h2">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+      {%- if section.settings.subheading != blank -%}
+        <p class="muted bundle-promo__subheading">{{ section.settings.subheading }}</p>
+      {%- endif -%}
+    </div>
+
+    <div class="bundle-promo__layout">
+      <div class="bundle-promo__products">
+        {%- if picked_count >= 2 -%}
+          {%- assign rendered = 0 -%}
+          {%- for i in (1..3) -%}
+            {%- liquid
+              assign product_key = 'product_' | append: i
+              assign bundle_product = section.settings[product_key]
+              if bundle_product == blank
+                continue
+              endif
+              assign bundle_variant = bundle_product.selected_or_first_available_variant
+              assign rendered = rendered | plus: 1
+            -%}
+
+            {%- if rendered > 1 -%}
+              <span class="bundle-promo__plus" aria-hidden="true">+</span>
+            {%- endif -%}
+
+            <div class="bundle-promo__card">
+              <a class="bundle-promo__media" href="{{ bundle_product.url }}">
+                {%- if bundle_product.featured_image != blank -%}
+                  <img
+                    src="{{ bundle_product.featured_image | image_url: width: 600 }}"
+                    srcset="
+                      {{ bundle_product.featured_image | image_url: width: 300 }} 300w,
+                      {{ bundle_product.featured_image | image_url: width: 450 }} 450w,
+                      {{ bundle_product.featured_image | image_url: width: 600 }} 600w
+                    "
+                    sizes="(min-width: 750px) 20rem, 34vw"
+                    alt="{{ bundle_product.featured_image.alt | default: bundle_product.title | escape }}"
+                    width="{{ bundle_product.featured_image.width }}"
+                    height="{{ bundle_product.featured_image.height }}"
+                    loading="lazy"
+                  >
+                {%- else -%}
+                  {{ 'product-1' | placeholder_svg_tag }}
+                {%- endif -%}
+              </a>
+
+              <p class="bundle-promo__title">
+                <a href="{{ bundle_product.url }}">{{ bundle_product.title }}</a>
+              </p>
+
+              {%- if section.settings.show_prices -%}
+                <div class="price{% if bundle_variant.compare_at_price > bundle_variant.price %} price--on-sale{% endif %}">
+                  <span class="price__current">{{ bundle_variant.price | money }}</span>
+                  {%- if bundle_variant.compare_at_price > bundle_variant.price -%}
+                    <s class="price__compare">{{ bundle_variant.compare_at_price | money }}</s>
+                  {%- endif -%}
+                </div>
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
+        {%- else -%}
+          {%- for i in (1..2) -%}
+            {%- if forloop.index > 1 -%}
+              <span class="bundle-promo__plus" aria-hidden="true">+</span>
+            {%- endif -%}
+            <div class="bundle-promo__card">
+              <span class="bundle-promo__media">
+                {{ 'product-' | append: forloop.index | placeholder_svg_tag }}
+              </span>
+              <p class="bundle-promo__title">Example product</p>
+              {%- if section.settings.show_prices -%}
+                <div class="price"><span class="price__current">{{ 3000 | money }}</span></div>
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
+        {%- endif -%}
+      </div>
+
+      <div class="bundle-promo__summary">
+        {%- if section.settings.discount_label != blank -%}
+          <span class="badge badge--accent">{{ section.settings.discount_label }}</span>
+        {%- endif -%}
+
+        {%- if section.settings.show_prices -%}
+          <div>
+            <p class="bundle-promo__total-label">Bundle total</p>
+            <p class="bundle-promo__total">
+              {%- if picked_count >= 2 -%}
+                {{ total_cents | money }}
+              {%- else -%}
+                {{ 6000 | money }}
+              {%- endif -%}
+            </p>
+          </div>
+        {%- endif -%}
+
+        <bundle-promo-cta>
+          <button
+            type="button"
+            class="btn btn--accent btn--full"
+            {% if cta_disabled %}
+              disabled
+              aria-disabled="true"
+            {% else %}
+              data-variant-ids='{{ items_json }}'
+              data-discount-code="{{ section.settings.discount_code | strip | escape }}"
+            {% endif %}
+          >
+            {{ section.settings.button_label | default: 'Add the set to cart' }}
+          </button>
+        </bundle-promo-cta>
+
+        {%- if section.settings.discount_code != blank and cta_disabled == false -%}
+          <p class="bundle-promo__code">Code {{ section.settings.discount_code | escape }} is applied automatically at checkout.</p>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    'use strict';
+
+    if (customElements.get('bundle-promo-cta')) return;
+
+    class BundlePromoCta extends HTMLElement {
+      connectedCallback() {
+        if (this.bound) return;
+        this.bound = true;
+
+        this.button = this.querySelector('button');
+        if (!this.button || this.button.disabled) return;
+
+        this.button.addEventListener('click', () => this.addSet());
+      }
+
+      async addSet() {
+        var button = this.button;
+        var strings = (window.theme && window.theme.strings) || {};
+
+        var items = [];
+        try {
+          items = JSON.parse(button.dataset.variantIds || '[]');
+        } catch (error) {
+          items = [];
+        }
+
+        if (!items.length || !window.HOG || typeof window.HOG.addItems !== 'function') return;
+
+        var original = button.textContent;
+        button.disabled = true;
+        button.textContent = strings.adding || 'Adding…';
+
+        try {
+          await window.HOG.addItems(items, button);
+
+          var code = button.dataset.discountCode;
+          if (code && typeof window.HOG.applyDiscount === 'function') {
+            await window.HOG.applyDiscount(code);
+          }
+
+          button.textContent = original;
+          button.disabled = false;
+        } catch (error) {
+          button.textContent = (error && error.message) || strings.cartError || 'Could not add the set';
+          window.setTimeout(function () {
+            button.textContent = original;
+            button.disabled = false;
+          }, 2500);
+        }
+      }
+    }
+
+    customElements.define('bundle-promo-cta', BundlePromoCta);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Bundle promo",
+  "tag": "section",
+  "class": "bundle-promo-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "LIMITED OFFER"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "The Complete Set"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Pair them together and save — the signature look, one click."
+    },
+    {
+      "type": "product",
+      "id": "product_1",
+      "label": "Product 1"
+    },
+    {
+      "type": "product",
+      "id": "product_2",
+      "label": "Product 2"
+    },
+    {
+      "type": "product",
+      "id": "product_3",
+      "label": "Product 3"
+    },
+    {
+      "type": "text",
+      "id": "discount_label",
+      "label": "Discount badge",
+      "default": "SAVE 15%"
+    },
+    {
+      "type": "text",
+      "id": "discount_code",
+      "label": "Discount code",
+      "info": "Created in Shopify admin. Applied automatically after the set is added.",
+      "default": "BUNDLE15"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Add the set to cart"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_prices",
+      "label": "Show prices",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Bundle & save"
+    }
+  ]
+}
+{% endschema %}

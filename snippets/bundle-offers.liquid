@@ -1,0 +1,233 @@
+{%- comment -%}
+  Renders quantity-break bundle tiles for the product page.
+
+  Accepts:
+  - product: {Object} the product being sold (required)
+  - block: {Object} the "bundle" block from sections/main-product.liquid
+           (supplies heading + tier settings and shopify_attributes)
+  - form_id: {String} id of the product form the tiles drive
+
+  Each tile is a radio input carrying data-quantity / data-discount /
+  data-code. Prices are server-rendered so the markup is correct without JS;
+  assets/conversion.js (<bundle-offer>) recomputes them on variant change and
+  syncs the form's quantity input + bundle discount code.
+
+  Usage:
+  {% render 'bundle-offers', product: product, block: block, form_id: form_id %}
+{%- endcomment -%}
+
+{% style %}
+  .bundle-offer {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .bundle-offer__heading {
+    margin: 0;
+    font-family: var(--font-heading-family);
+    font-size: 1.2rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .bundle-offer__tiles {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .bundle-offer__input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .bundle-offer__tile {
+    display: grid;
+    gap: var(--space-1);
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: border-color var(--duration) var(--ease), background var(--duration) var(--ease);
+  }
+
+  .bundle-offer__input:checked + .bundle-offer__tile {
+    border-color: var(--color-accent);
+    background: color-mix(in srgb, var(--color-accent) 8%, transparent);
+  }
+
+  .bundle-offer__input:focus-visible + .bundle-offer__tile {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+  }
+
+  .bundle-offer__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+  }
+
+  .bundle-offer__label {
+    font-family: var(--font-heading-family);
+    font-size: 1.3rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .bundle-offer__chips {
+    display: inline-flex;
+    gap: var(--space-1);
+    flex-wrap: wrap;
+  }
+
+  .bundle-offer__badge,
+  .bundle-offer__save {
+    padding: 0.2rem 0.8rem;
+    border-radius: 999px;
+    font-family: var(--font-heading-family);
+    font-size: 1rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .bundle-offer__badge {
+    background: var(--color-accent);
+    color: var(--color-accent-contrast);
+  }
+
+  .bundle-offer__save {
+    border: 1px solid var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .bundle-offer__pricing {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    font-size: 1.4rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .bundle-offer__compare {
+    color: var(--color-muted);
+    font-size: 1.2rem;
+  }
+
+  .bundle-offer__each {
+    color: var(--color-muted);
+    font-size: 1.2rem;
+  }
+
+  .bundle-offer__total {
+    font-size: 1.2rem;
+    color: var(--color-muted);
+    font-variant-numeric: tabular-nums;
+  }
+{% endstyle %}
+
+{%- liquid
+  assign base_price = product.selected_or_first_available_variant.price
+
+  comment
+    Default selection: the first tier that carries a badge wins, else tier 1.
+  endcomment
+  assign checked_tier = 0
+  for i in (1..3)
+    assign qty_key = 'tier' | append: i | append: '_quantity'
+    assign badge_key = 'tier' | append: i | append: '_badge'
+    if block.settings[qty_key] == 0
+      continue
+    endif
+    if checked_tier == 0
+      assign checked_tier = i
+    endif
+    if block.settings[badge_key] != blank
+      assign checked_tier = i
+      break
+    endif
+  endfor
+-%}
+
+<bundle-offer
+  class="bundle-offer"
+  data-form-id="{{ form_id }}"
+  data-price="{{ base_price }}"
+  {{ block.shopify_attributes }}
+>
+  {%- if block.settings.heading != blank -%}
+    <p class="bundle-offer__heading" id="BundleHeading-{{ form_id }}">{{ block.settings.heading | escape }}</p>
+  {%- endif -%}
+
+  <div
+    class="bundle-offer__tiles"
+    role="radiogroup"
+    {% if block.settings.heading != blank %}
+      aria-labelledby="BundleHeading-{{ form_id }}"
+    {% else %}
+      aria-label="Quantity offers"
+    {% endif %}
+  >
+    {%- for i in (1..3) -%}
+      {%- liquid
+        assign qty_key = 'tier' | append: i | append: '_quantity'
+        assign discount_key = 'tier' | append: i | append: '_discount'
+        assign label_key = 'tier' | append: i | append: '_label'
+        assign badge_key = 'tier' | append: i | append: '_badge'
+        assign code_key = 'tier' | append: i | append: '_code'
+
+        assign tier_quantity = block.settings[qty_key] | default: 0
+        assign tier_discount = block.settings[discount_key] | default: 0
+        assign tier_label = block.settings[label_key]
+        assign tier_badge = block.settings[badge_key]
+        assign tier_code = block.settings[code_key]
+
+        if tier_quantity == 0
+          continue
+        endif
+
+        assign keep_pct = 100 | minus: tier_discount
+        assign unit_price = base_price | times: keep_pct | divided_by: 100.0 | round
+        assign total_price = unit_price | times: tier_quantity
+        assign input_id = 'BundleTier-' | append: form_id | append: '-' | append: i
+      -%}
+
+      <input
+        class="bundle-offer__input"
+        type="radio"
+        id="{{ input_id }}"
+        name="BundleTier-{{ form_id }}"
+        value="{{ i }}"
+        data-quantity="{{ tier_quantity }}"
+        data-discount="{{ tier_discount }}"
+        data-code="{{ tier_code | strip | escape }}"
+        {% if i == checked_tier %}checked{% endif %}
+      >
+      <label class="bundle-offer__tile" for="{{ input_id }}">
+        <span class="bundle-offer__row">
+          <span class="bundle-offer__label">{{ tier_label | default: tier_quantity | escape }}</span>
+          <span class="bundle-offer__chips">
+            {%- if tier_badge != blank -%}
+              <span class="bundle-offer__badge">{{ tier_badge | escape }}</span>
+            {%- endif -%}
+            {%- if tier_discount > 0 -%}
+              <span class="bundle-offer__save">Save {{ tier_discount }}%</span>
+            {%- endif -%}
+          </span>
+        </span>
+
+        <span class="bundle-offer__pricing">
+          <span data-role="unit">{{ unit_price | money }}</span>
+          {%- if tier_discount > 0 -%}
+            <s class="bundle-offer__compare" data-role="compare">{{ base_price | money }}</s>
+          {%- endif -%}
+          <span class="bundle-offer__each">each</span>
+        </span>
+
+        <span class="bundle-offer__total">Total: <span data-role="total">{{ total_price | money }}</span></span>
+      </label>
+    {%- endfor -%}
+  </div>
+</bundle-offer>

@@ -1,0 +1,484 @@
+{%- comment -%}
+  Scratch-card discount popup. Full-screen takeover: dark image backdrop,
+  logo, urgency countdown, and a gold-foil canvas the visitor scratches to
+  reveal a discount code. All behaviour lives in assets/scratch-popup.js.
+{%- endcomment -%}
+
+{%- if section.settings.enable -%}
+  {% style %}
+    .scratch-popup {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+
+    .scratch-popup[hidden] {
+      display: none;
+    }
+
+    .scratch-popup__backdrop {
+      position: fixed;
+      inset: 0;
+      background: var(--color-fg);
+      overflow: hidden;
+    }
+
+    .scratch-popup__backdrop img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .scratch-popup__shade {
+      position: absolute;
+      inset: 0;
+      background: #000;
+    }
+
+    .scratch-popup__dialog {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      place-items: center;
+      min-height: 100%;
+      padding: var(--space-7) var(--gutter);
+    }
+
+    .scratch-popup__close {
+      position: absolute;
+      top: var(--space-4);
+      right: var(--space-4);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 4.4rem;
+      height: 4.4rem;
+      border-radius: 999px;
+      color: #fff;
+      background: rgb(0 0 0 / 0.35);
+      transition: background var(--duration) var(--ease);
+    }
+
+    .scratch-popup__close:hover {
+      background: rgb(0 0 0 / 0.6);
+    }
+
+    .scratch-popup__close svg {
+      width: 1.8rem;
+      height: 1.8rem;
+    }
+
+    .scratch-popup__inner {
+      display: grid;
+      gap: var(--space-4);
+      justify-items: center;
+      width: min(56rem, 100%);
+      text-align: center;
+      color: #fff;
+    }
+
+    .scratch-popup__logo img {
+      max-width: 16rem;
+      height: auto;
+    }
+
+    .scratch-popup__logo-text {
+      font-family: var(--font-heading-family);
+      font-size: 2rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .scratch-popup__timer {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 9.6rem;
+      padding: var(--space-2) var(--space-4);
+      border-radius: calc(var(--radius) + 6px);
+      background: #fff;
+      color: #17130c;
+      font-family: var(--font-heading-family);
+      font-size: 2.4rem;
+      line-height: 1.2;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .scratch-popup__heading {
+      font-size: clamp(3.4rem, 8vw, 5.6rem);
+      color: #fff;
+    }
+
+    .scratch-popup__subheading {
+      max-width: 42ch;
+      font-size: 1.5rem;
+      color: rgb(255 255 255 / 0.82);
+    }
+
+    .scratch-popup__card {
+      position: relative;
+      width: min(38rem, 100%);
+      aspect-ratio: 3 / 2;
+      margin-top: var(--space-2);
+      border-radius: 1.6rem;
+      overflow: hidden;
+      box-shadow: 0 2.4rem 6rem rgb(0 0 0 / 0.5);
+    }
+
+    .scratch-popup__prize {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      gap: var(--space-3);
+      padding: var(--space-4);
+      background: #fff;
+      color: #17130c;
+    }
+
+    @keyframes scratch-popup-pop {
+      from { transform: scale(0.95); opacity: 0.4; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .scratch-popup__prize.is-revealed {
+      animation: scratch-popup-pop 360ms var(--ease);
+    }
+
+    .scratch-popup__prize-label {
+      margin: 0;
+      font-family: var(--font-heading-family);
+      font-size: 2rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .scratch-popup__chip {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-2) var(--space-3);
+      border: 2px dashed var(--color-accent);
+      border-radius: var(--radius);
+    }
+
+    .scratch-popup__code {
+      font-family: var(--font-heading-family);
+      font-size: 1.6rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .scratch-popup__copy {
+      font-size: 1.1rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: underline;
+      text-underline-offset: 0.25em;
+      color: var(--color-accent);
+    }
+
+    .scratch-popup__note {
+      margin: 0;
+      font-size: 1.1rem;
+      color: var(--color-muted);
+    }
+
+    .scratch-popup__claim {
+      min-height: 4.2rem;
+      padding-inline: var(--space-5);
+      font-size: 1.2rem;
+    }
+
+    .scratch-popup__canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      touch-action: none;
+      cursor: crosshair;
+      transition: opacity 420ms var(--ease);
+    }
+
+    .scratch-popup__canvas.is-cleared {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .scratch-popup__canvas[hidden] {
+      display: none;
+    }
+
+    .scratch-popup__reveal {
+      font-size: 1.2rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: underline;
+      text-underline-offset: 0.25em;
+      color: rgb(255 255 255 / 0.85);
+    }
+
+    .scratch-popup__reveal:not(:focus) {
+      position: absolute !important;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      padding: 0;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      clip-path: inset(50%);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .scratch-popup__dismiss {
+      font-size: 1.3rem;
+      color: rgb(255 255 255 / 0.7);
+      text-decoration: underline;
+      text-underline-offset: 0.25em;
+      transition: color var(--duration) var(--ease);
+    }
+
+    .scratch-popup__dismiss:hover {
+      color: #fff;
+    }
+  {% endstyle %}
+
+  <scratch-popup
+    class="scratch-popup"
+    hidden
+    data-section-id="{{ section.id }}"
+    data-delay="{{ section.settings.delay_seconds }}"
+    data-frequency="{{ section.settings.frequency }}"
+    data-timer-minutes="{{ section.settings.timer_minutes }}"
+    data-threshold="{{ section.settings.scratch_threshold }}"
+    data-code="{{ section.settings.discount_code | escape }}"
+  >
+    <div class="scratch-popup__backdrop">
+      {%- if section.settings.background_image != blank -%}
+        <img
+          src="{{ section.settings.background_image | image_url: width: 1800 }}"
+          srcset="
+            {{ section.settings.background_image | image_url: width: 750 }} 750w,
+            {{ section.settings.background_image | image_url: width: 1200 }} 1200w,
+            {{ section.settings.background_image | image_url: width: 1800 }} 1800w
+          "
+          sizes="100vw"
+          alt=""
+          width="{{ section.settings.background_image.width }}"
+          height="{{ section.settings.background_image.height }}"
+          loading="lazy"
+        >
+      {%- endif -%}
+      <div class="scratch-popup__shade" style="opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};"></div>
+    </div>
+
+    <div
+      class="scratch-popup__dialog"
+      data-scratch-dialog
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="ScratchPopupHeading-{{ section.id }}"
+    >
+      <button type="button" class="scratch-popup__close" data-scratch-close aria-label="Close">
+        {% render 'icon', name: 'close' %}
+      </button>
+
+      <div class="scratch-popup__inner">
+        {%- if section.settings.show_logo -%}
+          <div class="scratch-popup__logo">
+            {%- if settings.logo != blank -%}
+              <img
+                src="{{ settings.logo | image_url: width: 320 }}"
+                srcset="{{ settings.logo | image_url: width: 160 }} 160w, {{ settings.logo | image_url: width: 320 }} 320w"
+                sizes="16rem"
+                alt="{{ shop.name | escape }}"
+                width="{{ settings.logo.width }}"
+                height="{{ settings.logo.height }}"
+                loading="lazy"
+              >
+            {%- else -%}
+              <span class="scratch-popup__logo-text">{{ shop.name }}</span>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+
+        {%- if section.settings.timer_minutes > 0 -%}
+          <div class="scratch-popup__timer" role="timer" aria-label="Offer time remaining">
+            <span data-scratch-timer>{{ section.settings.timer_minutes }}:00</span>
+          </div>
+        {%- endif -%}
+
+        {%- if section.settings.heading != blank -%}
+          <h2 class="scratch-popup__heading" id="ScratchPopupHeading-{{ section.id }}">
+            {{ section.settings.heading }}
+          </h2>
+        {%- endif -%}
+
+        {%- if section.settings.subheading != blank -%}
+          <p class="scratch-popup__subheading">{{ section.settings.subheading }}</p>
+        {%- endif -%}
+
+        <div class="scratch-popup__card">
+          <div class="scratch-popup__prize" data-scratch-prize inert aria-hidden="true">
+            <p class="scratch-popup__prize-label">{{ section.settings.prize_label }}</p>
+
+            {%- if section.settings.discount_code != blank -%}
+              <div class="scratch-popup__chip">
+                <span class="scratch-popup__code" data-scratch-code>{{ section.settings.discount_code }}</span>
+                <button type="button" class="scratch-popup__copy" data-scratch-copy>Copy</button>
+              </div>
+            {%- endif -%}
+
+            {%- if section.settings.prize_note != blank -%}
+              <p class="scratch-popup__note">{{ section.settings.prize_note }}</p>
+            {%- endif -%}
+
+            <button type="button" class="btn scratch-popup__claim" data-scratch-claim>
+              {{ section.settings.button_label }}
+            </button>
+          </div>
+
+          <canvas class="scratch-popup__canvas" data-scratch-canvas aria-hidden="true"></canvas>
+        </div>
+
+        <button type="button" class="scratch-popup__reveal" data-scratch-reveal>
+          Reveal my prize without scratching
+        </button>
+
+        <button type="button" class="scratch-popup__dismiss" data-scratch-dismiss>
+          No thanks, I'll pay full price
+        </button>
+      </div>
+    </div>
+  </scratch-popup>
+
+  <script src="{{ 'scratch-popup.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Scratch card popup",
+  "tag": "section",
+  "class": "scratch-popup-section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable",
+      "label": "Enable popup",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "TRY YOUR LUCK"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Scratch below to see what you win"
+    },
+    {
+      "type": "text",
+      "id": "prize_label",
+      "label": "Prize label",
+      "default": "YOU'VE WON 15% OFF"
+    },
+    {
+      "type": "text",
+      "id": "discount_code",
+      "label": "Discount code",
+      "info": "Must match a discount code created in your Shopify admin.",
+      "default": "LUCKY15"
+    },
+    {
+      "type": "text",
+      "id": "prize_note",
+      "label": "Prize note",
+      "default": "Your code is applied automatically at checkout"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Claim my prize"
+    },
+    {
+      "type": "range",
+      "id": "timer_minutes",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "min",
+      "label": "Countdown minutes",
+      "info": "Urgency countdown. 0 hides it.",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "delay_seconds",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "s",
+      "label": "Delay before opening",
+      "default": 6
+    },
+    {
+      "type": "select",
+      "id": "frequency",
+      "label": "Show frequency",
+      "options": [
+        { "value": "every_visit", "label": "Every visit" },
+        { "value": "once_per_session", "label": "Once per session" },
+        { "value": "once_per_day", "label": "Once per day" },
+        { "value": "once_per_visitor", "label": "Once per visitor" }
+      ],
+      "default": "once_per_day"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 90,
+      "step": 5,
+      "unit": "%",
+      "label": "Overlay opacity",
+      "default": 60
+    },
+    {
+      "type": "checkbox",
+      "id": "show_logo",
+      "label": "Show logo",
+      "info": "Uses the store logo from theme settings, or falls back to the store name.",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "scratch_threshold",
+      "min": 30,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "label": "Scratch threshold",
+      "info": "% of the card scratched before the prize reveals",
+      "default": 50
+    }
+  ],
+  "presets": [
+    {
+      "name": "Scratch card popup"
+    }
+  ]
+}
+{% endschema %}
