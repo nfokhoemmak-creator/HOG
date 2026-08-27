@@ -4,72 +4,175 @@
       "type": "hero",
       "settings": {
         "height": "full",
-        "overlay_opacity": 45,
-        "heading": "NEW DROP",
-        "subheading": "Limited pieces, made in Lebanon. Once they're gone, they're gone.",
-        "text_alignment": "left",
-        "button_label": "Shop the drop",
-        "show_countdown": false,
-        "countdown_heading": "Drops in"
+        "overlay_opacity": 35,
+        "heading": "TIMELESS BY DESIGN",
+        "subheading": "Signature pieces crafted to elevate the everyday. Engineered to last, priced to make sense.",
+        "text_alignment": "center",
+        "button_label": "Shop bestsellers",
+        "show_countdown": false
+      }
+    },
+    "usp": {
+      "type": "usp-bar",
+      "blocks": {
+        "usp-1": {
+          "type": "usp",
+          "settings": {
+            "icon": "shipping",
+            "heading": "Free Worldwide Shipping",
+            "text": "On every order — no minimum"
+          }
+        },
+        "usp-2": {
+          "type": "usp",
+          "settings": {
+            "icon": "warranty",
+            "heading": "24-Month Warranty",
+            "text": "Covered from day one"
+          }
+        },
+        "usp-3": {
+          "type": "usp",
+          "settings": {
+            "icon": "returns",
+            "heading": "30-Day Returns",
+            "text": "Easy and hassle-free"
+          }
+        },
+        "usp-4": {
+          "type": "usp",
+          "settings": {
+            "icon": "support",
+            "heading": "24/7 Support",
+            "text": "Real humans, fast replies"
+          }
+        }
+      },
+      "block_order": ["usp-1", "usp-2", "usp-3", "usp-4"],
+      "settings": {
+        "style": "tinted"
       }
     },
     "featured": {
       "type": "featured-collection",
       "settings": {
-        "title": "New drop",
+        "title": "Bestsellers",
         "products_to_show": 8,
         "columns_desktop": 4,
         "columns_mobile": "2",
         "show_view_all": true
       }
     },
-    "drop-banner": {
-      "type": "drop-banner",
-      "settings": {
-        "eyebrow": "Limited run",
-        "heading": "NO RESTOCKS",
-        "text": "<p>Every piece is made in a small batch. When a size sells out, that's it.</p>",
-        "button_label": "Shop the catalog",
-        "marquee": "EVERYBODY CAN'T HAVE LIMITED ITEMS ·"
-      }
-    },
-    "categories": {
-      "type": "collection-list",
-      "blocks": {
-        "col-1": { "type": "featured_collection", "settings": {} },
-        "col-2": { "type": "featured_collection", "settings": {} },
-        "col-3": { "type": "featured_collection", "settings": {} }
-      },
-      "block_order": ["col-1", "col-2", "col-3"],
-      "settings": {
-        "title": "Shop by category",
-        "columns_desktop": 3
-      }
-    },
-    "image-with-text": {
+    "story": {
       "type": "image-with-text",
       "settings": {
         "layout": "left",
-        "heading": "Made in limited runs",
-        "text": "<p>Heavyweight fabric, boxy fits, and nothing that gets remade. House of Garments releases in drops — follow along on Instagram so you don't miss one.</p>",
-        "button_label": "Follow @houseofgarments.co",
-        "button_link": "https://www.instagram.com/houseofgarments.co/"
+        "heading": "Crafted with intent",
+        "text": "<p>Every piece starts with the details: premium materials, clean proportions and a finish that holds up to daily wear. No middlemen, no markup games — just considered design, delivered to your door with free worldwide shipping and a 24-month warranty.</p>",
+        "button_label": "Discover the collection"
+      }
+    },
+    "bundle": {
+      "type": "bundle-promo",
+      "settings": {
+        "eyebrow": "LIMITED OFFER",
+        "heading": "The Complete Set",
+        "subheading": "Pair them together and save — the signature look, one click.",
+        "discount_label": "SAVE 15%",
+        "discount_code": "BUNDLE15",
+        "button_label": "Add the set to cart",
+        "show_prices": true
+      }
+    },
+    "video": {
+      "type": "video-section",
+      "settings": {
+        "heading": "Crafted in motion",
+        "subheading": "A closer look at the details that set us apart.",
+        "autoplay": true,
+        "full_width": false,
+        "aspect": "16/9"
+      }
+    },
+    "reviews": {
+      "type": "testimonials",
+      "blocks": {
+        "review-1": {
+          "type": "testimonial",
+          "settings": {
+            "stars": 5,
+            "quote": "The quality genuinely surprised me — it looks and feels far more expensive than it is. I've worn it every day since it arrived.",
+            "author": "Sarah M.",
+            "detail": "Verified buyer"
+          }
+        },
+        "review-2": {
+          "type": "testimonial",
+          "settings": {
+            "stars": 5,
+            "quote": "Ordered on Sunday, it was at my door by Friday with tracking the whole way. The packaging alone felt like a gift.",
+            "author": "Daniel K.",
+            "detail": "Verified buyer"
+          }
+        },
+        "review-3": {
+          "type": "testimonial",
+          "settings": {
+            "stars": 5,
+            "quote": "I keep getting compliments on it. Bought a second one for my brother's birthday a week later — that says it all.",
+            "author": "Amira L.",
+            "detail": "Verified buyer"
+          }
+        }
+      },
+      "block_order": ["review-1", "review-2", "review-3"],
+      "settings": {
+        "heading": "What our customers say",
+        "show_overall": true,
+        "overall_rating": 4.8,
+        "overall_count": 2400
+      }
+    },
+    "trustpilot": {
+      "type": "trustpilot",
+      "settings": {
+        "heading": "Rated Excellent by our customers"
+      }
+    },
+    "press": {
+      "type": "logo-list",
+      "blocks": {
+        "logo-1": { "type": "logo", "settings": { "title": "THE JOURNAL" } },
+        "logo-2": { "type": "logo", "settings": { "title": "STYLE WEEKLY" } },
+        "logo-3": { "type": "logo", "settings": { "title": "MODERN EDIT" } },
+        "logo-4": { "type": "logo", "settings": { "title": "DAILY LUXE" } },
+        "logo-5": { "type": "logo", "settings": { "title": "CITY PAPER" } }
+      },
+      "block_order": ["logo-1", "logo-2", "logo-3", "logo-4", "logo-5"],
+      "settings": {
+        "heading": "AS FEATURED IN",
+        "marquee": true,
+        "grayscale": true
       }
     },
     "newsletter": {
       "type": "newsletter",
       "settings": {
-        "heading": "Get the drop first",
-        "text": "<p>New releases go to the list before anywhere else. Delivery all over Lebanon.</p>"
+        "heading": "Join the club",
+        "text": "<p>Early access to new releases, private offers and members-only pricing — straight to your inbox.</p>"
       }
     }
   },
   "order": [
     "hero",
+    "usp",
     "featured",
-    "drop-banner",
-    "categories",
-    "image-with-text",
+    "story",
+    "bundle",
+    "video",
+    "reviews",
+    "trustpilot",
+    "press",
     "newsletter"
   ]
 }

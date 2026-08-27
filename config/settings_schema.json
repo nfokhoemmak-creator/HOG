@@ -1,11 +1,11 @@
 [
   {
     "name": "theme_info",
-    "theme_name": "House of Garments",
-    "theme_version": "1.0.0",
-    "theme_author": "House of Garments",
-    "theme_documentation_url": "https://houseofgarments.co",
-    "theme_support_url": "https://houseofgarments.co/pages/contact"
+    "theme_name": "HOG Atelier",
+    "theme_version": "2.0.0",
+    "theme_author": "HOG",
+    "theme_documentation_url": "https://github.com/nfokhoemmak-creator/HOG",
+    "theme_support_url": "https://github.com/nfokhoemmak-creator/HOG"
   },
   {
     "name": "t:settings_schema.brand.name",
@@ -35,7 +35,7 @@
         "type": "text",
         "id": "brand_tagline",
         "label": "t:settings_schema.brand.settings.brand_tagline.label",
-        "default": "EVERYBODY CAN'T HAVE LIMITED ITEMS"
+        "default": "Timeless design. Modern craft."
       },
       {
         "type": "image_picker",
@@ -56,19 +56,19 @@
         "type": "color",
         "id": "color_background",
         "label": "t:settings_schema.colors.settings.color_background.label",
-        "default": "#0a0a0a"
+        "default": "#ffffff"
       },
       {
         "type": "color",
         "id": "color_background_alt",
         "label": "t:settings_schema.colors.settings.color_background_alt.label",
-        "default": "#151515"
+        "default": "#f7f6f3"
       },
       {
         "type": "color",
         "id": "color_border",
         "label": "t:settings_schema.colors.settings.color_border.label",
-        "default": "#2a2a2a"
+        "default": "#e6e3dc"
       },
       {
         "type": "header",
@@ -78,13 +78,13 @@
         "type": "color",
         "id": "color_text",
         "label": "t:settings_schema.colors.settings.color_text.label",
-        "default": "#f5f5f5"
+        "default": "#141414"
       },
       {
         "type": "color",
         "id": "color_text_muted",
         "label": "t:settings_schema.colors.settings.color_text_muted.label",
-        "default": "#8a8a8a"
+        "default": "#75706a"
       },
       {
         "type": "header",
@@ -94,20 +94,20 @@
         "type": "color",
         "id": "color_accent",
         "label": "t:settings_schema.colors.settings.color_accent.label",
-        "default": "#d6ff3f",
+        "default": "#8f7339",
         "info": "t:settings_schema.colors.settings.color_accent.info"
       },
       {
         "type": "color",
         "id": "color_accent_contrast",
         "label": "t:settings_schema.colors.settings.color_accent_contrast.label",
-        "default": "#0a0a0a"
+        "default": "#ffffff"
       },
       {
         "type": "color",
         "id": "color_sale",
         "label": "t:settings_schema.colors.settings.color_sale.label",
-        "default": "#ff4d4d"
+        "default": "#b3261e"
       },
       {
         "type": "header",
@@ -117,13 +117,13 @@
         "type": "color",
         "id": "color_button_background",
         "label": "t:settings_schema.colors.settings.color_button_background.label",
-        "default": "#f5f5f5"
+        "default": "#141414"
       },
       {
         "type": "color",
         "id": "color_button_text",
         "label": "t:settings_schema.colors.settings.color_button_text.label",
-        "default": "#0a0a0a"
+        "default": "#ffffff"
       }
     ]
   },
@@ -138,7 +138,7 @@
         "type": "font_picker",
         "id": "type_heading_font",
         "label": "t:settings_schema.typography.settings.type_heading_font.label",
-        "default": "archivo_n6"
+        "default": "marcellus_n4"
       },
       {
         "type": "range",
@@ -148,7 +148,7 @@
         "step": 5,
         "unit": "%",
         "label": "t:settings_schema.typography.settings.type_heading_scale.label",
-        "default": 105
+        "default": 100
       },
       {
         "type": "range",
@@ -158,7 +158,7 @@
         "step": 1,
         "unit": "px",
         "label": "t:settings_schema.typography.settings.type_heading_tracking.label",
-        "default": 1
+        "default": 2
       },
       {
         "type": "checkbox",
@@ -219,7 +219,7 @@
         "step": 1,
         "unit": "px",
         "label": "t:settings_schema.layout.settings.layout_corner_radius.label",
-        "default": 0,
+        "default": 6,
         "info": "t:settings_schema.layout.settings.layout_corner_radius.info"
       },
       {
@@ -230,7 +230,7 @@
         "step": 2,
         "unit": "px",
         "label": "t:settings_schema.layout.settings.grid_gap.label",
-        "default": 8
+        "default": 24
       },
       {
         "type": "checkbox",
@@ -253,7 +253,7 @@
           { "value": "portrait", "label": "t:settings_schema.product_cards.settings.card_image_ratio.options__2" },
           { "value": "natural", "label": "t:settings_schema.product_cards.settings.card_image_ratio.options__3" }
         ],
-        "default": "portrait"
+        "default": "square"
       },
       {
         "type": "checkbox",
@@ -291,7 +291,7 @@
         "type": "checkbox",
         "id": "currency_code_enabled",
         "label": "t:settings_schema.product_cards.settings.currency_code_enabled.label",
-        "default": true,
+        "default": false,
         "info": "t:settings_schema.product_cards.settings.currency_code_enabled.info"
       }
     ]
@@ -319,7 +319,18 @@
         "type": "richtext",
         "id": "cart_notice",
         "label": "t:settings_schema.cart.settings.cart_notice.label",
-        "default": "<p>Delivery all over Lebanon. Orders ship within 2–4 business days.</p>"
+        "default": "<p>Free worldwide shipping. Orders ship within 1–3 business days.</p>"
+      },
+      {
+        "type": "header",
+        "content": "Free shipping bar"
+      },
+      {
+        "type": "number",
+        "id": "free_shipping_threshold",
+        "label": "Free shipping threshold",
+        "info": "Amount in your store's main currency (e.g. 50 = free shipping over 50). The cart shows a progress bar toward this amount. Set 0 to hide the bar.",
+        "default": 50
       }
     ]
   },
@@ -329,8 +340,7 @@
       {
         "type": "text",
         "id": "social_instagram_link",
-        "label": "t:settings_schema.social.settings.social_instagram_link.label",
-        "default": "https://www.instagram.com/houseofgarments.co/"
+        "label": "t:settings_schema.social.settings.social_instagram_link.label"
       },
       {
         "type": "text",

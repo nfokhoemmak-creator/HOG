@@ -8,8 +8,8 @@
         "text-1": {
           "type": "text",
           "settings": {
-            "heading": "House of Garments",
-            "text": "<p>Limited-run streetwear out of Lebanon. Delivery all over Lebanon.</p>"
+            "heading": "Our promise",
+            "text": "<p>Timeless pieces, designed with intent. Free worldwide shipping, easy returns and a 24-month warranty on every order.</p>"
           }
         },
         "menu-1": {
@@ -30,11 +30,15 @@
       "block_order": ["text-1", "menu-1", "menu-2"],
       "settings": {
         "show_newsletter": true,
-        "newsletter_heading": "Get the drop first",
+        "newsletter_heading": "Join the club",
         "show_payment_icons": true,
         "show_social": true
       }
+    },
+    "scratch-popup": {
+      "type": "scratch-popup",
+      "settings": {}
     }
   },
-  "order": ["footer"]
+  "order": ["footer", "scratch-popup"]
 }

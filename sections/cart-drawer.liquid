@@ -23,6 +23,30 @@
     <div class="cart-drawer__body">
       <p class="form__error" data-cart-error hidden></p>
 
+      {%- liquid
+        assign threshold = settings.free_shipping_threshold | default: 0 | times: 100
+      -%}
+      {%- if threshold > 0 -%}
+        {%- liquid
+          assign remaining = threshold | minus: cart.total_price
+          assign progress = cart.total_price | times: 100 | divided_by: threshold | at_most: 100
+        -%}
+        <div class="shipping-bar{% if remaining <= 0 %} shipping-bar--unlocked{% endif %}" aria-live="polite">
+          <p class="shipping-bar__label">
+            {%- if cart.item_count == 0 -%}
+              Free shipping on orders over <strong>{{ threshold | money }}</strong>
+            {%- elsif remaining > 0 -%}
+              You're <strong>{{ remaining | money }}</strong> away from <strong>free shipping</strong>
+            {%- else -%}
+              🎉 Congratulations — you've unlocked <strong>free shipping</strong>!
+            {%- endif -%}
+          </p>
+          <div class="shipping-bar__track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ progress }}">
+            <div class="shipping-bar__fill" style="width: {{ progress }}%;"></div>
+          </div>
+        </div>
+      {%- endif -%}
+
       {%- if cart.item_count == 0 -%}
         <div class="empty-state">
           <p class="h4">{{ 'sections.cart.empty' | t }}</p>

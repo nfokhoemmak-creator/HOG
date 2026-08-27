@@ -1,10 +1,61 @@
-# House of Garments — Shopify Theme
+# HOG Atelier — Shopify Theme
 
-Custom Online Store 2.0 theme for **[houseofgarments.co](https://houseofgarments.co)** — a Lebanon-based streetwear label.
+A custom, conversion-focused Shopify Online Store 2.0 theme for a premium
+dropshipping storefront: minimal luxury look (light palette, serif display
+headings, black buttons, gold accent), built to sell.
 
-> *EVERYBODY CAN'T HAVE LIMITED ITEMS.*
+Built from scratch: no Dawn fork, no vendor bundles. Plain Liquid, one base
+stylesheet, small vanilla-JS modules. Everything works without JS (real forms
+everywhere) and everything is configurable from the theme editor.
 
-Built from scratch: no Dawn fork, no vendor bundles. Plain Liquid, one stylesheet, three small vanilla-JS modules. It ships with a drop-oriented homepage, a cart drawer, a countdown-capable hero, and section settings tuned for a small catalog of limited runs.
+---
+
+## Store features
+
+**Conversion toolkit**
+
+- **Announcement bar** — rotating offers (free shipping / sale / bundle deal).
+- **Scratch-card popup** — full-screen "Try your luck" popup with a countdown
+  timer and a canvas scratch card that reveals a discount code and applies it
+  to checkout automatically. Frequency capping (per visitor / day / session),
+  fully configurable in the editor.
+- **Free-shipping progress bar** — in the cart drawer and cart page, driven by
+  one threshold setting.
+- **Bundle & save (quantity breaks)** — Buy 1 / Buy 2 / Buy 3 tiles on the
+  product page with per-tier savings, badges ("MOST POPULAR", "BEST VALUE")
+  and optional per-tier discount codes that auto-apply at checkout.
+- **Bundle promo section** — homepage "Complete the set" offer that adds 2–3
+  products to the cart in one click and applies a bundle code.
+- **Product page** — star rating row, urgency countdown, trust badges,
+  payment icons, benefit checklist, shipping/warranty accordions, sticky
+  mobile add-to-cart bar, thumbnail gallery, variant-aware pricing.
+- **Reviews** — testimonial carousel with star ratings, plus a **Trustpilot**
+  section: paste your TrustBox business-unit ID for the real widget, or use
+  the built-in static rating until you have one.
+- **Video** — hero background video (uploaded or .mp4 URL) and a standalone
+  video section (uploaded, YouTube or Vimeo).
+- **USP bar, press-logo marquee, image-with-text, newsletter** — the rest of
+  the homepage system.
+
+### Make the offers real (one-time admin setup)
+
+The theme displays offers; Shopify applies the actual money off. Create these
+discounts in **Admin → Discounts** (names must match the codes configured in
+the theme editor — defaults below):
+
+| Code | Type | Suggested rule |
+| --- | --- | --- |
+| `BUNDLE10` | Percentage code, 10% | Minimum quantity 2 |
+| `BUNDLE15` | Percentage code, 15% | Minimum quantity 3 (also used by the homepage bundle) |
+| `LUCKY15` | Percentage code, 15% | The scratch-popup prize |
+
+Tip: create them as **automatic discounts** with the same quantity rules if
+you also want customers who ignore the widgets to get the deal. The theme's
+widgets pre-apply the code via `/discount/CODE`, so checkout picks it up
+without the customer typing anything.
+
+Set the **free shipping threshold** in Theme settings → Cart, and configure a
+matching free-shipping rate in **Settings → Shipping** so the promise is real.
 
 ---
 
@@ -14,59 +65,52 @@ Built from scratch: no Dawn fork, no vendor bundles. Plain Liquid, one styleshee
 | --- | --- |
 | [Shopify CLI](https://shopify.dev/docs/api/shopify-cli) | `>= 3.60` |
 | Node.js | `>= 18` (only for lint/format scripts) |
-| A Shopify store | Partner dev store or the live `houseofgarments.co` store |
+| A Shopify store | Any plan; a Partner dev store works |
 
 ## Quick start
 
 ```bash
-git clone <this-repo> house-of-garments-theme
-cd house-of-garments-theme
+git clone <this-repo> theme && cd theme
 npm install
 
 # Authenticate + start a live-reloading local preview
-npm run dev -- --store houseofgarments.myshopify.com
+npm run dev -- --store your-store.myshopify.com
 ```
 
-The CLI prints a preview URL plus a link to the theme editor. Changes to
-`sections/`, `snippets/`, `assets/` and `templates/` hot-reload.
+### Publishing without the CLI
+
+- **Zip upload:** `npm run package` (or zip the repo minus `node_modules`,
+  `scripts`, `.git`) → Admin → Online Store → Themes → **Add theme → Upload
+  zip file**.
+- **GitHub:** Admin → Themes → **Add theme → Connect from GitHub** and pick
+  this repo/branch — pushes then sync to the theme automatically.
 
 ## Everyday commands
 
 ```bash
-npm run dev        # shopify theme dev  — local preview with hot reload
-npm run check      # shopify theme check — Liquid linting (Theme Check)
-npm run pull       # pull settings/content changes merchants made in the admin
-npm run push       # push to an *unpublished* theme
-npm run deploy     # push to the live theme (asks for confirmation)
-npm run package    # produce a .zip you can upload in Admin → Themes
+npm run dev             # shopify theme dev — local preview with hot reload
+npm run check           # shopify theme check — Liquid linting
+npm run validate:json   # every JSON document parses (incl. section schemas)
+npm run validate:theme  # cross-reference lint: sections/blocks/snippets exist,
+                        # balanced Liquid tags, preset sanity
+npm run pull            # pull settings/content merchants changed in the admin
+npm run push            # push to an *unpublished* theme
+npm run deploy          # push to the live theme (asks for confirmation)
+npm run package         # produce a .zip for Admin → Themes
 ```
-
-`npm run push` never targets the live theme. Publishing is a deliberate,
-separate step — see [Deploying](#deploying).
 
 ## Repository layout
 
 ```
-assets/           CSS + JS. base.css is the single stylesheet; JS is split by concern.
-config/           settings_schema.json (what merchants can edit) + settings_data.json (current values).
-layout/           theme.liquid wraps every page. password.liquid wraps the pre-launch gate.
+assets/           CSS + JS. base.css is the single stylesheet; JS split by concern.
+config/           settings_schema.json (what merchants edit) + settings_data.json (values).
+layout/           theme.liquid wraps every page. password.liquid wraps the launch gate.
 locales/          en.default.json (storefront strings) + en.default.schema.json (editor labels).
-sections/         Every section. `main-*` sections are the body of a given template.
-snippets/         Reusable partials: product-card, price, icon, meta-tags, pagination.
-templates/        JSON templates that compose sections. customers/ are Liquid (2.0 has no JSON there).
+sections/         Every section. `main-*` sections are the body of a template.
+snippets/         Reusable partials: product-card, price, icon, star-rating, bundle-offers…
+templates/        JSON templates that compose sections. customers/ are Liquid.
+scripts/          Node lint helpers used by the validate:* commands.
 ```
-
-### Where to change things
-
-| I want to… | Edit |
-| --- | --- |
-| Change brand colors, type scale, spacing | `config/settings_schema.json` → then set values in the theme editor |
-| Restyle anything | `assets/base.css` (CSS custom properties live in `:root`) |
-| Change the homepage layout | Theme editor, or `templates/index.json` directly |
-| Add a new homepage block type | New file in `sections/`, then add it to `templates/index.json` |
-| Change product page behaviour | `sections/main-product.liquid` + `assets/product-form.js` |
-| Change cart drawer behaviour | `snippets/cart-drawer.liquid` + `assets/cart-drawer.js` |
-| Add or reword any storefront string | `locales/en.default.json` |
 
 ## Design system
 
@@ -74,117 +118,89 @@ Everything is driven by CSS custom properties emitted from theme settings in
 `layout/theme.liquid`. Nothing is hard-coded twice.
 
 ```
---color-bg          #0a0a0a   near-black canvas
---color-fg          #f5f5f5   off-white text
---color-accent      #d6ff3f   drop/limited highlight
---color-muted       #8a8a8a   secondary text, meta
---font-heading      condensed uppercase display face
---font-body         system/neutral sans
---space-1 … --space-8   4px-based spacing scale
---container         1440px max width
+--color-bg          #ffffff   canvas
+--color-bg-alt      #f7f6f3   tinted bands, cards
+--color-fg          #141414   text
+--color-accent      #8f7339   gold — highlights, savings, progress
+--color-muted       #75706a   secondary text, meta
+--font-heading      Marcellus (serif display, tracked uppercase)
+--font-body         Assistant (neutral sans)
+--space-1 … --space-9   4px-based spacing scale
+--container         1400px max width
 ```
 
-Layout is CSS grid + `clamp()` for fluid type. There is no CSS framework and no
-build step for styles — `base.css` is served as-is by Shopify's CDN.
+New sections carry their component CSS in a scoped `{% style %}` block and
+consume only these variables, so retheming stays a settings-only job.
 
 ## JavaScript
 
-Three ES modules, no dependencies, no bundler. Each is loaded with `defer` and
-guards for the elements it needs before doing anything.
+No dependencies, no bundler. Each file is loaded with `defer` and degrades:
+the storefront renders, navigates and checks out with JS disabled.
 
 | File | Responsibility |
 | --- | --- |
-| `assets/theme.js` | Mobile nav, announcement rotation, scroll header, details polyfilling, `<countdown-timer>` |
-| `assets/cart-drawer.js` | Cart Ajax API (`/cart/add.js`, `/cart/change.js`), drawer open/close, focus trap, live count |
-| `assets/product-form.js` | Variant matching from the option inputs, price/availability swap, media sync, add-to-cart |
-
-Custom elements used: `<cart-drawer>`, `<product-form>`, `<countdown-timer>`,
-`<quantity-input>`, `<menu-drawer>`. All degrade to working HTML when JS fails —
-the product form is a real `<form action="/cart/add">`, and the cart page works
-without the drawer.
+| `assets/theme.js` | Mobile nav, announcement rotation, reveal-on-scroll, `<countdown-timer>`, `<quantity-input>` |
+| `assets/cart-drawer.js` | Ajax cart (`/cart/add.js`, `/cart/change.js`), drawer, `HOG.addItems`, `HOG.applyDiscount` |
+| `assets/product-form.js` | Variant matching, price/availability swap, media sync, `variant:change` event |
+| `assets/conversion.js` | `<evergreen-countdown>`, `<bundle-offer>` quantity breaks, `<sticky-atc>` |
+| `assets/scratch-popup.js` | `<scratch-popup>` — canvas scratch card, timer, frequency capping |
 
 ## Sections
 
 | Section | Used on | Notes |
 | --- | --- | --- |
-| `announcement-bar` | all | Rotating messages. Default: *DELIVERY ALL OVER LEBANON* |
-| `header` | all | Sticky, logo, nav, search, account, cart count |
-| `footer` | all | Menus, Instagram, payment icons, newsletter opt-in |
-| `hero` | index | Full-bleed image/video, optional drop countdown |
-| `featured-collection` | index | Grid of N products from a chosen collection |
-| `drop-banner` | index | Large type + CTA for the current release |
+| `announcement-bar` | all | Rotating offer messages |
+| `header` / `footer` | all | Sticky header; footer menus, newsletter, payment icons |
+| `scratch-popup` | all (footer group) | Scratch-to-win discount popup with timer |
+| `hero` | index | Full-bleed image or video, optional countdown |
+| `usp-bar` | index | Icon benefit strip (shipping / warranty / returns / support) |
+| `featured-collection` | index, product | Product grid from a chosen collection |
 | `image-with-text` | index, pages | Editorial split block |
-| `newsletter` | index, footer | Shopify customer form, `contact` type |
-| `rich-text` | index, pages | Free text block |
-| `main-product` | product | Gallery, variant picker, form, accordions |
+| `bundle-promo` | index | 2–3 product set with one-click add + bundle code |
+| `video-section` | index, pages | Uploaded / YouTube / Vimeo video |
+| `testimonials` | index, product | Star-rated review carousel |
+| `trustpilot` | index | TrustBox embed or static rating fallback |
+| `logo-list` | index | "As featured in" marquee |
+| `newsletter` | index, footer | Shopify customer form |
+| `main-product` | product | Gallery, rating, countdown, bundles, trust badges, sticky ATC |
 | `main-collection` | collection | Filters, sort, grid, pagination |
-| `main-cart` | cart | Full cart page fallback for the drawer |
-| `main-search`, `main-404`, `main-page`, `main-blog`, `main-article`, `main-list-collections`, `main-password` | respective templates | |
+| `main-cart` | cart | Cart page with free-shipping progress |
+| `main-*` (search, 404, page, blog, article, list-collections, password) | respective templates | |
 
 ## Theme settings
 
 Grouped in the editor as **Brand**, **Colors**, **Typography**, **Layout**,
-**Product cards**, **Cart**, **Social**, and **Advanced**. Notable ones:
+**Product cards**, **Cart**, **Social**, and **Search**. Notable ones:
 
-- **Cart type** — drawer, page, or none.
-- **Show "sold out" as "SOLD"** — streetwear convention, on by default.
-- **Badge: limited / pre-order** — reads the product tag `limited` or a title
-  prefix of `PRE-ORDER` and renders an accent badge on the card.
-- **Currency code display** — appends `USD`, which matters for a Lebanon-based
-  store pricing in dollars.
+- **Cart → Free shipping threshold** — drives the progress bar in drawer + cart.
+- **Cart type** — drawer (default) or page.
+- **Badges** — product tags `limited`, `preorder`, `new` render card badges.
+- **Rating metafields** — if `reviews.rating` / `reviews.rating_count`
+  metafields exist (set by most review apps), the product-page rating block
+  uses them automatically instead of its manual settings.
 
-## Content conventions
+## Validation
 
-The theme keys off a small set of tags. Keeping them consistent is what makes
-the merchandising work.
+```bash
+npm run validate:json && npm run validate:theme
+```
 
-| Tag | Effect |
-| --- | --- |
-| `limited` | Accent "LIMITED" badge on cards and the product page |
-| `preorder` | "PRE-ORDER" badge; add-to-cart button label changes |
-| `new` | "NEW" badge |
-| `drop-<n>` | Groups a release, e.g. `drop-03`, for collection automation |
-
-Product metafields read by the theme (all optional, namespace `custom`):
-
-| Metafield | Type | Used for |
-| --- | --- | --- |
-| `custom.fabric` | single line text | Materials accordion |
-| `custom.fit` | single line text | Fit accordion, e.g. "Boxy, oversized" |
-| `custom.size_guide` | rich text | Size guide accordion |
-| `custom.drop_date` | date and time | Hero + product countdown |
-
-## Deploying
-
-1. `npm run check` — must be clean.
-2. `npm run push` — uploads to an unpublished theme; the CLI gives you a preview link.
-3. Review the preview on a real device. Check the cart drawer and the product form.
-4. `npm run deploy` — publishes.
-
-Merchant edits made in the admin (menus, section settings, content) live in
-`config/settings_data.json` and the JSON templates. Run `npm run pull` before
-starting new work so you don't overwrite them.
-
-### CI
-
-`.github/workflows/theme-check.yml` runs Theme Check and validates every JSON
-file on push and pull request. It does not deploy — publishing stays manual.
+Both run offline (no Shopify auth needed) and catch the mistakes that break a
+theme upload: bad JSON, missing section/snippet references, unbalanced Liquid
+tags, presets pointing at undeclared blocks.
 
 ## Browser support
 
-Evergreen Chrome, Safari, Firefox and Edge, plus iOS Safari 15+. The theme uses
-`:has()` progressively — layouts do not depend on it.
+Evergreen Chrome, Safari, Firefox and Edge, plus iOS Safari 15+.
 
 ## Accessibility
 
 - Visible focus rings, never removed.
-- Skip link to `#MainContent`.
-- Drawers trap focus and restore it on close.
-- All decorative imagery has empty `alt`; product imagery uses the media alt text.
+- Skip link to `#MainContent`; drawers and popups trap focus and restore it.
+- Scratch popup and drawers close on Escape; countdowns are `aria-live` safe.
 - Color pairs in the default palette meet WCAG AA at body sizes.
 
 ## License
 
-MIT — see [LICENSE](LICENSE). Brand assets, product photography, logos and the
-House of Garments name are not covered by this license and remain the property
-of House of Garments.
+MIT — see [LICENSE](LICENSE). Brand assets, product photography and store
+names are not covered by this license.

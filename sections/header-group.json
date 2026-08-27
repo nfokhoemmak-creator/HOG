@@ -8,21 +8,27 @@
         "announcement-1": {
           "type": "announcement",
           "settings": {
-            "text": "DELIVERY ALL OVER LEBANON"
+            "text": "FREE WORLDWIDE SHIPPING ON ALL ORDERS"
           }
         },
         "announcement-2": {
           "type": "announcement",
           "settings": {
-            "text": "EVERYBODY CAN'T HAVE LIMITED ITEMS"
+            "text": "SUMMER SALE — UP TO 50% OFF, ENDS TONIGHT"
+          }
+        },
+        "announcement-3": {
+          "type": "announcement",
+          "settings": {
+            "text": "EXTRA 10% OFF WHEN YOU BUY 2 OR MORE"
           }
         }
       },
-      "block_order": ["announcement-1", "announcement-2"],
+      "block_order": ["announcement-1", "announcement-2", "announcement-3"],
       "settings": {
-        "color_scheme": "accent",
+        "color_scheme": "inverse",
         "rotate": true,
-        "rotate_speed": 5
+        "rotate_speed": 4
       }
     },
     "header": {

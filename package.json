@@ -13,7 +13,8 @@
     "push": "shopify theme push --unpublished",
     "deploy": "shopify theme push --live",
     "package": "shopify theme package",
-    "validate:json": "node scripts/validate-json.mjs"
+    "validate:json": "node scripts/validate-json.mjs",
+    "validate:theme": "node scripts/validate-theme.mjs"
   },
   "engines": {
     "node": ">=18"

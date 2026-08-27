@@ -52,6 +52,7 @@
         --font-heading-style: {{ heading_font.style }};
         --font-heading-weight: {{ heading_font.weight }};
         --font-heading-tracking: {{ settings.type_heading_tracking }}px;
+        --heading-transform: {% if settings.type_heading_uppercase %}uppercase{% else %}none{% endif %};
 
         --font-body-scale: {{ settings.type_body_scale | divided_by: 100.0 }};
         --font-heading-scale: {{ settings.type_heading_scale | divided_by: 100.0 }};
@@ -100,13 +101,15 @@
           predictiveSearch: {{ routes.predictive_search_url | json }}
         },
         moneyFormat: {{ shop.money_format | json }},
-        cartType: {{ settings.cart_type | json }}
+        cartType: {{ settings.cart_type | json }},
+        freeShippingThreshold: {{ settings.free_shipping_threshold | default: 0 | times: 100 }}
       };
     </script>
 
     <script src="{{ 'theme.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'cart-drawer.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'conversion.js' | asset_url }}" defer="defer"></script>
   </head>
 
   <body class="template-{{ template.name | handle }} {% if settings.animations_enabled %}animate{% endif %}">

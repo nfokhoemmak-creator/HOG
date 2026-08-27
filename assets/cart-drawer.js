@@ -192,7 +192,42 @@
     return data;
   }
 
-  window.HOG = Object.assign(window.HOG || {}, { addToCart, updateCartCount });
+  /**
+   * Add several variants at once (bundles). `items` is the Ajax API shape:
+   * [{ id: variantId, quantity: n }, ...]. Opens the drawer afterwards.
+   */
+  async function addItems(items, opener) {
+    const data = await postJSON(routes.cartAdd || '/cart/add.js', { items });
+
+    document.dispatchEvent(new CustomEvent('cart:updated', { detail: { items: data } }));
+    if (window.HOG) window.HOG.announce(strings.itemAdded);
+
+    const drawer = document.querySelector('cart-drawer');
+    if (drawer && window.theme && window.theme.cartType === 'drawer') {
+      await drawer.refresh();
+      drawer.open(opener);
+    } else {
+      window.location.href = routes.cart || '/cart';
+    }
+
+    return data;
+  }
+
+  /**
+   * Pre-apply a discount code so checkout picks it up automatically. Shopify
+   * stores the code in the cart session when /discount/CODE is requested.
+   * Failures are swallowed: the order still works, just without auto-apply.
+   */
+  async function applyDiscount(code) {
+    if (!code) return;
+    try {
+      await fetch(`${routes.root || '/'}discount/${encodeURIComponent(code)}`, { method: 'GET' });
+    } catch (error) {
+      /* non-fatal */
+    }
+  }
+
+  window.HOG = Object.assign(window.HOG || {}, { addToCart, addItems, applyDiscount, updateCartCount });
 
   /* ------------------------------------------------------------ quick add */
 
