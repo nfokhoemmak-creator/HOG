@@ -14,12 +14,13 @@
   'use strict';
 
   const strings = (window.theme && window.theme.strings) || {};
-  const moneyFormat = (window.theme && window.theme.moneyFormat) || '${{amount}}';
 
+  // theme.js (loaded first) provides the placeholder-aware formatter.
   function formatMoney(cents) {
-    const value = (cents / 100).toFixed(2);
-    const withCommas = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    return moneyFormat.replace(/\{\{\s*(\w+)\s*\}\}/, withCommas);
+    if (window.HOG && typeof window.HOG.formatMoney === 'function') {
+      return window.HOG.formatMoney(cents);
+    }
+    return '$' + (cents / 100).toFixed(2);
   }
 
   class ProductForm extends HTMLElement {
@@ -33,7 +34,15 @@
       this.sectionId = this.dataset.sectionId;
 
       this.variants = this.readVariants();
-      this.optionInputs = Array.from(this.querySelectorAll('[data-option-index]'));
+
+      // The variant picker is a sibling block, not a child of <product-form>,
+      // so collect its inputs at section scope. Radios are named
+      // "{{ option.name }}-{{ section.id }}"; matching on the suffix keeps a
+      // second product section on the page from cross-wiring.
+      const scope = this.closest('.main-product-section') || document;
+      this.optionInputs = Array.from(scope.querySelectorAll('[data-option-index]')).filter(
+        (input) => input.name.endsWith('-' + this.sectionId)
+      );
 
       this.optionInputs.forEach((input) => {
         input.addEventListener('change', () => this.onOptionChange());
@@ -73,10 +82,18 @@
     }
 
     onOptionChange(config) {
-      const options = this.selectedOptions();
-      const variant = this.matchVariant(options);
+      let variant;
 
-      this.markUnavailableOptions(options);
+      if (this.optionInputs.length === 0) {
+        // No picker rendered (single-variant product, or the block was
+        // removed): key off the hidden id input instead of option matching.
+        const id = this.idInput ? parseInt(this.idInput.value, 10) : NaN;
+        variant = this.variants.find((candidate) => candidate.id === id);
+      } else {
+        const options = this.selectedOptions();
+        variant = this.matchVariant(options);
+        this.markUnavailableOptions(options);
+      }
 
       if (!variant) {
         this.setButton(strings.unavailable || 'Unavailable', true);

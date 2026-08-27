@@ -40,6 +40,14 @@
     }
   }
 
+  function removeKey(store, key) {
+    try {
+      store.removeItem(STORE_PREFIX + key);
+    } catch (error) {
+      /* ignore */
+    }
+  }
+
   function designMode() {
     return Boolean(window.Shopify && window.Shopify.designMode);
   }
@@ -99,7 +107,9 @@
 
       if (this.isOpen) {
         if (this.releaseFocus) this.releaseFocus();
-        if (window.HOG) window.HOG.lockScroll(false);
+        if (window.HOG && !document.querySelector('.cart-drawer.is-open, .menu-drawer.is-open')) {
+          window.HOG.lockScroll(false);
+        }
       }
     }
 
@@ -130,6 +140,10 @@
 
     setCap() {
       if (designMode()) return;
+
+      /* The popup's run is over — a later eligible showing (e.g. tomorrow
+         under once_per_day in the same tab) starts a fresh countdown. */
+      removeKey(window.sessionStorage, 'deadline');
 
       switch (this.frequency) {
         case 'once_per_session':
@@ -210,7 +224,11 @@
         this.releaseFocus = null;
       }
 
-      if (window.HOG) window.HOG.lockScroll(false);
+      // The scroll lock is shared: don't release it out from under an open
+      // cart or menu drawer.
+      if (window.HOG && !document.querySelector('.cart-drawer.is-open, .menu-drawer.is-open')) {
+        window.HOG.lockScroll(false);
+      }
     }
 
     dismiss() {
@@ -234,11 +252,15 @@
     startTimer() {
       if (!this.timerOutput || this.timerMinutes <= 0) return;
 
-      /* Persist the deadline so re-opening the popup never resets the clock. */
-      let deadline = parseInt(readKey(window.sessionStorage, 'deadline'), 10);
-      if (!deadline) {
+      /* Persist the deadline so re-opening the popup never resets the clock.
+         Only a deadline still in the future is reused, and the theme editor
+         skips storage so previews always reflect the configured minutes. */
+      let deadline = designMode()
+        ? NaN
+        : parseInt(readKey(window.sessionStorage, 'deadline'), 10);
+      if (!deadline || deadline <= Date.now()) {
         deadline = Date.now() + this.timerMinutes * 60000;
-        writeKey(window.sessionStorage, 'deadline', String(deadline));
+        if (!designMode()) writeKey(window.sessionStorage, 'deadline', String(deadline));
       }
 
       const tick = () => {

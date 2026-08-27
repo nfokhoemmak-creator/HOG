@@ -12,12 +12,12 @@
 (function () {
   'use strict';
 
-  const moneyFormat = (window.theme && window.theme.moneyFormat) || '${{amount}}';
-
+  // theme.js (loaded first) provides the placeholder-aware formatter.
   function formatMoney(cents) {
-    const value = (cents / 100).toFixed(2);
-    const withCommas = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    return moneyFormat.replace(/\{\{\s*(\w+)\s*\}\}/, withCommas);
+    if (window.HOG && typeof window.HOG.formatMoney === 'function') {
+      return window.HOG.formatMoney(cents);
+    }
+    return '$' + (cents / 100).toFixed(2);
   }
 
   /* ------------------------------------------------- <evergreen-countdown> */

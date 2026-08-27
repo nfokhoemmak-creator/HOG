@@ -13,6 +13,10 @@
   const routes = (window.theme && window.theme.routes) || {};
   const strings = (window.theme && window.theme.strings) || {};
 
+  // routes.root is "/" on the default locale but "/fr" (no trailing slash) on
+  // others; normalize so concatenated paths stay valid everywhere.
+  const rootUrl = ((routes.root || '/') + '').replace(/\/?$/, '/');
+
   /* ------------------------------------------------------------- fetching */
 
   async function postJSON(url, body) {
@@ -33,7 +37,7 @@
   }
 
   async function getSectionHTML(section) {
-    const url = `${routes.root || '/'}?section_id=${section}`;
+    const url = `${rootUrl}?section_id=${section}`;
     const response = await fetch(url);
     return response.text();
   }
@@ -42,16 +46,42 @@
 
   class CartDrawer extends HTMLElement {
     connectedCallback() {
+      if (this.bound) return; // refresh() swaps innerHTML; never rebind
+      this.bound = true;
+
       this.panel = this.querySelector('.cart-drawer__panel');
-      this.overlay = this.querySelector('.cart-drawer__overlay');
-      this.closeButton = this.querySelector('[data-cart-close]');
       this.releaseFocus = null;
       this.opener = null;
 
-      if (this.overlay) this.overlay.addEventListener('click', () => this.close());
-      if (this.closeButton) this.closeButton.addEventListener('click', () => this.close());
+      // Everything inside the panel is replaced on refresh, so all inner
+      // interactions are delegated to the host element, which survives.
+      this.addEventListener('click', (event) => {
+        if (
+          event.target.closest('[data-cart-close]') ||
+          event.target.closest('.cart-drawer__overlay')
+        ) {
+          this.close();
+          return;
+        }
 
-      this.bindLineItems();
+        const remove = event.target.closest('[data-line-remove]');
+        if (remove) {
+          event.preventDefault();
+          this.change(remove.dataset.lineRemove, 0);
+        }
+      });
+
+      this.addEventListener('change', (event) => {
+        const input = event.target.closest('[data-line-quantity]');
+        if (!input) return;
+        const quantity = parseInt(input.value, 10);
+        if (Number.isNaN(quantity)) {
+          // Cleared field: restore the server-rendered quantity, don't POST NaN.
+          input.value = input.defaultValue || 1;
+          return;
+        }
+        this.change(input.dataset.lineQuantity, Math.max(0, quantity));
+      });
 
       document.addEventListener('cart:updated', (event) => {
         this.render(event.detail && event.detail.sections);
@@ -67,21 +97,6 @@
         if (!trigger) return;
         event.preventDefault();
         this.open(trigger);
-      });
-    }
-
-    bindLineItems() {
-      this.querySelectorAll('[data-line-remove]').forEach((button) => {
-        button.addEventListener('click', (event) => {
-          event.preventDefault();
-          this.change(button.dataset.lineRemove, 0);
-        });
-      });
-
-      this.querySelectorAll('[data-line-quantity]').forEach((input) => {
-        input.addEventListener('change', () => {
-          this.change(input.dataset.lineQuantity, parseInt(input.value, 10));
-        });
       });
     }
 
@@ -123,8 +138,16 @@
 
       const wasOpen = this.classList.contains('is-open');
       this.innerHTML = fresh.innerHTML;
-      this.connectedCallback();
-      if (wasOpen) this.classList.add('is-open');
+      this.panel = this.querySelector('.cart-drawer__panel');
+
+      if (wasOpen) {
+        this.classList.add('is-open');
+        // The old focus trap's keydown handler sits on the detached panel.
+        if (window.HOG && this.panel) {
+          if (this.releaseFocus) this.releaseFocus();
+          this.releaseFocus = window.HOG.trapFocus(this.panel, () => this.close());
+        }
+      }
 
       updateCartCount();
     }
@@ -156,7 +179,7 @@
 
   async function updateCartCount() {
     try {
-      const response = await fetch(`${routes.root || '/'}cart.js`);
+      const response = await fetch(`${rootUrl}cart.js`);
       const cart = await response.json();
       document.querySelectorAll('[data-cart-count]').forEach((node) => {
         node.textContent = cart.item_count;
@@ -221,7 +244,7 @@
   async function applyDiscount(code) {
     if (!code) return;
     try {
-      await fetch(`${routes.root || '/'}discount/${encodeURIComponent(code)}`, { method: 'GET' });
+      await fetch(`${rootUrl}discount/${encodeURIComponent(code)}`, { method: 'GET' });
     } catch (error) {
       /* non-fatal */
     }

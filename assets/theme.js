@@ -67,7 +67,43 @@
     }, 60);
   }
 
-  window.HOG = Object.assign(window.HOG || {}, { trapFocus, lockScroll, announce });
+  /**
+   * Format cents according to the shop's money format, honouring the
+   * placeholder name Shopify puts in it (amount, amount_no_decimals,
+   * amount_with_comma_separator, …).
+   */
+  function formatMoney(cents, format) {
+    const fmt = format || (window.theme && window.theme.moneyFormat) || '${{amount}}';
+
+    function delimit(number, precision, thousands, decimal) {
+      const parts = (number / 100).toFixed(precision).split('.');
+      const whole = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousands);
+      return parts[1] ? whole + decimal + parts[1] : whole;
+    }
+
+    return fmt.replace(/\{\{\s*(\w+)\s*\}\}/, (match, placeholder) => {
+      switch (placeholder) {
+        case 'amount_no_decimals':
+          return delimit(cents, 0, ',', '.');
+        case 'amount_with_comma_separator':
+          return delimit(cents, 2, '.', ',');
+        case 'amount_no_decimals_with_comma_separator':
+          return delimit(cents, 0, '.', ',');
+        case 'amount_with_apostrophe_separator':
+          return delimit(cents, 2, "'", '.');
+        case 'amount_with_space_separator':
+          return delimit(cents, 2, ' ', ',');
+        case 'amount_no_decimals_with_space_separator':
+          return delimit(cents, 0, ' ', ',');
+        case 'amount_with_period_and_space_separator':
+          return delimit(cents, 2, ' ', '.');
+        default:
+          return delimit(cents, 2, ',', '.');
+      }
+    });
+  }
+
+  window.HOG = Object.assign(window.HOG || {}, { trapFocus, lockScroll, announce, formatMoney });
 
   /* --------------------------------------------------------- <menu-drawer> */
 

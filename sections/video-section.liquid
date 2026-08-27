@@ -102,9 +102,9 @@
     <div class="video-section__media" style="--video-aspect: {{ section.settings.aspect }};">
       {%- if section.settings.video != blank -%}
         {%- if section.settings.autoplay -%}
-          {{ section.settings.video | video_tag: autoplay: true, loop: true, muted: true, controls: false, image_size: '1600x' }}
+          {{ section.settings.video | video_tag: autoplay: true, loop: true, muted: true, controls: false, playsinline: true, image_size: '1600x' }}
         {%- else -%}
-          {{ section.settings.video | video_tag: controls: true, image_size: '1600x' }}
+          {{ section.settings.video | video_tag: controls: true, playsinline: true, image_size: '1600x' }}
         {%- endif -%}
 
       {%- elsif external != blank -%}

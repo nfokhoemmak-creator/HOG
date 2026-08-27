@@ -154,8 +154,12 @@
 
   assign items_json = '[' | append: items_json | append: ']'
 
+  comment
+    A partially available set would break the advertised total and can fail a
+    minimum-quantity discount, so the CTA needs the whole set in stock.
+  endcomment
   assign cta_disabled = false
-  if picked_count < 2 or available_count == 0
+  if picked_count < 2 or available_count < picked_count
     assign cta_disabled = true
   endif
 -%}
@@ -217,6 +221,10 @@
               <p class="bundle-promo__title">
                 <a href="{{ bundle_product.url }}">{{ bundle_product.title }}</a>
               </p>
+
+              {%- unless bundle_variant.available -%}
+                <span class="badge badge--sold" style="justify-self: center;">Sold out</span>
+              {%- endunless -%}
 
               {%- if section.settings.show_prices -%}
                 <div class="price{% if bundle_variant.compare_at_price > bundle_variant.price %} price--on-sale{% endif %}">
@@ -299,14 +307,17 @@
         if (this.bound) return;
         this.bound = true;
 
-        this.button = this.querySelector('button');
-        if (!this.button || this.button.disabled) return;
-
-        this.button.addEventListener('click', () => this.addSet());
+        // Delegate to the host: for a second section instance on the page the
+        // element upgrades while the parser streams it, before its <button>
+        // child exists, so the button must be resolved at click time.
+        this.addEventListener('click', (event) => {
+          var button = event.target.closest('button');
+          if (!button || button.disabled) return;
+          this.addSet(button);
+        });
       }
 
-      async addSet() {
-        var button = this.button;
+      async addSet(button) {
         var strings = (window.theme && window.theme.strings) || {};
 
         var items = [];
@@ -323,12 +334,14 @@
         button.textContent = strings.adding || 'Adding…';
 
         try {
-          await window.HOG.addItems(items, button);
-
+          // Register the discount first: with cart type "page", addItems
+          // navigates away and a later applyDiscount would never run.
           var code = button.dataset.discountCode;
           if (code && typeof window.HOG.applyDiscount === 'function') {
             await window.HOG.applyDiscount(code);
           }
+
+          await window.HOG.addItems(items, button);
 
           button.textContent = original;
           button.disabled = false;
