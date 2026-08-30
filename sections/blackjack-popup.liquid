@@ -45,7 +45,41 @@
 }
   {%- endcapture -%}
 
-  <dialog class="bj-modal" id="BlackjackModal" data-blackjack-modal aria-label="{{ section.settings.heading | default: 'Blackjack' | escape }}">
+  {%- comment -%}
+    Auto-open scoping. "Browsing" means the product and collection templates
+    plus search results; the merchant can widen it to every page.
+  {%- endcomment -%}
+  {%- liquid
+    assign auto_ok = false
+    if section.settings.auto_open
+      case section.settings.auto_pages
+        when 'all'
+          assign auto_ok = true
+        when 'browsing'
+          if template.name == 'product' or template.name == 'collection' or template.name == 'search' or template.name == 'list-collections'
+            assign auto_ok = true
+          endif
+        when 'home'
+          if template.name == 'index'
+            assign auto_ok = true
+          endif
+      endcase
+    endif
+  -%}
+
+  <dialog
+    class="bj-modal"
+    id="BlackjackModal"
+    data-blackjack-modal
+    aria-label="{{ section.settings.heading | default: 'Blackjack' | escape }}"
+    {% if auto_ok %}
+      data-auto-open
+      data-auto-scroll="{{ section.settings.auto_scroll_percent | default: 50 }}"
+      data-auto-delay="{{ section.settings.auto_delay | default: 5 }}"
+      data-auto-frequency="{{ section.settings.auto_frequency | default: 'session' }}"
+      data-plays-per-day="{{ section.settings.plays_per_day | default: 3 }}"
+    {% endif %}
+  >
     <div class="bj-modal__panel">
       <div class="bj-modal__head">
         <div>
@@ -140,6 +174,74 @@
         }
       ],
       "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Open automatically"
+    },
+    {
+      "type": "checkbox",
+      "id": "auto_open",
+      "label": "Open the popup while customers browse",
+      "default": true,
+      "info": "Shows once, after they scroll far enough to be engaged. Closing it stops it returning."
+    },
+    {
+      "type": "select",
+      "id": "auto_pages",
+      "label": "Where",
+      "options": [
+        {
+          "value": "browsing",
+          "label": "Product, collection and search pages"
+        },
+        {
+          "value": "all",
+          "label": "Every page"
+        },
+        {
+          "value": "home",
+          "label": "Home page only"
+        }
+      ],
+      "default": "browsing"
+    },
+    {
+      "type": "range",
+      "id": "auto_scroll_percent",
+      "min": 10,
+      "max": 90,
+      "step": 5,
+      "unit": "%",
+      "label": "Scroll depth before it opens",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "auto_delay",
+      "min": 0,
+      "max": 60,
+      "step": 5,
+      "unit": "s",
+      "label": "Minimum time on page first",
+      "default": 5,
+      "info": "Stops it firing on a fast scroll straight down the page."
+    },
+    {
+      "type": "select",
+      "id": "auto_frequency",
+      "label": "How often",
+      "options": [
+        {
+          "value": "session",
+          "label": "Once per visit"
+        },
+        {
+          "value": "day",
+          "label": "Once per day"
+        }
+      ],
+      "default": "session"
     },
     {
       "type": "header",

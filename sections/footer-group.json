@@ -47,7 +47,12 @@
         "text": "<p>Beat the dealer, win a discount code. Hit blackjack for the max.</p>",
         "show_floating": true,
         "floating_label": "PLAY ♠",
-        "floating_position": "left"
+        "floating_position": "left",
+        "auto_open": true,
+        "auto_pages": "browsing",
+        "auto_scroll_percent": 50,
+        "auto_delay": 5,
+        "auto_frequency": "session"
       }
     }
   },
