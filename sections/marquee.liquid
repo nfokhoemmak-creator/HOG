@@ -1,0 +1,95 @@
+{%- liquid
+  assign text = section.settings.text | default: 'HOUSE OF GARMENTS'
+  assign sep = section.settings.sep | default: '✦'
+  assign speed = section.settings.speed | default: 24
+-%}
+
+<div
+  class="marquee marquee--{{ section.settings.style }} marquee--{{ section.settings.size }}"
+  style="--marquee-duration: {{ speed }}s;"
+>
+  {%- if section.settings.link != blank -%}
+    <a class="marquee__link" href="{{ section.settings.link }}" aria-label="{{ text | escape }}">
+  {%- endif -%}
+
+  <div class="marquee__track">
+    {%- for i in (1..12) -%}
+      <span class="marquee__item">{{ text }}</span>
+      <span class="marquee__sep" aria-hidden="true">{{ sep }}</span>
+    {%- endfor -%}
+    {%- comment -%} Duplicate run so the -50% loop is seamless; hidden from a11y. {%- endcomment -%}
+    {%- for i in (1..12) -%}
+      <span class="marquee__item" aria-hidden="true">{{ text }}</span>
+      <span class="marquee__sep" aria-hidden="true">{{ sep }}</span>
+    {%- endfor -%}
+  </div>
+
+  {%- if section.settings.link != blank -%}
+    </a>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Marquee",
+  "tag": "section",
+  "class": "marquee-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Text",
+      "default": "HOUSE OF GARMENTS"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Link",
+      "info": "Optional. Makes the whole ticker a link."
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Style",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "accent", "label": "Accent" },
+        { "value": "inverse", "label": "Inverse" }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "select",
+      "id": "size",
+      "label": "Size",
+      "options": [
+        { "value": "regular", "label": "Regular" },
+        { "value": "large", "label": "Large" }
+      ],
+      "default": "large"
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "min": 8,
+      "max": 60,
+      "step": 2,
+      "unit": "s",
+      "label": "Speed",
+      "info": "Seconds per loop — higher is slower.",
+      "default": 24
+    },
+    {
+      "type": "text",
+      "id": "sep",
+      "label": "Separator",
+      "default": "✦"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Marquee"
+    }
+  ]
+}
+{% endschema %}

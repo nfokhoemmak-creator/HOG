@@ -21,7 +21,11 @@
    15. Search, 404, page, blog
    16. Customer account
    17. Password page
-   18. Motion
+   18. Free-shipping bar
+   19. Upsells + complete the look
+   20. Bundle builder
+   21. Blackjack
+   22. Motion
    ========================================================================== */
 
 /* 1. Reset ---------------------------------------------------------------- */
@@ -124,6 +128,20 @@ p:last-child {
 .h4 { font-size: calc(1.8rem * var(--font-heading-scale)); }
 .h5 { font-size: calc(1.5rem * var(--font-heading-scale)); }
 
+/* Display face (Anton via --font-display-family, falls back to heading font).
+   Anton ships a single 400 weight; relax the tracking accordingly. */
+.h0,
+.h1,
+.hero__heading,
+.marquee__item,
+.drop-banner__heading,
+.password__heading,
+.display {
+  font-family: var(--font-display-family, var(--font-heading-family));
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
 .eyebrow {
   font-family: var(--font-heading-family);
   font-size: 1.2rem;
@@ -181,6 +199,19 @@ p:last-child {
   background: var(--color-border);
 }
 
+/* Film-grain overlay (settings.show_grain adds body.grain). Static noise tile
+   from an inline SVG feTurbulence filter — no network request, no animation. */
+body.grain::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
 /* 4. Buttons + forms ------------------------------------------------------ */
 
 .btn {
@@ -191,7 +222,7 @@ p:last-child {
   min-height: 4.8rem;
   padding: 0 var(--space-6);
   border: 1px solid var(--color-btn-bg);
-  border-radius: var(--radius);
+  border-radius: var(--radius-btn, 999px);
   background: var(--color-btn-bg);
   color: var(--color-btn-fg);
   font-family: var(--font-heading-family);
@@ -627,8 +658,8 @@ textarea::placeholder {
 .hero--right .hero__content { justify-items: end; text-align: right; margin-left: auto; }
 
 .hero__heading {
-  font-size: clamp(4rem, 11vw, 10rem);
-  line-height: 0.92;
+  font-size: clamp(4.8rem, 13vw, 15rem);
+  line-height: 0.88;
 }
 
 .hero__subheading {
@@ -706,16 +737,67 @@ textarea::placeholder {
 .marquee__track {
   display: inline-flex;
   gap: var(--space-6);
-  animation: marquee 24s linear infinite;
+  animation: marquee var(--marquee-duration, 24s) linear infinite;
   will-change: transform;
 }
 
+/* Font + tracking come from the display rule in section 2. */
 .marquee__item {
-  font-family: var(--font-heading-family);
   font-size: 2rem;
-  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--color-muted);
+}
+
+.marquee__sep {
+  align-self: center;
+  font-size: 1.4rem;
+  opacity: 0.5;
+}
+
+.marquee__link {
+  display: block;
+}
+
+.marquee__link:hover .marquee__item {
+  color: var(--color-accent);
+}
+
+/* Style variants. Default style/size (.marquee--default, .marquee--regular)
+   inherit the base look above. */
+.marquee--large {
+  padding-block: var(--space-4);
+}
+
+.marquee--large .marquee__item {
+  font-size: clamp(2.8rem, 6vw, 5.6rem);
+  color: var(--color-fg);
+}
+
+.marquee--large .marquee__sep {
+  font-size: clamp(2rem, 4.5vw, 4.2rem);
+}
+
+.marquee--accent {
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+  border: 0;
+}
+
+.marquee--inverse {
+  background: var(--color-fg);
+  color: var(--color-bg);
+  border: 0;
+}
+
+.marquee--accent .marquee__item,
+.marquee--inverse .marquee__item {
+  color: inherit;
+}
+
+/* On tinted variants the hover keeps the variant's own text color. */
+.marquee--accent .marquee__link:hover .marquee__item,
+.marquee--inverse .marquee__link:hover .marquee__item {
+  color: inherit;
 }
 
 @keyframes marquee {
@@ -1417,7 +1499,513 @@ textarea::placeholder {
 
 .password__heading { font-size: clamp(3.2rem, 9vw, 6.4rem); }
 
-/* 18. Motion -------------------------------------------------------------- */
+/* 18. Free-shipping bar --------------------------------------------------- */
+
+.ship-bar {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.ship-bar__label {
+  font-family: var(--font-heading-family);
+  font-size: 1.1rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.ship-bar__track {
+  height: 0.4rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--color-bg-alt);
+}
+
+.ship-bar__fill {
+  height: 100%;
+  background: var(--color-accent);
+  transition: width 400ms var(--ease);
+}
+
+.ship-bar--done .ship-bar__label {
+  color: var(--color-accent);
+}
+
+/* 19. Upsells + complete the look ----------------------------------------- */
+
+cart-upsells,
+complete-look,
+.upsells-mount {
+  display: block;
+}
+
+.upsells {
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.upsells__heading {
+  margin-bottom: var(--space-3);
+  font-family: var(--font-heading-family);
+  font-size: 1.2rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.upsells__list {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.upsell-card {
+  display: grid;
+  grid-template-columns: 6rem 1fr auto;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.upsell-card__image {
+  display: block;
+}
+
+.upsell-card__image img {
+  width: 6rem;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border-radius: var(--radius);
+}
+
+.upsell-card__info {
+  display: grid;
+  gap: var(--space-1);
+  justify-items: start;
+}
+
+.upsell-card__title {
+  font-family: var(--font-heading-family);
+  font-size: 1.2rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.upsell-card__price {
+  font-size: 1.2rem;
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.upsell-card__select {
+  width: auto;
+  min-height: 3.2rem;
+  padding: 0 var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-bg-alt);
+  color: var(--color-fg);
+  font: inherit;
+  font-size: 1.2rem;
+}
+
+.upsell-card__select:focus {
+  border-color: var(--color-accent);
+  outline: none;
+}
+
+.upsell-card__btn {
+  white-space: nowrap;
+}
+
+/* Tile variant (PDP "complete the fit" row). */
+.upsell-card--tile {
+  grid-template-columns: none;
+  grid-template-rows: auto auto auto;
+  align-items: start;
+  gap: var(--space-2);
+}
+
+.upsell-card--tile .upsell-card__image img {
+  width: 100%;
+}
+
+.upsell-card--tile .upsell-card__btn {
+  justify-self: start;
+}
+
+.complete-look__list {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(16rem, 1fr);
+  gap: var(--grid-gap);
+  overflow-x: auto;
+  padding-bottom: var(--space-2);
+}
+
+/* 20. Bundle builder ------------------------------------------------------ */
+
+.bundle {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.bundle__intro {
+  display: grid;
+  gap: var(--space-3);
+  max-width: 64rem;
+}
+
+.bundle__grid {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.bundle__items {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.bundle-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 9rem 1fr;
+  gap: var(--space-4);
+  align-items: center;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.bundle-item--soldout {
+  opacity: 0.45;
+}
+
+.bundle-item__toggle {
+  position: relative;
+  display: inline-flex;
+  cursor: pointer;
+}
+
+.bundle-item__toggle input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.bundle-item__box {
+  display: grid;
+  place-items: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  transition: background var(--duration) var(--ease), border-color var(--duration) var(--ease);
+}
+
+.bundle-item__box::after {
+  content: "";
+  width: 0.6rem;
+  height: 1.1rem;
+  border: solid var(--color-accent-contrast);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg) translate(-10%, -10%);
+  opacity: 0;
+}
+
+.bundle-item__toggle input:checked + .bundle-item__box {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.bundle-item__toggle input:checked + .bundle-item__box::after {
+  opacity: 1;
+}
+
+.bundle-item__toggle input:focus-visible + .bundle-item__box {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.bundle-item__media {
+  display: block;
+}
+
+.bundle-item__media img {
+  width: 9rem;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border-radius: var(--radius);
+}
+
+.bundle-item__info {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: start;
+}
+
+.bundle-item__title {
+  font-family: var(--font-heading-family);
+  font-size: 1.3rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.bundle-item__price {
+  font-size: 1.3rem;
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.bundle-item__select {
+  width: auto;
+  min-height: 3.6rem;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-bg-alt);
+  color: var(--color-fg);
+  font: inherit;
+  font-size: 1.3rem;
+}
+
+.bundle-item__select:focus {
+  border-color: var(--color-accent);
+  outline: none;
+}
+
+/* Connector between stacked cards; sits in the middle of the grid gap. */
+.bundle-item__plus {
+  position: absolute;
+  left: 50%;
+  bottom: calc(-1 * var(--space-5));
+  transform: translateX(-50%);
+  font-size: 2.4rem;
+  line-height: 1;
+  color: var(--color-accent);
+}
+
+.bundle-item:last-child .bundle-item__plus {
+  display: none;
+}
+
+.bundle__summary {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-bg-alt);
+}
+
+.bundle__summary-heading {
+  font-family: var(--font-heading-family);
+  font-size: 1.2rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.bundle__count {
+  font-family: var(--font-heading-family);
+  font-size: 1.2rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.bundle__prices {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.bundle__compare {
+  font-size: 1.4rem;
+  color: var(--color-muted);
+  text-decoration: line-through;
+}
+
+.bundle__total {
+  font-family: var(--font-display-family, var(--font-heading-family));
+  font-weight: 400;
+  font-size: 3.2rem;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+.bundle__savings {
+  color: var(--color-accent);
+  font-size: 1.3rem;
+}
+
+.bundle__hint {
+  color: var(--color-muted);
+  font-size: 1.3rem;
+}
+
+/* 21. Blackjack ----------------------------------------------------------- */
+
+.bj {
+  display: grid;
+  gap: var(--space-5);
+  justify-items: center;
+  text-align: center;
+  padding-block: var(--space-6);
+}
+
+.bj__table {
+  width: 100%;
+  max-width: 64rem;
+  display: grid;
+  gap: var(--space-6);
+  padding: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: calc(var(--radius) + 8px);
+  background: radial-gradient(ellipse at top, rgb(214 255 63 / 0.06), transparent 60%), var(--color-bg-alt);
+}
+
+.bj__hand {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.bj__hand-label {
+  font-family: var(--font-heading-family);
+  font-size: 1.2rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.bj__score {
+  color: var(--color-accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.bj__cards {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  min-height: 9.6rem;
+}
+
+/* Card faces are physical objects — fixed ink colors, not theme tokens. */
+.bj-card {
+  position: relative;
+  width: 6.6rem;
+  height: 9.6rem;
+  display: grid;
+  place-items: center;
+  border-radius: 0.6rem;
+  background: #f7f5ef;
+  color: #111;
+  font-family: var(--font-heading-family);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.5);
+}
+
+.bj-card__corner {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.6rem;
+  font-size: 1.2rem;
+  line-height: 1.1;
+}
+
+/* Second corner mirrors the first, bottom-right. */
+.bj-card__corner ~ .bj-card__corner {
+  top: auto;
+  left: auto;
+  right: 0.6rem;
+  bottom: 0.5rem;
+  transform: rotate(180deg);
+}
+
+.bj-card__pip {
+  font-size: 2.8rem;
+  line-height: 1;
+}
+
+.bj-card--red {
+  color: #c92a2a;
+}
+
+.bj-card--down {
+  background: repeating-linear-gradient(45deg, #1a1a1a 0 6px, #222 6px 12px);
+  border: 1px solid var(--color-border);
+  color: transparent;
+}
+
+.bj-card--flip {
+  animation: bj-flip 300ms var(--ease);
+}
+
+@keyframes bj-flip {
+  from {
+    transform: rotateY(90deg);
+    opacity: 0;
+  }
+}
+
+.bj__status {
+  min-height: 1.6em;
+  font-family: var(--font-heading-family);
+  font-size: 1.4rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.bj__actions {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.bj__actions .btn[hidden] {
+  display: none;
+}
+
+.bj__result {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: center;
+  padding: var(--space-5);
+  border: 1px dashed var(--color-accent);
+  border-radius: var(--radius);
+}
+
+.bj__result[hidden] {
+  display: none;
+}
+
+.bj__result-title {
+  font-family: var(--font-display-family, var(--font-heading-family));
+  font-weight: 400;
+  font-size: 2.4rem;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+.bj__code {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.bj__code code {
+  padding: var(--space-2) var(--space-4);
+  font-size: 2rem;
+  letter-spacing: 0.2em;
+  background: var(--color-bg-alt);
+  border-radius: var(--radius);
+}
+
+.bj__meta {
+  font-size: 1.2rem;
+  color: var(--color-muted);
+}
+
+/* 22. Motion -------------------------------------------------------------- */
 
 .animate .reveal {
   opacity: 0;
@@ -1446,6 +2034,8 @@ body.is-locked {
 
   .animate .reveal { opacity: 1; transform: none; }
   .marquee__track { animation: none; }
+  .bj-card--flip { animation: none; }
+  .ship-bar__fill { transition: none; }
 }
 
 /* --- Breakpoints --------------------------------------------------------- */
@@ -1484,6 +2074,17 @@ body.is-locked {
   .footer__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 
   .article-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+  .bundle__grid {
+    grid-template-columns: 1fr 34rem;
+    gap: var(--space-7);
+    align-items: start;
+  }
+
+  .bundle__summary {
+    position: sticky;
+    top: calc(var(--header-height) + var(--space-5));
+  }
 
   .section { padding-block: var(--space-8); }
 }

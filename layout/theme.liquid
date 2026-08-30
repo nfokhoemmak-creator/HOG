@@ -14,6 +14,12 @@
 
     <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
 
+    {%- if settings.use_display_font -%}
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&display=swap">
+    {%- endif -%}
+
     <title>
       {{ page_title }}
       {%- if current_tags %} &ndash; {{ 'general.meta.tags' | t: tags: current_tags | join: ', ' }}{% endif -%}
@@ -34,6 +40,15 @@
       assign body_font_bold = body_font | font_modify: 'weight', 'bold'
       assign body_font_italic = body_font | font_modify: 'style', 'italic'
       assign heading_font = settings.type_heading_font
+
+      case settings.layout_button_shape
+        when 'square'
+          assign radius_btn = '0px'
+        when 'rounded'
+          assign radius_btn = '8px'
+        else
+          assign radius_btn = '999px'
+      endcase
     -%}
 
     {{ body_font | font_face: font_display: 'swap' }}
@@ -53,6 +68,8 @@
         --font-heading-weight: {{ heading_font.weight }};
         --font-heading-tracking: {{ settings.type_heading_tracking }}px;
 
+        --font-display-family: {% if settings.use_display_font %}'Anton', {% endif %}{{ heading_font.family }}, {{ heading_font.fallback_families }};
+
         --font-body-scale: {{ settings.type_body_scale | divided_by: 100.0 }};
         --font-heading-scale: {{ settings.type_heading_scale | divided_by: 100.0 }};
 
@@ -71,6 +88,7 @@
         --container: {{ settings.layout_max_width }}px;
         --gutter: {{ settings.layout_gutter }}px;
         --radius: {{ settings.layout_corner_radius }}px;
+        --radius-btn: {{ radius_btn }};
 
         --grid-gap: {{ settings.grid_gap }}px;
       }
@@ -90,14 +108,24 @@
           unavailable: {{ 'products.product.unavailable' | t | json }},
           lowStock: {{ 'products.product.low_stock' | t: count: '{{ count }}' | json }},
           cartError: {{ 'sections.cart.error' | t | json }},
-          itemAdded: {{ 'sections.cart.item_added' | t | json }}
+          itemAdded: {{ 'sections.cart.item_added' | t | json }},
+          upsellAdd: "ADD",
+          upsellAdding: "ADDING…",
+          upsellAdded: "ADDED",
+          upsellSoldOut: "SOLD OUT"
         },
         routes: {
           root: {{ routes.root_url | json }},
           cart: {{ routes.cart_url | json }},
           cartAdd: {{ routes.cart_add_url | json }},
           cartChange: {{ routes.cart_change_url | json }},
-          predictiveSearch: {{ routes.predictive_search_url | json }}
+          predictiveSearch: {{ routes.predictive_search_url | json }},
+          productRecommendations: {{ routes.product_recommendations_url | json }}
+        },
+        settings: {
+          freeShippingEnabled: {{ settings.free_shipping_enabled | json }},
+          freeShippingThreshold: {{ settings.free_shipping_threshold | default: 0 | times: 100 | json }},
+          cartUpsellsEnabled: {{ settings.cart_upsells_enabled | json }}
         },
         moneyFormat: {{ shop.money_format | json }},
         cartType: {{ settings.cart_type | json }}
@@ -109,7 +137,7 @@
     <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
   </head>
 
-  <body class="template-{{ template.name | handle }} {% if settings.animations_enabled %}animate{% endif %}">
+  <body class="template-{{ template.name | handle }} {% if settings.animations_enabled %}animate{% endif %}{% if settings.show_grain %} grain{% endif %}">
     <a class="skip-to-content visually-hidden" href="#MainContent">
       {{ 'accessibility.skip_to_text' | t }}
     </a>

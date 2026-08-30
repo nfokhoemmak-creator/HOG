@@ -185,6 +185,13 @@
         "unit": "%",
         "label": "t:settings_schema.typography.settings.type_body_scale.label",
         "default": 100
+      },
+      {
+        "type": "checkbox",
+        "id": "use_display_font",
+        "label": "Use display font (Anton)",
+        "info": "Loads Anton from Google Fonts for hero, marquee and oversized headings.",
+        "default": true
       }
     ]
   },
@@ -238,6 +245,23 @@
         "label": "t:settings_schema.layout.settings.animations_enabled.label",
         "default": true,
         "info": "t:settings_schema.layout.settings.animations_enabled.info"
+      },
+      {
+        "type": "select",
+        "id": "layout_button_shape",
+        "label": "Button shape",
+        "options": [
+          { "value": "square", "label": "Square" },
+          { "value": "rounded", "label": "Rounded" },
+          { "value": "pill", "label": "Pill" }
+        ],
+        "default": "pill"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_grain",
+        "label": "Film grain overlay",
+        "default": true
       }
     ]
   },
@@ -320,6 +344,31 @@
         "id": "cart_notice",
         "label": "t:settings_schema.cart.settings.cart_notice.label",
         "default": "<p>Delivery all over Lebanon. Orders ship within 2–4 business days.</p>"
+      },
+      {
+        "type": "checkbox",
+        "id": "free_shipping_enabled",
+        "label": "Show free-shipping progress bar",
+        "default": true
+      },
+      {
+        "type": "number",
+        "id": "free_shipping_threshold",
+        "label": "Free-shipping threshold",
+        "info": "In store currency. Keep in sync with your shipping settings.",
+        "default": 100
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_upsells_enabled",
+        "label": "Show cart upsells",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "cart_upsells_heading",
+        "label": "Cart upsells heading",
+        "default": "COMPLETE THE FIT"
       }
     ]
   },

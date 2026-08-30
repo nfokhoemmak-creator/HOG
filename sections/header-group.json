@@ -8,17 +8,24 @@
         "announcement-1": {
           "type": "announcement",
           "settings": {
-            "text": "DELIVERY ALL OVER LEBANON"
+            "text": "FREE SHIPPING OVER $100"
           }
         },
         "announcement-2": {
           "type": "announcement",
           "settings": {
-            "text": "EVERYBODY CAN'T HAVE LIMITED ITEMS"
+            "text": "BUNDLE ANY 2+ PIECES — 15% OFF AUTO-APPLIED"
+          }
+        },
+        "announcement-3": {
+          "type": "announcement",
+          "settings": {
+            "text": "PLAY BLACKJACK ✦ WIN UP TO 21% OFF",
+            "link": "/pages/blackjack"
           }
         }
       },
-      "block_order": ["announcement-1", "announcement-2"],
+      "block_order": ["announcement-1", "announcement-2", "announcement-3"],
       "settings": {
         "color_scheme": "accent",
         "rotate": true,

@@ -13,14 +13,85 @@
         "countdown_heading": "Drops in"
       }
     },
+    "ticker-1": {
+      "type": "marquee",
+      "settings": {
+        "text": "EVERYBODY CAN'T HAVE LIMITED ITEMS",
+        "style": "default",
+        "size": "large",
+        "speed": 24,
+        "sep": "✦"
+      }
+    },
     "featured": {
       "type": "featured-collection",
       "settings": {
-        "title": "New drop",
+        "title": "THE LATEST DROP",
+        "collection": "frontpage",
         "products_to_show": 8,
         "columns_desktop": 4,
         "columns_mobile": "2",
         "show_view_all": true
+      }
+    },
+    "bundle": {
+      "type": "bundle-builder",
+      "blocks": {
+        "item-1": {
+          "type": "product",
+          "settings": {
+            "product": "hg-regular-t-shirt"
+          }
+        },
+        "item-2": {
+          "type": "product",
+          "settings": {
+            "product": "black-pants"
+          }
+        },
+        "item-3": {
+          "type": "product",
+          "settings": {
+            "product": "black-jacket"
+          }
+        }
+      },
+      "block_order": ["item-1", "item-2", "item-3"],
+      "settings": {
+        "eyebrow": "BUNDLE & SAVE",
+        "heading": "BUILD A FIT",
+        "text": "<p>Stack pieces. Any 2+ pieces are 15% off, applied automatically at checkout.</p>",
+        "savings_percent": 15,
+        "min_items": 2,
+        "button_label": "ADD FIT TO CART"
+      }
+    },
+    "categories": {
+      "type": "collection-list",
+      "blocks": {
+        "col-1": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "t-shirts"
+          }
+        },
+        "col-2": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "accessories"
+          }
+        },
+        "col-3": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "denim"
+          }
+        }
+      },
+      "block_order": ["col-1", "col-2", "col-3"],
+      "settings": {
+        "title": "SHOP BY CATEGORY",
+        "columns_desktop": 3
       }
     },
     "drop-banner": {
@@ -33,43 +104,44 @@
         "marquee": "EVERYBODY CAN'T HAVE LIMITED ITEMS ·"
       }
     },
-    "categories": {
-      "type": "collection-list",
-      "blocks": {
-        "col-1": { "type": "featured_collection", "settings": {} },
-        "col-2": { "type": "featured_collection", "settings": {} },
-        "col-3": { "type": "featured_collection", "settings": {} }
-      },
-      "block_order": ["col-1", "col-2", "col-3"],
-      "settings": {
-        "title": "Shop by category",
-        "columns_desktop": 3
-      }
-    },
     "image-with-text": {
       "type": "image-with-text",
       "settings": {
         "layout": "left",
-        "heading": "Made in limited runs",
+        "heading": "MADE IN LIMITED RUNS",
         "text": "<p>Heavyweight fabric, boxy fits, and nothing that gets remade. House of Garments releases in drops — follow along on Instagram so you don't miss one.</p>",
         "button_label": "Follow @houseofgarments.co",
         "button_link": "https://www.instagram.com/houseofgarments.co/"
       }
     },
+    "ticker-2": {
+      "type": "marquee",
+      "settings": {
+        "text": "PLAY BLACKJACK ✦ WIN UP TO 21% OFF",
+        "link": "/pages/blackjack",
+        "style": "accent",
+        "size": "regular",
+        "speed": 24,
+        "sep": "♠"
+      }
+    },
     "newsletter": {
       "type": "newsletter",
       "settings": {
-        "heading": "Get the drop first",
+        "heading": "GET THE DROP FIRST",
         "text": "<p>New releases go to the list before anywhere else. Delivery all over Lebanon.</p>"
       }
     }
   },
   "order": [
     "hero",
+    "ticker-1",
     "featured",
-    "drop-banner",
+    "bundle",
     "categories",
+    "drop-banner",
     "image-with-text",
+    "ticker-2",
     "newsletter"
   ]
 }
