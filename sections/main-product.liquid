@@ -30,8 +30,22 @@
     endif
   endif
 
+  comment
+    Chart image, same precedence: a per-product metafield beats the shop-wide
+    image, so a tee and a pair of sweatpants can show different charts.
+  endcomment
+  assign size_guide_image = ''
+  if section.settings.show_size_guide
+    assign product_guide_image = product.metafields.custom.size_guide_image.value
+    if product_guide_image != blank
+      assign size_guide_image = product_guide_image
+    elsif section.settings.size_guide_image != blank
+      assign size_guide_image = section.settings.size_guide_image
+    endif
+  endif
+
   assign has_size_guide = false
-  if size_guide_content != blank
+  if size_guide_content != blank or size_guide_image != blank
     assign has_size_guide = true
   endif
 
@@ -331,7 +345,26 @@
         </button>
       </div>
 
-      <div class="size-guide__body rte">{{ size_guide_content }}</div>
+      <div class="size-guide__body rte">
+        {%- if size_guide_image != blank -%}
+          <img
+            class="size-guide__image"
+            src="{{ size_guide_image | image_url: width: 1400 }}"
+            srcset="
+              {{ size_guide_image | image_url: width: 600 }} 600w,
+              {{ size_guide_image | image_url: width: 1000 }} 1000w,
+              {{ size_guide_image | image_url: width: 1400 }} 1400w
+            "
+            sizes="(min-width: 750px) 68rem, 92vw"
+            alt="{{ size_guide_image.alt | default: size_guide_label | escape }}"
+            {% if size_guide_image.width %}width="{{ size_guide_image.width }}"{% endif %}
+            {% if size_guide_image.height %}height="{{ size_guide_image.height }}"{% endif %}
+            loading="lazy"
+          >
+        {%- endif -%}
+
+        {{ size_guide_content }}
+      </div>
 
       {%- if size_guide_url != blank -%}
         <a class="size-guide__link underline eyebrow" href="{{ size_guide_url }}">
@@ -409,10 +442,16 @@
       "default": "Size guide"
     },
     {
+      "type": "image_picker",
+      "id": "size_guide_image",
+      "label": "Size chart image",
+      "info": "Shown at the top of the popup. A product metafield custom.size_guide_image overrides it per product."
+    },
+    {
       "type": "page",
       "id": "size_guide_page",
       "label": "Size guide page",
-      "info": "The page content fills the popup. Leave empty to use the text below instead."
+      "info": "The page content fills the popup, below the image. Leave empty to use the text below instead."
     },
     {
       "type": "richtext",

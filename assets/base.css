@@ -2083,6 +2083,19 @@ complete-look,
   font-size: 1.4rem;
 }
 
+/* Covers the chart image and any image inside the size-guide page content.
+   Charts are usually dark line art, often on a transparent background, so a
+   light plate keeps them readable on the near-black panel. */
+.size-guide__body img {
+  width: 100%;
+  border-radius: var(--radius);
+  background: var(--color-fg);
+}
+
+.size-guide__image {
+  margin-bottom: var(--space-5);
+}
+
 .size-guide__body h2,
 .size-guide__body h3 {
   margin-bottom: var(--space-3);
