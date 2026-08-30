@@ -26,7 +26,8 @@
         "buy_buttons": {
           "type": "buy_buttons",
           "settings": {
-            "show_dynamic_checkout": true
+            "show_dynamic_checkout": true,
+            "assurance": "Secure checkout, Ships in 2-4 days, Easy exchanges"
           }
         },
         "description": {
@@ -73,7 +74,7 @@
         "share"
       ],
       "settings": {
-        "media_layout": "stacked",
+        "media_layout": "thumbnails",
         "enable_sticky_info": true,
         "show_size_guide": true,
         "size_guide_label": "Size guide",
