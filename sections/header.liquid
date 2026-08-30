@@ -72,6 +72,22 @@
     </nav>
 
     <div class="header__actions">
+      {%- comment -%}
+        A real link to the game page: theme.js upgrades it into the popup
+        trigger, so it works either way.
+      {%- endcomment -%}
+      {%- if section.settings.show_blackjack -%}
+        <a
+          class="header__blackjack"
+          href="{{ routes.root_url }}pages/blackjack"
+          data-blackjack-open
+          aria-controls="BlackjackModal"
+        >
+          <span aria-hidden="true">&#9824;</span>
+          <span class="header__blackjack-label">{{ section.settings.blackjack_label | default: 'Play' }}</span>
+        </a>
+      {%- endif -%}
+
       {%- if section.settings.show_search -%}
         <a class="header__icon" href="{{ routes.search_url }}" aria-label="{{ 'general.search.search' | t }}">
           {% render 'icon', name: 'search' %}
@@ -137,6 +153,19 @@
       "id": "sticky",
       "label": "t:sections.header.settings.sticky.label",
       "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_blackjack",
+      "label": "Show the blackjack button",
+      "default": true,
+      "info": "Opens the blackjack popup from the header on every page."
+    },
+    {
+      "type": "text",
+      "id": "blackjack_label",
+      "label": "Blackjack button label",
+      "default": "PLAY"
     },
     {
       "type": "checkbox",

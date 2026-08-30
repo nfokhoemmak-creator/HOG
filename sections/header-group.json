@@ -25,7 +25,11 @@
           }
         }
       },
-      "block_order": ["announcement-1", "announcement-2", "announcement-3"],
+      "block_order": [
+        "announcement-1",
+        "announcement-2",
+        "announcement-3"
+      ],
       "settings": {
         "color_scheme": "accent",
         "rotate": true,
@@ -38,9 +42,14 @@
         "menu": "main-menu",
         "sticky": true,
         "show_search": true,
-        "show_account": true
+        "show_account": true,
+        "show_blackjack": true,
+        "blackjack_label": "PLAY"
       }
     }
   },
-  "order": ["announcement-bar", "header"]
+  "order": [
+    "announcement-bar",
+    "header"
+  ]
 }

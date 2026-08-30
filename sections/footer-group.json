@@ -45,7 +45,7 @@
         "enabled": true,
         "heading": "BLACKJACK",
         "text": "<p>Beat the dealer, win a discount code. Hit blackjack for the max.</p>",
-        "show_floating": false,
+        "show_floating": true,
         "floating_label": "PLAY ♠",
         "floating_position": "left"
       }
