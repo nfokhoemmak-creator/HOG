@@ -1,0 +1,232 @@
+{%- comment -%}
+  The site-wide blackjack popup. Lives in the footer group so it renders on
+  every page, stays closed until something opens it, and shares its table
+  markup with the game page through snippets/blackjack-game.liquid.
+
+  theme.js turns every link pointing at the blackjack page into a trigger, so
+  the announcement bar and the marquee tickers open the popup without any
+  extra markup — and still navigate to the real page if the script fails.
+
+  Skipped on the blackjack page itself: two live games on one document would
+  both write the same daily-play counter.
+{%- endcomment -%}
+
+{%- liquid
+  assign on_game_page = false
+  if request.path contains '/pages/blackjack'
+    assign on_game_page = true
+  endif
+
+  assign shop_url = section.settings.shop_link | default: routes.all_products_collection_url
+  assign shop_label = section.settings.shop_label | default: 'APPLY CODE & SHOP'
+-%}
+
+{%- if section.settings.enabled and on_game_page == false -%}
+  {%- capture bj_config -%}
+{
+  "playsPerDay": {{ section.settings.plays_per_day | default: 3 }},
+  "tiers": {
+    "win": {
+      "code": {{ section.settings.win_code | default: 'BLACKJACK10' | json | replace: '</', '<\/' }},
+      "percent": {{ section.settings.win_percent | default: 10 }}
+    },
+    "blackjack": {
+      "code": {{ section.settings.bj_code | default: 'BLACKJACK21' | json | replace: '</', '<\/' }},
+      "percent": {{ section.settings.bj_percent | default: 21 }}
+    },
+    "streak": {
+      "code": {{ section.settings.streak_code | default: 'BLACKJACK15' | json | replace: '</', '<\/' }},
+      "percent": {{ section.settings.streak_percent | default: 15 }},
+      "length": {{ section.settings.streak_length | default: 3 }}
+    }
+  },
+  "shopUrl": {{ shop_url | json | replace: '</', '<\/' }},
+  "shopLabel": {{ shop_label | json | replace: '</', '<\/' }}
+}
+  {%- endcapture -%}
+
+  <dialog class="bj-modal" id="BlackjackModal" data-blackjack-modal aria-label="{{ section.settings.heading | default: 'Blackjack' | escape }}">
+    <div class="bj-modal__panel">
+      <div class="bj-modal__head">
+        <div>
+          {%- if section.settings.heading != blank -%}
+            <p class="bj-modal__title display">{{ section.settings.heading }}</p>
+          {%- endif -%}
+          {%- if section.settings.text != blank -%}
+            <div class="bj-modal__text muted">{{ section.settings.text }}</div>
+          {%- endif -%}
+        </div>
+
+        <button type="button" class="header__icon" data-blackjack-close aria-label="{{ 'general.close' | t }}">
+          {% render 'icon', name: 'close' %}
+        </button>
+      </div>
+
+      <div class="bj-modal__body">
+        {% render 'blackjack-game', config: bj_config, shop_label: shop_label %}
+      </div>
+    </div>
+  </dialog>
+
+  {%- if section.settings.show_floating -%}
+    <a
+      class="bj-fab bj-fab--{{ section.settings.floating_position | default: 'left' }}"
+      href="{{ routes.root_url }}pages/blackjack"
+      data-blackjack-open
+      aria-controls="BlackjackModal"
+    >
+      {{ section.settings.floating_label | default: 'PLAY' }}
+    </a>
+  {%- endif -%}
+
+  <script src="{{ 'blackjack.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Blackjack popup",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Opens a blackjack game in a popup from anywhere on the store. Any link pointing at the blackjack page opens this popup instead, so the announcement bar and marquee tickers work as triggers automatically."
+    },
+    {
+      "type": "checkbox",
+      "id": "enabled",
+      "label": "Enable the popup",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "BLACKJACK"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Beat the dealer, win a discount code. Hit blackjack for the max.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Floating button"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_floating",
+      "label": "Show a floating play button on every page",
+      "default": false,
+      "info": "A small button pinned to the bottom corner. Leave off if you would rather drive plays from the announcement bar and tickers."
+    },
+    {
+      "type": "text",
+      "id": "floating_label",
+      "label": "Floating button label",
+      "default": "PLAY \u2660"
+    },
+    {
+      "type": "select",
+      "id": "floating_position",
+      "label": "Position",
+      "options": [
+        {
+          "value": "left",
+          "label": "Bottom left"
+        },
+        {
+          "value": "right",
+          "label": "Bottom right"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Game"
+    },
+    {
+      "type": "range",
+      "id": "plays_per_day",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "label": "Hands per day",
+      "default": 3
+    },
+    {
+      "type": "url",
+      "id": "shop_link",
+      "label": "Where the shop button goes"
+    },
+    {
+      "type": "text",
+      "id": "shop_label",
+      "label": "Shop button label",
+      "default": "APPLY CODE & SHOP"
+    },
+    {
+      "type": "header",
+      "content": "Rewards",
+      "info": "Every code must exist as a real discount code in Shopify admin, at the same percentage."
+    },
+    {
+      "type": "text",
+      "id": "win_code",
+      "label": "Win code",
+      "default": "BLACKJACK10"
+    },
+    {
+      "type": "range",
+      "id": "win_percent",
+      "min": 5,
+      "max": 30,
+      "step": 1,
+      "unit": "%",
+      "label": "Win discount",
+      "default": 10
+    },
+    {
+      "type": "text",
+      "id": "bj_code",
+      "label": "Natural blackjack code",
+      "default": "BLACKJACK21"
+    },
+    {
+      "type": "range",
+      "id": "bj_percent",
+      "min": 5,
+      "max": 40,
+      "step": 1,
+      "unit": "%",
+      "label": "Natural blackjack discount",
+      "default": 21
+    },
+    {
+      "type": "text",
+      "id": "streak_code",
+      "label": "Streak code",
+      "default": "BLACKJACK15"
+    },
+    {
+      "type": "range",
+      "id": "streak_percent",
+      "min": 5,
+      "max": 30,
+      "step": 1,
+      "unit": "%",
+      "label": "Streak discount",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "streak_length",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "label": "Wins needed for the streak",
+      "default": 3
+    }
+  ]
+}
+{% endschema %}

@@ -110,6 +110,36 @@
           </div>
         {%- endfor -%}
 
+        {%- comment -%}
+          Shopify applies a code from ?discount= on any storefront URL, so this
+          is a plain GET form — it needs no JavaScript and no Ajax endpoint
+          (the Ajax cart API cannot apply discount codes at all).
+        {%- endcomment -%}
+        <details class="accordion discount-toggle">
+          <summary>
+            {{ 'sections.cart.discount_prompt' | t }}
+            {% render 'icon', name: 'plus' %}
+          </summary>
+          <div class="accordion__content">
+            <form class="discount-form" method="get" action="{{ routes.cart_url }}">
+              <label class="visually-hidden" for="CartPageDiscount">
+                {{ 'sections.cart.discount_label' | t }}
+              </label>
+              <input
+                class="field__input"
+                type="text"
+                id="CartPageDiscount"
+                name="discount"
+                placeholder="{{ 'sections.cart.discount_placeholder' | t }}"
+                autocomplete="off"
+                autocapitalize="characters"
+                spellcheck="false"
+              >
+              <button type="submit" class="btn">{{ 'sections.cart.discount_apply' | t }}</button>
+            </form>
+          </div>
+        </details>
+
         <p class="cart-notice">{{ 'sections.cart.taxes_and_shipping_at_checkout' | t }}</p>
 
         <button type="submit" name="checkout" class="btn btn--accent btn--full">

@@ -88,7 +88,11 @@
       "error": "Something went wrong. Please try again.",
       "item_added": "Added to cart",
       "quantity_error": "Only {{ quantity }} available.",
-      "continue_shopping": "Continue shopping"
+      "continue_shopping": "Continue shopping",
+      "discount_prompt": "Have a discount code?",
+      "discount_label": "Discount code",
+      "discount_placeholder": "Enter code",
+      "discount_apply": "Apply"
     },
     "featured_collection": {
       "view_all": "View all"

@@ -1,0 +1,68 @@
+{%- comment -%}
+  The blackjack table shell. Rendered twice — by sections/blackjack.liquid on
+  the game page and by sections/blackjack-popup.liquid inside the site-wide
+  dialog — so the markup and the data attributes blackjack.js binds to live in
+  one place.
+
+  Accepts:
+  - config: {String} the JSON config blob, already built by the caller
+  - shop_label: {String} label for the "apply code and shop" link
+  - eyebrow, heading, text: {String} optional intro copy; omit for the popup,
+    which carries its own header
+
+  Usage:
+  {% render 'blackjack-game', config: bj_config, shop_label: label %}
+{%- endcomment -%}
+
+<blackjack-game class="bj">
+  <script type="application/json" data-bj-config>{{ config }}</script>
+
+  {%- if eyebrow != blank or heading != blank or text != blank -%}
+    <header class="bj__intro">
+      {%- if eyebrow != blank -%}
+        <p class="eyebrow">{{ eyebrow }}</p>
+      {%- endif -%}
+
+      {%- if heading != blank -%}
+        <h2 class="h1 display">{{ heading }}</h2>
+      {%- endif -%}
+
+      {%- if text != blank -%}
+        <div class="bj__text muted">{{ text }}</div>
+      {%- endif -%}
+    </header>
+  {%- endif -%}
+
+  <div class="bj__table" aria-live="off">
+    <div class="bj__hand">
+      <p class="bj__hand-label">DEALER <span data-bj-dealer-score class="bj__score"></span></p>
+      <div class="bj__cards" data-bj-dealer-cards></div>
+    </div>
+
+    <div class="bj__hand">
+      <p class="bj__hand-label">YOU <span data-bj-player-score class="bj__score"></span></p>
+      <div class="bj__cards" data-bj-player-cards></div>
+    </div>
+  </div>
+
+  <p class="bj__status" data-bj-status role="status" aria-live="polite"></p>
+
+  <div class="bj__actions">
+    <button type="button" class="btn btn--accent" data-bj-deal>DEAL</button>
+    <button type="button" class="btn" data-bj-hit hidden>HIT</button>
+    <button type="button" class="btn btn--outline" data-bj-stand hidden>STAND</button>
+  </div>
+
+  <div class="bj__result" data-bj-result hidden>
+    <p class="bj__result-title" data-bj-result-title></p>
+    <div class="bj__code">
+      <code data-bj-code></code>
+      <button type="button" class="btn btn--small" data-bj-copy>COPY</button>
+    </div>
+    <a class="btn btn--accent" data-bj-shop href="#">{{ shop_label }}</a>
+  </div>
+
+  <p class="bj__meta" data-bj-meta></p>
+
+  <noscript><p class="muted">Enable JavaScript to play.</p></noscript>
+</blackjack-game>

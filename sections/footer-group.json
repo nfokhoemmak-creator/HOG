@@ -27,14 +27,32 @@
           }
         }
       },
-      "block_order": ["text-1", "menu-1", "menu-2"],
+      "block_order": [
+        "text-1",
+        "menu-1",
+        "menu-2"
+      ],
       "settings": {
         "show_newsletter": true,
         "newsletter_heading": "Get the drop first",
         "show_payment_icons": true,
         "show_social": true
       }
+    },
+    "blackjack-popup": {
+      "type": "blackjack-popup",
+      "settings": {
+        "enabled": true,
+        "heading": "BLACKJACK",
+        "text": "<p>Beat the dealer, win a discount code. Hit blackjack for the max.</p>",
+        "show_floating": false,
+        "floating_label": "PLAY ♠",
+        "floating_position": "left"
+      }
     }
   },
-  "order": ["footer"]
+  "order": [
+    "footer",
+    "blackjack-popup"
+  ]
 }

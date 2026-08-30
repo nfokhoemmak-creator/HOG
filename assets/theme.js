@@ -317,6 +317,50 @@
     });
   }
 
+  /* --------------------------------------------------------- blackjack popup */
+
+  let blackjackBound = false;
+
+  function isBlackjackLink(node) {
+    if (!node || !node.getAttribute) return false;
+    const href = node.getAttribute('href');
+    if (!href) return false;
+    // Match the page path only, so an anchor or query string still counts.
+    return /\/pages\/blackjack(\/|\?|#|$)/.test(href);
+  }
+
+  function initBlackjackPopup() {
+    if (blackjackBound) return;
+    blackjackBound = true;
+
+    document.addEventListener('click', (event) => {
+      const closer = event.target.closest('[data-blackjack-close]');
+      if (closer) {
+        const dialog = closer.closest('dialog');
+        if (dialog) dialog.close();
+        return;
+      }
+
+      const backdrop = event.target.closest('dialog[data-blackjack-modal]');
+      if (backdrop && event.target === backdrop) {
+        backdrop.close();
+        return;
+      }
+
+      // Any link to the game page opens the popup instead; without the popup
+      // (or without <dialog> support) the click falls through to the page.
+      const opener = event.target.closest('[data-blackjack-open], a[href]');
+      if (!opener) return;
+      if (!opener.hasAttribute('data-blackjack-open') && !isBlackjackLink(opener)) return;
+
+      const modal = document.querySelector('dialog[data-blackjack-modal]');
+      if (!modal || typeof modal.showModal !== 'function') return;
+
+      event.preventDefault();
+      modal.showModal();
+    });
+  }
+
   /* ------------------------------------------------------------------ boot */
 
   function boot() {
@@ -324,6 +368,7 @@
     initGalleries();
     initDetailsDismiss();
     initSizeGuide();
+    initBlackjackPopup();
   }
 
   if (document.readyState === 'loading') {

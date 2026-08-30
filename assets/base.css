@@ -26,7 +26,9 @@
    20. Bundle builder
    21. Blackjack
    22. Size guide
-   23. Motion
+   23. Discount code form
+   24. Blackjack popup
+   25. Motion
    ========================================================================== */
 
 /* 1. Reset ---------------------------------------------------------------- */
@@ -220,25 +222,32 @@ body.grain::after {
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
-  min-height: 4.8rem;
+  min-height: 5.2rem;
   padding: 0 var(--space-6);
   border: 1px solid var(--color-btn-bg);
   border-radius: var(--radius-btn, 999px);
   background: var(--color-btn-bg);
   color: var(--color-btn-fg);
   font-family: var(--font-heading-family);
-  font-size: 1.3rem;
-  letter-spacing: 0.12em;
+  font-size: 1.4rem;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   text-align: center;
-  transition: background var(--duration) var(--ease), color var(--duration) var(--ease), opacity var(--duration) var(--ease);
+  transition: background var(--duration) var(--ease), color var(--duration) var(--ease),
+    border-color var(--duration) var(--ease), transform var(--duration) var(--ease),
+    box-shadow var(--duration) var(--ease), opacity var(--duration) var(--ease);
 }
 
+/* Lift on hover, press down on click — the button reads as a physical control
+   rather than a coloured rectangle. */
 .btn:hover {
   background: var(--color-accent);
   border-color: var(--color-accent);
   color: var(--color-accent-contrast);
+  transform: translateY(-1px);
 }
+
+.btn:active { transform: translateY(1px); }
 
 .btn--outline {
   background: transparent;
@@ -250,6 +259,13 @@ body.grain::after {
   background: var(--color-accent);
   border-color: var(--color-accent);
   color: var(--color-accent-contrast);
+}
+
+/* The volt button is already the loudest thing on the page, so on hover it
+   brightens and throws a glow instead of changing colour. */
+.btn--accent:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 0 0 1px var(--color-accent), 0 8px 24px -8px var(--color-accent);
 }
 
 .btn--full { width: 100%; }
@@ -1128,6 +1144,90 @@ textarea::placeholder {
   padding-bottom: var(--space-4);
   font-size: 1.4rem;
   color: var(--color-muted);
+}
+
+/* Buy area: volt Add to cart leads, Buy now sits under it as the quieter
+   second action. Shopify renders the dynamic button's markup itself, so the
+   theme has to reach into its classes to keep it on-brand. */
+
+.product__buy {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.product__buy .shopify-payment-button {
+  display: block;
+}
+
+.shopify-payment-button__button {
+  min-height: 5.2rem;
+  border-radius: var(--radius-btn, 999px) !important;
+  background: transparent;
+  border: 1px solid var(--color-fg);
+  color: var(--color-fg);
+  font-family: var(--font-heading-family);
+  font-size: 1.4rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition: background var(--duration) var(--ease), color var(--duration) var(--ease),
+    transform var(--duration) var(--ease);
+}
+
+.shopify-payment-button__button--unbranded {
+  background: transparent !important;
+  color: var(--color-fg) !important;
+}
+
+.shopify-payment-button__button:hover:not([disabled]),
+.shopify-payment-button__button--unbranded:hover:not([disabled]) {
+  background: var(--color-fg) !important;
+  color: var(--color-bg) !important;
+  transform: translateY(-1px);
+}
+
+.shopify-payment-button__button:active:not([disabled]) {
+  transform: translateY(1px);
+}
+
+.shopify-payment-button__more-options {
+  margin-top: var(--space-2);
+  font-family: var(--font-heading-family);
+  font-size: 1.1rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+}
+
+.shopify-payment-button__more-options:hover {
+  color: var(--color-fg);
+}
+
+/* Reassurance line under the buttons. */
+.product__assurance {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2) var(--space-4);
+  font-size: 1.15rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.product__assurance li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.product__assurance li::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--color-accent);
 }
 
 /* 13. Collection + facets ------------------------------------------------- */
@@ -2140,7 +2240,128 @@ complete-look,
   padding: 0 var(--space-5) var(--space-5);
 }
 
-/* 23. Motion -------------------------------------------------------------- */
+/* 23. Discount code form -------------------------------------------------- */
+
+/* A plain GET form to /cart?discount=CODE — Shopify applies the code to the
+   session, so this works with no JavaScript at all. */
+.discount-form {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.discount-form .field__input {
+  flex: 1 1 auto;
+  min-height: 4.4rem;
+  font-size: 1.3rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.discount-form .btn {
+  min-height: 4.4rem;
+  padding-inline: var(--space-5);
+  font-size: 1.2rem;
+}
+
+.discount-toggle {
+  border: 0;
+}
+
+.discount-toggle summary {
+  padding-block: var(--space-2);
+  font-size: 1.2rem;
+  letter-spacing: 0.12em;
+}
+
+.discount-toggle .accordion__content {
+  padding-bottom: var(--space-3);
+}
+
+/* 24. Blackjack popup ----------------------------------------------------- */
+
+.bj-modal {
+  width: min(76rem, calc(100vw - var(--gutter) * 2));
+  max-height: min(90vh, 90rem);
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: calc(var(--radius) + 8px);
+  background: var(--color-bg);
+  color: var(--color-fg);
+  overflow: hidden;
+}
+
+.bj-modal::backdrop {
+  background: rgb(0 0 0 / 0.8);
+}
+
+.bj-modal__panel {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  max-height: inherit;
+}
+
+.bj-modal__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.bj-modal__title {
+  font-family: var(--font-display-family, var(--font-heading-family));
+  font-size: clamp(2.4rem, 5vw, 3.6rem);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.bj-modal__text {
+  margin-top: var(--space-2);
+  font-size: 1.3rem;
+}
+
+.bj-modal__body {
+  overflow-y: auto;
+  padding: var(--space-5);
+}
+
+/* Inside the popup the table is already framed by the dialog itself. */
+.bj-modal .bj {
+  padding-block: 0;
+  gap: var(--space-4);
+}
+
+.bj-modal .bj__table {
+  padding: var(--space-4);
+}
+
+/* Floating trigger */
+.bj-fab {
+  position: fixed;
+  bottom: var(--space-5);
+  z-index: 50;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  border-radius: 999px;
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+  font-family: var(--font-heading-family);
+  font-size: 1.2rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  box-shadow: 0 8px 24px -8px rgb(0 0 0 / 0.8);
+  transition: transform var(--duration) var(--ease);
+}
+
+.bj-fab--left { left: var(--space-5); }
+.bj-fab--right { right: var(--space-5); }
+
+.bj-fab:hover { transform: translateY(-2px); }
+
+/* 25. Motion -------------------------------------------------------------- */
 
 .animate .reveal {
   opacity: 0;

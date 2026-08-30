@@ -243,29 +243,40 @@
               {%- form 'product', product, id: form_id, novalidate: 'novalidate' -%}
                 <input type="hidden" name="id" value="{{ current_variant.id }}">
 
-                <button
-                  type="submit"
-                  name="add"
-                  class="btn btn--accent btn--full"
-                  {% unless current_variant.available %}disabled aria-disabled="true"{% endunless %}
-                >
-                  <span data-button-text>
-                    {%- if current_variant.available -%}
-                      {%- if is_preorder -%}
-                        {{ 'products.product.preorder' | t }}
+                <div class="product__buy">
+                  <button
+                    type="submit"
+                    name="add"
+                    class="btn btn--accent btn--full"
+                    {% unless current_variant.available %}disabled aria-disabled="true"{% endunless %}
+                  >
+                    <span data-button-text>
+                      {%- if current_variant.available -%}
+                        {%- if is_preorder -%}
+                          {{ 'products.product.preorder' | t }}
+                        {%- else -%}
+                          {{ 'products.product.add_to_cart' | t }}
+                        {%- endif -%}
                       {%- else -%}
-                        {{ 'products.product.add_to_cart' | t }}
+                        {{ 'products.product.sold_out' | t }}
                       {%- endif -%}
-                    {%- else -%}
-                      {{ 'products.product.sold_out' | t }}
-                    {%- endif -%}
-                  </span>
-                </button>
+                    </span>
+                  </button>
 
-                {%- if block.settings.show_dynamic_checkout -%}
-                  {{ form | payment_button }}
-                {%- endif -%}
+                  {%- if block.settings.show_dynamic_checkout and current_variant.available -%}
+                    {{ form | payment_button }}
+                  {%- endif -%}
+                </div>
               {%- endform -%}
+
+              {%- if block.settings.assurance != blank and current_variant.available -%}
+                <ul class="product__assurance">
+                  {%- assign assurance_items = block.settings.assurance | split: ',' -%}
+                  {%- for item in assurance_items -%}
+                    <li>{{ item | strip }}</li>
+                  {%- endfor -%}
+                </ul>
+              {%- endif -%}
 
               {%- if is_preorder -%}
                 <p class="product__inventory" style="margin-top: var(--space-2);">
@@ -476,6 +487,13 @@
           "id": "show_dynamic_checkout",
           "label": "t:sections.main_product.blocks.buy_buttons.settings.show_dynamic_checkout.label",
           "default": true
+        },
+        {
+          "type": "text",
+          "id": "assurance",
+          "label": "Reassurance line",
+          "info": "Short points separated by commas, shown under the buttons. Leave empty to hide.",
+          "default": "Secure checkout, Ships in 2-4 days, Easy exchanges"
         }
       ]
     },
