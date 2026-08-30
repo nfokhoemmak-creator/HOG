@@ -3,18 +3,36 @@
     "main": {
       "type": "main-product",
       "blocks": {
-        "badges": { "type": "badges", "settings": {} },
-        "title": { "type": "title", "settings": {} },
-        "price": { "type": "price", "settings": {} },
-        "variant_picker": { "type": "variant_picker", "settings": {} },
-        "quantity": { "type": "quantity_selector", "settings": {} },
+        "badges": {
+          "type": "badges",
+          "settings": {}
+        },
+        "title": {
+          "type": "title",
+          "settings": {}
+        },
+        "price": {
+          "type": "price",
+          "settings": {}
+        },
+        "variant_picker": {
+          "type": "variant_picker",
+          "settings": {}
+        },
+        "quantity": {
+          "type": "quantity_selector",
+          "settings": {}
+        },
         "buy_buttons": {
           "type": "buy_buttons",
           "settings": {
             "show_dynamic_checkout": true
           }
         },
-        "description": { "type": "description", "settings": {} },
+        "description": {
+          "type": "description",
+          "settings": {}
+        },
         "fabric": {
           "type": "accordion",
           "settings": {
@@ -36,7 +54,10 @@
             "content": "<p>Delivery all over Lebanon, 2–4 business days. Exchanges accepted within 7 days on unworn pieces with tags attached.</p>"
           }
         },
-        "share": { "type": "share", "settings": {} }
+        "share": {
+          "type": "share",
+          "settings": {}
+        }
       },
       "block_order": [
         "badges",
@@ -55,8 +76,7 @@
         "media_layout": "stacked",
         "enable_sticky_info": true,
         "show_size_guide": true,
-        "size_guide_label": "Size guide",
-        "size_guide_page": "size-guide"
+        "size_guide_label": "Size guide"
       }
     },
     "complete-look": {
@@ -78,5 +98,9 @@
       }
     }
   },
-  "order": ["main", "complete-look", "related"]
+  "order": [
+    "main",
+    "complete-look",
+    "related"
+  ]
 }
