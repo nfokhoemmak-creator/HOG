@@ -305,7 +305,7 @@
         const dealerNatural = handValue(this.dealer).total === 21;
         this.revealHole();
         if (dealerNatural) {
-          this.finish('push', 'TWO BLACKJACKS. PUSH —');
+          this.finish('push', 'TWO BLACKJACKS.');
         } else {
           this.finish('blackjack', null);
         }

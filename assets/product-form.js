@@ -33,7 +33,12 @@
       this.sectionId = this.dataset.sectionId;
 
       this.variants = this.readVariants();
-      this.optionInputs = Array.from(this.querySelectorAll('[data-option-index]'));
+
+      // The variant picker block renders as a sibling of <product-form>, so
+      // the lookup has to widen to the shared info column or the radios are
+      // never found (and the buy button would be wrongly disabled on load).
+      const scope = this.closest('.product__info') || this.closest('.product') || this;
+      this.optionInputs = Array.from(scope.querySelectorAll('[data-option-index]'));
 
       this.optionInputs.forEach((input) => {
         input.addEventListener('change', () => this.onOptionChange());
@@ -73,6 +78,10 @@
     }
 
     onOptionChange(config) {
+      // No picker on the page (default-variant product): keep the
+      // server-rendered button state instead of matching against nothing.
+      if (this.optionInputs.length === 0) return;
+
       const options = this.selectedOptions();
       const variant = this.matchVariant(options);
 

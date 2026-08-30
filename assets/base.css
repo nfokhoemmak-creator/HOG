@@ -736,9 +736,15 @@ textarea::placeholder {
 
 .marquee__track {
   display: inline-flex;
-  gap: var(--space-6);
+  /* No flex gap: each child carries its own trailing margin so half the track
+     width lands exactly on the start of the duplicate run — a gap would leave
+     the -50% loop half a gap short and the ticker would stutter each cycle. */
   animation: marquee var(--marquee-duration, 24s) linear infinite;
   will-change: transform;
+}
+
+.marquee__track > * {
+  margin-right: var(--space-6);
 }
 
 /* Font + tracking come from the display rule in section 2. */
@@ -1255,8 +1261,10 @@ textarea::placeholder {
   position: absolute;
   top: 0;
   right: 0;
-  display: grid;
-  grid-template-rows: auto 1fr auto;
+  /* Column flex, not a fixed-row grid: the ship-bar renders conditionally
+     between head and body, so the row count varies. */
+  display: flex;
+  flex-direction: column;
   width: min(44rem, 100%);
   height: 100%;
   background: var(--color-bg);
@@ -1285,6 +1293,8 @@ textarea::placeholder {
 }
 
 .cart-drawer__body {
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-y: auto;
   padding: var(--space-4) var(--space-5);
 }

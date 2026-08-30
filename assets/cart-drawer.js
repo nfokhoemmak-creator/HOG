@@ -62,6 +62,12 @@
 
       this.bindLineItems();
 
+      // refresh() re-runs connectedCallback after every innerHTML swap; the
+      // document-level listeners must bind exactly once or each cart mutation
+      // stacks another set (and another redundant section fetch per event).
+      if (this.docBound) return;
+      this.docBound = true;
+
       document.addEventListener('cart:updated', (event) => {
         this.render(event.detail && event.detail.sections);
       });

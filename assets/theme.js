@@ -205,8 +205,11 @@
         button.addEventListener('click', (event) => {
           event.preventDefault();
           const step = button.dataset.action === 'increase' ? 1 : -1;
-          const min = parseInt(this.input.min, 10) || 1;
-          const max = parseInt(this.input.max, 10) || Infinity;
+          // NaN-safe: `|| 1` would clamp a legitimate min="0" (cart lines) to 1.
+          const parsedMin = parseInt(this.input.min, 10);
+          const parsedMax = parseInt(this.input.max, 10);
+          const min = Number.isNaN(parsedMin) ? 1 : parsedMin;
+          const max = Number.isNaN(parsedMax) ? Infinity : parsedMax;
           const next = Math.min(max, Math.max(min, (parseInt(this.input.value, 10) || min) + step));
           this.input.value = next;
           this.input.dispatchEvent(new Event('change', { bubbles: true }));
