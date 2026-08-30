@@ -14,25 +14,8 @@
   assign form_id = 'ProductForm-' | append: section.id
 
   comment
-    Size guide content, most specific source first: a per-product metafield
-    beats the shop-wide page, which beats the inline richtext.
-  endcomment
-  assign size_guide_content = ''
-  if section.settings.show_size_guide
-    assign product_guide = product.metafields.custom.size_guide
-    if product_guide != blank
-      assign size_guide_content = product_guide
-    elsif section.settings.size_guide_page != blank
-      assign size_guide_content = section.settings.size_guide_page.content
-      assign size_guide_url = section.settings.size_guide_page.url
-    elsif section.settings.size_guide_content != blank
-      assign size_guide_content = section.settings.size_guide_content
-    endif
-  endif
-
-  comment
-    Chart image, same precedence: a per-product metafield beats the shop-wide
-    image, so a tee and a pair of sweatpants can show different charts.
+    Chart image, most specific first: a per-product metafield beats the
+    shop-wide image, so a tee and a pair of sweatpants can differ.
   endcomment
   assign size_guide_image = ''
   if section.settings.show_size_guide
@@ -41,6 +24,27 @@
       assign size_guide_image = product_guide_image
     elsif section.settings.size_guide_image != blank
       assign size_guide_image = section.settings.size_guide_image
+    endif
+  endif
+
+  comment
+    Text content. A real chart image speaks for itself, so it replaces the
+    shop-wide page and the fallback copy rather than stacking on top of them —
+    upload a chart and the generic tables stop showing on their own. Text set
+    on the product itself is deliberate, so that still rides along.
+  endcomment
+  assign size_guide_content = ''
+  if section.settings.show_size_guide
+    assign product_guide = product.metafields.custom.size_guide
+    if product_guide != blank
+      assign size_guide_content = product_guide
+    elsif size_guide_image == blank
+      if section.settings.size_guide_page != blank
+        assign size_guide_content = section.settings.size_guide_page.content
+        assign size_guide_url = section.settings.size_guide_page.url
+      elsif section.settings.size_guide_content != blank
+        assign size_guide_content = section.settings.size_guide_content
+      endif
     endif
   endif
 
