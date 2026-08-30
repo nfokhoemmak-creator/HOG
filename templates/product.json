@@ -64,6 +64,14 @@
         "enable_sticky_info": true
       }
     },
+    "complete-look": {
+      "type": "complete-the-look",
+      "settings": {
+        "heading": "COMPLETE THE FIT",
+        "intent": "complementary",
+        "limit": 4
+      }
+    },
     "related": {
       "type": "featured-collection",
       "settings": {
@@ -75,5 +83,5 @@
       }
     }
   },
-  "order": ["main", "related"]
+  "order": ["main", "complete-look", "related"]
 }

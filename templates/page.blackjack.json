@@ -1,0 +1,36 @@
+{
+  "sections": {
+    "banner": {
+      "type": "marquee",
+      "settings": {
+        "text": "WIN UP TO 21% OFF ✦ PLAY BLACKJACK",
+        "style": "accent",
+        "size": "regular",
+        "speed": 24,
+        "sep": "✦"
+      }
+    },
+    "main": {
+      "type": "main-page",
+      "settings": {}
+    },
+    "game": {
+      "type": "blackjack",
+      "settings": {
+        "eyebrow": "HOUSE RULES",
+        "heading": "BLACKJACK",
+        "text": "<p>Beat the dealer, win a discount code. Hit blackjack for the max. Up to 3 hands a day — no real money, just the house being generous.</p>",
+        "plays_per_day": 3,
+        "win_code": "BLACKJACK10",
+        "win_percent": 10,
+        "bj_code": "BLACKJACK21",
+        "bj_percent": 21,
+        "streak_code": "BLACKJACK15",
+        "streak_percent": 15,
+        "streak_length": 3,
+        "shop_label": "APPLY CODE & SHOP"
+      }
+    }
+  },
+  "order": ["banner", "main", "game"]
+}

@@ -1,0 +1,218 @@
+{%- comment -%}
+  Bundle builder — pick pieces, watch the stacked price, add the whole fit
+  in one go. Every variant option carries data-price in cents; bundle.js
+  does the math and posts the selection to the cart.
+
+  Progressive enhancement: without JS each item is still a real link to its
+  product page — only the combined add button needs script. The savings
+  percent is display-only and must match the automatic discount in admin.
+{%- endcomment -%}
+
+<div class="section">
+  <div class="container">
+    <bundle-builder
+      class="bundle"
+      data-savings-percent="{{ section.settings.savings_percent }}"
+      data-min-items="{{ section.settings.min_items }}"
+    >
+      <div class="bundle__intro{% if settings.animations_enabled %} reveal{% endif %}">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="eyebrow">{{ section.settings.eyebrow }}</p>
+        {%- endif -%}
+
+        {%- if section.settings.heading != blank -%}
+          <h2 class="h1 display">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+
+        {%- if section.settings.text != blank -%}
+          <div class="bundle__text muted">{{ section.settings.text }}</div>
+        {%- endif -%}
+      </div>
+
+      <div class="bundle__grid">
+        <div class="bundle__items">
+          {%- for block in section.blocks -%}
+            {%- liquid
+              assign product = block.settings.product
+              if product == blank
+                continue
+              endif
+              assign default_variant = product.first_available_variant | default: product.variants.first
+            -%}
+
+            <div
+              class="bundle-item{% unless product.available %} bundle-item--soldout{% endunless %}"
+              data-bundle-item
+              {{ block.shopify_attributes }}
+            >
+              <label class="bundle-item__toggle">
+                <input
+                  type="checkbox"
+                  data-bundle-check
+                  {% if product.available %}checked{% else %}disabled{% endif %}
+                >
+                <span class="bundle-item__box" aria-hidden="true"></span>
+                <span class="visually-hidden">Include {{ product.title | escape }}</span>
+              </label>
+
+              <a class="bundle-item__media" href="{{ product.url }}" aria-label="{{ product.title | escape }}">
+                {%- if product.featured_media -%}
+                  <img
+                    src="{{ product.featured_media | image_url: width: 360 }}"
+                    srcset="
+                      {{ product.featured_media | image_url: width: 180 }} 180w,
+                      {{ product.featured_media | image_url: width: 360 }} 360w
+                    "
+                    sizes="90px"
+                    alt="{{ product.featured_media.alt | escape }}"
+                    width="{{ product.featured_media.width }}"
+                    height="{{ product.featured_media.height }}"
+                    loading="lazy"
+                  >
+                {%- else -%}
+                  {{ 'product-1' | placeholder_svg_tag: 'bundle-item__placeholder' }}
+                {%- endif -%}
+              </a>
+
+              <div class="bundle-item__info">
+                <a class="bundle-item__title" href="{{ product.url }}">{{ product.title | escape }}</a>
+                <span class="bundle-item__price" data-item-price>{{ default_variant.price | money }}</span>
+
+                {%- if product.has_only_default_variant -%}
+                  <input
+                    type="hidden"
+                    data-bundle-variant
+                    value="{{ default_variant.id }}"
+                    data-price="{{ default_variant.price }}"
+                  >
+                {%- else -%}
+                  <select
+                    class="bundle-item__select"
+                    data-bundle-variant
+                    aria-label="Options for {{ product.title | escape }}"
+                  >
+                    {%- assign selected_done = false -%}
+                    {%- for variant in product.variants -%}
+                      <option
+                        value="{{ variant.id }}"
+                        data-price="{{ variant.price }}"
+                        {% unless variant.available %}disabled{% endunless %}
+                        {% if variant.available and selected_done == false %}
+                          selected
+                          {%- assign selected_done = true -%}
+                        {% endif %}
+                      >
+                        {{- variant.title | escape -}}
+                      </option>
+                    {%- endfor -%}
+                  </select>
+                {%- endif -%}
+              </div>
+
+              <span class="bundle-item__plus display" aria-hidden="true">+</span>
+            </div>
+          {%- endfor -%}
+        </div>
+
+        <aside class="bundle__summary">
+          <p class="bundle__summary-heading">YOUR FIT</p>
+          <p class="bundle__count" data-bundle-count></p>
+
+          <div class="bundle__prices">
+            <span class="bundle__compare price__compare" data-bundle-compare hidden></span>
+            <span class="bundle__total" data-bundle-total>—</span>
+          </div>
+
+          <p class="bundle__savings" data-bundle-savings hidden></p>
+          <p class="bundle__hint" data-bundle-hint></p>
+
+          <button type="button" class="btn btn--accent btn--full" data-bundle-add>
+            {{ section.settings.button_label | default: 'ADD FIT TO CART' }}
+          </button>
+
+          <p class="form__error" data-bundle-error hidden></p>
+        </aside>
+      </div>
+    </bundle-builder>
+  </div>
+</div>
+
+<script src="{{ 'bundle.js' | asset_url }}" defer="defer"></script>
+
+{% schema %}
+{
+  "name": "Bundle builder",
+  "tag": "section",
+  "class": "bundle-builder-section",
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "BUNDLE & SAVE"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "BUILD A FIT"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Stack pieces. Any 2+ pieces are 15% off, applied automatically at checkout.</p>"
+    },
+    {
+      "type": "range",
+      "id": "savings_percent",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "%",
+      "label": "Savings percent",
+      "info": "Display only — must match the automatic discount configured in Shopify admin.",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "min_items",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "label": "Minimum items",
+      "default": 2
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "ADD FIT TO CART"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Product",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Bundle builder",
+      "blocks": [
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" }
+      ]
+    }
+  ]
+}
+{% endschema %}

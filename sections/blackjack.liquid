@@ -1,0 +1,208 @@
+{%- comment -%}
+  Blackjack — beat the dealer, win a discount code. The section renders the
+  table shell plus a JSON config blob; blackjack.js deals, scores and pays
+  out. Codes are display + deep-link only: each one must exist as a real
+  discount code in Shopify admin. The daily hand limit and the win streak
+  live in localStorage on the player's device.
+{%- endcomment -%}
+
+{%- liquid
+  assign shop_url = section.settings.shop_link | default: routes.all_products_collection_url
+  assign shop_label = section.settings.shop_label | default: 'APPLY CODE & SHOP'
+-%}
+
+<div class="section">
+  <div class="container">
+    <blackjack-game class="bj">
+      <script type="application/json" data-bj-config>
+        {
+          "playsPerDay": {{ section.settings.plays_per_day | default: 3 }},
+          "tiers": {
+            "win": {
+              "code": {{ section.settings.win_code | default: 'BLACKJACK10' | json | replace: '</', '<\/' }},
+              "percent": {{ section.settings.win_percent | default: 10 }}
+            },
+            "blackjack": {
+              "code": {{ section.settings.bj_code | default: 'BLACKJACK21' | json | replace: '</', '<\/' }},
+              "percent": {{ section.settings.bj_percent | default: 21 }}
+            },
+            "streak": {
+              "code": {{ section.settings.streak_code | default: 'BLACKJACK15' | json | replace: '</', '<\/' }},
+              "percent": {{ section.settings.streak_percent | default: 15 }},
+              "length": {{ section.settings.streak_length | default: 3 }}
+            }
+          },
+          "shopUrl": {{ shop_url | json | replace: '</', '<\/' }},
+          "shopLabel": {{ shop_label | json | replace: '</', '<\/' }}
+        }
+      </script>
+
+      <header class="bj__intro" style="display: grid; gap: var(--space-3); justify-items: center;">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="eyebrow">{{ section.settings.eyebrow }}</p>
+        {%- endif -%}
+
+        {%- if section.settings.heading != blank -%}
+          <h2 class="h1 display">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+
+        {%- if section.settings.text != blank -%}
+          <div class="bj__text muted">{{ section.settings.text }}</div>
+        {%- endif -%}
+      </header>
+
+      <div class="bj__table" aria-live="off">
+        <div class="bj__hand">
+          <p class="bj__hand-label">DEALER <span data-bj-dealer-score class="bj__score"></span></p>
+          <div class="bj__cards" data-bj-dealer-cards></div>
+        </div>
+
+        <div class="bj__hand">
+          <p class="bj__hand-label">YOU <span data-bj-player-score class="bj__score"></span></p>
+          <div class="bj__cards" data-bj-player-cards></div>
+        </div>
+      </div>
+
+      <p class="bj__status" data-bj-status role="status" aria-live="polite"></p>
+
+      <div class="bj__actions">
+        <button type="button" class="btn btn--accent" data-bj-deal>DEAL</button>
+        <button type="button" class="btn" data-bj-hit hidden>HIT</button>
+        <button type="button" class="btn btn--outline" data-bj-stand hidden>STAND</button>
+      </div>
+
+      <div class="bj__result" data-bj-result hidden>
+        <p class="bj__result-title" data-bj-result-title></p>
+        <div class="bj__code">
+          <code data-bj-code></code>
+          <button type="button" class="btn btn--small" data-bj-copy>COPY</button>
+        </div>
+        <a class="btn btn--accent" data-bj-shop href="#">{{ shop_label }}</a>
+      </div>
+
+      <p class="bj__meta" data-bj-meta></p>
+
+      <noscript><p class="muted">Enable JavaScript to play.</p></noscript>
+    </blackjack-game>
+  </div>
+</div>
+
+<script src="{{ 'blackjack.js' | asset_url }}" defer="defer"></script>
+
+{% schema %}
+{
+  "name": "Blackjack",
+  "tag": "section",
+  "class": "blackjack-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "HOUSE RULES"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "BLACKJACK"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Beat the dealer, win a discount code. Hit blackjack for the max. Up to 3 hands a day — no real money, just the house being generous.</p>"
+    },
+    {
+      "type": "range",
+      "id": "plays_per_day",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "label": "Hands per day",
+      "default": 3
+    },
+    {
+      "type": "text",
+      "id": "win_code",
+      "label": "Win code",
+      "info": "Must exist as a discount code in Shopify admin.",
+      "default": "BLACKJACK10"
+    },
+    {
+      "type": "range",
+      "id": "win_percent",
+      "min": 5,
+      "max": 30,
+      "step": 1,
+      "unit": "%",
+      "label": "Win percent",
+      "info": "Display only — must match the win code's actual value.",
+      "default": 10
+    },
+    {
+      "type": "text",
+      "id": "bj_code",
+      "label": "Blackjack code",
+      "info": "Must exist as a discount code in Shopify admin.",
+      "default": "BLACKJACK21"
+    },
+    {
+      "type": "range",
+      "id": "bj_percent",
+      "min": 5,
+      "max": 40,
+      "step": 1,
+      "unit": "%",
+      "label": "Blackjack percent",
+      "info": "Display only — must match the blackjack code's actual value.",
+      "default": 21
+    },
+    {
+      "type": "text",
+      "id": "streak_code",
+      "label": "Streak code",
+      "info": "Must exist as a discount code in Shopify admin.",
+      "default": "BLACKJACK15"
+    },
+    {
+      "type": "range",
+      "id": "streak_percent",
+      "min": 5,
+      "max": 30,
+      "step": 1,
+      "unit": "%",
+      "label": "Streak percent",
+      "info": "Display only — must match the streak code's actual value.",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "streak_length",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "label": "Streak length",
+      "info": "Wins in a row needed to unlock the streak code.",
+      "default": 3
+    },
+    {
+      "type": "url",
+      "id": "shop_link",
+      "label": "Shop link",
+      "info": "Where the apply button sends winners. Defaults to the all-products collection."
+    },
+    {
+      "type": "text",
+      "id": "shop_label",
+      "label": "Shop button label",
+      "default": "APPLY CODE & SHOP"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Blackjack"
+    }
+  ]
+}
+{% endschema %}

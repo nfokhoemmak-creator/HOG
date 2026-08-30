@@ -1,7 +1,9 @@
 {%- comment -%}
   The cart drawer. cart-drawer.js re-fetches this section by id after every
   Ajax cart mutation and swaps the markup in, so everything the drawer shows
-  must be rendered here — nothing is templated client-side.
+  must be rendered here — nothing is templated client-side. The one exception
+  is <cart-upsells> (upsell.js), which re-fetches recommendations after every
+  swap; its script tag lives OUTSIDE <cart-drawer> so the swap never eats it.
 {%- endcomment -%}
 
 <cart-drawer class="cart-drawer" aria-hidden="true">
@@ -19,6 +21,30 @@
         {% render 'icon', name: 'close' %}
       </button>
     </div>
+
+    {%- if settings.free_shipping_enabled and cart.item_count > 0 -%}
+      {%- liquid
+        assign threshold_cents = settings.free_shipping_threshold | times: 100
+      -%}
+      {%- if threshold_cents > 0 -%}
+        {%- liquid
+          assign remaining = threshold_cents | minus: cart.total_price
+          assign pct = cart.total_price | times: 100 | divided_by: threshold_cents | at_most: 100
+        -%}
+        <div class="ship-bar{% if remaining <= 0 %} ship-bar--done{% endif %}" role="status">
+          <p class="ship-bar__label">
+            {%- if remaining <= 0 -%}
+              FREE SHIPPING UNLOCKED ✦
+            {%- else -%}
+              YOU'RE {{ remaining | money }} FROM FREE SHIPPING
+            {%- endif -%}
+          </p>
+          <div class="ship-bar__track">
+            <div class="ship-bar__fill" style="width: {{ pct }}%;"></div>
+          </div>
+        </div>
+      {%- endif -%}
+    {%- endif -%}
 
     <div class="cart-drawer__body">
       <p class="form__error" data-cart-error hidden></p>
@@ -117,6 +143,17 @@
             </div>
           </details>
         {%- endif -%}
+
+        {%- if settings.cart_upsells_enabled -%}
+          <cart-upsells
+            class="upsells-mount"
+            data-heading="{{ settings.cart_upsells_heading | escape }}"
+            data-product-id="{{ cart.items.first.product_id }}"
+            data-limit="2"
+            data-intent="related"
+            data-exclude="{% for item in cart.items %}{{ item.product_id }}{% unless forloop.last %},{% endunless %}{% endfor %}"
+          ></cart-upsells>
+        {%- endif -%}
       {%- endif -%}
     </div>
 
@@ -159,6 +196,8 @@
     {%- endif -%}
   </div>
 </cart-drawer>
+
+<script src="{{ 'upsell.js' | asset_url }}" defer="defer"></script>
 
 {% schema %}
 {

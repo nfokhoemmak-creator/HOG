@@ -12,6 +12,15 @@
 
   const routes = (window.theme && window.theme.routes) || {};
   const strings = (window.theme && window.theme.strings) || {};
+  const moneyFormat = (window.theme && window.theme.moneyFormat) || '${{amount}}';
+
+  /* ---------------------------------------------------------------- money */
+
+  function formatMoney(cents) {
+    const value = (cents / 100).toFixed(2);
+    const withCommas = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return moneyFormat.replace(/\{\{\s*(\w+)\s*\}\}/, withCommas);
+  }
 
   /* ------------------------------------------------------------- fetching */
 
@@ -192,7 +201,30 @@
     return data;
   }
 
-  window.HOG = Object.assign(window.HOG || {}, { addToCart, updateCartCount });
+  /**
+   * Add one or more variants at once ({ items: [{ id, quantity }, …] }).
+   * Same follow-through as addToCart: broadcast, announce, refresh + open the
+   * drawer. Throws on error so callers can show the message on their button.
+   */
+  async function addItems(items, opener) {
+    const data = await postJSON(routes.cartAdd || '/cart/add.js', { items });
+
+    document.dispatchEvent(new CustomEvent('cart:updated', { detail: { item: data } }));
+
+    if (window.HOG) window.HOG.announce(strings.itemAdded);
+
+    const drawer = document.querySelector('cart-drawer');
+    if (drawer && window.theme && window.theme.cartType === 'drawer') {
+      await drawer.refresh();
+      drawer.open(opener);
+    } else {
+      window.location.href = routes.cart || '/cart';
+    }
+
+    return data;
+  }
+
+  window.HOG = Object.assign(window.HOG || {}, { addToCart, addItems, formatMoney, updateCartCount });
 
   /* ------------------------------------------------------------ quick add */
 
