@@ -199,17 +199,23 @@
                   </fieldset>
                 {%- endfor -%}
 
-                {%- if has_size_guide and has_size_option == false -%}
-                  <div class="size-guide__row">
-                    {% render 'size-guide-trigger',
-                      label: size_guide_label,
-                      dialog_id: size_guide_id,
-                      guide_url: size_guide_url
-                    %}
-                  </div>
-                {%- endif -%}
               </div>
             {%- endunless -%}
+
+            {%- comment -%}
+              No size option to hang the trigger off — either the product has
+              one variant or its options are colour-only. Sits outside the
+              picker so single-variant products still get the guide.
+            {%- endcomment -%}
+            {%- if has_size_guide and has_size_option == false -%}
+              <div class="size-guide__row">
+                {% render 'size-guide-trigger',
+                  label: size_guide_label,
+                  dialog_id: size_guide_id,
+                  guide_url: size_guide_url
+                %}
+              </div>
+            {%- endif -%}
 
           {%- when 'quantity_selector' -%}
             <div {{ block.shopify_attributes }}>

@@ -76,7 +76,9 @@
         "media_layout": "stacked",
         "enable_sticky_info": true,
         "show_size_guide": true,
-        "size_guide_label": "Size guide"
+        "size_guide_label": "Size guide",
+        "size_guide_page": "size-guide",
+        "size_guide_content": "<p>Measurements are taken flat and are approximate. Not sure on sizing? Message us on Instagram and we will size you.</p>"
       }
     },
     "complete-look": {
