@@ -191,7 +191,8 @@
         "minutes": "Min",
         "seconds": "Sec",
         "live": "Live now"
-      }
+      },
+      "size_guide_full": "Open the full size guide"
     },
     "facets": {
       "apply": "Apply",

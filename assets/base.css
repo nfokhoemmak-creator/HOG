@@ -25,7 +25,8 @@
    19. Upsells + complete the look
    20. Bundle builder
    21. Blackjack
-   22. Motion
+   22. Size guide
+   23. Motion
    ========================================================================== */
 
 /* 1. Reset ---------------------------------------------------------------- */
@@ -2015,7 +2016,118 @@ complete-look,
   color: var(--color-muted);
 }
 
-/* 22. Motion -------------------------------------------------------------- */
+/* 22. Size guide ---------------------------------------------------------- */
+
+.size-guide__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-heading-family);
+  font-size: 1.1rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+  padding: 0;
+  transition: color var(--duration) var(--ease);
+}
+
+.size-guide__trigger:hover {
+  color: var(--color-accent);
+}
+
+.size-guide__trigger svg {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+
+.size-guide__row {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.size-guide {
+  width: min(72rem, calc(100vw - var(--gutter) * 2));
+  max-height: min(80vh, 72rem);
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  color: var(--color-fg);
+  overflow: hidden;
+}
+
+.size-guide::backdrop {
+  background: rgb(0 0 0 / 0.7);
+}
+
+.size-guide__panel {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  max-height: inherit;
+}
+
+.size-guide__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.size-guide__body {
+  padding: var(--space-5);
+  overflow-y: auto;
+  font-size: 1.4rem;
+}
+
+.size-guide__body h2,
+.size-guide__body h3 {
+  margin-bottom: var(--space-3);
+  font-size: 1.4rem;
+  letter-spacing: 0.12em;
+}
+
+.size-guide__body h2:not(:first-child),
+.size-guide__body h3:not(:first-child) {
+  margin-top: var(--space-5);
+}
+
+.size-guide__body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: var(--space-4);
+  font-variant-numeric: tabular-nums;
+}
+
+.size-guide__body th,
+.size-guide__body td {
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+}
+
+.size-guide__body th {
+  font-family: var(--font-heading-family);
+  font-size: 1.1rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.size-guide__body ul {
+  list-style: disc;
+  padding-left: 1.5em;
+  margin-bottom: 1em;
+}
+
+.size-guide__link {
+  padding: 0 var(--space-5) var(--space-5);
+}
+
+/* 23. Motion -------------------------------------------------------------- */
 
 .animate .reveal {
   opacity: 0;

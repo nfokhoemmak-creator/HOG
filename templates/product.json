@@ -29,13 +29,6 @@
             "metafield": "custom.fit"
           }
         },
-        "size_guide": {
-          "type": "accordion",
-          "settings": {
-            "heading": "Size guide",
-            "metafield": "custom.size_guide"
-          }
-        },
         "shipping": {
           "type": "accordion",
           "settings": {
@@ -55,13 +48,15 @@
         "description",
         "fabric",
         "fit",
-        "size_guide",
         "shipping",
         "share"
       ],
       "settings": {
         "media_layout": "stacked",
-        "enable_sticky_info": true
+        "enable_sticky_info": true,
+        "show_size_guide": true,
+        "size_guide_label": "Size guide",
+        "size_guide_page": "size-guide"
       }
     },
     "complete-look": {

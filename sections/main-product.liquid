@@ -12,6 +12,43 @@
   endif
 
   assign form_id = 'ProductForm-' | append: section.id
+
+  comment
+    Size guide content, most specific source first: a per-product metafield
+    beats the shop-wide page, which beats the inline richtext.
+  endcomment
+  assign size_guide_content = ''
+  if section.settings.show_size_guide
+    assign product_guide = product.metafields.custom.size_guide
+    if product_guide != blank
+      assign size_guide_content = product_guide
+    elsif section.settings.size_guide_page != blank
+      assign size_guide_content = section.settings.size_guide_page.content
+      assign size_guide_url = section.settings.size_guide_page.url
+    elsif section.settings.size_guide_content != blank
+      assign size_guide_content = section.settings.size_guide_content
+    endif
+  endif
+
+  assign has_size_guide = false
+  if size_guide_content != blank
+    assign has_size_guide = true
+  endif
+
+  assign size_guide_id = 'SizeGuide-' | append: section.id
+  assign size_guide_label = section.settings.size_guide_label | default: 'Size guide'
+
+  comment
+    Does any option read as a size? If so the trigger sits in that option's
+    label row; otherwise it goes under the picker.
+  endcomment
+  assign has_size_option = false
+  for option in product.options_with_values
+    assign option_name_check = option.name | downcase
+    if option_name_check contains 'size'
+      assign has_size_option = true
+    endif
+  endfor
 -%}
 
 <div class="container">
@@ -117,9 +154,17 @@
             {%- unless product.has_only_default_variant -%}
               <div class="variant-picker" {{ block.shopify_attributes }}>
                 {%- for option in product.options_with_values -%}
+                  {%- assign option_name_down = option.name | downcase -%}
                   <fieldset style="border: 0; margin: 0; padding: 0;">
                     <legend class="variant-option__label" style="width: 100%;">
                       <span>{{ option.name }}</span>
+                      {%- if has_size_guide and option_name_down contains 'size' -%}
+                        {% render 'size-guide-trigger',
+                          label: size_guide_label,
+                          dialog_id: size_guide_id,
+                          guide_url: size_guide_url
+                        %}
+                      {%- endif -%}
                     </legend>
 
                     <div class="variant-option__values">
@@ -139,6 +184,16 @@
                     </div>
                   </fieldset>
                 {%- endfor -%}
+
+                {%- if has_size_guide and has_size_option == false -%}
+                  <div class="size-guide__row">
+                    {% render 'size-guide-trigger',
+                      label: size_guide_label,
+                      dialog_id: size_guide_id,
+                      guide_url: size_guide_url
+                    %}
+                  </div>
+                {%- endif -%}
               </div>
             {%- endunless -%}
 
@@ -256,6 +311,37 @@
   </div>
 </div>
 
+{%- if has_size_guide -%}
+  {%- comment -%}
+    Native <dialog>: showModal() brings its own focus trap and Escape handling.
+    theme.js opens it; when the trigger is a link to the size-guide page it
+    stays a working link if the script never runs.
+  {%- endcomment -%}
+  <dialog class="size-guide" id="{{ size_guide_id }}" data-size-guide>
+    <div class="size-guide__panel">
+      <div class="size-guide__head">
+        <h2 class="h4">{{ size_guide_label }}</h2>
+        <button
+          type="button"
+          class="header__icon"
+          data-size-guide-close
+          aria-label="{{ 'general.close' | t }}"
+        >
+          {% render 'icon', name: 'close' %}
+        </button>
+      </div>
+
+      <div class="size-guide__body rte">{{ size_guide_content }}</div>
+
+      {%- if size_guide_url != blank -%}
+        <a class="size-guide__link underline eyebrow" href="{{ size_guide_url }}">
+          {{ 'products.product.size_guide_full' | t }}
+        </a>
+      {%- endif -%}
+    </div>
+  </dialog>
+{%- endif -%}
+
 <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -304,6 +390,35 @@
       "id": "enable_sticky_info",
       "label": "t:sections.main_product.settings.enable_sticky_info.label",
       "default": true
+    },
+    {
+      "type": "header",
+      "content": "Size guide"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_size_guide",
+      "label": "Show size guide button",
+      "default": true,
+      "info": "The button sits next to the size selector and opens a popup."
+    },
+    {
+      "type": "text",
+      "id": "size_guide_label",
+      "label": "Button label",
+      "default": "Size guide"
+    },
+    {
+      "type": "page",
+      "id": "size_guide_page",
+      "label": "Size guide page",
+      "info": "The page content fills the popup. Leave empty to use the text below instead."
+    },
+    {
+      "type": "richtext",
+      "id": "size_guide_content",
+      "label": "Size guide text",
+      "info": "Used only when no page is selected. A product metafield custom.size_guide overrides both."
     }
   ],
   "blocks": [

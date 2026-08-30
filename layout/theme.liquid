@@ -51,12 +51,16 @@
       endcase
     -%}
 
-    {{ body_font | font_face: font_display: 'swap' }}
-    {{ body_font_bold | font_face: font_display: 'swap' }}
-    {{ body_font_italic | font_face: font_display: 'swap' }}
-    {{ heading_font | font_face: font_display: 'swap' }}
-
     <style>
+      {%- comment -%}
+        font_face emits bare @font-face rules, not a <style> tag — leaving them
+        loose in the head makes the browser render them as text above the page.
+      {%- endcomment -%}
+      {{ body_font | font_face: font_display: 'swap' }}
+      {{ body_font_bold | font_face: font_display: 'swap' }}
+      {{ body_font_italic | font_face: font_display: 'swap' }}
+      {{ heading_font | font_face: font_display: 'swap' }}
+
       :root {
         --font-body-family: {{ body_font.family }}, {{ body_font.fallback_families }};
         --font-body-style: {{ body_font.style }};

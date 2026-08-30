@@ -283,12 +283,47 @@
     });
   }
 
+  /* -------------------------------------------------------------- size guide */
+
+  let sizeGuideBound = false;
+
+  function initSizeGuide() {
+    // Bound once: boot() runs again on every theme-editor section reload.
+    if (sizeGuideBound) return;
+    sizeGuideBound = true;
+
+    document.addEventListener('click', (event) => {
+      const opener = event.target.closest('[data-size-guide-open]');
+      if (opener) {
+        const dialog = document.getElementById(opener.getAttribute('aria-controls'));
+        // No <dialog> support: a trigger that links to the page navigates instead.
+        if (dialog && typeof dialog.showModal === 'function') {
+          event.preventDefault();
+          dialog.showModal();
+        }
+        return;
+      }
+
+      const closer = event.target.closest('[data-size-guide-close]');
+      if (closer) {
+        const dialog = closer.closest('dialog');
+        if (dialog) dialog.close();
+        return;
+      }
+
+      // Clicking the backdrop targets the dialog element itself.
+      const dialog = event.target.closest('dialog[data-size-guide]');
+      if (dialog && event.target === dialog) dialog.close();
+    });
+  }
+
   /* ------------------------------------------------------------------ boot */
 
   function boot() {
     initReveal();
     initGalleries();
     initDetailsDismiss();
+    initSizeGuide();
   }
 
   if (document.readyState === 'loading') {
