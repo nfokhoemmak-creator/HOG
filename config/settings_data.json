@@ -37,7 +37,7 @@
     "cart_show_note": true,
     "cart_notice": "<p>Delivery all over Lebanon. Orders ship within 2–4 business days.</p>",
     "free_shipping_enabled": true,
-    "free_shipping_threshold": 100,
+    "free_shipping_threshold": 75,
     "cart_upsells_enabled": true,
     "cart_upsells_heading": "COMPLETE THE FIT",
     "social_instagram_link": "https://www.instagram.com/houseofgarments.co/",
