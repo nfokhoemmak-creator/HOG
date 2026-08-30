@@ -219,12 +219,22 @@
       const streak = tierFrom(tiers.streak, 'BLACKJACK15', 15);
       streak.length = parseInt(tiers.streak && tiers.streak.length, 10) || 3;
 
+      // Consolation only counts when the merchant actually configured a code.
+      let consolation = null;
+      if (tiers.consolation && tiers.consolation.code) {
+        consolation = tierFrom(tiers.consolation, '', 0);
+        if (!consolation.code || consolation.percent < 1) consolation = null;
+      }
+
       return {
         playsPerDay: Math.max(1, parseInt(parsed.playsPerDay, 10) || 3),
+        // House rules favour the player: a tie pays out instead of washing.
+        tiesPayPlayer: parsed.tiesPayPlayer !== false,
         tiers: {
           win: tierFrom(tiers.win, 'BLACKJACK10', 10),
           blackjack: tierFrom(tiers.blackjack, 'BLACKJACK21', 21),
-          streak: streak
+          streak: streak,
+          consolation: consolation
         },
         shopUrl: typeof parsed.shopUrl === 'string' && parsed.shopUrl !== '' ? parsed.shopUrl : '/collections/all',
         shopLabel: typeof parsed.shopLabel === 'string' && parsed.shopLabel !== '' ? parsed.shopLabel : 'APPLY CODE & SHOP'
@@ -242,11 +252,12 @@
         stored = null;
       }
 
-      const state = { d: today, plays: 0, streak: 0 };
+      const state = { d: today, plays: 0, streak: 0, won: false };
       if (stored && typeof stored === 'object') {
         state.streak = Math.max(0, parseInt(stored.streak, 10) || 0);
         if (stored.d === today) {
           state.plays = Math.max(0, parseInt(stored.plays, 10) || 0);
+          state.won = stored.won === true;
         }
       }
       return state;
@@ -264,6 +275,7 @@
       if (this.state.d === todayKey()) return;
       this.state.d = todayKey();
       this.state.plays = 0;
+      this.state.won = false;
       this.writeState();
       if (!this.inHand) {
         this.setStatus("DEALER'S READY WHEN YOU ARE.");
@@ -305,7 +317,11 @@
         const dealerNatural = handValue(this.dealer).total === 21;
         this.revealHole();
         if (dealerNatural) {
-          this.finish('push', 'TWO BLACKJACKS.');
+          if (this.config.tiesPayPlayer) {
+            this.finish('blackjack', 'TWO BLACKJACKS — TIE PAYS YOU.');
+          } else {
+            this.finish('push', 'TWO BLACKJACKS.');
+          }
         } else {
           this.finish('blackjack', null);
         }
@@ -355,6 +371,8 @@
         this.finish('lose', null);
       } else if (dealerValue.total < playerTotal) {
         this.finish('win', null);
+      } else if (this.config.tiesPayPlayer) {
+        this.finish('win', 'TIE PAYS YOU.');
       } else {
         this.finish('push', null);
       }
@@ -372,13 +390,21 @@
         this.state.streak = 0;
         this.writeState();
         const left = this.playsLeft();
-        this.setStatus(
-          prefix + 'HOUSE WINS. ' + left + (left === 1 ? ' HAND' : ' HANDS') + ' LEFT TODAY.'
-        );
+
+        // Out of hands with nothing won: nobody leaves the table empty-handed.
+        if (left === 0 && this.state.won === false && this.config.tiers.consolation) {
+          this.setStatus(prefix + "HOUSE TAKES IT — BUT YOU'RE NOT LEAVING EMPTY-HANDED.");
+          this.showResult(this.config.tiers.consolation, false);
+        } else {
+          this.setStatus(
+            prefix + 'HOUSE WINS. ' + left + (left === 1 ? ' HAND' : ' HANDS') + ' LEFT TODAY.'
+          );
+        }
       } else {
         // 'win' or 'blackjack' — a winning final play still pays out.
         this.state.plays += 1;
         this.state.streak += 1;
+        this.state.won = true;
         this.writeState();
 
         const natural = outcome === 'blackjack';
@@ -426,7 +452,11 @@
       const left = this.playsLeft();
       this.metaTarget.textContent =
         left > 0
-          ? left + ' OF ' + this.config.playsPerDay + ' HANDS LEFT TODAY. PUSHES ARE FREE.'
+          ? left +
+            ' OF ' +
+            this.config.playsPerDay +
+            ' HANDS LEFT TODAY. ' +
+            (this.config.tiesPayPlayer ? 'TIES PAY YOU.' : 'PUSHES ARE FREE.')
           : "YOU'RE DONE FOR TODAY — BACK TOMORROW.";
     }
 

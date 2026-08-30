@@ -25,6 +25,7 @@
   {%- capture bj_config -%}
 {
   "playsPerDay": {{ section.settings.plays_per_day | default: 3 }},
+  "tiesPayPlayer": {% if section.settings.ties_pay_player == false %}false{% else %}true{% endif %},
   "tiers": {
     "win": {
       "code": {{ section.settings.win_code | default: 'BLACKJACK10' | json | replace: '</', '<\/' }},
@@ -38,6 +39,10 @@
       "code": {{ section.settings.streak_code | default: 'BLACKJACK15' | json | replace: '</', '<\/' }},
       "percent": {{ section.settings.streak_percent | default: 15 }},
       "length": {{ section.settings.streak_length | default: 3 }}
+    },
+    "consolation": {
+      "code": {{ section.settings.consolation_code | default: '' | json | replace: '</', '<\/' }},
+      "percent": {{ section.settings.consolation_percent | default: 5 }}
     }
   },
   "shopUrl": {{ shop_url | json | replace: '</', '<\/' }},
@@ -328,6 +333,30 @@
       "step": 1,
       "label": "Wins needed for the streak",
       "default": 3
+    },
+    {
+      "type": "checkbox",
+      "id": "ties_pay_player",
+      "label": "Ties pay the player",
+      "default": true,
+      "info": "House rule in the customer's favour: a tie wins instead of washing out. Turning this off makes the house win more often than the player."
+    },
+    {
+      "type": "text",
+      "id": "consolation_code",
+      "label": "Consolation code",
+      "default": "BLACKJACK5",
+      "info": "Given when someone uses all their hands without a win, so nobody leaves empty-handed. Leave empty to give nothing."
+    },
+    {
+      "type": "range",
+      "id": "consolation_percent",
+      "min": 5,
+      "max": 20,
+      "step": 1,
+      "unit": "%",
+      "label": "Consolation discount",
+      "default": 5
     }
   ]
 }
