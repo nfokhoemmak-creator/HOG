@@ -19,3 +19,7 @@ published from the Shopify admin.
 The `review` blocks read `product.metafields.reviews.rating` and
 `reviews.rating_count`, which only a reviews app writes. They render nothing
 until such an app is installed; no ratings are hard-coded.
+
+The homepage "Shop by collection" grid lists the `men` collection first. That
+collection is automated in Shopify: any product tagged `Men` appears in it, so
+new men's products only need the tag.
