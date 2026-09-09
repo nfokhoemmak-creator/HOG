@@ -1,6 +1,6 @@
-# Mareluce Shopify theme files
+# Meridio Shopify theme files
 
-Source of the Mareluce storefront, built on Shopify's Horizon theme. Each file
+Source of the Meridio storefront, built on Shopify's Horizon theme. Each file
 maps to a theme path (dashes stand for directory separators):
 
 - `templates-index.json` -> `templates/index.json` (homepage)
