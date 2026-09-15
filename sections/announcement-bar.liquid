@@ -31,7 +31,7 @@
             assign text = ''
             assign icon = block.settings.icon
             if block.type == 'rating'
-              assign text = block.settings.text | replace: '{{ rating }}', store_rating | replace: '{{ count }}', store_count
+              assign text = block.settings.text | replace: '[rating]', store_rating | replace: '[count]', store_count
               if icon == blank
                 assign icon = 'star'
               endif
@@ -162,13 +162,13 @@
       "settings": [
         {
           "type": "paragraph",
-          "content": "Reads the store-wide rating and review count from Theme settings > Offers. {{ rating }} and {{ count }} are replaced automatically."
+          "content": "Reads the store-wide rating and review count from Theme settings > Offers. [rating] and [count] are replaced automatically."
         },
         {
           "type": "text",
           "id": "text",
           "label": "Text",
-          "default": "Rated {{ rating }}★ by {{ count }} shark fans"
+          "default": "Rated [rating]★ by [count] shark fans"
         },
         {
           "type": "url",

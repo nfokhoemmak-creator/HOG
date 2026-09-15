@@ -6,7 +6,7 @@
   assign free_shipping_line = ''
   if threshold_cents > 0 and settings.free_shipping_text != blank
     assign amt = threshold_cents | money_without_trailing_zeros
-    assign free_shipping_line = settings.free_shipping_text | replace: '{{ amount }}', amt
+    assign free_shipping_line = settings.free_shipping_text | replace: '[amount]', amt
   endif
   assign has_discount = false
   if cart.cart_level_discount_applications.size > 0

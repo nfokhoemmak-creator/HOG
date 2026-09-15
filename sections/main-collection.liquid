@@ -22,7 +22,7 @@
   assign tier_percent = settings.bundle_tier_percent | default: 20
   assign tier_min_string = tier_min | append: ''
   assign tier_percent_string = tier_percent | append: ''
-  assign offer_text = section.settings.offer_text | replace: '{{ min }}', tier_min_string | replace: '{{ percent }}', tier_percent_string
+  assign offer_text = section.settings.offer_text | replace: '[min]', tier_min_string | replace: '[percent]', tier_percent_string
 
   assign active_filter_count = 0
   for filter in collection.filters
@@ -83,8 +83,8 @@
             <span class="badge badge--accent">{{ 'products.product.bundle_hint' | t: min: tier_min, percent: tier_percent }}</span>
             <span>{{ offer_text | escape }}</span>
           </p>
-          {%- if section.settings.offer_link_label != blank and section.settings.offer_link != blank -%}
-            <a class="btn btn--ghost btn--sm collection__offer-link" href="{{ section.settings.offer_link }}">
+          {%- if section.settings.offer_link_label != blank -%}
+            <a class="btn btn--ghost btn--sm collection__offer-link" href="{{ section.settings.offer_link | default: '/pages/bundles' }}">
               {{ section.settings.offer_link_label | escape }}
               {% render 'icon', name: 'arrow-right' %}
             </a>
@@ -349,9 +349,9 @@
                 <div class="btn-row">
                   <a class="btn btn--secondary" href="{{ collection.url }}">{{ 'collections.clear_all' | t }}</a>
                 </div>
-              {%- elsif section.settings.empty_button_label != blank and section.settings.empty_button_link != blank -%}
+              {%- elsif section.settings.empty_button_label != blank -%}
                 <div class="btn-row">
-                  <a class="btn" href="{{ section.settings.empty_button_link }}">{{ section.settings.empty_button_label | escape }}</a>
+                  <a class="btn" href="{{ section.settings.empty_button_link | default: '/collections/shark-slippers' }}">{{ section.settings.empty_button_label | escape }}</a>
                 </div>
               {%- endif -%}
             </div>
@@ -490,8 +490,8 @@
       "type": "text",
       "id": "offer_text",
       "label": "Offer text",
-      "info": "{{ min }} and {{ percent }} are replaced with the bundle settings from theme settings.",
-      "default": "Buy {{ min }} pairs, save {{ percent }}% — applied automatically in your cart"
+      "info": "[min] and [percent] are replaced with the bundle settings from theme settings.",
+      "default": "Buy [min] pairs, save [percent]% — applied automatically in your cart"
     },
     {
       "type": "text",
@@ -502,8 +502,7 @@
     {
       "type": "url",
       "id": "offer_link",
-      "label": "Offer link",
-      "default": "/pages/bundles"
+      "label": "Offer link"
     },
     {
       "type": "header",
@@ -564,8 +563,14 @@
       "id": "columns_mobile",
       "label": "Columns on mobile",
       "options": [
-        { "value": "1", "label": "1" },
-        { "value": "2", "label": "2" }
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        }
       ],
       "default": "2"
     },
@@ -582,8 +587,7 @@
     {
       "type": "url",
       "id": "empty_button_link",
-      "label": "Empty state button link",
-      "default": "/collections/shark-slippers"
+      "label": "Empty state button link"
     },
     {
       "type": "header",
@@ -594,9 +598,18 @@
       "id": "color_scheme",
       "label": "Color scheme",
       "options": [
-        { "value": "default", "label": "Default" },
-        { "value": "alt", "label": "Soft aqua" },
-        { "value": "brand", "label": "Navy" }
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "alt",
+          "label": "Soft aqua"
+        },
+        {
+          "value": "brand",
+          "label": "Navy"
+        }
       ],
       "default": "default"
     },
@@ -626,7 +639,9 @@
     }
   ],
   "enabled_on": {
-    "templates": ["collection"]
+    "templates": [
+      "collection"
+    ]
   }
 }
 {% endschema %}

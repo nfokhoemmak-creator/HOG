@@ -26,7 +26,7 @@
     "grid_gap": 16,
     "animations_enabled": true,
     "free_shipping_threshold": 30,
-    "free_shipping_text": "Free standard shipping over {{ amount }} across Lebanon",
+    "free_shipping_text": "Free standard shipping over [amount] across Lebanon",
     "bundle_tier_min": 2,
     "bundle_tier_percent": 20,
     "set_discount_percent": 25,

@@ -56,9 +56,9 @@
       <p class="lead">{{ text | escape }}</p>
 
       <div class="btn-row">
-        <a class="btn btn--lg" href="{{ section.settings.button_link }}">{{ button_label | escape }}</a>
-        <a class="btn btn--lg btn--outline" href="{{ section.settings.link_2 }}">{{ link_label_2 | escape }}</a>
-        <a class="btn btn--lg btn--ghost" href="{{ section.settings.link_3 }}">
+        <a class="btn btn--lg" href="{{ section.settings.button_link | default: '/collections/shark-slippers' }}">{{ button_label | escape }}</a>
+        <a class="btn btn--lg btn--outline" href="{{ section.settings.link_2 | default: '/products/sharkbite-blanket' }}">{{ link_label_2 | escape }}</a>
+        <a class="btn btn--lg btn--ghost" href="{{ section.settings.link_3 | default: '/pages/bundles' }}">
           {{ link_label_3 | escape }}
           {% render 'icon', name: 'arrow-right' %}
         </a>
@@ -117,8 +117,7 @@
     {
       "type": "url",
       "id": "button_link",
-      "label": "Link",
-      "default": "/collections/shark-slippers"
+      "label": "Link"
     },
     {
       "type": "header",
@@ -133,8 +132,7 @@
     {
       "type": "url",
       "id": "link_2",
-      "label": "Link",
-      "default": "/products/sharkbite-blanket"
+      "label": "Link"
     },
     {
       "type": "header",
@@ -149,8 +147,7 @@
     {
       "type": "url",
       "id": "link_3",
-      "label": "Link",
-      "default": "/pages/bundles"
+      "label": "Link"
     },
     {
       "type": "checkbox",
@@ -167,9 +164,18 @@
       "id": "color_scheme",
       "label": "Color scheme",
       "options": [
-        { "value": "default", "label": "Default" },
-        { "value": "alt", "label": "Soft aqua" },
-        { "value": "brand", "label": "Navy" }
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "alt",
+          "label": "Soft aqua"
+        },
+        {
+          "value": "brand",
+          "label": "Navy"
+        }
       ],
       "default": "default"
     },
@@ -199,7 +205,9 @@
     }
   ],
   "enabled_on": {
-    "templates": ["404"]
+    "templates": [
+      "404"
+    ]
   }
 }
 {% endschema %}

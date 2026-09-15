@@ -74,8 +74,8 @@
           {% render 'icon', name: 'shark' %}
           <h2 class="empty-state__title h3">{{ 'general.search.no_results' | t: terms: search.terms | escape }}</h2>
           <div class="btn-row">
-            <a class="btn" href="{{ section.settings.empty_button_link }}">{{ section.settings.empty_button_label | escape }}</a>
-            <a class="btn btn--ghost" href="{{ section.settings.empty_link_2 }}">
+            <a class="btn" href="{{ section.settings.empty_button_link | default: '/collections/shark-slippers' }}">{{ section.settings.empty_button_label | escape }}</a>
+            <a class="btn btn--ghost" href="{{ section.settings.empty_link_2 | default: '/pages/contact' }}">
               {{ section.settings.empty_link_label_2 | escape }}
               {% render 'icon', name: 'arrow-right' %}
             </a>
@@ -214,8 +214,7 @@
     {
       "type": "url",
       "id": "empty_button_link",
-      "label": "Button link",
-      "default": "/collections/shark-slippers"
+      "label": "Button link"
     },
     {
       "type": "text",
@@ -226,8 +225,7 @@
     {
       "type": "url",
       "id": "empty_link_2",
-      "label": "Secondary link",
-      "default": "/pages/contact"
+      "label": "Secondary link"
     },
     {
       "type": "header",
@@ -238,9 +236,18 @@
       "id": "color_scheme",
       "label": "Color scheme",
       "options": [
-        { "value": "default", "label": "Default" },
-        { "value": "alt", "label": "Soft aqua" },
-        { "value": "brand", "label": "Navy" }
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "alt",
+          "label": "Soft aqua"
+        },
+        {
+          "value": "brand",
+          "label": "Navy"
+        }
       ],
       "default": "default"
     },
@@ -270,7 +277,9 @@
     }
   ],
   "enabled_on": {
-    "templates": ["search"]
+    "templates": [
+      "search"
+    ]
   }
 }
 {% endschema %}

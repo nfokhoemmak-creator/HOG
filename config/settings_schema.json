@@ -267,8 +267,8 @@
         "type": "text",
         "id": "free_shipping_text",
         "label": "Free standard shipping message",
-        "info": "{{ amount }} is replaced with the threshold.",
-        "default": "Free standard shipping over {{ amount }} across Lebanon"
+        "info": "[amount] is replaced with the threshold.",
+        "default": "Free standard shipping over [amount] across Lebanon"
       },
       {
         "type": "header",

@@ -26,7 +26,7 @@
     {%- liquid
       assign item_text = block.settings.text
       if block.type == 'rating'
-        assign item_text = block.settings.text | replace: '{{ rating }}', settings.store_rating | replace: '{{ count }}', settings.store_review_count
+        assign item_text = block.settings.text | replace: '[rating]', settings.store_rating | replace: '[count]', settings.store_review_count
       endif
     -%}
     {%- if item_text != blank -%}
@@ -45,7 +45,7 @@
     {%- liquid
       assign item_text = block.settings.text
       if block.type == 'rating'
-        assign item_text = block.settings.text | replace: '{{ rating }}', settings.store_rating | replace: '{{ count }}', settings.store_review_count
+        assign item_text = block.settings.text | replace: '[rating]', settings.store_rating | replace: '[count]', settings.store_review_count
       endif
     -%}
     {%- if item_text != blank -%}
@@ -179,8 +179,8 @@
           "type": "text",
           "id": "text",
           "label": "Text",
-          "default": "Rated {{ rating }}★ by {{ count }} shark fans",
-          "info": "{{ rating }} and {{ count }} are replaced with the store rating from Theme settings > Offers."
+          "default": "Rated [rating]★ by [count] shark fans",
+          "info": "[rating] and [count] are replaced with the store rating from Theme settings > Offers."
         },
         {
           "type": "select",
@@ -204,7 +204,7 @@
         { "type": "item", "settings": { "text": "Free standard shipping over $30", "icon": "truck" } },
         { "type": "item", "settings": { "text": "Buy 2 pairs, save 20%", "icon": "gift" } },
         { "type": "item", "settings": { "text": "Delivery all over Lebanon", "icon": "shark" } },
-        { "type": "rating", "settings": { "text": "Rated {{ rating }}★ by {{ count }} shark fans", "icon": "star" } },
+        { "type": "rating", "settings": { "text": "Rated [rating]★ by [count] shark fans", "icon": "star" } },
         { "type": "item", "settings": { "text": "Damaged on arrival? Replaced within 7 days", "icon": "shield" } }
       ]
     }

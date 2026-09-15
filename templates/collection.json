@@ -19,7 +19,7 @@
         "show_heading": false,
         "show_description": false,
         "show_offer": true,
-        "offer_text": "Buy {{ min }} pairs, save {{ percent }}% — applied automatically in your cart",
+        "offer_text": "Buy [min] pairs, save [percent]% — applied automatically in your cart",
         "offer_link_label": "Build a bundle",
         "offer_link": "/pages/bundles",
         "show_count": true,

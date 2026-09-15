@@ -30,7 +30,7 @@
         "announcement-rating": {
           "type": "rating",
           "settings": {
-            "text": "Rated {{ rating }}★ by {{ count }} shark fans",
+            "text": "Rated [rating]★ by [count] shark fans",
             "icon": "star"
           }
         }

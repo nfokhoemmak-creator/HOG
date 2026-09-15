@@ -180,10 +180,22 @@
       "id": "image_ratio",
       "label": "Image shape",
       "options": [
-        { "value": "portrait", "label": "Portrait (4:5)" },
-        { "value": "square", "label": "Square" },
-        { "value": "landscape", "label": "Landscape (4:3)" },
-        { "value": "natural", "label": "Natural" }
+        {
+          "value": "portrait",
+          "label": "Portrait (4:5)"
+        },
+        {
+          "value": "square",
+          "label": "Square"
+        },
+        {
+          "value": "landscape",
+          "label": "Landscape (4:3)"
+        },
+        {
+          "value": "natural",
+          "label": "Natural"
+        }
       ],
       "default": "portrait"
     },
@@ -192,8 +204,14 @@
       "id": "layout",
       "label": "Layout",
       "options": [
-        { "value": "image_first", "label": "Image first" },
-        { "value": "text_first", "label": "Text first" }
+        {
+          "value": "image_first",
+          "label": "Image first"
+        },
+        {
+          "value": "text_first",
+          "label": "Text first"
+        }
       ],
       "default": "image_first"
     },
@@ -229,8 +247,7 @@
     {
       "type": "url",
       "id": "button_link",
-      "label": "Button link",
-      "default": "/products/sharkbite-blanket"
+      "label": "Button link"
     },
     {
       "type": "text",
@@ -251,9 +268,18 @@
       "id": "color_scheme",
       "label": "Color scheme",
       "options": [
-        { "value": "default", "label": "Default" },
-        { "value": "alt", "label": "Soft aqua" },
-        { "value": "brand", "label": "Navy" }
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "alt",
+          "label": "Soft aqua"
+        },
+        {
+          "value": "brand",
+          "label": "Navy"
+        }
       ],
       "default": "default"
     },
@@ -288,9 +314,18 @@
           "id": "source",
           "label": "Number comes from",
           "options": [
-            { "value": "custom", "label": "Custom number" },
-            { "value": "store_rating", "label": "Store rating (theme settings)" },
-            { "value": "store_review_count", "label": "Review count (theme settings)" }
+            {
+              "value": "custom",
+              "label": "Custom number"
+            },
+            {
+              "value": "store_rating",
+              "label": "Store rating (theme settings)"
+            },
+            {
+              "value": "store_review_count",
+              "label": "Review count (theme settings)"
+            }
           ],
           "default": "custom"
         },
@@ -322,9 +357,28 @@
         "button_link": "/products/sharkbite-blanket"
       },
       "blocks": [
-        { "type": "stat", "settings": { "source": "store_rating", "label": "Average rating" } },
-        { "type": "stat", "settings": { "source": "store_review_count", "label": "Reviews from shark fans" } },
-        { "type": "stat", "settings": { "source": "custom", "number": "4", "label": "Blanket sizes" } }
+        {
+          "type": "stat",
+          "settings": {
+            "source": "store_rating",
+            "label": "Average rating"
+          }
+        },
+        {
+          "type": "stat",
+          "settings": {
+            "source": "store_review_count",
+            "label": "Reviews from shark fans"
+          }
+        },
+        {
+          "type": "stat",
+          "settings": {
+            "source": "custom",
+            "number": "4",
+            "label": "Blanket sizes"
+          }
+        }
       ]
     },
     {
@@ -337,9 +391,29 @@
         "button_link": "/collections/shark-slippers"
       },
       "blocks": [
-        { "type": "stat", "settings": { "source": "custom", "number": "36–45", "label": "EU sizes" } },
-        { "type": "stat", "settings": { "source": "custom", "number": "2", "label": "Styles: Winter & Originals" } },
-        { "type": "stat", "settings": { "source": "store_rating", "label": "Average rating" } }
+        {
+          "type": "stat",
+          "settings": {
+            "source": "custom",
+            "number": "36–45",
+            "label": "EU sizes"
+          }
+        },
+        {
+          "type": "stat",
+          "settings": {
+            "source": "custom",
+            "number": "2",
+            "label": "Styles: Winter & Originals"
+          }
+        },
+        {
+          "type": "stat",
+          "settings": {
+            "source": "store_rating",
+            "label": "Average rating"
+          }
+        }
       ]
     }
   ]

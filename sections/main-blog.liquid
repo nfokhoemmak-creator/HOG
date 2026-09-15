@@ -115,7 +115,7 @@
           {% render 'icon', name: 'shark' %}
           <h2 class="empty-state__title h3">{{ 'blog.no_articles' | t }}</h2>
           <div class="btn-row">
-            <a class="btn" href="{{ section.settings.empty_button_link }}">{{ section.settings.empty_button_label | escape }}</a>
+            <a class="btn" href="{{ section.settings.empty_button_link | default: '/collections/shark-slippers' }}">{{ section.settings.empty_button_label | escape }}</a>
           </div>
         </div>
       {%- endif -%}
@@ -145,8 +145,14 @@
       "id": "text_alignment",
       "label": "Heading alignment",
       "options": [
-        { "value": "left", "label": "Left" },
-        { "value": "center", "label": "Center" }
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        }
       ],
       "default": "left"
     },
@@ -192,8 +198,7 @@
     {
       "type": "url",
       "id": "empty_button_link",
-      "label": "Empty state button link",
-      "default": "/collections/shark-slippers"
+      "label": "Empty state button link"
     },
     {
       "type": "header",
@@ -204,9 +209,18 @@
       "id": "color_scheme",
       "label": "Color scheme",
       "options": [
-        { "value": "default", "label": "Default" },
-        { "value": "alt", "label": "Soft aqua" },
-        { "value": "brand", "label": "Navy" }
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "alt",
+          "label": "Soft aqua"
+        },
+        {
+          "value": "brand",
+          "label": "Navy"
+        }
       ],
       "default": "default"
     },
@@ -236,7 +250,9 @@
     }
   ],
   "enabled_on": {
-    "templates": ["blog"]
+    "templates": [
+      "blog"
+    ]
   }
 }
 {% endschema %}
