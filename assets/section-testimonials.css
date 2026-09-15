@@ -1,0 +1,151 @@
+/* Testimonials — real quotes as cards, store-wide summary pill, app blocks below */
+
+.testimonials__header {
+  justify-content: center;
+  text-align: center;
+}
+
+.testimonials__header > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  max-width: 64rem;
+  margin-inline: auto;
+}
+
+.testimonials__header .section__subtitle {
+  margin: 0;
+}
+
+.testimonials__summary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 4rem;
+  padding: 0.6rem 1.4rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-btn);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.testimonials__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  align-items: stretch;
+}
+
+.testimonials__card {
+  height: 100%;
+}
+
+.testimonials__card:hover {
+  transform: none;
+}
+
+.testimonials__figure {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: var(--space-5);
+}
+
+.testimonials__stars {
+  display: flex;
+}
+
+.testimonials__quote {
+  flex: 1 1 auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 1.6rem;
+  line-height: 1.55;
+}
+
+.testimonials__quote > :last-child {
+  margin-bottom: 0;
+}
+
+.testimonials__quote p::before {
+  content: '\201C';
+}
+
+.testimonials__quote p:last-child::after {
+  content: '\201D';
+}
+
+.testimonials__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+}
+
+.testimonials__avatar {
+  flex: none;
+  width: 4.8rem;
+  height: 4.8rem;
+  border-radius: var(--radius-pill);
+  object-fit: cover;
+  background: var(--color-surface-alt);
+}
+
+.testimonials__avatar--initial {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-brand);
+  font-family: var(--font-heading-family);
+  font-weight: var(--font-heading-weight);
+  font-size: 1.8rem;
+  text-transform: uppercase;
+}
+
+.testimonials__who {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.testimonials__author {
+  font-family: var(--font-heading-family);
+  font-weight: var(--font-heading-weight-medium);
+  font-size: 1.5rem;
+}
+
+.testimonials__app {
+  margin-top: var(--space-6);
+}
+
+.testimonials__grid + .testimonials__app {
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-border);
+}
+
+/* Navy scheme */
+.section--brand .testimonials__summary {
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border-color: transparent;
+}
+
+.section--brand .testimonials__product {
+  color: var(--color-muted);
+}
+
+@media (min-width: 990px) {
+  .testimonials__figure {
+    padding: var(--space-6);
+  }
+
+  .testimonials__quote {
+    font-size: 1.7rem;
+  }
+}

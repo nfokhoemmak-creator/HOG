@@ -1,49 +1,227 @@
-<div class="section">
-  <div class="container container--narrow" style="text-align: {{ section.settings.text_alignment }};">
-    {%- if section.settings.heading != blank -%}
-      <h2 class="h2" style="margin-bottom: var(--space-4);">{{ section.settings.heading }}</h2>
-    {%- endif -%}
+{%- liquid
+  assign s = section.settings
 
-    {%- if section.settings.text != blank -%}
-      <div class="page-content" style="padding-block: 0; margin-inline: {% if section.settings.text_alignment == 'center' %}auto{% else %}0{% endif %};">
-        {{ section.settings.text }}
-      </div>
-    {%- endif -%}
+  case s.color_scheme
+    when 'alt'
+      assign scheme_class = ' section--alt'
+    when 'brand'
+      assign scheme_class = ' section--brand'
+    else
+      assign scheme_class = ''
+  endcase
+
+  assign align_class = ''
+  if s.alignment == 'center'
+    assign align_class = ' center rich-text--center'
+  endif
+
+  assign container_class = 'container'
+  if s.narrow
+    assign container_class = 'container container--narrow'
+  endif
+
+  assign heading_class = 'h2'
+  if s.heading_size == 'large'
+    assign heading_class = 'h1'
+  elsif s.heading_size == 'small'
+    assign heading_class = 'h3'
+  endif
+
+  assign pt = s.padding_top
+  assign pb = s.padding_bottom
+  assign pt_mobile = pt | times: 0.75 | round
+  assign pb_mobile = pb | times: 0.75 | round
+-%}
+
+{%- style -%}
+  #shopify-section-{{ section.id }} .rich-text {
+    padding-top: {{ pt_mobile }}px;
+    padding-bottom: {{ pb_mobile }}px;
+  }
+  @media (min-width: 750px) {
+    #shopify-section-{{ section.id }} .rich-text {
+      padding-top: {{ pt }}px;
+      padding-bottom: {{ pb }}px;
+    }
+  }
+  #shopify-section-{{ section.id }} .rich-text__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    max-width: 72rem;
+  }
+  #shopify-section-{{ section.id }} .rich-text--center .rich-text__inner {
+    margin-inline: auto;
+    align-items: center;
+  }
+  #shopify-section-{{ section.id }} .rich-text__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0;
+  }
+  #shopify-section-{{ section.id }} .rich-text__heading,
+  #shopify-section-{{ section.id }} .rich-text__text {
+    margin: 0;
+  }
+  #shopify-section-{{ section.id }} .rich-text__text > :last-child {
+    margin-bottom: 0;
+  }
+  #shopify-section-{{ section.id }} .rich-text__actions {
+    margin-top: var(--space-2);
+  }
+  #shopify-section-{{ section.id }} .rich-text.section--brand .rich-text__text {
+    color: inherit;
+  }
+{%- endstyle -%}
+
+<div class="section rich-text{{ scheme_class }}{{ align_class }}">
+  <div class="{{ container_class }}">
+    <div class="rich-text__inner">
+      {%- if s.eyebrow != blank -%}
+        <p class="eyebrow rich-text__eyebrow">
+          <span class="accent" aria-hidden="true">{% render 'icon', name: 'shark' %}</span>
+          {{ s.eyebrow | escape }}
+        </p>
+      {%- endif -%}
+
+      {%- if s.heading != blank -%}
+        <h2 class="{{ heading_class }} rich-text__heading">{{ s.heading | escape }}</h2>
+      {%- endif -%}
+
+      {%- if s.text != blank -%}
+        <div class="rte lead rich-text__text">{{ s.text }}</div>
+      {%- endif -%}
+
+      {%- if s.button_label != blank or s.button_label_2 != blank -%}
+        <div class="btn-row rich-text__actions{% if s.alignment == 'center' %} btn-row--center{% endif %}">
+          {%- if s.button_label != blank -%}
+            <a class="btn" href="{{ s.button_link | default: '/collections/shark-slippers' }}">{{ s.button_label | escape }}</a>
+          {%- endif -%}
+          {%- if s.button_label_2 != blank -%}
+            <a class="btn btn--ghost" href="{{ s.button_link_2 | default: '/collections/shark-slippers' }}">
+              {{ s.button_label_2 | escape }}
+              {% render 'icon', name: 'arrow-right' %}
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
   </div>
 </div>
 
 {% schema %}
 {
-  "name": "t:sections.rich_text.name",
+  "name": "Rich text",
   "tag": "section",
-  "class": "rich-text-section",
+  "class": "section-rich-text",
   "settings": [
     {
       "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Ready?"
+    },
+    {
+      "type": "text",
       "id": "heading",
-      "label": "t:sections.rich_text.settings.heading.label",
-      "default": "About House of Garments"
+      "label": "Heading",
+      "default": "Bite into comfort"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" }
+      ],
+      "default": "medium"
     },
     {
       "type": "richtext",
       "id": "text",
-      "label": "t:sections.rich_text.settings.text.label",
-      "default": "<p>Streetwear out of Lebanon, released in limited runs.</p>"
+      "label": "Text",
+      "default": "<p>Plush shark slippers and the famous shark blanket, delivered across Lebanon. Buy two pairs and 20% comes off automatically in your cart.</p>"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Shop slippers"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link",
+      "default": "/collections/shark-slippers"
+    },
+    {
+      "type": "text",
+      "id": "button_label_2",
+      "label": "Secondary link label"
+    },
+    {
+      "type": "url",
+      "id": "button_link_2",
+      "label": "Secondary link"
     },
     {
       "type": "select",
-      "id": "text_alignment",
-      "label": "t:sections.rich_text.settings.text_alignment.label",
+      "id": "alignment",
+      "label": "Alignment",
       "options": [
-        { "value": "left", "label": "t:sections.rich_text.settings.text_alignment.options__1" },
-        { "value": "center", "label": "t:sections.rich_text.settings.text_alignment.options__2" }
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
       ],
       "default": "center"
+    },
+    {
+      "type": "checkbox",
+      "id": "narrow",
+      "label": "Narrow container",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Section"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "alt", "label": "Soft aqua" },
+        { "value": "brand", "label": "Navy" }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
     }
   ],
   "presets": [
     {
-      "name": "t:sections.rich_text.name"
+      "name": "Rich text"
     }
   ]
 }

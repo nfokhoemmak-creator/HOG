@@ -1,0 +1,193 @@
+{
+  "sections": {
+    "bundle-builder": {
+      "type": "bundle-builder",
+      "settings": {
+        "heading": "Bundle & save",
+        "text": "Mix any styles and sizes. The discount is applied automatically in your cart — no code needed.",
+        "anchor_id": "bundle-builder",
+        "product_a": "sharkbite-winter-collection",
+        "label_a": "Winter",
+        "product_b": "the-sharkbite™-originals",
+        "label_b": "Originals",
+        "product_blanket": "sharkbite-blanket",
+        "label_blanket": "Blanket",
+        "color_scheme": "alt",
+        "padding_top": 64,
+        "padding_bottom": 64
+      },
+      "blocks": {
+        "bundle-solo": {
+          "type": "bundle",
+          "settings": {
+            "title": "Solo",
+            "subtitle": "Start here",
+            "pairs": 1,
+            "include_blanket": false,
+            "badge": "",
+            "description": "One pair of shark slippers in your size and style."
+          }
+        },
+        "bundle-pair": {
+          "type": "bundle",
+          "settings": {
+            "title": "The Pair",
+            "subtitle": "Two pairs, 20% off both.",
+            "pairs": 2,
+            "include_blanket": false,
+            "badge": "Most popular",
+            "description": "Two pairs, 20% off both. Free standard shipping unlocked."
+          }
+        },
+        "bundle-family": {
+          "type": "bundle",
+          "settings": {
+            "title": "Family Pack",
+            "subtitle": "Three pairs, 20% off",
+            "pairs": 3,
+            "include_blanket": false,
+            "badge": "",
+            "description": "Three pairs, 20% off every one. Mix winter and summer, any sizes."
+          }
+        },
+        "bundle-cozy-set": {
+          "type": "bundle",
+          "settings": {
+            "title": "The Cozy Set",
+            "subtitle": "Slippers + the shark blanket",
+            "pairs": 1,
+            "include_blanket": true,
+            "badge": "Best gift",
+            "description": "Slippers + the shark blanket, 25% off the blanket."
+          }
+        }
+      },
+      "block_order": ["bundle-solo", "bundle-pair", "bundle-family", "bundle-cozy-set"]
+    },
+    "offer-banner": {
+      "type": "offer-banner",
+      "settings": {
+        "style": "brand",
+        "badge": "Best gift",
+        "eyebrow": "The Cozy Set",
+        "heading": "Add the blanket, get 25% off it",
+        "text": "<p>Any pair of slippers plus the wearable shark blanket. The discount is applied automatically in your cart.</p>",
+        "button_label": "Build the Cozy Set",
+        "button_link": "/pages/bundles#bundle-builder",
+        "link_label": "Shop the blanket on its own",
+        "link_url": "/products/sharkbite-blanket",
+        "text_alignment": "left",
+        "full_width": false,
+        "color_scheme": "default",
+        "padding_top": 32,
+        "padding_bottom": 32
+      }
+    },
+    "faq": {
+      "type": "faq",
+      "settings": {
+        "heading": "Bundle questions, bitten answers.",
+        "text": "",
+        "open_first": true,
+        "show_json_ld": true,
+        "color_scheme": "default",
+        "padding_top": 64,
+        "padding_bottom": 64
+      },
+      "blocks": {
+        "faq-discounts": {
+          "type": "question",
+          "settings": {
+            "question": "How do bundle discounts work?",
+            "answer": "<p>Add 2 or more pairs and 20% comes off automatically in your cart. Add the shark blanket with any slippers and the blanket is 25% off. No codes.</p>"
+          }
+        },
+        "faq-mix": {
+          "type": "question",
+          "settings": {
+            "question": "Can I mix sizes and styles in a bundle?",
+            "answer": "<p>Yes. Any two or more pairs count — Winter or Originals, any size, any colour. The discount applies to every pair in your cart, and the blanket discount applies as soon as there is at least one pair with it.</p>"
+          }
+        },
+        "faq-delivery": {
+          "type": "question",
+          "settings": {
+            "question": "How fast is delivery?",
+            "answer": "<p>Orders are prepared within 3–5 business days, then delivered by standard courier (3–5 days, $3 — free over $30) or express courier (1–2 days, $6).</p>"
+          }
+        },
+        "faq-returns": {
+          "type": "question",
+          "settings": {
+            "question": "Can I exchange or return?",
+            "answer": "<p>All sales are final, but if your order arrives damaged or defective, message us on WhatsApp within 7 days and we'll replace it.</p>"
+          }
+        }
+      },
+      "block_order": ["faq-discounts", "faq-mix", "faq-delivery", "faq-returns"]
+    },
+    "testimonials": {
+      "type": "testimonials",
+      "settings": {
+        "heading": "Hear it from the shark fans",
+        "text": "",
+        "anchor_id": "",
+        "show_summary": true,
+        "rating_value": "4.9",
+        "rating_count": "26",
+        "color_scheme": "alt",
+        "padding_top": 64,
+        "padding_bottom": 64
+      },
+      "blocks": {
+        "testimonial-rahaf": {
+          "type": "testimonial",
+          "settings": {
+            "quote": "<p>Cozy, warm, and hilariously fun – the SharkBite Winter Slippers keep my feet toasty while making me smile every time I wear them! 🦈❄️</p>",
+            "author": "Rahaf L.",
+            "product": "Winter slippers",
+            "stars": 5
+          }
+        },
+        "testimonial-wael": {
+          "type": "testimonial",
+          "settings": {
+            "quote": "<p>Light, comfy, and breathable – the SharkBite Summer Slippers are perfect for sunny days with a splash of fun!</p>",
+            "author": "Wael K.",
+            "product": "Originals slides",
+            "stars": 5
+          }
+        },
+        "testimonial-ghida": {
+          "type": "testimonial",
+          "settings": {
+            "quote": "<p>Amazing customer support and super fast shipping – my SharkBite Slippers arrived in no time, and the team was so helpful!</p>",
+            "author": "Ghida L.",
+            "product": "Shark slippers",
+            "stars": 5
+          }
+        }
+      },
+      "block_order": ["testimonial-rahaf", "testimonial-wael", "testimonial-ghida"]
+    },
+    "closing-cta": {
+      "type": "rich-text",
+      "settings": {
+        "eyebrow": "Ready?",
+        "heading": "Pick your pack",
+        "heading_size": "medium",
+        "text": "<p>Two pairs, 20% off both, free standard shipping. Or add the blanket and save on that too — all applied automatically in your cart.</p>",
+        "button_label": "Build a bundle",
+        "button_link": "/pages/bundles#bundle-builder",
+        "button_label_2": "Shop single pairs",
+        "button_link_2": "/collections/shark-slippers",
+        "alignment": "center",
+        "narrow": true,
+        "color_scheme": "default",
+        "padding_top": 64,
+        "padding_bottom": 64
+      }
+    }
+  },
+  "order": ["bundle-builder", "offer-banner", "faq", "testimonials", "closing-cta"]
+}

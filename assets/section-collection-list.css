@@ -1,0 +1,115 @@
+/* ==========================================================================
+   Shark Bite — section-collection-list.css
+   Collection cards: image, title, short line and a "Shop now →" affordance.
+   The whole card is clickable through the title link.
+   ========================================================================== */
+
+.collection-list__card {
+  position: relative;
+}
+
+.collection-list__media {
+  aspect-ratio: 4 / 3;
+}
+
+.collection-list__image {
+  transition: transform 500ms var(--ease);
+}
+
+@media (hover: hover) {
+  .collection-list__card:hover .collection-list__image {
+    transform: scale(1.03);
+  }
+}
+
+.collection-list__placeholder {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--color-brand-soft);
+  color: var(--color-brand);
+  opacity: 0.6;
+}
+
+.collection-list__body {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.collection-list__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.collection-list__text .card__meta {
+  margin: 0;
+}
+
+/* Stretch the title link over the whole card */
+.collection-list__card .card__title a::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.collection-list__card .card__title a:focus-visible {
+  outline: none;
+}
+
+.collection-list__card:has(.card__title a:focus-visible) {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+  box-shadow: 0 0 0 3px var(--color-bg);
+}
+
+.collection-list__cta {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 4.4rem;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--color-ink);
+  border-radius: var(--radius-btn);
+  color: var(--color-ink);
+  font-family: var(--font-heading-family);
+  font-weight: 600;
+  font-size: 1.4rem;
+  white-space: nowrap;
+  transition: background var(--duration) var(--ease), color var(--duration) var(--ease);
+}
+
+.collection-list__cta .icon {
+  width: 1.8rem;
+  height: 1.8rem;
+  transition: transform var(--duration) var(--ease);
+}
+
+@media (hover: hover) {
+  .collection-list__card:hover .collection-list__cta {
+    background: var(--color-ink);
+    color: var(--color-bg);
+  }
+
+  .collection-list__card:hover .collection-list__cta .icon {
+    transform: translateX(2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .collection-list__image,
+  .collection-list__cta,
+  .collection-list__cta .icon {
+    transition: none;
+  }
+
+  .collection-list__card:hover .collection-list__image {
+    transform: none;
+  }
+}

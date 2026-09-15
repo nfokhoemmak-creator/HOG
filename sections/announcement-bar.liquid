@@ -1,89 +1,192 @@
+{{ 'section-header.css' | asset_url | stylesheet_tag }}
+
 {%- liquid
-  assign scheme_class = ''
+  assign scheme_class = 'announcement-bar--brand'
   case section.settings.color_scheme
     when 'accent'
       assign scheme_class = 'announcement-bar--accent'
-    when 'inverse'
-      assign scheme_class = 'announcement-bar--inverse'
+    when 'default'
+      assign scheme_class = 'announcement-bar--default'
   endcase
+  assign store_rating = settings.store_rating | default: '4.9'
+  assign store_count = settings.store_review_count | default: '26'
 -%}
 
 {%- if section.blocks.size > 0 -%}
   <announcement-rotator
     class="announcement-bar {{ scheme_class }}"
-    data-speed="{{ section.settings.rotate_speed }}"
-    {% unless section.settings.rotate %}data-static{% endunless %}
-    role="region"
-    aria-label="{{ 'sections.announcements.announcement' | t }}"
+    data-speed="{{ section.settings.speed }}"
+    {% if section.settings.autoplay %}data-autoplay{% endif %}
   >
-    <div class="announcement-bar__list">
-      {%- for block in section.blocks -%}
-        <div
-          class="announcement-bar__item"
-          {% if forloop.index > 1 and section.settings.rotate %}hidden{% endif %}
-          {{ block.shopify_attributes }}
-        >
-          {%- if block.settings.link != blank -%}
-            <a href="{{ block.settings.link }}">{{ block.settings.text }}</a>
-          {%- else -%}
-            {{ block.settings.text }}
+    <div class="container announcement-bar__inner">
+      {%- if section.blocks.size > 1 and section.settings.show_arrows -%}
+        <button type="button" class="announcement-bar__arrow" data-announcement-prev aria-label="{{ 'pagination.previous' | t }}" hidden>
+          {% render 'icon', name: 'chevron-left' %}
+        </button>
+      {%- endif -%}
+
+      <div class="announcement-bar__list" aria-live="polite">
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign text = ''
+            assign icon = block.settings.icon
+            if block.type == 'rating'
+              assign text = block.settings.text | replace: '{{ rating }}', store_rating | replace: '{{ count }}', store_count
+              if icon == blank
+                assign icon = 'star'
+              endif
+            else
+              assign text = block.settings.text
+            endif
+          -%}
+          {%- if text != blank -%}
+            <div class="announcement-bar__item" data-announcement-item {{ block.shopify_attributes }}>
+              {%- if block.settings.link != blank -%}
+                <a class="announcement-bar__link" href="{{ block.settings.link }}">
+                  {%- if icon != blank and icon != 'none' -%}
+                    <span class="announcement-bar__icon">{% render 'icon', name: icon %}</span>
+                  {%- endif -%}
+                  <span>{{ text }}</span>
+                </a>
+              {%- else -%}
+                <span class="announcement-bar__text">
+                  {%- if icon != blank and icon != 'none' -%}
+                    <span class="announcement-bar__icon">{% render 'icon', name: icon %}</span>
+                  {%- endif -%}
+                  <span>{{ text }}</span>
+                </span>
+              {%- endif -%}
+            </div>
           {%- endif -%}
-        </div>
-      {%- endfor -%}
+        {%- endfor -%}
+      </div>
+
+      {%- if section.blocks.size > 1 and section.settings.show_arrows -%}
+        <button type="button" class="announcement-bar__arrow" data-announcement-next aria-label="{{ 'pagination.next' | t }}" hidden>
+          {% render 'icon', name: 'chevron-right' %}
+        </button>
+      {%- endif -%}
     </div>
   </announcement-rotator>
 {%- endif -%}
 
 {% schema %}
 {
-  "name": "t:sections.announcement_bar.name",
+  "name": "Announcement bar",
   "tag": "aside",
   "class": "announcement-bar-section",
   "max_blocks": 5,
+  "enabled_on": {
+    "groups": ["header"]
+  },
   "settings": [
     {
       "type": "select",
       "id": "color_scheme",
-      "label": "t:sections.announcement_bar.settings.color_scheme.label",
+      "label": "Color scheme",
       "options": [
-        { "value": "accent", "label": "t:sections.announcement_bar.settings.color_scheme.options__1" },
-        { "value": "inverse", "label": "t:sections.announcement_bar.settings.color_scheme.options__2" },
-        { "value": "default", "label": "t:sections.announcement_bar.settings.color_scheme.options__3" }
+        { "value": "brand", "label": "Brand (navy)" },
+        { "value": "accent", "label": "Accent (coral)" },
+        { "value": "default", "label": "Default (sand)" }
       ],
-      "default": "accent"
+      "default": "brand"
     },
     {
       "type": "checkbox",
-      "id": "rotate",
-      "label": "t:sections.announcement_bar.settings.rotate.label",
-      "default": true
+      "id": "autoplay",
+      "label": "Rotate announcements automatically",
+      "default": true,
+      "info": "Rotation pauses on hover and respects reduced-motion settings."
     },
     {
       "type": "range",
-      "id": "rotate_speed",
+      "id": "speed",
       "min": 3,
       "max": 12,
       "step": 1,
       "unit": "s",
-      "label": "t:sections.announcement_bar.settings.rotate_speed.label",
+      "label": "Seconds per announcement",
       "default": 5
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show previous/next arrows",
+      "default": false
     }
   ],
   "blocks": [
     {
       "type": "announcement",
-      "name": "t:sections.announcement_bar.blocks.announcement.name",
+      "name": "Announcement",
       "settings": [
         {
           "type": "text",
           "id": "text",
-          "label": "t:sections.announcement_bar.blocks.announcement.settings.text.label",
-          "default": "DELIVERY ALL OVER LEBANON"
+          "label": "Text",
+          "default": "Free standard shipping over $30 across Lebanon"
         },
         {
           "type": "url",
           "id": "link",
-          "label": "t:sections.announcement_bar.blocks.announcement.settings.link.label"
+          "label": "Link"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "shark", "label": "Shark" },
+            { "value": "truck", "label": "Truck" },
+            { "value": "bolt", "label": "Bolt" },
+            { "value": "gift", "label": "Gift" },
+            { "value": "sparkle", "label": "Sparkle" },
+            { "value": "star", "label": "Star" },
+            { "value": "check", "label": "Check" },
+            { "value": "shield", "label": "Shield" },
+            { "value": "whatsapp", "label": "WhatsApp" },
+            { "value": "snowflake", "label": "Snowflake" },
+            { "value": "sun", "label": "Sun" },
+            { "value": "heart", "label": "Heart" },
+            { "value": "box", "label": "Box" },
+            { "value": "info", "label": "Info" }
+          ],
+          "default": "shark"
+        }
+      ]
+    },
+    {
+      "type": "rating",
+      "name": "Store rating",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Reads the store-wide rating and review count from Theme settings > Offers. {{ rating }} and {{ count }} are replaced automatically."
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Rated {{ rating }}★ by {{ count }} shark fans"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "star", "label": "Star" },
+            { "value": "shark", "label": "Shark" },
+            { "value": "heart", "label": "Heart" },
+            { "value": "sparkle", "label": "Sparkle" }
+          ],
+          "default": "star"
         }
       ]
     }

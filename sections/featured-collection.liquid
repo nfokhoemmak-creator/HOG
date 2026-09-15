@@ -1,103 +1,258 @@
-{%- liquid
-  assign target = collections[section.settings.collection]
-  assign limit = section.settings.products_to_show
+{{ 'section-featured-collection.css' | asset_url | stylesheet_tag }}
 
-  assign fallback_title = 'onboarding.collection_title' | t
-  assign heading = section.settings.title | default: target.title | default: fallback_title
+{%- liquid
+  assign s = section.settings
+  assign limit = s.products_to_show | default: 3
+
+  comment
+    Source order: the hand-picked product list (fixed, merchant-controlled
+    order) → the chosen collection → the shark-slippers collection.
+  endcomment
+  assign source_products = blank
+  assign source_collection = blank
+  if s.products.size > 0
+    assign source_products = s.products
+  else
+    assign source_collection = s.collection
+    if source_collection == blank
+      assign source_collection = collections['shark-slippers']
+    endif
+    if source_collection != blank
+      assign source_products = source_collection.products
+    endif
+  endif
+
+  assign product_count = 0
+  if source_products != blank
+    assign product_count = source_products.size
+  endif
+  if product_count > limit
+    assign product_count = limit
+  endif
+
+  assign heading = s.heading
+  if heading == blank and source_collection != blank
+    assign heading = source_collection.title
+  endif
+
+  assign columns_desktop = s.columns_desktop | default: 3
+  assign grid_class = 'product-grid product-grid--' | append: columns_desktop
+  if s.columns_mobile == '1'
+    assign grid_class = grid_class | append: ' product-grid--mobile-1'
+  endif
+
+  if columns_desktop == 4
+    assign card_sizes = '(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw'
+  elsif columns_desktop == 2
+    assign card_sizes = '(min-width: 750px) 50vw, 50vw'
+  else
+    assign card_sizes = '(min-width: 750px) 33vw, 50vw'
+  endif
+  if s.columns_mobile == '1'
+    assign card_sizes = card_sizes | replace: ', 50vw', ', 100vw'
+  endif
+
+  assign show_view_all = false
+  if s.show_view_all and source_collection != blank
+    assign show_view_all = true
+  endif
+
+  case s.color_scheme
+    when 'alt'
+      assign scheme_class = ' section--alt'
+    when 'brand'
+      assign scheme_class = ' section--brand'
+    else
+      assign scheme_class = ''
+  endcase
+
+  assign pt = s.padding_top
+  assign pb = s.padding_bottom
+  assign pt_mobile = pt | times: 0.75 | round
+  assign pb_mobile = pb | times: 0.75 | round
 -%}
 
-<div class="section">
+{%- style -%}
+  #shopify-section-{{ section.id }} .featured-collection {
+    padding-top: {{ pt_mobile }}px;
+    padding-bottom: {{ pb_mobile }}px;
+  }
+  @media (min-width: 750px) {
+    #shopify-section-{{ section.id }} .featured-collection {
+      padding-top: {{ pt }}px;
+      padding-bottom: {{ pb }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="section featured-collection{{ scheme_class }}">
   <div class="container">
-    <div class="section__head">
-      <h2 class="h2">{{ heading }}</h2>
+    {%- if heading != blank or s.subtitle != blank or show_view_all -%}
+      <div class="section__header">
+        <div>
+          {%- if heading != blank -%}
+            <h2 class="section__title h2">{{ heading | escape }}</h2>
+          {%- endif -%}
+          {%- if s.subtitle != blank -%}
+            <p class="section__subtitle">{{ s.subtitle | escape }}</p>
+          {%- endif -%}
+        </div>
+        {%- if show_view_all -%}
+          <a class="section__link featured-collection__link" href="{{ source_collection.url }}">
+            {{ 'general.view_all' | t }}
+            {% render 'icon', name: 'arrow-right' %}
+          </a>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
 
-      {%- if section.settings.show_view_all and target != blank -%}
-        <a class="underline eyebrow" href="{{ target.url }}">
-          {{ 'sections.featured_collection.view_all' | t }}
-        </a>
-      {%- endif -%}
-    </div>
-
-    <div
-      class="product-grid"
-      style="--cols-desktop: {{ section.settings.columns_desktop }}; --cols-mobile: {{ section.settings.columns_mobile }};"
-    >
-      {%- if target.products.size > 0 -%}
-        {%- for product in target.products limit: limit -%}
-          {% render 'product-card', card_product: product, lazy_load: forloop.index > 4 %}
+    {%- if product_count > 0 -%}
+      <div class="{{ grid_class }} featured-collection__grid">
+        {%- for product in source_products limit: limit -%}
+          {%- liquid
+            assign lazy = true
+            if forloop.index <= 2
+              assign lazy = false
+            endif
+          -%}
+          {% render 'product-card', card_product: product, lazy_load: lazy, show_rating: s.show_rating, sizes: card_sizes %}
         {%- endfor -%}
-      {%- else -%}
+      </div>
+    {%- elsif request.design_mode -%}
+      <div class="{{ grid_class }} featured-collection__grid">
         {%- for i in (1..limit) -%}
-          <div class="card">
-            <div class="card__media card__media--{{ settings.card_image_ratio }}">
-              {{ 'product-' | append: forloop.index | placeholder_svg_tag: 'card__image' }}
+          <div class="card featured-collection__placeholder">
+            <div class="card__media card__media--square">
+              {{ 'product-' | append: forloop.index | placeholder_svg_tag: 'featured-collection__placeholder-svg' }}
             </div>
-            <div class="card__info">
-              <span class="card__title">{{ 'onboarding.product_title' | t }}</span>
-              <div class="price"><span class="price__current">{{ 3000 | money }}</span></div>
+            <div class="card__body">
+              <p class="card__title h5">{{ 'onboarding.product_title' | t }}</p>
+              <p class="muted small">Pick products or a collection in the sidebar.</p>
             </div>
           </div>
         {%- endfor -%}
-      {%- endif -%}
-    </div>
+      </div>
+    {%- endif -%}
+
+    {%- if show_view_all and product_count > 0 -%}
+      <div class="featured-collection__footer">
+        <a class="btn btn--outline" href="{{ source_collection.url }}">{{ 'general.view_all' | t }}</a>
+      </div>
+    {%- endif -%}
   </div>
 </div>
 
 {% schema %}
 {
-  "name": "t:sections.featured_collection.name",
+  "name": "Featured collection",
   "tag": "section",
-  "class": "featured-collection-section",
+  "class": "section-featured-collection",
   "settings": [
     {
       "type": "text",
-      "id": "title",
-      "label": "t:sections.featured_collection.settings.title.label",
-      "default": "New drop"
+      "id": "heading",
+      "label": "Heading",
+      "default": "Meet the sharks"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subheading",
+      "default": "Two slippers, one legendary blanket."
+    },
+    {
+      "type": "product_list",
+      "id": "products",
+      "label": "Products (hand-picked, in this order)",
+      "limit": 12,
+      "info": "When set, these take priority over the collection below."
     },
     {
       "type": "collection",
       "id": "collection",
-      "label": "t:sections.featured_collection.settings.collection.label"
+      "label": "Collection",
+      "info": "Used when no products are picked. Falls back to the shark-slippers collection."
     },
     {
       "type": "range",
       "id": "products_to_show",
+      "label": "Maximum products to show",
       "min": 2,
-      "max": 16,
+      "max": 12,
       "step": 1,
-      "label": "t:sections.featured_collection.settings.products_to_show.label",
-      "default": 8
+      "default": 3
     },
     {
       "type": "range",
       "id": "columns_desktop",
+      "label": "Columns on desktop",
       "min": 2,
-      "max": 5,
+      "max": 4,
       "step": 1,
-      "label": "t:sections.featured_collection.settings.columns_desktop.label",
-      "default": 4
+      "default": 3
     },
     {
       "type": "select",
       "id": "columns_mobile",
-      "label": "t:sections.featured_collection.settings.columns_mobile.label",
+      "label": "Columns on mobile",
       "options": [
-        { "value": "1", "label": "t:sections.featured_collection.settings.columns_mobile.options__1" },
-        { "value": "2", "label": "t:sections.featured_collection.settings.columns_mobile.options__2" }
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
       ],
       "default": "2"
     },
     {
       "type": "checkbox",
-      "id": "show_view_all",
-      "label": "t:sections.featured_collection.settings.show_view_all.label",
+      "id": "show_rating",
+      "label": "Show product ratings",
       "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Show “View all” link",
+      "default": false,
+      "info": "Links to the collection (only when a collection is the source)."
+    },
+    {
+      "type": "header",
+      "content": "Section"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "alt", "label": "Soft aqua" },
+        { "value": "brand", "label": "Navy" }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
     }
   ],
   "presets": [
     {
-      "name": "t:sections.featured_collection.name"
+      "name": "Featured collection"
     }
   ]
 }

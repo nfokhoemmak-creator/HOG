@@ -1,23 +1,32 @@
 {%- comment -%}
   Renders the social icon row from theme settings. Renders nothing when no
-  social URLs are set.
+  social links are set. Empty links are always hidden.
+
+  Accepts:
+  - class: {String} extra classes on the <ul>
 
   Usage:
   {% render 'social-links' %}
 {%- endcomment -%}
 
 {%- liquid
+  assign whatsapp_url = blank
+  if settings.social_whatsapp_number != blank
+    assign whatsapp_digits = settings.social_whatsapp_number | replace: '+', '' | replace: ' ', '' | replace: '-', ''
+    assign whatsapp_url = 'https://wa.me/' | append: whatsapp_digits
+  endif
+
   assign has_social = false
-  if settings.social_instagram_link != blank or settings.social_tiktok_link != blank or settings.social_whatsapp_link != blank or settings.social_facebook_link != blank
+  if settings.social_instagram_link != blank or settings.social_tiktok_link != blank or settings.social_facebook_link != blank or whatsapp_url != blank
     assign has_social = true
   endif
 -%}
 
 {%- if has_social -%}
-  <ul class="social-list">
+  <ul class="social-list{% if class != blank %} {{ class }}{% endif %}">
     {%- if settings.social_instagram_link != blank -%}
       <li>
-        <a href="{{ settings.social_instagram_link }}" target="_blank" rel="noopener" aria-describedby="a11y-new-window-message">
+        <a class="icon-btn" href="{{ settings.social_instagram_link }}" target="_blank" rel="noopener" aria-describedby="a11y-new-window-message">
           <span class="visually-hidden">Instagram</span>
           {% render 'icon', name: 'instagram' %}
         </a>
@@ -26,27 +35,27 @@
 
     {%- if settings.social_tiktok_link != blank -%}
       <li>
-        <a href="{{ settings.social_tiktok_link }}" target="_blank" rel="noopener" aria-describedby="a11y-new-window-message">
+        <a class="icon-btn" href="{{ settings.social_tiktok_link }}" target="_blank" rel="noopener" aria-describedby="a11y-new-window-message">
           <span class="visually-hidden">TikTok</span>
           {% render 'icon', name: 'tiktok' %}
         </a>
       </li>
     {%- endif -%}
 
-    {%- if settings.social_whatsapp_link != blank -%}
+    {%- if settings.social_facebook_link != blank -%}
       <li>
-        <a href="{{ settings.social_whatsapp_link }}" target="_blank" rel="noopener" aria-describedby="a11y-new-window-message">
-          <span class="visually-hidden">WhatsApp</span>
-          {% render 'icon', name: 'whatsapp' %}
+        <a class="icon-btn" href="{{ settings.social_facebook_link }}" target="_blank" rel="noopener" aria-describedby="a11y-new-window-message">
+          <span class="visually-hidden">Facebook</span>
+          {% render 'icon', name: 'facebook' %}
         </a>
       </li>
     {%- endif -%}
 
-    {%- if settings.social_facebook_link != blank -%}
+    {%- if whatsapp_url != blank -%}
       <li>
-        <a href="{{ settings.social_facebook_link }}" target="_blank" rel="noopener" aria-describedby="a11y-new-window-message">
-          <span class="visually-hidden">Facebook</span>
-          {% render 'icon', name: 'facebook' %}
+        <a class="icon-btn" href="{{ whatsapp_url }}" target="_blank" rel="noopener" aria-describedby="a11y-new-window-message">
+          <span class="visually-hidden">WhatsApp</span>
+          {% render 'icon', name: 'whatsapp' %}
         </a>
       </li>
     {%- endif -%}

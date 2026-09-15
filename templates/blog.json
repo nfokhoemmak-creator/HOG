@@ -2,7 +2,20 @@
   "sections": {
     "main": {
       "type": "main-blog",
-      "settings": {}
+      "settings": {
+        "eyebrow": "From the shark tank",
+        "text": "",
+        "text_alignment": "left",
+        "articles_per_page": 9,
+        "show_image": true,
+        "show_date": true,
+        "show_author": false,
+        "show_excerpt": true,
+        "empty_button_label": "Shop slippers",
+        "empty_button_link": "/collections/shark-slippers",
+        "padding_top": 48,
+        "padding_bottom": 64
+      }
     }
   },
   "order": ["main"]

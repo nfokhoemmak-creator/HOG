@@ -1,0 +1,152 @@
+{%- comment -%}
+  "Complete the set" companion card: a mini quick form (Style/Size selects +
+  add button) driven by <bundle-companion> in section-main-product.js, which
+  posts { items: [{ id, quantity: 1 }] } through SB.addToCart.
+
+  The offer chip is derived from the companion's collections:
+  - in `shark-blankets` → products.product.set_hint  ("25% off with any slippers")
+  - in `shark-slippers` → products.product.bundle_hint ("Buy 2+ pairs, save 20%")
+
+  Accepts:
+  - companion:  {Object} product to offer (required)
+  - section_id: {String} section id, used to build unique ids (required)
+  - text:       {String} optional supporting line under the title
+  - lazy:       {Boolean} default true; image loading attribute
+
+  Without JS the add button stays hidden and a "Choose options" link to the
+  product page is shown instead (a Style/Size select cannot resolve a variant
+  id without a script).
+
+  Usage:
+  {% render 'bundle-companion', companion: product_b, section_id: section.id, text: block.settings.text %}
+{%- endcomment -%}
+
+{%- liquid
+  assign handles = companion.collections | map: 'handle'
+  assign is_blanket = false
+  assign is_slipper = false
+  if handles contains 'shark-blankets'
+    assign is_blanket = true
+  endif
+  if handles contains 'shark-slippers'
+    assign is_slipper = true
+  endif
+
+  assign variant = companion.selected_or_first_available_variant | default: companion.variants.first
+  assign uid = section_id | append: '-' | append: companion.id
+
+  assign chip = blank
+  if is_blanket and settings.set_discount_percent > 0
+    assign chip = 'products.product.set_hint' | t: percent: settings.set_discount_percent
+  elsif is_slipper and settings.bundle_tier_percent > 0
+    assign chip = 'products.product.bundle_hint' | t: min: settings.bundle_tier_min, percent: settings.bundle_tier_percent
+  endif
+
+  assign on_sale = false
+  if variant.compare_at_price > variant.price
+    assign on_sale = true
+  endif
+
+  assign img_loading = 'lazy'
+  if lazy == false
+    assign img_loading = 'eager'
+  endif
+
+  assign companion_image = variant.featured_image | default: companion.featured_image
+  assign companion_alt = companion_image.alt | default: companion.title | escape
+-%}
+
+<bundle-companion
+  class="companion card card--padded card--flat"
+  data-product-id="{{ companion.id }}"
+  data-url="{{ companion.url }}"
+  data-uid="{{ uid }}"
+>
+  <script type="application/json" data-variants>{{ companion.variants | json }}</script>
+
+  <a class="companion__media" href="{{ companion.url }}" tabindex="-1" aria-hidden="true">
+    {%- if companion_image -%}
+      <img
+        class="companion__img"
+        src="{{ companion_image | image_url: width: 480 }}"
+        srcset="{{ companion_image | image_url: width: 240 }} 240w, {{ companion_image | image_url: width: 480 }} 480w"
+        sizes="12rem"
+        width="240"
+        height="240"
+        loading="{{ img_loading }}"
+        alt=""
+        data-companion-image
+      >
+    {%- else -%}
+      {{ 'product-2' | placeholder_svg_tag: 'companion__img companion__img--placeholder' }}
+    {%- endif -%}
+  </a>
+
+  <div class="companion__body">
+    {%- if chip != blank -%}
+      <span class="badge badge--accent companion__chip">{{ chip }}</span>
+    {%- endif -%}
+
+    <h3 class="companion__title h5">
+      <a href="{{ companion.url }}">{{ companion.title | escape }}</a>
+    </h3>
+
+    {%- if text != blank -%}
+      <p class="companion__text small muted">{{ text | escape }}</p>
+    {%- endif -%}
+
+    <div class="companion__price price{% if on_sale %} price--on-sale{% endif %}">
+      <span class="price__current" data-companion-price>{{ variant.price | money }}</span>
+      <s class="price__compare" data-companion-compare{% unless on_sale %} hidden{% endunless %}>
+        {%- if on_sale %}{{ variant.compare_at_price | money }}{% endif -%}
+      </s>
+    </div>
+
+    {%- unless companion.has_only_default_variant -%}
+      <div class="companion__options">
+        {%- for option in companion.options_with_values -%}
+          {%- assign option_index = forloop.index0 -%}
+          <div class="companion__field">
+            <label class="companion__label small" for="Companion-{{ uid }}-{{ option_index }}">{{ option.name | escape }}</label>
+            <select
+              id="Companion-{{ uid }}-{{ option_index }}"
+              class="select select--sm"
+              name="options[{{ option.name | escape }}]"
+              data-option-index="{{ option_index }}"
+            >
+              {%- for value in option.values -%}
+                <option
+                  value="{{ value.name | escape }}"
+                  data-label="{{ value.name | escape }}"
+                  {% if value.selected %}selected{% endif %}
+                  {% unless value.available %}data-unavailable{% endunless %}
+                >
+                  {{- value.name | escape -}}
+                  {%- unless value.available %} — {{ 'products.product.sold_out' | t }}{% endunless -%}
+                </option>
+              {%- endfor -%}
+            </select>
+          </div>
+        {%- endfor -%}
+      </div>
+    {%- endunless -%}
+
+    <button
+      type="button"
+      class="btn btn--secondary btn--full companion__add"
+      data-companion-add
+      data-companion-alt="{{ companion_alt }}"
+      hidden
+      {% unless variant.available %}disabled{% endunless %}
+    >
+      {% render 'icon', name: 'plus' %}
+      <span data-companion-text>
+        {%- if variant.available %}{{ 'products.product.add_to_cart' | t }}{% else %}{{ 'products.product.sold_out' | t }}{% endif -%}
+      </span>
+    </button>
+    <noscript>
+      <a class="btn btn--secondary btn--full" href="{{ companion.url }}">{{ 'products.product.choose_options' | t }}</a>
+    </noscript>
+    <p class="form__error companion__error" data-companion-error hidden role="alert"></p>
+  </div>
+</bundle-companion>

@@ -2,9 +2,7 @@
   "sections": {
     "main": {
       "type": "main-cart",
-      "settings": {
-        "show_cross_sell": true
-      }
+      "settings": {}
     }
   },
   "order": ["main"]

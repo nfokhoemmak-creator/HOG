@@ -1,0 +1,153 @@
+/* ==========================================================================
+   Shark Bite — section-video-showcase.css
+   One feature video with copy beside it (media-left / media-right) or laid
+   over it (full).
+   ========================================================================== */
+
+.video-showcase__inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+  align-items: center;
+}
+
+.video-showcase__media {
+  min-width: 0;
+}
+
+.video-showcase__media .video {
+  box-shadow: var(--shadow-md);
+}
+
+.video-showcase__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+  max-width: 56rem;
+}
+
+.video-showcase__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.video-showcase__heading,
+.video-showcase__text {
+  margin: 0;
+}
+
+.video-showcase__text > :last-child {
+  margin-bottom: 0;
+}
+
+.video-showcase__actions {
+  margin-top: var(--space-2);
+}
+
+/* Side-by-side layouts --------------------------------------------------- */
+
+@media (min-width: 990px) {
+  .video-showcase--media-left .video-showcase__inner,
+  .video-showcase--media-right .video-showcase__inner {
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: var(--space-7);
+  }
+
+  .video-showcase--media-right .video-showcase__inner {
+    grid-template-columns: 0.85fr 1.15fr;
+  }
+
+  .video-showcase--media-right .video-showcase__media {
+    order: 2;
+  }
+
+  .video-showcase--media-right .video-showcase__copy {
+    order: 1;
+  }
+
+  .video-showcase__inner--media-only {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Full layout: text over a navy scrim ------------------------------------ */
+
+.video-showcase--full .video-showcase__inner {
+  position: relative;
+  display: block;
+}
+
+.video-showcase--full .video-showcase__media .video {
+  min-height: 42rem;
+}
+
+.video-showcase--full .video-showcase__copy {
+  position: absolute;
+  inset: auto 0 0 0;
+  max-width: none;
+  padding: var(--space-8) var(--space-5) var(--space-5);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  background: linear-gradient(180deg, rgb(11 59 111 / 0) 0%, rgb(11 59 111 / 82%) 100%);
+  color: var(--color-brand-contrast);
+  pointer-events: none;
+}
+
+.video-showcase--full .video-showcase__copy > * {
+  pointer-events: auto;
+}
+
+.video-showcase--full .video-showcase__eyebrow {
+  color: var(--color-brand-muted);
+}
+
+.video-showcase--full .video-showcase__text {
+  color: inherit;
+  max-width: 56rem;
+}
+
+.video-showcase--full .video-showcase__heading {
+  color: inherit;
+}
+
+/* Keep the play/pause facade reachable under the scrim on touch devices. */
+.video-showcase--full .video-showcase__copy .btn-row {
+  pointer-events: auto;
+}
+
+.video-showcase--full .btn--ghost {
+  color: inherit;
+}
+
+@media (min-width: 750px) {
+  .video-showcase--full .video-showcase__copy {
+    padding: var(--space-9) var(--space-7) var(--space-7);
+  }
+
+  .video-showcase--full .video-showcase__media .video {
+    min-height: 48rem;
+  }
+}
+
+/* Aspect ratios other than 16:9 keep the video from becoming a wall */
+.video-showcase--full .video--9-16,
+.video-showcase--full .video--4-5,
+.video-showcase--full .video--1-1 {
+  max-height: 80vh;
+}
+
+/* Brand scheme ----------------------------------------------------------- */
+
+.section--brand .video-showcase__heading {
+  color: inherit;
+}
+
+.section--brand .video-showcase__text {
+  color: var(--color-brand-contrast);
+}
+
+.section--brand .video-showcase__media .video {
+  box-shadow: none;
+}

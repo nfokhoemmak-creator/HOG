@@ -1,0 +1,195 @@
+{{ 'section-marquee.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign scheme = section.settings.color_scheme | default: 'alt'
+  assign speed = section.settings.speed | default: 30
+  assign padding_mobile_top = section.settings.padding_top | times: 0.75 | round
+  assign padding_mobile_bottom = section.settings.padding_bottom | times: 0.75 | round
+-%}
+
+{%- style -%}
+  #shopify-section-{{ section.id }} .marquee {
+    padding-top: {{ padding_mobile_top }}px;
+    padding-bottom: {{ padding_mobile_bottom }}px;
+    --marquee-duration: {{ speed }}s;
+  }
+  @media (min-width: 990px) {
+    #shopify-section-{{ section.id }} .marquee {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+{%- capture items -%}
+  {%- for block in section.blocks -%}
+    {%- liquid
+      assign item_text = block.settings.text
+      if block.type == 'rating'
+        assign item_text = block.settings.text | replace: '{{ rating }}', settings.store_rating | replace: '{{ count }}', settings.store_review_count
+      endif
+    -%}
+    {%- if item_text != blank -%}
+      <li class="marquee__item" {{ block.shopify_attributes }}>
+        {%- if block.settings.icon != 'none' -%}
+          {% render 'icon', name: block.settings.icon, class: 'marquee__icon' %}
+        {%- endif -%}
+        <span>{{ item_text | escape }}</span>
+      </li>
+    {%- endif -%}
+  {%- endfor -%}
+{%- endcapture -%}
+
+{%- capture items_clone -%}
+  {%- for block in section.blocks -%}
+    {%- liquid
+      assign item_text = block.settings.text
+      if block.type == 'rating'
+        assign item_text = block.settings.text | replace: '{{ rating }}', settings.store_rating | replace: '{{ count }}', settings.store_review_count
+      endif
+    -%}
+    {%- if item_text != blank -%}
+      <li class="marquee__item" aria-hidden="true">
+        {%- if block.settings.icon != 'none' -%}
+          {% render 'icon', name: block.settings.icon, class: 'marquee__icon' %}
+        {%- endif -%}
+        <span>{{ item_text | escape }}</span>
+      </li>
+    {%- endif -%}
+  {%- endfor -%}
+{%- endcapture -%}
+
+{%- if items != blank -%}
+  <div class="marquee section--tight{% if scheme != 'default' %} section--{{ scheme }}{% endif %}">
+    <div class="marquee__viewport">
+      <ul class="marquee__track" role="list">
+        {{ items }}
+      </ul>
+      <ul class="marquee__track marquee__track--clone" aria-hidden="true">
+        {{ items_clone }}
+      </ul>
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Marquee",
+  "tag": "section",
+  "class": "section-marquee",
+  "settings": [
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Loop duration",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "s",
+      "default": 30,
+      "info": "Higher is slower. Stops automatically for people who prefer reduced motion."
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "alt", "label": "Soft aqua" },
+        { "value": "brand", "label": "Navy" }
+      ],
+      "default": "alt"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 16
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Free standard shipping over $30"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "shark", "label": "Shark" },
+            { "value": "truck", "label": "Truck" },
+            { "value": "gift", "label": "Gift" },
+            { "value": "shield", "label": "Shield" },
+            { "value": "sparkle", "label": "Sparkle" },
+            { "value": "heart", "label": "Heart" },
+            { "value": "star", "label": "Star" },
+            { "value": "whatsapp", "label": "WhatsApp" },
+            { "value": "bolt", "label": "Bolt" },
+            { "value": "check", "label": "Check" }
+          ],
+          "default": "shark"
+        }
+      ]
+    },
+    {
+      "type": "rating",
+      "name": "Store rating",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Rated {{ rating }}★ by {{ count }} shark fans",
+          "info": "{{ rating }} and {{ count }} are replaced with the store rating from Theme settings > Offers."
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "star", "label": "Star" },
+            { "value": "shark", "label": "Shark" },
+            { "value": "heart", "label": "Heart" }
+          ],
+          "default": "star"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Marquee",
+      "blocks": [
+        { "type": "item", "settings": { "text": "Free standard shipping over $30", "icon": "truck" } },
+        { "type": "item", "settings": { "text": "Buy 2 pairs, save 20%", "icon": "gift" } },
+        { "type": "item", "settings": { "text": "Delivery all over Lebanon", "icon": "shark" } },
+        { "type": "rating", "settings": { "text": "Rated {{ rating }}★ by {{ count }} shark fans", "icon": "star" } },
+        { "type": "item", "settings": { "text": "Replacement guarantee on damaged items", "icon": "shield" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,167 @@
+/* ==========================================================================
+   Shark Bite — section-newsletter.css
+   Customer (newsletter) form as a centered card or a full-width band.
+   ========================================================================== */
+
+.newsletter__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.newsletter--card .newsletter__panel {
+  padding: var(--space-6) var(--space-5);
+  text-align: center;
+  align-items: center;
+}
+
+@media (min-width: 750px) {
+  .newsletter--card .newsletter__panel {
+    padding: var(--space-7) var(--space-7);
+  }
+}
+
+.newsletter__copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-width: 56rem;
+}
+
+.newsletter--card .newsletter__copy {
+  align-items: center;
+}
+
+.newsletter__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.newsletter__heading,
+.newsletter__text {
+  margin: 0;
+}
+
+.newsletter__text > :last-child {
+  margin-bottom: 0;
+}
+
+.newsletter__form-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+  max-width: 52rem;
+}
+
+.newsletter--card .newsletter__form-col {
+  align-items: center;
+}
+
+.newsletter__form {
+  width: 100%;
+}
+
+.newsletter__row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.newsletter__input {
+  flex: 1 1 auto;
+  min-height: 5.2rem;
+}
+
+.newsletter__submit {
+  flex: none;
+}
+
+@media (min-width: 500px) {
+  .newsletter__row {
+    flex-direction: row;
+  }
+
+  .newsletter__row .newsletter__input {
+    min-width: 0;
+  }
+}
+
+.newsletter__success,
+.newsletter__error {
+  margin: 0;
+}
+
+.newsletter__error {
+  margin-top: var(--space-2);
+}
+
+.newsletter__privacy {
+  margin: 0;
+}
+
+.newsletter__whatsapp {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2) var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+  width: 100%;
+}
+
+.newsletter__or {
+  margin: 0;
+}
+
+/* Band layout: copy left, form right on desktop --------------------------- */
+
+@media (min-width: 990px) {
+  .newsletter--band .newsletter__panel {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-8);
+  }
+
+  .newsletter--band .newsletter__copy {
+    flex: 1 1 50%;
+  }
+
+  .newsletter--band .newsletter__form-col {
+    flex: 0 1 48rem;
+  }
+
+  .newsletter--band .newsletter__whatsapp {
+    justify-content: flex-start;
+  }
+}
+
+/* Navy scheme ------------------------------------------------------------ */
+
+.section--brand .newsletter__panel:not(.card) .newsletter__text,
+.section--brand .newsletter__panel:not(.card) .newsletter__heading {
+  color: inherit;
+}
+
+.section--brand .newsletter__panel:not(.card) .newsletter__privacy,
+.section--brand .newsletter__panel:not(.card) .newsletter__or {
+  color: var(--color-brand-muted);
+}
+
+.section--brand .newsletter__panel:not(.card) .newsletter__whatsapp {
+  border-top-color: color-mix(in srgb, var(--color-brand-contrast) 20%, var(--color-brand));
+}
+
+.section--brand .newsletter__panel:not(.card) .newsletter__input {
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+
+.section--brand .newsletter__panel:not(.card) .btn--outline {
+  border-color: var(--color-brand-contrast);
+  color: var(--color-brand-contrast);
+}

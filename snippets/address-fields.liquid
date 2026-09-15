@@ -10,18 +10,20 @@
 
 {%- assign uid = form.id | default: 'new' -%}
 
-<div class="field">
-  <label class="field__label" for="AddressFirstName-{{ uid }}">{{ 'customer.addresses.first_name' | t }}</label>
-  <input class="field__input" type="text" id="AddressFirstName-{{ uid }}" name="address[first_name]" value="{{ form.first_name }}" autocomplete="given-name">
+<div class="form__row">
+  <div class="field">
+    <label class="field__label" for="AddressFirstName-{{ uid }}">{{ 'customer.addresses.first_name' | t }}</label>
+    <input class="field__input" type="text" id="AddressFirstName-{{ uid }}" name="address[first_name]" value="{{ form.first_name }}" autocomplete="given-name">
+  </div>
+
+  <div class="field">
+    <label class="field__label" for="AddressLastName-{{ uid }}">{{ 'customer.addresses.last_name' | t }}</label>
+    <input class="field__input" type="text" id="AddressLastName-{{ uid }}" name="address[last_name]" value="{{ form.last_name }}" autocomplete="family-name">
+  </div>
 </div>
 
 <div class="field">
-  <label class="field__label" for="AddressLastName-{{ uid }}">{{ 'customer.addresses.last_name' | t }}</label>
-  <input class="field__input" type="text" id="AddressLastName-{{ uid }}" name="address[last_name]" value="{{ form.last_name }}" autocomplete="family-name">
-</div>
-
-<div class="field">
-  <label class="field__label" for="AddressCompany-{{ uid }}">{{ 'customer.addresses.company' | t }}</label>
+  <label class="field__label" for="AddressCompany-{{ uid }}">{{ 'customer.addresses.company' | t }} <span class="muted">({{ 'general.optional' | t | downcase }})</span></label>
   <input class="field__input" type="text" id="AddressCompany-{{ uid }}" name="address[company]" value="{{ form.company }}" autocomplete="organization">
 </div>
 
@@ -31,25 +33,32 @@
 </div>
 
 <div class="field">
-  <label class="field__label" for="AddressLine2-{{ uid }}">{{ 'customer.addresses.address2' | t }}</label>
+  <label class="field__label" for="AddressLine2-{{ uid }}">{{ 'customer.addresses.address2' | t }} <span class="muted">({{ 'general.optional' | t | downcase }})</span></label>
   <input class="field__input" type="text" id="AddressLine2-{{ uid }}" name="address[address2]" value="{{ form.address2 }}" autocomplete="address-line2">
 </div>
 
-<div class="field">
-  <label class="field__label" for="AddressCity-{{ uid }}">{{ 'customer.addresses.city' | t }}</label>
-  <input class="field__input" type="text" id="AddressCity-{{ uid }}" name="address[city]" value="{{ form.city }}" autocomplete="address-level2">
+<div class="form__row">
+  <div class="field">
+    <label class="field__label" for="AddressCity-{{ uid }}">{{ 'customer.addresses.city' | t }}</label>
+    <input class="field__input" type="text" id="AddressCity-{{ uid }}" name="address[city]" value="{{ form.city }}" autocomplete="address-level2">
+  </div>
+
+  <div class="field">
+    <label class="field__label" for="AddressZip-{{ uid }}">{{ 'customer.addresses.zip' | t }}</label>
+    <input class="field__input" type="text" id="AddressZip-{{ uid }}" name="address[zip]" value="{{ form.zip }}" autocomplete="postal-code">
+  </div>
 </div>
 
 <div class="field">
   <label class="field__label" for="AddressCountry-{{ uid }}">{{ 'customer.addresses.country' | t }}</label>
-  <select class="select" id="AddressCountry-{{ uid }}" name="address[country]" data-default="{{ form.country }}" autocomplete="country">
+  <select class="select" id="AddressCountry-{{ uid }}" name="address[country]" data-default="{{ form.country }}" data-address-country autocomplete="country">
     {{ country_option_tags }}
   </select>
 </div>
 
-<div class="field">
-  <label class="field__label" for="AddressZip-{{ uid }}">{{ 'customer.addresses.zip' | t }}</label>
-  <input class="field__input" type="text" id="AddressZip-{{ uid }}" name="address[zip]" value="{{ form.zip }}" autocomplete="postal-code">
+<div class="field" id="AddressProvinceContainer-{{ uid }}" data-address-province-container>
+  <label class="field__label" for="AddressProvince-{{ uid }}">{{ 'customer.addresses.province' | t }}</label>
+  <select class="select" id="AddressProvince-{{ uid }}" name="address[province]" data-default="{{ form.province }}" data-address-province autocomplete="address-level1"></select>
 </div>
 
 <div class="field">
@@ -57,7 +66,7 @@
   <input class="field__input" type="tel" id="AddressPhone-{{ uid }}" name="address[phone]" value="{{ form.phone }}" autocomplete="tel">
 </div>
 
-<label class="facets__option" style="margin-bottom: var(--space-4);">
-  {{ form.set_as_default_checkbox }}
+<label class="checkbox" for="AddressDefault-{{ uid }}">
+  <input type="checkbox" id="AddressDefault-{{ uid }}" name="address[default]" value="1"{% if form.id == customer.default_address.id %} checked{% endif %}>
   <span>{{ 'customer.addresses.set_default' | t }}</span>
 </label>

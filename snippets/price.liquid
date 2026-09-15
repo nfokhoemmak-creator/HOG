@@ -1,15 +1,18 @@
 {%- comment -%}
-  Renders a price, handling sale, unit and "from" pricing.
+  Renders a price with compare-at (muted strike, never red) and a single
+  "Save $X" accent-soft badge as the sale signal.
 
   Accepts:
-  - product: {Object} product or variant (required)
-  - use_variant: {Boolean} price the selected/first available variant instead of the product
-  - show_compare: {Boolean} render the struck-through compare-at price (default true)
-  - price_class: {String} extra class on the wrapper
-  - id_prefix: {String} used to build data-target ids for JS updates
+  - product:      {Object} product or variant (required)
+  - use_variant:  {Boolean} price the selected/first available variant instead of the product
+  - show_compare: {Boolean} render the compare-at price (default true)
+  - show_save:    {Boolean} render the "Save $X" badge when on sale (default true)
+  - price_class:  {String} extra classes on the wrapper (e.g. 'price--lg')
+  - data_hooks:   {Boolean} add data-price / data-compare-price / data-save-badge hooks for <product-form>
 
   Usage:
-  {% render 'price', product: product, use_variant: true, id_prefix: 'ProductPrice' %}
+  {% render 'price', product: product %}
+  {% render 'price', product: product, use_variant: true, price_class: 'price--lg', data_hooks: true %}
 {%- endcomment -%}
 
 {%- liquid
@@ -19,12 +22,13 @@
     assign target = product
   endif
 
-  assign compare_at = target.compare_at_price
+  assign compare_at = target.compare_at_price | default: 0
   assign price = target.price | default: 0
 
   assign on_sale = false
   if compare_at > price
     assign on_sale = true
+    assign saving = compare_at | minus: price
   endif
 
   assign show_from = false
@@ -39,26 +43,32 @@
     assign money = price | money
     assign money_compare = compare_at | money
   endif
+
+  assign saving_remainder = saving | modulo: 100
+  if saving_remainder == 0
+    assign money_saving = saving | money_without_trailing_zeros
+  else
+    assign money_saving = saving | money
+  endif
 -%}
 
-<div class="price {{ price_class }}{% if on_sale %} price--on-sale{% endif %}">
+<div class="price{% if price_class != blank %} {{ price_class }}{% endif %}{% if on_sale %} price--on-sale{% endif %}">
   {%- if show_from -%}
-    <span class="price__from muted">{{ 'products.facets.from' | t }}</span>
+    <span class="price__from">{{ 'products.product.from' | t }}</span>
   {%- endif -%}
 
-  <span class="price__current" data-price-current{% if id_prefix %} id="{{ id_prefix }}-current"{% endif %}>
-    {{ money }}
-  </span>
+  <span class="price__current"{% if data_hooks %} data-price{% endif %}>{{ money }}</span>
 
   {%- if show_compare != false -%}
-    <s
-      class="price__compare"
-      data-price-compare
-      {% if id_prefix %}id="{{ id_prefix }}-compare"{% endif %}
-      {% unless on_sale %}hidden{% endunless %}
-    >
-      {{ money_compare }}
+    <s class="price__compare"{% if data_hooks %} data-compare-price{% endif %}{% unless on_sale %} hidden{% endunless %}>
+      <span class="visually-hidden">{{ 'bundles.was' | t }} </span>{{ money_compare }}
     </s>
+  {%- endif -%}
+
+  {%- if show_save != false -%}
+    <span class="price__save badge badge--accent"{% if data_hooks %} data-save-badge{% endif %}{% unless on_sale %} hidden{% endunless %}>
+      {%- if on_sale %}{{ 'products.product.save_amount' | t: amount: money_saving }}{% endif -%}
+    </span>
   {%- endif -%}
 
   {%- if target.unit_price_measurement -%}
@@ -72,8 +82,4 @@
       {{ target.unit_price_measurement.reference_unit }}
     </span>
   {%- endif -%}
-
-  <span class="visually-hidden">
-    {%- if on_sale -%}{{ 'products.product.on_sale' | t }}{%- endif -%}
-  </span>
 </div>

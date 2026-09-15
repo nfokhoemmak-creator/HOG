@@ -1,0 +1,91 @@
+/* Benefits — 2×2 on mobile, 4 across on desktop, icon in a soft aqua circle */
+
+.benefits__header {
+  justify-content: center;
+  text-align: center;
+}
+
+.benefits__header > div {
+  max-width: 60rem;
+  margin-inline: auto;
+}
+
+.benefits__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5) var(--space-4);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.benefits__item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.benefits__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 5.2rem;
+  height: 5.2rem;
+  margin-bottom: var(--space-1);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-alt);
+  color: var(--color-brand);
+}
+
+.benefits__icon .icon {
+  width: 2.4rem;
+  height: 2.4rem;
+}
+
+.benefits__title {
+  margin: 0;
+}
+
+.benefits__text {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+/* Aqua scheme: the circle needs to read on the aqua band */
+.section--alt .benefits__icon {
+  background: var(--color-surface);
+}
+
+/* Navy scheme */
+.section--brand .benefits__icon {
+  background: color-mix(in srgb, var(--color-brand-contrast) 12%, var(--color-brand));
+  color: var(--color-brand-contrast);
+}
+
+.section--brand .benefits__text {
+  color: var(--color-brand-muted);
+}
+
+@media (min-width: 750px) {
+  .benefits__grid {
+    gap: var(--space-6) var(--space-5);
+  }
+
+  .benefits__icon {
+    width: 6rem;
+    height: 6rem;
+  }
+
+  .benefits__icon .icon {
+    width: 2.8rem;
+    height: 2.8rem;
+  }
+}
+
+@media (min-width: 990px) {
+  .benefits__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}

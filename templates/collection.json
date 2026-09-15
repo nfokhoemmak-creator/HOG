@@ -3,20 +3,37 @@
     "banner": {
       "type": "main-collection-banner",
       "settings": {
+        "eyebrow": "Shark Bite",
+        "show_description": true,
         "show_image": false,
-        "show_description": true
+        "layout": "stacked",
+        "text_alignment": "left",
+        "padding_top": 48,
+        "padding_bottom": 16
       }
     },
-    "product-grid": {
+    "products": {
       "type": "main-collection",
       "settings": {
-        "columns_desktop": 4,
-        "columns_mobile": "2",
-        "show_filters": true,
+        "show_heading": false,
+        "show_description": false,
+        "show_offer": true,
+        "offer_text": "Buy {{ min }} pairs, save {{ percent }}% — applied automatically in your cart",
+        "offer_link_label": "Build a bundle",
+        "offer_link": "/pages/bundles",
+        "show_count": true,
         "show_sort": true,
-        "show_count": true
+        "show_filters": true,
+        "filters_open": 2,
+        "products_per_page": 24,
+        "columns_desktop": 3,
+        "columns_mobile": "2",
+        "empty_button_label": "Shop slippers",
+        "empty_button_link": "/collections/shark-slippers",
+        "padding_top": 16,
+        "padding_bottom": 64
       }
     }
   },
-  "order": ["banner", "product-grid"]
+  "order": ["banner", "products"]
 }

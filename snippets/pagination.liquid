@@ -3,36 +3,43 @@
 
   Accepts:
   - paginate: {Object} the paginate object from {% paginate %} (required)
+  - anchor:   {String} optional fragment appended to every link (e.g. 'products')
 
   Usage:
   {% render 'pagination', paginate: paginate %}
 {%- endcomment -%}
 
 {%- if paginate.pages > 1 -%}
-  <nav class="pagination" role="navigation" aria-label="{{ 'general.pagination.label' | t }}">
+  {%- liquid
+    assign fragment = ''
+    if anchor != blank
+      assign fragment = '#' | append: anchor
+    endif
+  -%}
+  <nav class="pagination" aria-label="{{ 'pagination.label' | t }}">
     {%- if paginate.previous -%}
-      <a href="{{ paginate.previous.url }}" aria-label="{{ 'general.pagination.previous' | t }}">
-        {% render 'icon', name: 'arrow-right' %}
+      <a class="pagination__item" href="{{ paginate.previous.url }}{{ fragment }}" aria-label="{{ 'pagination.previous' | t }}" rel="prev">
+        {% render 'icon', name: 'chevron-left' %}
       </a>
     {%- endif -%}
 
     {%- for part in paginate.parts -%}
       {%- if part.is_link -%}
-        <a href="{{ part.url }}" aria-label="{{ 'general.pagination.page' | t: number: part.title }}">
+        <a class="pagination__item" href="{{ part.url }}{{ fragment }}" aria-label="{{ 'pagination.page' | t: number: part.title }}">
           {{- part.title -}}
         </a>
-      {%- elsif part.title == current_page -%}
-        <span aria-current="page" aria-label="{{ 'general.pagination.page' | t: number: part.title }}">
+      {%- elsif part.title == paginate.current_page -%}
+        <span class="pagination__item" aria-current="page" aria-label="{{ 'pagination.page' | t: number: part.title }}">
           {{- part.title -}}
         </span>
       {%- else -%}
-        <span>{{ part.title }}</span>
+        <span class="pagination__item pagination__item--gap" aria-hidden="true">{{ part.title }}</span>
       {%- endif -%}
     {%- endfor -%}
 
     {%- if paginate.next -%}
-      <a href="{{ paginate.next.url }}" aria-label="{{ 'general.pagination.next' | t }}">
-        {% render 'icon', name: 'arrow-right' %}
+      <a class="pagination__item" href="{{ paginate.next.url }}{{ fragment }}" aria-label="{{ 'pagination.next' | t }}" rel="next">
+        {% render 'icon', name: 'chevron-right' %}
       </a>
     {%- endif -%}
   </nav>

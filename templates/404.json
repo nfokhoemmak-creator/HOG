@@ -2,7 +2,19 @@
   "sections": {
     "main": {
       "type": "main-404",
-      "settings": {}
+      "settings": {
+        "heading": "",
+        "text": "",
+        "button_label": "",
+        "button_link": "/collections/shark-slippers",
+        "link_label_2": "",
+        "link_2": "/products/sharkbite-blanket",
+        "link_label_3": "",
+        "link_3": "/pages/bundles",
+        "show_search": true,
+        "padding_top": 32,
+        "padding_bottom": 64
+      }
     }
   },
   "order": ["main"]

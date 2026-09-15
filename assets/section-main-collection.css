@@ -1,0 +1,421 @@
+/* Collection page: banner, offer strip, toolbar, filters, grid.
+   Uses only base.css tokens/classes plus its own BEM classes. */
+
+/* Banner (main-collection-banner) ------------------------------------- */
+.collection-banner__media {
+  position: relative;
+  margin-bottom: var(--space-6);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  background: var(--color-surface-alt);
+}
+
+.collection-banner__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.collection-banner__text {
+  max-width: 72rem;
+}
+
+.collection-banner__eyebrow {
+  margin-bottom: var(--space-2);
+}
+
+.collection-banner__title {
+  margin: 0;
+}
+
+.collection-banner__description {
+  margin-top: var(--space-3);
+  color: var(--color-muted);
+}
+
+.collection-banner--center .collection-banner__text {
+  margin-inline: auto;
+  text-align: center;
+}
+
+@media (min-width: 750px) {
+  .collection-banner__media {
+    aspect-ratio: 3 / 1;
+  }
+}
+
+@media (min-width: 990px) {
+  .collection-banner--split .collection-banner__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-7);
+    align-items: center;
+  }
+
+  .collection-banner--split .collection-banner__media {
+    order: 2;
+    margin-bottom: 0;
+    aspect-ratio: 4 / 3;
+  }
+}
+
+/* Collection heading inside main-collection ----------------------------- */
+.collection__header {
+  max-width: 72rem;
+}
+
+.collection__description {
+  margin-top: var(--space-3);
+  color: var(--color-muted);
+}
+
+/* Offer strip ----------------------------------------------------------- */
+.collection__offer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-5);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid color-mix(in srgb, var(--color-brand) 18%, var(--color-surface));
+  border-radius: var(--radius);
+  background: var(--color-brand-soft);
+}
+
+.collection__offer-icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 3.6rem;
+  height: 3.6rem;
+  border-radius: 50%;
+  background: var(--color-surface);
+  color: var(--color-brand);
+}
+
+.collection__offer-icon .icon {
+  width: 2rem;
+  height: 2rem;
+}
+
+.collection__offer-text {
+  display: flex;
+  flex: 1 1 24rem;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  margin: 0;
+  font-size: 1.4rem;
+  line-height: 1.4;
+}
+
+.collection__offer-link {
+  margin-left: auto;
+}
+
+/* Toolbar --------------------------------------------------------------- */
+.collection-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-5);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.collection-toolbar__count {
+  margin: 0;
+  font-size: 1.4rem;
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.collection-toolbar__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin-left: auto;
+}
+
+.collection-toolbar__sort {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.collection-toolbar__sort .field__label {
+  white-space: nowrap;
+}
+
+.collection-toolbar__sort .select {
+  width: auto;
+  min-width: 16rem;
+}
+
+.collection-toolbar__filter-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 2rem;
+  margin-left: var(--space-1);
+  padding-inline: 0.5rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-brand);
+  color: var(--color-brand-contrast);
+  font-family: var(--font-heading-family);
+  font-size: 1.2rem;
+  font-weight: var(--font-heading-weight);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Layout: filters + grid ---------------------------------------------- */
+.collection__layout {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.collection__main {
+  min-width: 0;
+}
+
+/* Filters --------------------------------------------------------------- */
+.collection-filters {
+  border: var(--border-card);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+.collection-filters__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: 5.2rem;
+  padding: var(--space-3) var(--space-4);
+  list-style: none;
+  cursor: pointer;
+  font-family: var(--font-heading-family);
+  font-weight: var(--font-heading-weight);
+  font-size: 1.6rem;
+}
+
+.collection-filters__summary::-webkit-details-marker {
+  display: none;
+}
+
+.collection-filters__summary .icon {
+  width: 2rem;
+  height: 2rem;
+  transition: transform var(--duration) var(--ease);
+}
+
+.collection-filters[open] > .collection-filters__summary .icon {
+  transform: rotate(180deg);
+}
+
+.collection-filters__summary-label {
+  display: inline-flex;
+  align-items: center;
+}
+
+.collection-filters__form {
+  padding: 0 var(--space-4) var(--space-4);
+}
+
+.collection-filters__active {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-2);
+}
+
+.collection-filters__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.collection-filters__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 3.6rem;
+  padding: 0.4rem var(--space-2) 0.4rem var(--space-3);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-btn);
+  background: var(--color-surface);
+  font-size: 1.3rem;
+  line-height: 1.3;
+  text-decoration: none;
+  transition: border-color var(--duration) var(--ease), background var(--duration) var(--ease);
+}
+
+.collection-filters__chip:hover {
+  border-color: var(--color-ink);
+  background: var(--color-brand-soft);
+}
+
+.collection-filters__chip .icon {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+
+.collection-filters__clear {
+  font-size: 1.3rem;
+  font-weight: var(--font-body-weight-bold);
+}
+
+.collection-filters__group {
+  border-top: 0;
+}
+
+.collection-filters__group > summary {
+  font-size: 1.5rem;
+}
+
+.collection-filters__group > summary > span {
+  display: inline-flex;
+  align-items: center;
+}
+
+.collection-filters__content {
+  padding-bottom: var(--space-3);
+}
+
+.collection-filters__hint {
+  margin: 0 0 var(--space-3);
+}
+
+.collection-filters__values {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.collection-filters__value {
+  width: 100%;
+  font-size: 1.4rem;
+}
+
+.collection-filters__value--disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.collection-filters__value-label {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1);
+}
+
+.collection-filters__value-count {
+  color: var(--color-muted);
+  font-size: 1.2rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.collection-filters__price {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.collection-filters__price .field {
+  margin-bottom: 0;
+}
+
+.collection-filters__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  margin-top: var(--space-4);
+}
+
+/* Grid ------------------------------------------------------------------ */
+.collection__grid {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.collection__item {
+  min-width: 0;
+}
+
+.collection__item .card {
+  height: 100%;
+}
+
+.collection__empty {
+  border: var(--border-card);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+/* Mobile: the filter panel is a collapsible card under the toolbar. The
+   toolbar toggle button (JS only) drives the same <details>. */
+@media (max-width: 989px) {
+  .js .collection-filters__summary {
+    display: none;
+  }
+
+  .js .collection-filters:not([open]) {
+    display: none;
+  }
+
+  .js .collection-filters__form {
+    padding-top: var(--space-4);
+  }
+}
+
+/* Desktop: sidebar + grid ---------------------------------------------- */
+@media (min-width: 990px) {
+  .collection__layout {
+    grid-template-columns: 26rem minmax(0, 1fr);
+    gap: var(--space-7);
+    align-items: start;
+  }
+
+  .collection__layout--full {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .collection__sidebar {
+    position: sticky;
+    top: calc(var(--header-height, 68px) + var(--space-4));
+    max-height: calc(100vh - var(--header-height, 68px) - var(--space-6));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .collection-toolbar__filter-toggle {
+    display: none;
+  }
+
+  .collection--sidebar .collection-filters__summary {
+    cursor: default;
+    pointer-events: none;
+  }
+
+  .collection--sidebar .collection-filters__summary .icon {
+    display: none;
+  }
+}

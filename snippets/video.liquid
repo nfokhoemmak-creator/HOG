@@ -1,0 +1,179 @@
+{%- comment -%}
+  Renders any video the theme shows. This is the single place video markup
+  is produced, so every section gets the same posters, lazy loading, facade
+  and design-mode placeholder.
+
+  Accepts:
+  - video:      {Object}  Shopify video object (a `video` setting)
+  - video_url:  {Object}  a `video_url` setting (YouTube or Vimeo)
+  - mp4_url:    {String}  direct URL to an .mp4 file
+  - poster:     {Object}  image (optional; Shopify videos fall back to their own preview)
+  - autoplay:   {Boolean} default false
+  - loop:       {Boolean} default false
+  - muted:      {Boolean} default false (forced true when autoplay is true)
+  - controls:   {Boolean} default false
+  - aspect:     {String}  '9/16' | '16/9' | '1/1' | '4/5' (default '16/9')
+  - class:      {String}  extra classes on the wrapper
+  - lazy:       {Boolean} default true — poster images load lazily
+  - preload:    {String}  'none' | 'metadata' (default 'metadata'; reels pass 'none')
+  - label:      {String}  accessible name for the facade play button / placeholder
+
+  Priority when more than one source is set: Shopify video → external URL → mp4.
+  With nothing set, a dashed placeholder renders only in the theme editor.
+
+  Usage:
+  {% render 'video', video: section.settings.video, video_url: section.settings.video_url, mp4_url: section.settings.mp4_url, poster: section.settings.poster, autoplay: true, loop: true, muted: true, aspect: '9/16', preload: 'none' %}
+{%- endcomment -%}
+
+{%- liquid
+  assign video_aspect = aspect | default: '16/9'
+  case video_aspect
+    when '9/16'
+      assign aspect_css = '9 / 16'
+      assign poster_width = 720
+    when '1/1'
+      assign aspect_css = '1 / 1'
+      assign poster_width = 1000
+    when '4/5'
+      assign aspect_css = '4 / 5'
+      assign poster_width = 1000
+    else
+      assign aspect_css = '16 / 9'
+      assign poster_width = 1400
+  endcase
+
+  assign preload_mode = preload | default: 'metadata'
+  if preload_mode != 'none'
+    assign preload_mode = 'metadata'
+  endif
+
+  assign is_autoplay = false
+  if autoplay == true
+    assign is_autoplay = true
+  endif
+  assign is_muted = false
+  if muted == true or is_autoplay
+    assign is_muted = true
+  endif
+  assign is_loop = false
+  if loop == true
+    assign is_loop = true
+  endif
+  assign has_controls = false
+  if controls == true
+    assign has_controls = true
+  endif
+
+  assign poster_loading = 'lazy'
+  if lazy == false
+    assign poster_loading = 'eager'
+  endif
+
+  assign play_label = label | default: 'accessibility.play_video' | t
+
+  assign source = ''
+  if video != blank
+    assign source = 'shopify'
+  elsif video_url != blank and video_url.id != blank
+    assign source = 'external'
+  elsif mp4_url != blank
+    assign source = 'mp4'
+  endif
+
+  assign wrapper_class = 'video video--' | append: video_aspect | replace: '/', '-'
+  if source != ''
+    assign wrapper_class = wrapper_class | append: ' video--' | append: source
+  endif
+  if class != blank
+    assign wrapper_class = wrapper_class | append: ' ' | append: class
+  endif
+  if is_autoplay
+    assign wrapper_class = wrapper_class | append: ' video--autoplay'
+  endif
+
+  assign poster_url = ''
+  if poster != blank
+    assign poster_url = poster | image_url: width: poster_width
+  endif
+-%}
+
+{%- if source != '' or request.design_mode -%}
+  {{ 'component-video.css' | asset_url | stylesheet_tag }}
+{%- endif -%}
+
+{%- if source == 'shopify' -%}
+  <div class="{{ wrapper_class }}" style="--video-aspect: {{ aspect_css }};" data-video-source="shopify">
+    {%- if poster_url != blank -%}
+      {{ video | video_tag: image_size: '1100x', autoplay: is_autoplay, loop: is_loop, muted: is_muted, controls: has_controls, preload: preload_mode, loading: 'lazy', poster: poster_url, class: 'video__el' }}
+    {%- else -%}
+      {{ video | video_tag: image_size: '1100x', autoplay: is_autoplay, loop: is_loop, muted: is_muted, controls: has_controls, preload: preload_mode, loading: 'lazy', class: 'video__el' }}
+    {%- endif -%}
+  </div>
+
+{%- elsif source == 'external' -%}
+  {%- liquid
+    if video_url.type == 'vimeo'
+      assign embed_src = 'https://player.vimeo.com/video/' | append: video_url.id | append: '?autoplay=1&muted=1&playsinline=1'
+    else
+      assign embed_src = 'https://www.youtube-nocookie.com/embed/' | append: video_url.id | append: '?autoplay=1&mute=1&playsinline=1&rel=0'
+    endif
+  -%}
+  <script src="{{ 'component-video.js' | asset_url }}" defer="defer"></script>
+  <video-facade
+    class="{{ wrapper_class }}"
+    style="--video-aspect: {{ aspect_css }};"
+    data-video-source="{{ video_url.type }}"
+    data-embed-src="{{ embed_src }}"
+    data-embed-title="{{ play_label | escape }}"
+  >
+    <button type="button" class="video__facade" data-video-play aria-label="{{ play_label | escape }}">
+      {%- if poster != blank -%}
+        <img
+          class="video__poster"
+          src="{{ poster_url }}"
+          srcset="{{ poster | image_url: width: 600 }} 600w, {{ poster | image_url: width: 1000 }} 1000w, {{ poster | image_url: width: 1400 }} 1400w"
+          sizes="(min-width: 990px) 60vw, 100vw"
+          alt="{{ poster.alt | default: play_label | escape }}"
+          width="{{ poster.width }}"
+          height="{{ poster.height }}"
+          loading="{{ poster_loading }}"
+        >
+      {%- else -%}
+        <span class="video__poster video__poster--empty" aria-hidden="true">
+          {%- render 'icon', name: 'shark' -%}
+        </span>
+      {%- endif -%}
+      <span class="video__play" aria-hidden="true">{% render 'icon', name: 'play' %}</span>
+    </button>
+    <noscript>
+      <a class="video__fallback" href="{{ video_url }}" target="_blank" rel="noopener">
+        {{ play_label }} <span class="visually-hidden">({{ 'general.new_window' | t }})</span>
+      </a>
+    </noscript>
+  </video-facade>
+
+{%- elsif source == 'mp4' -%}
+  <div class="{{ wrapper_class }}" style="--video-aspect: {{ aspect_css }};" data-video-source="mp4">
+    <video
+      class="video__el"
+      {% if is_autoplay %}autoplay{% endif %}
+      {% if is_loop %}loop{% endif %}
+      {% if is_muted %}muted{% endif %}
+      {% if has_controls %}controls{% endif %}
+      playsinline
+      preload="{{ preload_mode }}"
+      {% if poster_url != blank %}poster="{{ poster_url }}"{% endif %}
+      aria-label="{{ play_label | escape }}"
+    >
+      <source src="{{ mp4_url }}" type="video/mp4">
+    </video>
+  </div>
+
+{%- elsif request.design_mode -%}
+  <div class="{{ wrapper_class }} video--placeholder" style="--video-aspect: {{ aspect_css }};" data-video-source="none">
+    <div class="video__placeholder">
+      {%- render 'icon', name: 'play' -%}
+      <span class="small">Add a video in the sidebar</span>
+    </div>
+  </div>
+{%- endif -%}

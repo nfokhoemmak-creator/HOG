@@ -1,64 +1,218 @@
-{%- assign newsletter_fallback = 'general.newsletter_form.heading' | t -%}
+{{ 'section-newsletter.css' | asset_url | stylesheet_tag }}
 
-<div class="section" style="background: var(--color-bg-alt);">
-  <div class="container container--narrow center">
-    <h2 class="h2" style="margin-bottom: var(--space-3);">
-      {{ section.settings.heading | default: newsletter_fallback }}
-    </h2>
+{%- liquid
+  assign s = section.settings
+  assign form_id = 'newsletter-' | append: section.id
+  assign layout = s.layout | default: 'card'
 
-    {%- if section.settings.text != blank -%}
-      <div class="muted" style="margin-bottom: var(--space-4);">{{ section.settings.text }}</div>
-    {%- endif -%}
+  case s.color_scheme
+    when 'alt'
+      assign scheme_class = ' section--alt'
+    when 'brand'
+      assign scheme_class = ' section--brand'
+    else
+      assign scheme_class = ''
+  endcase
 
-    {%- form 'customer', class: 'newsletter-form', style: 'justify-content: center;' -%}
-      <input type="hidden" name="contact[tags]" value="newsletter">
-      <label class="visually-hidden" for="Newsletter-{{ section.id }}">
-        {{ 'general.newsletter_form.email_placeholder' | t }}
-      </label>
-      <input
-        id="Newsletter-{{ section.id }}"
-        class="field__input"
-        type="email"
-        name="contact[email]"
-        placeholder="{{ 'general.newsletter_form.email_placeholder' | t }}"
-        autocomplete="email"
-        required
-      >
-      <button type="submit" class="btn btn--accent">{{ 'general.newsletter_form.submit' | t }}</button>
+  assign whatsapp_number = settings.social_whatsapp_number | replace: ' ', '' | replace: '+', ''
+  assign show_whatsapp = false
+  if s.show_whatsapp and whatsapp_number != blank
+    assign show_whatsapp = true
+  endif
 
-      {%- if form.errors -%}
-        <p class="form__error" style="width: 100%;">
-          {{ form.errors.translated_fields.email }} {{ form.errors.messages.email }}
-        </p>
-      {%- elsif form.posted_successfully? -%}
-        <p class="form__success" style="width: 100%;">{{ 'general.newsletter_form.confirmation' | t }}</p>
-      {%- endif -%}
-    {%- endform -%}
+  assign pt = s.padding_top
+  assign pb = s.padding_bottom
+  assign pt_mobile = pt | times: 0.75 | round
+  assign pb_mobile = pb | times: 0.75 | round
+-%}
+
+{%- style -%}
+  #shopify-section-{{ section.id }} .newsletter {
+    padding-top: {{ pt_mobile }}px;
+    padding-bottom: {{ pb_mobile }}px;
+  }
+  @media (min-width: 750px) {
+    #shopify-section-{{ section.id }} .newsletter {
+      padding-top: {{ pt }}px;
+      padding-bottom: {{ pb }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="section newsletter newsletter--{{ layout }}{{ scheme_class }}">
+  <div class="container{% if layout == 'card' %} container--narrow{% endif %}">
+    <div class="newsletter__panel{% if layout == 'card' %} card card--static{% endif %}">
+      <div class="newsletter__copy">
+        {%- if s.eyebrow != blank -%}
+          <p class="eyebrow newsletter__eyebrow">
+            <span class="accent" aria-hidden="true">{% render 'icon', name: 'shark' %}</span>
+            {{ s.eyebrow | escape }}
+          </p>
+        {%- endif -%}
+        {%- if s.heading != blank -%}
+          <h2 class="h2 newsletter__heading">{{ s.heading | escape }}</h2>
+        {%- endif -%}
+        {%- if s.text != blank -%}
+          <div class="rte newsletter__text">{{ s.text }}</div>
+        {%- endif -%}
+      </div>
+
+      <div class="newsletter__form-col">
+        {%- form 'customer', id: form_id, class: 'newsletter__form' -%}
+          <input type="hidden" name="contact[tags]" value="newsletter">
+
+          {%- if form.posted_successfully? -%}
+            <p class="form__success newsletter__success" role="status" tabindex="-1">
+              {% render 'icon', name: 'check' %}
+              {{ 'sections.newsletter.success' | t }}
+            </p>
+          {%- else -%}
+            <div class="newsletter__row">
+              <label class="visually-hidden" for="{{ section.id }}-email">{{ 'sections.newsletter.email' | t }}</label>
+              <input
+                id="{{ section.id }}-email"
+                class="field__input newsletter__input"
+                type="email"
+                name="contact[email]"
+                value="{{ form.email }}"
+                placeholder="{{ 'sections.newsletter.email' | t }}"
+                autocomplete="email"
+                autocorrect="off"
+                autocapitalize="off"
+                required
+                {% if form.errors %}
+                  aria-invalid="true"
+                  aria-describedby="{{ section.id }}-error"
+                {% endif %}
+              >
+              <button type="submit" class="btn newsletter__submit">
+                {{ 'sections.newsletter.submit' | t }}
+              </button>
+            </div>
+            {%- if form.errors -%}
+              <p id="{{ section.id }}-error" class="form__error newsletter__error" role="alert">
+                {% render 'icon', name: 'info' %}
+                {{ 'sections.newsletter.error' | t }}
+              </p>
+            {%- endif -%}
+          {%- endif -%}
+        {%- endform -%}
+
+        {%- if s.privacy_text != blank -%}
+          <p class="small muted newsletter__privacy">{{ s.privacy_text | escape }}</p>
+        {%- endif -%}
+
+        {%- if show_whatsapp -%}
+          <div class="newsletter__whatsapp">
+            <span class="small muted newsletter__or">{{ s.whatsapp_intro | escape }}</span>
+            <a
+              class="btn btn--outline btn--sm newsletter__whatsapp-btn"
+              href="https://wa.me/{{ whatsapp_number }}"
+              target="_blank"
+              rel="noopener"
+            >
+              {% render 'icon', name: 'whatsapp' %}
+              {{ 'general.whatsapp_cta' | t }}
+              <span class="visually-hidden">({{ 'general.new_window' | t }})</span>
+            </a>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
   </div>
 </div>
 
 {% schema %}
 {
-  "name": "t:sections.newsletter.name",
+  "name": "Newsletter",
   "tag": "section",
-  "class": "newsletter-section",
+  "class": "section-newsletter",
   "settings": [
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        { "value": "card", "label": "Card" },
+        { "value": "band", "label": "Full-width band" }
+      ],
+      "default": "card"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow"
+    },
     {
       "type": "text",
       "id": "heading",
-      "label": "t:sections.newsletter.settings.heading.label",
-      "default": "Get the drop first"
+      "label": "Heading",
+      "default": "Join the shark pack"
     },
     {
       "type": "richtext",
       "id": "text",
-      "label": "t:sections.newsletter.settings.text.label",
-      "default": "<p>New releases go to the list before anywhere else.</p>"
+      "label": "Text",
+      "default": "<p>New styles, restocks and bundle deals — no spam.</p>"
+    },
+    {
+      "type": "text",
+      "id": "privacy_text",
+      "label": "Small print",
+      "default": "Unsubscribe any time."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_whatsapp",
+      "label": "Show WhatsApp button",
+      "default": true,
+      "info": "Uses the WhatsApp number from theme settings; hidden when it is empty."
+    },
+    {
+      "type": "text",
+      "id": "whatsapp_intro",
+      "label": "WhatsApp intro",
+      "default": "Prefer to chat?"
+    },
+    {
+      "type": "header",
+      "content": "Section"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "alt", "label": "Soft aqua" },
+        { "value": "brand", "label": "Navy" }
+      ],
+      "default": "alt"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
     }
   ],
   "presets": [
     {
-      "name": "t:sections.newsletter.name"
+      "name": "Newsletter"
     }
   ]
 }

@@ -1,51 +1,235 @@
-<div class="container">
-  <h1 class="h1" style="padding-top: var(--space-7);">{{ page_title }}</h1>
+{%- liquid
+  assign padding_mobile_top = section.settings.padding_top | times: 0.75 | round
+  assign padding_mobile_bottom = section.settings.padding_bottom | times: 0.75 | round
+  assign columns = section.settings.columns_desktop
+  assign card_sizes = '(min-width: 990px) 33vw, (min-width: 750px) 50vw, calc(100vw - 40px)'
+  if columns == 4
+    assign card_sizes = '(min-width: 990px) 25vw, (min-width: 750px) 50vw, calc(100vw - 40px)'
+  elsif columns == 2
+    assign card_sizes = '(min-width: 750px) 50vw, calc(100vw - 40px)'
+  endif
+-%}
 
-  <div class="product-grid" style="--cols-desktop: 3; --cols-mobile: 2; margin-top: var(--space-5);">
-    {%- for list_collection in collections -%}
-      {%- if list_collection.all_products_count > 0 -%}
-        <div class="card">
-          <a class="card__media card__media--portrait" href="{{ list_collection.url }}">
-            {%- if list_collection.image -%}
-              <img
-                class="card__image card__image--primary"
-                src="{{ list_collection.image | image_url: width: 800 }}"
-                alt="{{ list_collection.image.alt | escape }}"
-                width="{{ list_collection.image.width }}"
-                height="{{ list_collection.image.height }}"
-                loading="lazy"
-              >
-            {%- elsif list_collection.products.first.featured_media -%}
-              <img
-                class="card__image card__image--primary"
-                src="{{ list_collection.products.first.featured_media | image_url: width: 800 }}"
-                alt=""
-                width="800"
-                height="1067"
-                loading="lazy"
-              >
-            {%- else -%}
-              {{ 'collection-1' | placeholder_svg_tag: 'card__image' }}
-            {%- endif -%}
-          </a>
+{%- style -%}
+  #shopify-section-{{ section.id }} .list-collections {
+    padding-top: {{ padding_mobile_top }}px;
+    padding-bottom: {{ padding_mobile_bottom }}px;
+  }
+  @media (min-width: 990px) {
+    #shopify-section-{{ section.id }} .list-collections {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
 
-          <div class="card__info">
-            <a class="card__title" href="{{ list_collection.url }}">{{ list_collection.title | escape }}</a>
-            <span class="card__vendor">
-              {{ 'sections.collection_template.product_count_simple' | t: count: list_collection.all_products_count }}
-            </span>
+{%- paginate collections by section.settings.collections_per_page -%}
+  <div class="list-collections section">
+    <div class="container">
+      <header class="page-header{% if section.settings.text_alignment == 'center' %} page-header--center{% endif %}">
+        {%- liquid
+          assign heading = section.settings.heading
+          if heading == blank
+            assign heading = 'collections.title' | t
+          endif
+        -%}
+        <h1 class="h1">{{ heading | escape }}</h1>
+        {%- if section.settings.text != blank -%}
+          <p class="lead muted">{{ section.settings.text | escape }}</p>
+        {%- endif -%}
+      </header>
+
+      {%- assign rendered = 0 -%}
+      <ul class="grid grid--{{ columns }}" role="list">
+        {%- for collection in collections -%}
+          {%- if section.settings.hide_empty and collection.all_products_count == 0 -%}
+            {%- continue -%}
+          {%- endif -%}
+          {%- assign rendered = rendered | plus: 1 -%}
+          {%- liquid
+            assign card_image = collection.featured_image
+            if card_image == blank
+              assign card_image = collection.products.first.featured_image
+            endif
+            assign loading = 'lazy'
+            if forloop.index <= columns
+              assign loading = 'eager'
+            endif
+          -%}
+          <li>
+            <article class="card{% if settings.animations_enabled %} reveal{% endif %}">
+              <a class="card__media card__media--{{ section.settings.image_ratio }}" href="{{ collection.url }}" tabindex="-1" aria-hidden="true">
+                {%- if card_image != blank -%}
+                  <img
+                    src="{{ card_image | image_url: width: 800 }}"
+                    srcset="
+                      {{ card_image | image_url: width: 400 }} 400w,
+                      {{ card_image | image_url: width: 600 }} 600w,
+                      {{ card_image | image_url: width: 800 }} 800w,
+                      {{ card_image | image_url: width: 1200 }} 1200w
+                    "
+                    sizes="{{ card_sizes }}"
+                    alt="{{ card_image.alt | default: collection.title | escape }}"
+                    width="{{ card_image.width }}"
+                    height="{{ card_image.height }}"
+                    loading="{{ loading }}"
+                  >
+                {%- else -%}
+                  {{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                {%- endif -%}
+              </a>
+              <div class="card__body">
+                <h2 class="card__title h4">
+                  <a href="{{ collection.url }}">{{ collection.title | escape }}</a>
+                </h2>
+                {%- if section.settings.show_count -%}
+                  <p class="card__meta">
+                    {%- if collection.all_products_count == 1 -%}
+                      {{ 'collections.count_one' | t }}
+                    {%- else -%}
+                      {{ 'collections.count' | t: count: collection.all_products_count }}
+                    {%- endif -%}
+                  </p>
+                {%- endif -%}
+                <a class="btn btn--ghost btn--sm" href="{{ collection.url }}">
+                  {{ 'collections.shop_now' | t }}
+                  {% render 'icon', name: 'arrow-right' %}
+                </a>
+              </div>
+            </article>
+          </li>
+        {%- endfor -%}
+      </ul>
+
+      {%- if rendered == 0 -%}
+        <div class="empty-state">
+          {% render 'icon', name: 'shark' %}
+          <h2 class="empty-state__title h3">{{ 'collections.empty' | t }}</h2>
+          {%- liquid
+            assign empty_label = section.settings.empty_button_label
+            if empty_label == blank
+              assign empty_label = 'general.continue_shopping' | t
+            endif
+          -%}
+          <div class="btn-row">
+            <a class="btn" href="{{ section.settings.empty_button_link | default: '/' }}">{{ empty_label | escape }}</a>
           </div>
         </div>
       {%- endif -%}
-    {%- endfor -%}
+
+      {% render 'pagination', paginate: paginate %}
+    </div>
   </div>
-</div>
+{%- endpaginate -%}
 
 {% schema %}
 {
   "name": "Collections list",
   "tag": "section",
-  "class": "main-list-collections-section",
-  "settings": []
+  "class": "section-main-list-collections",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Shop by shark"
+    },
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Subheading",
+      "default": "Slippers for cold floors, slides for warm days, one legendary blanket."
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Heading alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_empty",
+      "label": "Hide empty collections",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_count",
+      "label": "Show product count",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image ratio",
+      "options": [
+        { "value": "square", "label": "Square" },
+        { "value": "portrait", "label": "Portrait" },
+        { "value": "landscape", "label": "Landscape" }
+      ],
+      "default": "landscape"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns on desktop",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "collections_per_page",
+      "label": "Collections per page",
+      "min": 6,
+      "max": 24,
+      "step": 3,
+      "default": 12
+    },
+    {
+      "type": "text",
+      "id": "empty_button_label",
+      "label": "Empty state button label",
+      "default": "Shop slippers"
+    },
+    {
+      "type": "url",
+      "id": "empty_button_link",
+      "label": "Empty state button link",
+      "default": "/collections/shark-slippers"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    }
+  ],
+  "enabled_on": {
+    "templates": ["list-collections"]
+  }
 }
 {% endschema %}

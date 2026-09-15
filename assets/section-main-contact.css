@@ -1,0 +1,160 @@
+/* Contact page: form + WhatsApp / email cards.
+   Uses only base.css tokens/classes plus its own BEM classes. */
+
+.contact__header {
+  max-width: 72rem;
+}
+
+.contact__intro {
+  margin-top: var(--space-3);
+}
+
+.contact__layout {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.contact__form-col {
+  min-width: 0;
+}
+
+.contact__form {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border: var(--border-card);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.contact__form .form__row {
+  gap: var(--space-4);
+}
+
+.contact__status {
+  margin-bottom: var(--space-2);
+}
+
+.contact__status p {
+  margin: 0;
+}
+
+.contact__status ul {
+  margin: var(--space-2) 0 0;
+}
+
+.contact__form .field__hint.form__error {
+  padding: var(--space-2) var(--space-3);
+  font-size: 1.3rem;
+}
+
+.contact__form .textarea {
+  min-height: 16rem;
+  resize: vertical;
+}
+
+.contact__submit {
+  margin-top: var(--space-2);
+}
+
+/* Cards --------------------------------------------------------------- */
+.contact__aside {
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+}
+
+.contact-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.contact-card--whatsapp {
+  border: 2px solid var(--color-brand);
+  background: var(--color-surface);
+}
+
+.contact-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.4rem;
+  height: 4.4rem;
+  border-radius: 50%;
+  background: var(--color-surface-alt);
+  color: var(--color-brand);
+}
+
+.contact-card__icon .icon {
+  width: 2.2rem;
+  height: 2.2rem;
+}
+
+.contact-card__title {
+  margin: 0;
+}
+
+.contact-card__text {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.contact-card__value {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-weight: var(--font-heading-weight);
+  font-size: 1.8rem;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.contact-card .btn {
+  margin-top: var(--space-2);
+}
+
+.contact-card .btn .icon {
+  width: 2rem;
+  height: 2rem;
+}
+
+.contact-card--hours {
+  flex-direction: row;
+  align-items: center;
+}
+
+.contact-card--hours .contact-card__icon {
+  flex: none;
+}
+
+.contact-card--hours .contact-card__text {
+  color: var(--color-ink);
+}
+
+.contact__trust {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* Desktop: form left, cards right (cards are the fastest path, so they
+   stay in view while the visitor types). */
+@media (min-width: 990px) {
+  .contact__layout {
+    grid-template-columns: minmax(0, 1.2fr) minmax(30rem, 0.8fr);
+    gap: var(--space-8);
+    align-items: start;
+  }
+
+  .contact__aside {
+    position: sticky;
+    top: calc(var(--header-height, 68px) + var(--space-4));
+  }
+
+  .contact__form {
+    padding: var(--space-6);
+  }
+}

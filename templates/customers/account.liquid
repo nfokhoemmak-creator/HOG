@@ -1,49 +1,80 @@
-<div class="container account">
-  <aside>
-    <h1 class="h3" style="margin-bottom: var(--space-4);">{{ 'customer.account.title' | t }}</h1>
-    <ul class="footer__menu">
-      <li><a class="underline" href="{{ routes.account_addresses_url }}">{{ 'customer.account.view_addresses' | t }}</a></li>
-      <li><a class="underline" href="{{ routes.account_logout_url }}">{{ 'customer.log_out' | t }}</a></li>
-    </ul>
+{%- liquid
+  assign customer_name = customer.first_name | default: customer.name
+-%}
 
-    <div class="address-card" style="margin-top: var(--space-5);">
-      <p class="eyebrow" style="margin-bottom: var(--space-2);">{{ 'customer.account.details' | t }}</p>
-      {{ customer.default_address | format_address }}
+<section class="section">
+  <div class="container account account--split">
+    <aside>
+      <p class="eyebrow">{{ 'customer.account.title' | t }}</p>
+      <h1 class="h3" style="margin-top: var(--space-2);">{{ 'customer.account.welcome' | t: name: customer_name }}</h1>
+
+      <nav class="account__nav" aria-label="{{ 'customer.account.title' | t }}">
+        <a href="{{ routes.account_url }}" aria-current="page">
+          {% render 'icon', name: 'box' %}
+          {{ 'customer.orders.title' | t }}
+        </a>
+        <a href="{{ routes.account_addresses_url }}">
+          {% render 'icon', name: 'truck' %}
+          {{ 'customer.account.view_addresses' | t }}
+        </a>
+        <a href="{{ routes.account_logout_url }}">
+          {% render 'icon', name: 'lock' %}
+          {{ 'customer.log_out' | t }}
+        </a>
+      </nav>
+
+      <div class="address-card">
+        <p class="eyebrow" style="margin-bottom: var(--space-2);">{{ 'customer.account.details' | t }}</p>
+        <p>{{ customer.name }}<br>{{ customer.email }}</p>
+        {%- if customer.default_address -%}
+          <div class="muted small" style="margin-top: var(--space-3);">
+            {{ customer.default_address | format_address }}
+          </div>
+        {%- endif -%}
+      </div>
+    </aside>
+
+    <div>
+      <h2 class="h4" style="margin-bottom: var(--space-4);">{{ 'customer.orders.title' | t }}</h2>
+
+      {%- if customer.orders.size > 0 -%}
+        {%- paginate customer.orders by 20 -%}
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">{{ 'customer.orders.order_number' | t }}</th>
+                  <th scope="col">{{ 'customer.orders.date' | t }}</th>
+                  <th scope="col">{{ 'customer.orders.payment_status' | t }}</th>
+                  <th scope="col">{{ 'customer.orders.fulfillment_status' | t }}</th>
+                  <th scope="col">{{ 'customer.orders.total' | t }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {%- for order in customer.orders -%}
+                  <tr>
+                    <td><a class="underline" href="{{ order.customer_url }}">{{ order.name }}</a></td>
+                    <td>{{ order.created_at | date: '%b %d, %Y' }}</td>
+                    <td>{{ order.financial_status_label }}</td>
+                    <td>{{ order.fulfillment_status_label }}</td>
+                    <td>{{ order.total_price | money }}</td>
+                  </tr>
+                {%- endfor -%}
+              </tbody>
+            </table>
+          </div>
+
+          {% render 'pagination', paginate: paginate %}
+        {%- endpaginate -%}
+      {%- else -%}
+        <div class="empty-state card card--static" style="padding: var(--space-6);">
+          {% render 'icon', name: 'shark' %}
+          <p class="empty-state__title h5">{{ 'customer.orders.none' | t }}</p>
+          <div class="btn-row">
+            <a class="btn" href="{{ routes.collections_url }}/shark-slippers">{{ 'cart.empty_cta' | t }}</a>
+          </div>
+        </div>
+      {%- endif -%}
     </div>
-  </aside>
-
-  <div>
-    <h2 class="h4" style="margin-bottom: var(--space-4);">{{ 'customer.orders.title' | t }}</h2>
-
-    {%- if customer.orders.size > 0 -%}
-      {%- paginate customer.orders by 20 -%}
-        <table class="order-table">
-          <thead>
-            <tr>
-              <th>{{ 'customer.orders.order_number' | t }}</th>
-              <th>{{ 'customer.orders.date' | t }}</th>
-              <th>{{ 'customer.orders.payment_status' | t }}</th>
-              <th>{{ 'customer.orders.fulfillment_status' | t }}</th>
-              <th>{{ 'customer.orders.total' | t }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {%- for order in customer.orders -%}
-              <tr>
-                <td><a class="underline" href="{{ order.customer_url }}">{{ order.name }}</a></td>
-                <td>{{ order.created_at | date: '%b %d, %Y' }}</td>
-                <td>{{ order.financial_status_label }}</td>
-                <td>{{ order.fulfillment_status_label }}</td>
-                <td>{{ order.total_price | money }}</td>
-              </tr>
-            {%- endfor -%}
-          </tbody>
-        </table>
-
-        {% render 'pagination', paginate: paginate %}
-      {%- endpaginate -%}
-    {%- else -%}
-      <p class="muted">{{ 'customer.orders.none' | t }}</p>
-    {%- endif -%}
   </div>
-</div>
+</section>

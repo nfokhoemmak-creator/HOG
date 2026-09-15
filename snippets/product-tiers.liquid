@@ -1,0 +1,141 @@
+{%- comment -%}
+  Quantity tier selector for slipper products ("1 pair / 2 pairs / 3 pairs").
+
+  Prices are computed from the selected variant exactly the way Shopify
+  allocates a percentage discount on ONE cart line (SPEC §4 "Discount math"):
+  discount = round(line × percent / 100). section-main-product.js recomputes
+  the same numbers on `variant:change` and keeps the form quantity in sync.
+
+  Accepts:
+  - product:         {Object} product (required)
+  - current_variant: {Object} the variant currently selected (required)
+  - section_id:      {String} section id (required)
+  - form_id:         {String} id of the product form whose quantity the tiers control (required)
+  - block:           {Object} the `tiers` block (settings: heading, single_note, second_pair_text, bundle_link)
+
+  Renders nothing when settings.bundle_tier_percent is 0.
+
+  Usage:
+  {% render 'product-tiers', product: product, current_variant: current_variant, section_id: section.id, form_id: form_id, block: block %}
+{%- endcomment -%}
+
+{%- liquid
+  assign percent = settings.bundle_tier_percent | default: 0
+  assign tier_min = settings.bundle_tier_min | default: 2
+  assign threshold_cents = settings.free_shipping_threshold | default: 0 | times: 100
+  assign cart_total = cart.total_price | default: 0
+  assign price = current_variant.price | default: product.price
+  assign tier_max = tier_min | plus: 1
+  assign tiers_id = 'ProductTiers-' | append: section_id
+  assign save_template = 'products.product.save_amount' | t: amount: '[amount]'
+  assign second_template = block.settings.second_pair_text
+-%}
+
+{%- if percent > 0 -%}
+  <product-tiers
+    id="{{ tiers_id }}"
+    class="tiers"
+    data-section-id="{{ section_id }}"
+    data-form="{{ form_id }}"
+    data-price="{{ price }}"
+    data-percent="{{ percent }}"
+    data-min="{{ tier_min }}"
+    data-threshold="{{ threshold_cents }}"
+    data-cart-total="{{ cart_total }}"
+    data-save-template="{{ save_template | escape }}"
+    data-second-template="{{ second_template | escape }}"
+  >
+    <fieldset class="tiers__fieldset">
+      {%- if block.settings.heading != blank -%}
+        <legend class="tiers__legend h5">{{ block.settings.heading | escape }}</legend>
+      {%- endif -%}
+      <div class="tiers__list">
+        {%- for q in (1..tier_max) -%}
+          {%- liquid
+            assign line = price | times: q
+            assign discount = 0
+            if q >= tier_min
+              assign discount = line | times: percent | divided_by: 100.0 | round
+            endif
+            assign total = line | minus: discount
+            assign projected = cart_total | plus: total
+            assign ships_free = false
+            if threshold_cents > 0 and projected >= threshold_cents
+              assign ships_free = true
+            endif
+            assign second_money = total | minus: price | money
+            assign saving_rem = discount | modulo: 100
+            if saving_rem == 0
+              assign saving_money = discount | money_without_trailing_zeros
+            else
+              assign saving_money = discount | money
+            endif
+            assign is_popular = false
+            if q == tier_min
+              assign is_popular = true
+            endif
+            assign is_best = false
+            if q == tier_max
+              assign is_best = true
+            endif
+            assign tier_input_id = tiers_id | append: '-' | append: q
+          -%}
+          <label
+            class="tier{% if q == 1 %} is-selected{% endif %}{% if is_popular %} tier--popular{% endif %}"
+            for="{{ tier_input_id }}"
+            data-tier
+            data-tier-qty="{{ q }}"
+          >
+            <input
+              type="radio"
+              id="{{ tier_input_id }}"
+              class="tier__input"
+              name="Tier-{{ section_id }}"
+              value="{{ q }}"
+              data-tier-input
+              {% if q == 1 %}checked{% endif %}
+            >
+            <span class="tier__head">
+              <span class="tier__qty">
+                {{ q }}
+                {% if q == 1 %}{{ 'products.product.pair' | t }}{% else %}{{ 'products.product.pairs' | t }}{% endif %}
+              </span>
+              {%- if is_popular -%}
+                <span class="badge badge--accent tier__badge">{{ 'products.product.most_popular' | t }}</span>
+              {%- elsif is_best -%}
+                <span class="badge tier__badge">{{ 'products.product.best_value' | t }}</span>
+              {%- endif -%}
+            </span>
+            <span class="tier__price">
+              <span class="tier__total" data-tier-total>{{ total | money }}</span>
+              <s class="tier__regular" data-tier-regular{% unless discount > 0 %} hidden{% endunless %}>
+                {%- if discount > 0 %}{{ line | money }}{% endif -%}
+              </s>
+            </span>
+            <span class="tier__meta">
+              <span class="tier__saving" data-tier-saving{% unless discount > 0 %} hidden{% endunless %}>
+                {%- if discount > 0 %}{{ save_template | replace: '[amount]', saving_money }}{% endif -%}
+              </span>
+              {%- if q == 2 and second_template != blank -%}
+                <span class="tier__second" data-tier-second>{{ second_template | escape | replace: '{{ price }}', second_money }}</span>
+              {%- endif -%}
+              <span class="tier__ship" data-tier-ship{% unless ships_free %} hidden{% endunless %}>
+                {% render 'icon', name: 'check' %}
+                {{ 'bundles.free_shipping_included' | t }}
+              </span>
+              {%- if q == 1 and block.settings.single_note != blank -%}
+                <span class="tier__note" data-tier-note{% if ships_free %} hidden{% endif %}>{{ block.settings.single_note | escape }}</span>
+              {%- endif -%}
+            </span>
+          </label>
+        {%- endfor -%}
+      </div>
+    </fieldset>
+    {%- if block.settings.bundle_link != blank -%}
+      <a class="tiers__link" href="{{ block.settings.bundle_link }}">
+        {{ 'products.product.tiers_mixed' | t }}
+        {% render 'icon', name: 'arrow-right' %}
+      </a>
+    {%- endif -%}
+  </product-tiers>
+{%- endif -%}

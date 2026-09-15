@@ -1,0 +1,651 @@
+{{ 'section-bundle-builder.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'section-bundle-builder.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign scheme = section.settings.color_scheme | default: 'default'
+  assign anchor = section.settings.anchor_id | default: 'bundle-builder'
+  assign padding_mobile_top = section.settings.padding_top | times: 0.75 | round
+  assign padding_mobile_bottom = section.settings.padding_bottom | times: 0.75 | round
+
+  assign product_a = section.settings.product_a
+  if product_a == blank
+    assign product_a = collections['shark-slippers'].products[0]
+  endif
+  assign product_b = section.settings.product_b
+  if product_b == blank
+    assign product_b = collections['shark-slippers'].products[1]
+  endif
+  assign product_blanket = section.settings.product_blanket
+  if product_blanket == blank
+    assign product_blanket = collections['shark-blankets'].products[0]
+  endif
+
+  assign has_a = false
+  if product_a != blank
+    assign has_a = true
+  endif
+  assign has_b = false
+  if product_b != blank and product_b.id != product_a.id
+    assign has_b = true
+  endif
+  assign has_blanket = false
+  if product_blanket != blank
+    assign has_blanket = true
+  endif
+
+  assign label_a = section.settings.label_a
+  if label_a == blank
+    assign label_a = product_a.title
+  endif
+  assign label_b = section.settings.label_b
+  if label_b == blank
+    assign label_b = product_b.title
+  endif
+  assign label_blanket = section.settings.label_blanket
+  if label_blanket == blank
+    assign label_blanket = product_blanket.title
+  endif
+
+  assign tier_percent = settings.bundle_tier_percent | default: 0
+  assign tier_min = settings.bundle_tier_min | default: 2
+  assign set_percent = settings.set_discount_percent | default: 0
+  assign threshold_cents = settings.free_shipping_threshold | default: 0 | times: 100
+
+  assign variant_a = product_a.selected_or_first_available_variant
+  assign variant_blanket = product_blanket.selected_or_first_available_variant
+-%}
+
+{%- style -%}
+  #shopify-section-{{ section.id }} .bundle-builder {
+    padding-top: {{ padding_mobile_top }}px;
+    padding-bottom: {{ padding_mobile_bottom }}px;
+  }
+  @media (min-width: 990px) {
+    #shopify-section-{{ section.id }} .bundle-builder {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div id="{{ anchor | escape }}" class="bundle-builder section{% if scheme != 'default' %} section--{{ scheme }}{% endif %}">
+  <bundle-builder
+    class="container"
+    data-tier-percent="{{ tier_percent }}"
+    data-tier-min="{{ tier_min }}"
+    data-set-percent="{{ set_percent }}"
+    data-threshold="{{ threshold_cents }}"
+  >
+    {%- if section.settings.heading != blank or section.settings.text != blank -%}
+      <header class="section__header section__header--center bundle-builder__header">
+        <div>
+          {%- if section.settings.heading != blank -%}
+            <h2 class="section__title h2">{{ section.settings.heading | escape }}</h2>
+          {%- endif -%}
+          {%- if section.settings.text != blank -%}
+            <p class="section__subtitle">{{ section.settings.text | escape }}</p>
+          {%- endif -%}
+        </div>
+      </header>
+    {%- endif -%}
+
+    <script type="application/json" data-bundle-strings>
+      {
+        "add": {{ 'bundles.add_to_cart' | t | json }},
+        "adding": {{ 'bundles.adding' | t | json }},
+        "added": {{ 'bundles.added' | t | json }},
+        "error": {{ 'bundles.error' | t | json }},
+        "soldOut": {{ 'bundles.sold_out' | t | json }},
+        "save": {{ 'products.product.save_amount' | t: amount: '[amount]' | json }},
+        "shipIncluded": {{ 'bundles.free_shipping_included' | t | json }},
+        "shipAway": {{ 'bundles.free_shipping_away' | t: amount: '[amount]' | json }},
+        "edit": {{ 'bundles.edit' | t | json }},
+        "done": {{ 'bundles.done' | t | json }}
+      }
+    </script>
+
+    {%- comment -%} Per-product variant data, keyed by numeric product id {%- endcomment -%}
+    {%- assign product_keys = 'a,b,blanket' | split: ',' -%}
+    {%- for key in product_keys -%}
+      {%- liquid
+        assign emit = false
+        if key == 'a' and has_a
+          assign json_product = product_a
+          assign json_label = label_a
+          assign json_kind = 'slipper'
+          assign emit = true
+        elsif key == 'b' and has_b
+          assign json_product = product_b
+          assign json_label = label_b
+          assign json_kind = 'slipper'
+          assign emit = true
+        elsif key == 'blanket' and has_blanket
+          assign json_product = product_blanket
+          assign json_label = label_blanket
+          assign json_kind = 'blanket'
+          assign emit = true
+        endif
+      -%}
+      {%- if emit -%}
+        <script type="application/json" data-bundle-product="{{ json_product.id }}" data-bundle-handle="{{ json_product.handle | escape }}">
+          {
+            "id": {{ json_product.id | json }},
+            "title": {{ json_product.title | json }},
+            "label": {{ json_label | json }},
+            "kind": {{ json_kind | json }},
+            "handle": {{ json_product.handle | json }},
+            "url": {{ json_product.url | json }},
+            "price": {{ json_product.price | json }},
+            "featured_image": {% if json_product.featured_image %}{{ json_product.featured_image | image_url: width: 240 | json }}{% else %}null{% endif %},
+            "options": {{ json_product.options | json }},
+            "variants": [
+              {%- for variant in json_product.variants -%}
+                {
+                  "id": {{ variant.id | json }},
+                  "title": {{ variant.title | json }},
+                  "options": {{ variant.options | json }},
+                  "available": {{ variant.available | json }},
+                  "price": {{ variant.price | json }},
+                  "image": {% if variant.featured_image %}{{ variant.featured_image | image_url: width: 240 | json }}{% elsif json_product.featured_image %}{{ json_product.featured_image | image_url: width: 240 | json }}{% else %}null{% endif %}
+                }{% unless forloop.last %},{% endunless %}
+              {%- endfor -%}
+            ]
+          }
+        </script>
+      {%- endif -%}
+    {%- endfor -%}
+
+    {%- if has_a == false -%}
+      {%- if request.design_mode -%}
+        <p class="bundle-builder__empty muted center">Pick the two slipper products and the blanket in the section settings to build bundles.</p>
+      {%- endif -%}
+    {%- else -%}
+      <div class="grid grid--2 bundle-builder__grid">
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign pairs = block.settings.pairs | default: 1
+            assign include_blanket = false
+            if block.settings.include_blanket and has_blanket
+              assign include_blanket = true
+            endif
+
+            assign pair_price = variant_a.price | default: product_a.price
+            assign slipper_regular = pair_price | times: pairs
+            assign slipper_discount = 0
+            if pairs >= tier_min and tier_percent > 0
+              assign slipper_discount = slipper_regular | times: tier_percent | divided_by: 100.0 | round
+            endif
+
+            assign blanket_regular = 0
+            assign blanket_discount = 0
+            if include_blanket
+              assign blanket_regular = variant_blanket.price | default: product_blanket.price
+              if pairs >= 1 and set_percent > 0
+                assign blanket_discount = blanket_regular | times: set_percent | divided_by: 100.0 | round
+              endif
+            endif
+
+            assign regular_total = slipper_regular | plus: blanket_regular
+            assign savings = slipper_discount | plus: blanket_discount
+            assign bundle_total = regular_total | minus: savings
+            assign savings_percent = 0
+            if regular_total > 0
+              assign savings_percent = savings | times: 100.0 | divided_by: regular_total | round
+            endif
+            assign savings_remainder = savings | modulo: 100
+            if savings_remainder == 0
+              assign savings_label = savings | money_without_trailing_zeros
+            else
+              assign savings_label = savings | money
+            endif
+
+            assign ship_unlocked = false
+            assign ship_away = 0
+            if threshold_cents > 0
+              if bundle_total >= threshold_cents
+                assign ship_unlocked = true
+              else
+                assign ship_away = threshold_cents | minus: bundle_total
+              endif
+            endif
+            assign ship_away_remainder = ship_away | modulo: 100
+            if ship_away_remainder == 0
+              assign ship_away_label = ship_away | money_without_trailing_zeros
+            else
+              assign ship_away_label = ship_away | money
+            endif
+
+            assign card_id = section.id | append: '-' | append: block.id
+            assign is_featured = false
+            if block.settings.badge != blank
+              assign is_featured = true
+            endif
+            assign summary_a = variant_a.title | replace: ' / ', ' · '
+            assign summary_blanket = variant_blanket.title | replace: ' / ', ' · '
+          -%}
+
+          <article
+            class="card bundle{% if is_featured %} bundle--featured{% endif %}"
+            data-bundle-card
+            {{ block.shopify_attributes }}
+          >
+            {%- if is_featured -%}
+              <span class="badge sticker bundle__badge">{{ block.settings.badge | escape }}</span>
+            {%- endif -%}
+
+            <div class="card__body bundle__body">
+              <header class="bundle__head">
+                <h3 class="h4 bundle__title">{{ block.settings.title | escape }}</h3>
+                {%- if block.settings.subtitle != blank -%}
+                  <p class="bundle__subtitle small muted">{{ block.settings.subtitle | escape }}</p>
+                {%- endif -%}
+              </header>
+
+              <div class="bundle__slots" data-bundle-slots>
+                {%- for i in (1..pairs) -%}
+                  {%- liquid
+                    assign slot_id = card_id | append: '-pair-' | append: i
+                    assign slot_label = 'bundles.pair_label' | t: number: i
+                  -%}
+                  <div
+                    class="bundle__slot"
+                    data-slot
+                    data-slot-kind="slipper"
+                    data-product-id="{{ product_a.id }}"
+                    data-variant-id="{{ variant_a.id }}"
+                  >
+                    <button
+                      type="button"
+                      class="bundle__slot-toggle"
+                      aria-expanded="false"
+                      aria-controls="{{ slot_id }}-body"
+                      data-slot-toggle
+                    >
+                      <span class="bundle__slot-thumb" aria-hidden="true">
+                        {%- if variant_a.featured_image -%}
+                          <img src="{{ variant_a.featured_image | image_url: width: 120 }}" alt="" width="60" height="60" loading="lazy" data-slot-thumb>
+                        {%- elsif product_a.featured_image -%}
+                          <img src="{{ product_a.featured_image | image_url: width: 120 }}" alt="" width="60" height="60" loading="lazy" data-slot-thumb>
+                        {%- else -%}
+                          <img alt="" width="60" height="60" hidden data-slot-thumb>
+                        {%- endif -%}
+                      </span>
+                      <span class="bundle__slot-text">
+                        <span class="bundle__slot-label small muted">{{ slot_label }}</span>
+                        <span class="bundle__slot-summary" data-slot-summary>{{ label_a | escape }} · {{ summary_a | escape }}</span>
+                      </span>
+                      <span class="bundle__slot-edit small">
+                        <span>{{ 'bundles.edit' | t }}</span>
+                        {% render 'icon', name: 'chevron-down' %}
+                      </span>
+                    </button>
+
+                    <div class="bundle__slot-body" id="{{ slot_id }}-body" hidden data-slot-body>
+                      {%- if has_b -%}
+                        <fieldset class="bundle__product-toggle">
+                          <legend class="visually-hidden">{{ 'bundles.product' | t }}</legend>
+                          <div class="segmented">
+                            <label class="segmented__option">
+                              <input type="radio" name="{{ slot_id }}-product" value="{{ product_a.id }}" checked data-slot-product>
+                              <span>{{ label_a | escape }}</span>
+                            </label>
+                            <label class="segmented__option">
+                              <input type="radio" name="{{ slot_id }}-product" value="{{ product_b.id }}" data-slot-product>
+                              <span>{{ label_b | escape }}</span>
+                            </label>
+                          </div>
+                        </fieldset>
+                      {%- endif -%}
+
+                      <div class="bundle__options" data-slot-options>
+                        {%- for option in product_a.options_with_values -%}
+                          {%- assign option_index = forloop.index0 -%}
+                          <label class="field bundle__field">
+                            <span class="field__label small">{{ option.name | escape }}</span>
+                            <select class="select" name="{{ slot_id }}-option-{{ option_index }}" data-option-index="{{ option_index }}">
+                              {%- for value in option.values -%}
+                                <option
+                                  value="{{ value.name | escape }}"
+                                  {% if value.selected %}selected{% endif %}
+                                  {% unless value.available %}disabled{% endunless %}
+                                >
+                                  {{- value.name | escape -}}
+                                  {%- unless value.available %} — {{ 'bundles.sold_out' | t }}{% endunless -%}
+                                </option>
+                              {%- endfor -%}
+                            </select>
+                          </label>
+                        {%- endfor -%}
+                      </div>
+
+                      <button type="button" class="btn btn--sm btn--outline bundle__done" data-slot-done>{{ 'bundles.done' | t }}</button>
+                    </div>
+                  </div>
+                {%- endfor -%}
+
+                {%- if include_blanket -%}
+                  {%- assign slot_id = card_id | append: '-blanket' -%}
+                  <div
+                    class="bundle__slot"
+                    data-slot
+                    data-slot-kind="blanket"
+                    data-product-id="{{ product_blanket.id }}"
+                    data-variant-id="{{ variant_blanket.id }}"
+                  >
+                    <button
+                      type="button"
+                      class="bundle__slot-toggle"
+                      aria-expanded="false"
+                      aria-controls="{{ slot_id }}-body"
+                      data-slot-toggle
+                    >
+                      <span class="bundle__slot-thumb" aria-hidden="true">
+                        {%- if variant_blanket.featured_image -%}
+                          <img src="{{ variant_blanket.featured_image | image_url: width: 120 }}" alt="" width="60" height="60" loading="lazy" data-slot-thumb>
+                        {%- elsif product_blanket.featured_image -%}
+                          <img src="{{ product_blanket.featured_image | image_url: width: 120 }}" alt="" width="60" height="60" loading="lazy" data-slot-thumb>
+                        {%- else -%}
+                          <img alt="" width="60" height="60" hidden data-slot-thumb>
+                        {%- endif -%}
+                      </span>
+                      <span class="bundle__slot-text">
+                        <span class="bundle__slot-label small muted">{{ 'bundles.blanket_label' | t }}</span>
+                        <span class="bundle__slot-summary" data-slot-summary>{{ label_blanket | escape }} · {{ summary_blanket | escape }}</span>
+                      </span>
+                      <span class="bundle__slot-edit small">
+                        <span>{{ 'bundles.edit' | t }}</span>
+                        {% render 'icon', name: 'chevron-down' %}
+                      </span>
+                    </button>
+
+                    <div class="bundle__slot-body" id="{{ slot_id }}-body" hidden data-slot-body>
+                      <div class="bundle__options" data-slot-options>
+                        {%- for option in product_blanket.options_with_values -%}
+                          {%- assign option_index = forloop.index0 -%}
+                          <label class="field bundle__field">
+                            <span class="field__label small">{{ option.name | escape }}</span>
+                            <select class="select" name="{{ slot_id }}-option-{{ option_index }}" data-option-index="{{ option_index }}">
+                              {%- for value in option.values -%}
+                                <option
+                                  value="{{ value.name | escape }}"
+                                  {% if value.selected %}selected{% endif %}
+                                  {% unless value.available %}disabled{% endunless %}
+                                >
+                                  {{- value.name | escape -}}
+                                  {%- unless value.available %} — {{ 'bundles.sold_out' | t }}{% endunless -%}
+                                </option>
+                              {%- endfor -%}
+                            </select>
+                          </label>
+                        {%- endfor -%}
+                      </div>
+
+                      <button type="button" class="btn btn--sm btn--outline bundle__done" data-slot-done>{{ 'bundles.done' | t }}</button>
+                    </div>
+                  </div>
+                {%- endif -%}
+              </div>
+
+              {%- if block.settings.description != blank -%}
+                <p class="bundle__description small muted">{{ block.settings.description | escape }}</p>
+              {%- endif -%}
+
+              <div class="bundle__pricing">
+                <div class="bundle__totals">
+                  <span class="bundle__total-label small muted">{{ 'bundles.total' | t }}</span>
+                  <div class="bundle__amounts">
+                    <s class="bundle__regular muted tabular" data-bundle-regular{% if savings <= 0 %} hidden{% endif %}>
+                      <span class="visually-hidden">{{ 'bundles.was' | t }} </span>{{ regular_total | money }}
+                    </s>
+                    <span class="bundle__price tabular" data-bundle-total>{{ bundle_total | money }}</span>
+                  </div>
+                </div>
+                <span class="badge badge--accent bundle__save" data-bundle-save{% if savings <= 0 %} hidden{% endif %}>
+                  {{- 'products.product.save_amount' | t: amount: savings_label }} ({{ savings_percent }}%)
+                </span>
+                {%- if threshold_cents > 0 -%}
+                  <p class="bundle__ship small{% if ship_unlocked %} bundle__ship--unlocked{% endif %}" data-bundle-ship>
+                    <span class="bundle__ship-icon bundle__ship-icon--unlocked" data-bundle-ship-icon="unlocked"{% unless ship_unlocked %} hidden{% endunless %}>{% render 'icon', name: 'check', class: 'icon--sm' %}</span>
+                    <span class="bundle__ship-icon bundle__ship-icon--locked" data-bundle-ship-icon="locked"{% if ship_unlocked %} hidden{% endif %}>{% render 'icon', name: 'truck', class: 'icon--sm' %}</span>
+                    {%- if ship_unlocked -%}
+                      <span data-bundle-ship-text>{{ 'bundles.free_shipping_included' | t }}</span>
+                    {%- else -%}
+                      <span data-bundle-ship-text>{{ 'bundles.free_shipping_away' | t: amount: ship_away_label }}</span>
+                    {%- endif -%}
+                  </p>
+                {%- endif -%}
+              </div>
+
+              <div class="bundle__actions">
+                <button type="button" class="btn btn--full bundle__add" data-bundle-add>
+                  <span data-bundle-add-text>{{ 'bundles.add_to_cart' | t }}</span>
+                </button>
+                <p class="form__error bundle__error" data-bundle-error hidden role="alert"></p>
+
+                <div class="bundle__nojs">
+                  <a class="btn btn--full" href="{{ product_a.url }}">{{ 'bundles.choose' | t }} — {{ label_a | escape }}</a>
+                  {%- if has_b -%}
+                    <a class="btn btn--full btn--outline" href="{{ product_b.url }}">{{ 'bundles.choose' | t }} — {{ label_b | escape }}</a>
+                  {%- endif -%}
+                  {%- if include_blanket -%}
+                    <a class="btn btn--full btn--outline" href="{{ product_blanket.url }}">{{ 'bundles.choose' | t }} — {{ label_blanket | escape }}</a>
+                  {%- endif -%}
+                </div>
+              </div>
+            </div>
+          </article>
+        {%- endfor -%}
+      </div>
+
+      <p class="bundle-builder__how small muted center">
+        {% render 'icon', name: 'info', class: 'icon--sm' %}
+        <span>{{ 'bundles.how_it_works' | t }}</span>
+      </p>
+    {%- endif -%}
+  </bundle-builder>
+</div>
+
+{% schema %}
+{
+  "name": "Bundle builder",
+  "tag": "section",
+  "class": "section-bundle-builder",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Bundle & save"
+    },
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Text",
+      "default": "Mix any styles and sizes. The discount is applied automatically in your cart — no code needed."
+    },
+    {
+      "type": "text",
+      "id": "anchor_id",
+      "label": "Anchor id",
+      "default": "bundle-builder",
+      "info": "Lets links such as /pages/bundles#bundle-builder jump here."
+    },
+    {
+      "type": "header",
+      "content": "Products"
+    },
+    {
+      "type": "product",
+      "id": "product_a",
+      "label": "Slipper product 1",
+      "info": "Defaults to the first product in the Shark slippers collection."
+    },
+    {
+      "type": "text",
+      "id": "label_a",
+      "label": "Short name for product 1",
+      "default": "Winter"
+    },
+    {
+      "type": "product",
+      "id": "product_b",
+      "label": "Slipper product 2",
+      "info": "Defaults to the second product in the Shark slippers collection."
+    },
+    {
+      "type": "text",
+      "id": "label_b",
+      "label": "Short name for product 2",
+      "default": "Originals"
+    },
+    {
+      "type": "product",
+      "id": "product_blanket",
+      "label": "Blanket product",
+      "info": "Defaults to the first product in the Shark blankets collection."
+    },
+    {
+      "type": "text",
+      "id": "label_blanket",
+      "label": "Short name for the blanket",
+      "default": "Blanket"
+    },
+    {
+      "type": "paragraph",
+      "content": "Discount percentages come from Theme settings > Offers and must match the automatic discounts in your Shopify admin."
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "alt", "label": "Soft aqua" },
+        { "value": "brand", "label": "Navy" }
+      ],
+      "default": "alt"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    }
+  ],
+  "blocks": [
+    {
+      "type": "bundle",
+      "name": "Bundle",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "The Pair"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle",
+          "default": "Two pairs, 20% off both."
+        },
+        {
+          "type": "range",
+          "id": "pairs",
+          "label": "Number of slipper pairs",
+          "min": 1,
+          "max": 4,
+          "step": 1,
+          "default": 2
+        },
+        {
+          "type": "checkbox",
+          "id": "include_blanket",
+          "label": "Include the blanket",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "badge",
+          "label": "Badge",
+          "info": "Example: Most popular. Leave blank for no badge."
+        },
+        {
+          "type": "text",
+          "id": "description",
+          "label": "Description"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Bundle builder",
+      "blocks": [
+        {
+          "type": "bundle",
+          "settings": {
+            "title": "Solo",
+            "subtitle": "Start here",
+            "pairs": 1,
+            "include_blanket": false,
+            "badge": "",
+            "description": "One pair of shark slippers in your style and size."
+          }
+        },
+        {
+          "type": "bundle",
+          "settings": {
+            "title": "The Pair",
+            "subtitle": "Two pairs, 20% off both. Free standard shipping unlocked.",
+            "pairs": 2,
+            "include_blanket": false,
+            "badge": "Most popular",
+            "description": "Mix styles and sizes — one for you, one for someone you like."
+          }
+        },
+        {
+          "type": "bundle",
+          "settings": {
+            "title": "Family Pack",
+            "subtitle": "Three pairs, 20% off",
+            "pairs": 3,
+            "include_blanket": false,
+            "badge": "",
+            "description": "Three pairs, any mix. The whole house gets fins."
+          }
+        },
+        {
+          "type": "bundle",
+          "settings": {
+            "title": "The Cozy Set",
+            "subtitle": "Slippers + the shark blanket, 25% off the blanket",
+            "pairs": 1,
+            "include_blanket": true,
+            "badge": "Best gift",
+            "description": "One pair of slippers and the wearable shark blanket."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

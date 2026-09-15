@@ -1,0 +1,377 @@
+/* ==========================================================================
+   Shark Bite — section-product-spotlight.css
+   Single featured product for landing pages: swipeable gallery + thumbs on
+   the left, rating / title / price / bullets / variant form on the right.
+   The form behaviour comes from product-form.js (CORE).
+   ========================================================================== */
+
+.spotlight__inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+  align-items: start;
+}
+
+@media (min-width: 990px) {
+  .spotlight__inner {
+    grid-template-columns: 55fr 45fr;
+    gap: var(--space-8);
+  }
+}
+
+/* Gallery ---------------------------------------------------------------- */
+
+.spotlight__gallery {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.spotlight__viewer {
+  position: relative;
+  display: flex;
+  aspect-ratio: 1 / 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-alt);
+  box-shadow: var(--shadow-md);
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.spotlight__viewer::-webkit-scrollbar {
+  display: none;
+}
+
+.spotlight__viewer:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.spotlight__viewer--empty {
+  display: grid;
+  place-items: center;
+}
+
+.spotlight__slide {
+  position: relative;
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.spotlight__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.spotlight__slide-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 6.4rem;
+  height: 6.4rem;
+  border: 2px solid var(--color-ink);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  box-shadow: var(--shadow-sticker);
+  transform: translate(-50%, -50%);
+}
+
+.spotlight__placeholder {
+  width: 100%;
+  height: 100%;
+  background: var(--color-brand-soft);
+  color: var(--color-brand);
+  opacity: 0.6;
+}
+
+.spotlight__badge {
+  position: absolute;
+  top: var(--space-4);
+  left: var(--space-4);
+  z-index: 1;
+  background: var(--color-surface);
+}
+
+.spotlight__thumbs {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding: 0.3rem;
+  scrollbar-width: none;
+}
+
+.spotlight__thumbs::-webkit-scrollbar {
+  display: none;
+}
+
+.spotlight__thumb {
+  flex: none;
+  width: 6.4rem;
+  height: 6.4rem;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: calc(var(--radius) - 4px);
+  background: var(--color-surface-alt);
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color var(--duration) var(--ease);
+}
+
+.spotlight__thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.spotlight__thumb.is-active,
+.spotlight__thumb[aria-current='true'] {
+  border-color: var(--color-ink);
+}
+
+.spotlight__thumb:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+@media (min-width: 750px) {
+  .spotlight__thumb {
+    width: 8rem;
+    height: 8rem;
+  }
+}
+
+/* Info ------------------------------------------------------------------- */
+
+.spotlight__info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.spotlight__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.spotlight__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.spotlight__title {
+  margin: 0;
+}
+
+.spotlight__title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.spotlight__title a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
+}
+
+.spotlight__price-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+}
+
+.spotlight__bullets {
+  font-size: 1.5rem;
+}
+
+.spotlight__bullets ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--space-1);
+}
+
+.spotlight__bullets li {
+  position: relative;
+  padding-left: 2.4rem;
+}
+
+.spotlight__bullets li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 1.4rem;
+  height: 0.7rem;
+  border-left: 2px solid var(--color-success);
+  border-bottom: 2px solid var(--color-success);
+  transform: rotate(-45deg) translateY(-40%);
+}
+
+.spotlight__bullets p:last-child {
+  margin-bottom: 0;
+}
+
+/* Options ---------------------------------------------------------------- */
+
+.spotlight__options {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+}
+
+@media (min-width: 500px) {
+  .spotlight__options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .spotlight__option:only-child {
+    grid-column: 1 / -1;
+  }
+}
+
+.spotlight__selected {
+  font-weight: var(--font-body-weight-bold);
+}
+
+.spotlight__size-help {
+  margin: var(--space-1) 0 0;
+}
+
+.spotlight__size-help a {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.spotlight__noscript {
+  margin: 0;
+}
+
+/* Buy row ---------------------------------------------------------------- */
+
+.spotlight__buy {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: var(--space-3);
+}
+
+.spotlight__quantity {
+  flex: none;
+}
+
+.spotlight__add {
+  flex: 1 1 22rem;
+}
+
+.spotlight__availability,
+.spotlight__stock,
+.spotlight__error {
+  margin: 0;
+}
+
+.spotlight__stock {
+  color: var(--color-accent-text);
+  font-weight: var(--font-body-weight-bold);
+}
+
+/* Trust row -------------------------------------------------------------- */
+
+.spotlight__trust {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  margin: 0;
+  padding: var(--space-3) 0 0;
+  border-top: 1px solid var(--color-border);
+  list-style: none;
+  color: var(--color-muted);
+}
+
+.spotlight__trust li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.spotlight__trust .icon {
+  width: 1.6rem;
+  height: 1.6rem;
+  color: var(--color-brand);
+}
+
+.spotlight__details {
+  align-self: flex-start;
+}
+
+/* Empty (design mode) ---------------------------------------------------- */
+
+.spotlight__empty {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-4);
+  max-width: 48rem;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.spotlight__empty .spotlight__placeholder {
+  width: 24rem;
+  height: 24rem;
+  border-radius: var(--radius-lg);
+}
+
+/* Navy scheme ------------------------------------------------------------ */
+
+.section--brand .spotlight__title,
+.section--brand .spotlight__bullets,
+.section--brand .spotlight__selected,
+.section--brand .field__label {
+  color: inherit;
+}
+
+.section--brand .spotlight__trust {
+  border-top-color: color-mix(in srgb, var(--color-brand-contrast) 20%, var(--color-brand));
+  color: var(--color-brand-muted);
+}
+
+.section--brand .spotlight__trust .icon {
+  color: var(--color-brand-contrast);
+}
+
+.section--brand .spotlight__stock {
+  color: var(--color-brand-contrast);
+}
+
+.section--brand .spotlight__details {
+  color: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spotlight__viewer {
+    scroll-behavior: auto;
+  }
+
+  .spotlight__thumb {
+    transition: none;
+  }
+}

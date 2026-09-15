@@ -1,0 +1,179 @@
+/* ==========================================================================
+   Shark Bite — section-image-with-text.css
+   Two-column story block: image (or muted video) beside heading, text,
+   stats and a single coral CTA.
+   ========================================================================== */
+
+.iwt__inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+  align-items: center;
+}
+
+.iwt__media-col {
+  min-width: 0;
+}
+
+.iwt__media {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-alt);
+  box-shadow: var(--shadow-md);
+}
+
+.iwt__media--portrait {
+  aspect-ratio: 4 / 5;
+}
+
+.iwt__media--square {
+  aspect-ratio: 1 / 1;
+}
+
+.iwt__media--landscape {
+  aspect-ratio: 4 / 3;
+}
+
+.iwt__media--natural {
+  aspect-ratio: auto;
+}
+
+.iwt__image,
+.iwt__placeholder {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.iwt__media--portrait .iwt__image,
+.iwt__media--square .iwt__image,
+.iwt__media--landscape .iwt__image {
+  position: absolute;
+  inset: 0;
+}
+
+.iwt__media--natural .iwt__image {
+  height: auto;
+}
+
+.iwt__media--video {
+  aspect-ratio: auto;
+}
+
+.iwt__media--video .video {
+  border-radius: 0;
+}
+
+.iwt__placeholder {
+  aspect-ratio: 4 / 5;
+  background: var(--color-brand-soft);
+  color: var(--color-brand);
+  opacity: 0.6;
+}
+
+.iwt__badge {
+  position: absolute;
+  top: var(--space-4);
+  left: var(--space-4);
+  z-index: 1;
+  background: var(--color-surface);
+}
+
+/* Copy ------------------------------------------------------------------- */
+
+.iwt__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+  max-width: 56rem;
+}
+
+.iwt__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.iwt__heading,
+.iwt__text {
+  margin: 0;
+}
+
+.iwt__text > :last-child {
+  margin-bottom: 0;
+}
+
+.iwt__actions {
+  margin-top: var(--space-2);
+}
+
+/* Stats ------------------------------------------------------------------ */
+
+.iwt__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-6);
+  margin: var(--space-2) 0 0;
+  padding: var(--space-4) 0 0;
+  border-top: 1px solid var(--color-border);
+  width: 100%;
+}
+
+.iwt__stat {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 0.2rem;
+  min-width: 9rem;
+}
+
+.iwt__stat-number {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-weight: 700;
+  font-size: 2.6rem;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+.iwt__stat-label {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.section--brand .iwt__stats {
+  border-top-color: color-mix(in srgb, var(--color-brand-contrast) 20%, var(--color-brand));
+}
+
+.section--brand .iwt__stat-label {
+  color: var(--color-brand-muted);
+}
+
+.section--brand .iwt__text {
+  color: inherit;
+}
+
+/* Desktop ---------------------------------------------------------------- */
+
+@media (min-width: 990px) {
+  .iwt__inner {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-8);
+  }
+
+  .iwt--text_first .iwt__media-col {
+    order: 2;
+  }
+
+  .iwt--text_first .iwt__copy {
+    order: 1;
+  }
+
+  .iwt__media {
+    max-height: 64rem;
+  }
+}

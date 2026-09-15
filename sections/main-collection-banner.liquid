@@ -1,46 +1,155 @@
-<div class="container">
-  <div class="collection-banner">
-    <h1 class="collection-banner__title">{{ collection.title | escape }}</h1>
+{{ 'section-main-collection.css' | asset_url | stylesheet_tag }}
 
-    {%- if section.settings.show_description and collection.description != blank -%}
-      <div class="muted" style="max-width: 60ch;">{{ collection.description }}</div>
-    {%- endif -%}
+{%- liquid
+  assign padding_mobile_top = section.settings.padding_top | times: 0.75 | round
+  assign padding_mobile_bottom = section.settings.padding_bottom | times: 0.75 | round
 
-    {%- if section.settings.show_image and collection.image -%}
-      <img
-        src="{{ collection.image | image_url: width: 1800 }}"
-        srcset="
-          {{ collection.image | image_url: width: 900 }} 900w,
-          {{ collection.image | image_url: width: 1800 }} 1800w
-        "
-        sizes="100vw"
-        alt="{{ collection.image.alt | escape }}"
-        width="{{ collection.image.width }}"
-        height="{{ collection.image.height }}"
-        style="width: 100%; aspect-ratio: 21 / 9; object-fit: cover; border-radius: var(--radius); margin-top: var(--space-4);"
-      >
-    {%- endif -%}
+  assign banner_image = section.settings.image
+  if banner_image == blank and section.settings.show_image
+    assign banner_image = collection.image
+  endif
+  if section.settings.show_image == false
+    assign banner_image = blank
+  endif
+
+  assign layout = section.settings.layout
+  if banner_image == blank
+    assign layout = 'stacked'
+  endif
+-%}
+
+{%- style -%}
+  #shopify-section-{{ section.id }} .collection-banner {
+    padding-top: {{ padding_mobile_top }}px;
+    padding-bottom: {{ padding_mobile_bottom }}px;
+  }
+  @media (min-width: 990px) {
+    #shopify-section-{{ section.id }} .collection-banner {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="collection-banner collection-banner--{{ layout }}{% if section.settings.text_alignment == 'center' %} collection-banner--center{% endif %}">
+  <div class="container">
+    <div class="collection-banner__inner">
+      {%- if banner_image != blank -%}
+        <div class="collection-banner__media">
+          <img
+            src="{{ banner_image | image_url: width: 1600 }}"
+            srcset="
+              {{ banner_image | image_url: width: 600 }} 600w,
+              {{ banner_image | image_url: width: 900 }} 900w,
+              {{ banner_image | image_url: width: 1200 }} 1200w,
+              {{ banner_image | image_url: width: 1600 }} 1600w,
+              {{ banner_image | image_url: width: 2000 }} 2000w
+            "
+            sizes="(min-width: 1280px) 1216px, calc(100vw - 40px)"
+            alt="{{ banner_image.alt | default: collection.title | escape }}"
+            width="{{ banner_image.width }}"
+            height="{{ banner_image.height }}"
+            loading="eager"
+            fetchpriority="high"
+          >
+        </div>
+      {%- endif -%}
+
+      <div class="collection-banner__text">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="eyebrow collection-banner__eyebrow">
+            {% render 'icon', name: 'shark' %}
+            {{ section.settings.eyebrow | escape }}
+          </p>
+        {%- endif -%}
+
+        <h1 class="h1 collection-banner__title">{{ collection.title | escape }}</h1>
+
+        {%- if section.settings.show_description and collection.description != blank -%}
+          <div class="rte lead collection-banner__description">{{ collection.description }}</div>
+        {%- endif -%}
+      </div>
+    </div>
   </div>
 </div>
 
 {% schema %}
 {
-  "name": "t:sections.main_collection_banner.name",
+  "name": "Collection banner",
   "tag": "section",
-  "class": "collection-banner-section",
+  "class": "section-main-collection-banner",
   "settings": [
     {
-      "type": "checkbox",
-      "id": "show_image",
-      "label": "t:sections.main_collection_banner.settings.show_image.label",
-      "default": false
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "info": "Shown above the title with the shark mark. Leave blank to hide."
     },
     {
       "type": "checkbox",
       "id": "show_description",
-      "label": "t:sections.main_collection_banner.settings.show_description.label",
+      "label": "Show collection description",
       "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_image",
+      "label": "Show collection image",
+      "info": "Uses the image below, or the collection's own image from Shopify admin when none is set.",
+      "default": false
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image override"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout with image",
+      "options": [
+        { "value": "stacked", "label": "Image above text" },
+        { "value": "split", "label": "Text beside image (desktop)" }
+      ],
+      "default": "stacked"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 16
     }
-  ]
+  ],
+  "enabled_on": {
+    "templates": ["collection"]
+  }
 }
 {% endschema %}

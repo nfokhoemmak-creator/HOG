@@ -1,0 +1,91 @@
+/* FAQ — accordions in a narrow column, payment icons from the shop's enabled methods */
+
+.faq__header {
+  justify-content: center;
+  text-align: center;
+}
+
+.faq__header > div {
+  max-width: 60rem;
+  margin-inline: auto;
+}
+
+.faq__list {
+  border-radius: var(--radius-lg);
+}
+
+.faq__item > summary {
+  align-items: flex-start;
+}
+
+.faq__question {
+  flex: 1 1 auto;
+  padding-top: 0.2rem;
+}
+
+.faq__item > summary .icon {
+  margin-top: 0.4rem;
+}
+
+.faq__answer {
+  padding-bottom: var(--space-4);
+}
+
+.faq__answer > :last-child {
+  margin-bottom: 0;
+}
+
+.faq__payments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  list-style: none;
+  margin: 0 0 var(--space-3);
+  padding: 0;
+}
+
+.faq__payments li {
+  display: inline-flex;
+  padding: 0.3rem 0.4rem;
+  border: 1px solid var(--color-border);
+  border-radius: calc(var(--radius) / 2);
+  background: var(--color-surface);
+}
+
+.faq__payment-icon {
+  display: block;
+  width: 3.8rem;
+  height: 2.4rem;
+}
+
+/* Aqua scheme: card-like list so hairlines read on the band */
+.section--alt .faq__list {
+  padding: 0 var(--space-4);
+  background: var(--color-surface);
+  border: var(--border-card);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Navy scheme */
+.section--brand .accordion,
+.section--brand .accordion:last-child {
+  border-color: color-mix(in srgb, var(--color-brand-contrast) 20%, transparent);
+}
+
+.section--brand .accordion > summary:hover {
+  color: var(--color-brand-muted);
+}
+
+.section--brand .faq__answer {
+  color: var(--color-brand-contrast);
+}
+
+.section--brand .faq__answer a {
+  color: inherit;
+}
+
+@media (min-width: 750px) {
+  .section--alt .faq__list {
+    padding: var(--space-2) var(--space-6);
+  }
+}

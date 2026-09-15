@@ -1,0 +1,270 @@
+{{ 'section-video-showcase.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign s = section.settings
+
+  assign source = ''
+  if s.video != blank
+    assign source = 'shopify'
+  elsif s.video_url != blank and s.video_url.id != blank
+    assign source = 'external'
+  elsif s.mp4_url != blank
+    assign source = 'mp4'
+  endif
+
+  case s.color_scheme
+    when 'alt'
+      assign scheme_class = ' section--alt'
+    when 'brand'
+      assign scheme_class = ' section--brand'
+    else
+      assign scheme_class = ''
+  endcase
+
+  assign layout = s.layout | default: 'media-left'
+  assign has_copy = false
+  if s.heading != blank or s.text != blank or s.button_label != blank
+    assign has_copy = true
+  endif
+
+  assign is_autoplay = false
+  if s.autoplay
+    assign is_autoplay = true
+  endif
+  assign show_controls = false
+  if s.show_controls and is_autoplay == false
+    assign show_controls = true
+  endif
+
+  assign pt = s.padding_top
+  assign pb = s.padding_bottom
+  assign pt_mobile = pt | times: 0.75 | round
+  assign pb_mobile = pb | times: 0.75 | round
+-%}
+
+{%- style -%}
+  #shopify-section-{{ section.id }} .video-showcase {
+    padding-top: {{ pt_mobile }}px;
+    padding-bottom: {{ pb_mobile }}px;
+  }
+  @media (min-width: 750px) {
+    #shopify-section-{{ section.id }} .video-showcase {
+      padding-top: {{ pt }}px;
+      padding-bottom: {{ pb }}px;
+    }
+  }
+{%- endstyle -%}
+
+{%- if source != '' or request.design_mode -%}
+  <div class="section video-showcase video-showcase--{{ layout }}{{ scheme_class }}">
+    <div class="container">
+      <div class="video-showcase__inner{% unless has_copy %} video-showcase__inner--media-only{% endunless %}">
+        <div class="video-showcase__media">
+          {%- render 'video',
+            video: s.video,
+            video_url: s.video_url,
+            mp4_url: s.mp4_url,
+            poster: s.poster,
+            autoplay: is_autoplay,
+            loop: is_autoplay,
+            muted: is_autoplay,
+            controls: show_controls,
+            aspect: s.aspect,
+            preload: 'metadata',
+            lazy: true,
+            class: 'video-showcase__video',
+            label: s.heading
+          -%}
+        </div>
+
+        {%- if has_copy -%}
+          <div class="video-showcase__copy">
+            {%- if s.eyebrow != blank -%}
+              <p class="eyebrow video-showcase__eyebrow">
+                <span class="accent" aria-hidden="true">{% render 'icon', name: 'shark' %}</span>
+                {{ s.eyebrow | escape }}
+              </p>
+            {%- endif -%}
+            {%- if s.heading != blank -%}
+              <h2 class="h2 video-showcase__heading">{{ s.heading | escape }}</h2>
+            {%- endif -%}
+            {%- if s.text != blank -%}
+              <div class="rte lead video-showcase__text">{{ s.text }}</div>
+            {%- endif -%}
+            {%- if s.button_label != blank -%}
+              <div class="btn-row video-showcase__actions">
+                <a class="btn" href="{{ s.button_link | default: '/collections/shark-slippers' }}">{{ s.button_label | escape }}</a>
+                {%- if s.link_label != blank and s.link_url != blank -%}
+                  <a class="btn btn--ghost" href="{{ s.link_url }}">
+                    {{ s.link_label | escape }}
+                    {% render 'icon', name: 'arrow-right' %}
+                  </a>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Video showcase",
+  "tag": "section",
+  "class": "section-video-showcase",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "One big feature video with copy beside it or over it. Great for unboxings and how-it's-made clips. Hidden on the live store until a video is added."
+    },
+    {
+      "type": "header",
+      "content": "Video"
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "Video (uploaded to Shopify)"
+    },
+    {
+      "type": "video_url",
+      "id": "video_url",
+      "label": "Or YouTube / Vimeo link",
+      "accept": ["youtube", "vimeo"],
+      "info": "External videos load when tapped."
+    },
+    {
+      "type": "text",
+      "id": "mp4_url",
+      "label": "Or MP4 file URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "poster",
+      "label": "Poster image"
+    },
+    {
+      "type": "select",
+      "id": "aspect",
+      "label": "Video shape",
+      "options": [
+        { "value": "16/9", "label": "Landscape (16:9)" },
+        { "value": "4/5", "label": "Portrait (4:5)" },
+        { "value": "1/1", "label": "Square" },
+        { "value": "9/16", "label": "Vertical (9:16)" }
+      ],
+      "default": "16/9"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Autoplay (muted, looping)",
+      "default": false,
+      "info": "Only uploaded or MP4 videos autoplay."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_controls",
+      "label": "Show player controls",
+      "default": true,
+      "info": "Ignored when autoplay is on."
+    },
+    {
+      "type": "header",
+      "content": "Copy"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        { "value": "media-left", "label": "Video left, text right" },
+        { "value": "media-right", "label": "Text left, video right" },
+        { "value": "full", "label": "Full width, text over video" }
+      ],
+      "default": "media-left"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "See them in action"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Plush lining, a fin that wobbles when you walk, and a sole that grips the kitchen tiles. Press play.</p>"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Shop slippers"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link",
+      "default": "/collections/shark-slippers"
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "Secondary link label"
+    },
+    {
+      "type": "url",
+      "id": "link_url",
+      "label": "Secondary link"
+    },
+    {
+      "type": "header",
+      "content": "Section"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "alt", "label": "Soft aqua" },
+        { "value": "brand", "label": "Navy" }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    }
+  ],
+  "presets": [
+    {
+      "name": "Video showcase"
+    }
+  ]
+}
+{% endschema %}

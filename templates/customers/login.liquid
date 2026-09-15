@@ -1,55 +1,75 @@
-<div class="container container--narrow account">
-  <div class="account__form">
-    <h1 class="h2" style="margin-bottom: var(--space-5);">{{ 'customer.login_page.title' | t }}</h1>
+<section class="section">
+  <div class="container container--narrow">
+    <div class="auth-card">
+      <h1 class="h2" style="margin-bottom: var(--space-5);">{{ 'customer.login_page.title' | t }}</h1>
 
-    {%- form 'customer_login', novalidate: 'novalidate' -%}
-      {%- if form.errors -%}
-        <p class="form__error">{{ form.errors | default_errors }}</p>
-      {%- endif -%}
+      {%- form 'customer_login', novalidate: 'novalidate', class: 'form' -%}
+        {%- if form.errors -%}
+          <div class="form__error" role="alert">
+            {% render 'icon', name: 'info' %}
+            <div>{{ form.errors | default_errors }}</div>
+          </div>
+        {%- endif -%}
 
-      <div class="field">
-        <label class="field__label" for="CustomerEmail">{{ 'customer.login_page.email' | t }}</label>
-        <input class="field__input" type="email" id="CustomerEmail" name="customer[email]" autocomplete="email" required>
-      </div>
-
-      {%- if form.password_needed -%}
         <div class="field">
-          <label class="field__label" for="CustomerPassword">{{ 'customer.login_page.password' | t }}</label>
-          <input class="field__input" type="password" id="CustomerPassword" name="customer[password]" autocomplete="current-password">
+          <label class="field__label" for="CustomerEmail">{{ 'customer.login_page.email' | t }}</label>
+          <input class="field__input" type="email" id="CustomerEmail" name="customer[email]" autocomplete="email" autocorrect="off" autocapitalize="off" required>
         </div>
 
-        <a class="underline muted" href="#recover" style="font-size: 1.3rem;">
-          {{ 'customer.login_page.forgot_password' | t }}
-        </a>
+        {%- if form.password_needed -%}
+          <div class="field">
+            <label class="field__label" for="CustomerPassword">{{ 'customer.login_page.password' | t }}</label>
+            <input class="field__input" type="password" id="CustomerPassword" name="customer[password]" autocomplete="current-password">
+            <a class="field__hint underline" href="#recover">{{ 'customer.login_page.forgot_password' | t }}</a>
+          </div>
+        {%- endif -%}
+
+        <button type="submit" class="btn btn--full">{{ 'customer.login_page.sign_in' | t }}</button>
+      {%- endform -%}
+
+      {%- if shop.checkout.guest_login -%}
+        <div class="auth-card__footer">
+          <h2 class="h5" style="margin-bottom: var(--space-2);">{{ 'customer.login_page.guest_title' | t }}</h2>
+          {%- form 'guest_login' -%}
+            <button type="submit" class="btn btn--outline btn--sm">{{ 'customer.login_page.guest_continue' | t }}</button>
+          {%- endform -%}
+        </div>
       {%- endif -%}
 
-      <button type="submit" class="btn btn--full" style="margin-top: var(--space-4);">
-        {{ 'customer.login_page.sign_in' | t }}
-      </button>
-    {%- endform -%}
+      <p class="auth-card__footer">
+        {{ 'customer.register.title' | t }}?
+        <a class="underline" href="{{ routes.account_register_url }}">{{ 'customer.login_page.create_account' | t }}</a>
+      </p>
+    </div>
 
-    <p class="muted" style="margin-top: var(--space-5);">
-      <a class="underline" href="{{ routes.account_register_url }}">
-        {{ 'customer.login_page.create_account' | t }}
-      </a>
-    </p>
+    <div class="auth-card" id="recover" style="margin-top: var(--space-5);">
+      <h2 class="h4" style="margin-bottom: var(--space-2);">{{ 'customer.recover_password.title' | t }}</h2>
+      <p class="auth-card__intro">{{ 'customer.recover_password.subtext' | t }}</p>
 
-    <div id="recover" style="margin-top: var(--space-7); padding-top: var(--space-5); border-top: 1px solid var(--color-border);">
-      <h2 class="h4" style="margin-bottom: var(--space-3);">{{ 'customer.recover_password.title' | t }}</h2>
-      <p class="muted" style="margin-bottom: var(--space-4);">{{ 'customer.recover_password.subtext' | t }}</p>
-
-      {%- form 'recover_customer_password' -%}
+      {%- form 'recover_customer_password', class: 'form' -%}
         {%- if form.posted_successfully? -%}
-          <p class="form__success">{{ 'customer.recover_password.success' | t }}</p>
+          <div class="form__success" role="status">
+            {% render 'icon', name: 'check' %}
+            <div>{{ 'customer.recover_password.success' | t }}</div>
+          </div>
+        {%- endif -%}
+
+        {%- if form.errors -%}
+          <div class="form__error" role="alert">
+            {% render 'icon', name: 'info' %}
+            <div>{{ form.errors | default_errors }}</div>
+          </div>
         {%- endif -%}
 
         <div class="field">
           <label class="field__label" for="RecoverEmail">{{ 'customer.login_page.email' | t }}</label>
-          <input class="field__input" type="email" id="RecoverEmail" name="email" autocomplete="email" required>
+          <input class="field__input" type="email" id="RecoverEmail" name="email" autocomplete="email" autocorrect="off" autocapitalize="off" required>
         </div>
 
-        <button type="submit" class="btn btn--outline">{{ 'customer.recover_password.submit' | t }}</button>
+        <div class="btn-row">
+          <button type="submit" class="btn btn--secondary">{{ 'customer.recover_password.submit' | t }}</button>
+        </div>
       {%- endform -%}
     </div>
   </div>
-</div>
+</section>

@@ -1,0 +1,740 @@
+/* ==========================================================================
+   Shark Bite — section-cart.css
+   Cart drawer (<cart-drawer>), cart page (<cart-items>), shared line items,
+   totals, trust row, bundle nudges (cart-upsell) and the empty state.
+   Uses only base.css tokens/classes (§2/§3) plus its own BEM classes.
+   Mobile-first.
+   ========================================================================== */
+
+/* ------------------------------------------------------------ drawer */
+
+.cart-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: block;
+}
+
+.cart-drawer[hidden] {
+  display: none;
+}
+
+.cart-drawer__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgb(14 27 46 / 55%);
+  opacity: 0;
+  transition: opacity var(--duration) var(--ease);
+}
+
+.cart-drawer__panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 46rem);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  box-shadow: var(--shadow-lg);
+  transform: translateX(100%);
+  transition: transform 260ms var(--ease);
+  padding-top: env(safe-area-inset-top, 0px);
+  outline: none;
+}
+
+.cart-drawer.is-open .cart-drawer__overlay {
+  opacity: 1;
+}
+
+.cart-drawer.is-open .cart-drawer__panel {
+  transform: translateX(0);
+}
+
+.cart-drawer__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: var(--header-height, 60px);
+  padding: 0 var(--space-3) 0 var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.cart-drawer__title {
+  margin: 0;
+}
+
+.cart-drawer__count {
+  color: var(--color-muted);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.cart-drawer__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.4rem;
+  height: 4.4rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-btn);
+  background: transparent;
+  color: var(--color-ink);
+  cursor: pointer;
+  transition: background var(--duration) var(--ease);
+}
+
+.cart-drawer__close:hover {
+  background: var(--color-brand-soft);
+}
+
+.cart-drawer__close .icon {
+  width: 2.4rem;
+  height: 2.4rem;
+}
+
+.cart-drawer__shipping {
+  padding: var(--space-3) var(--space-5);
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.cart-drawer__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: var(--space-4) var(--space-5);
+}
+
+.cart-drawer__error[hidden],
+.cart-page__error[hidden] {
+  display: none;
+}
+
+.cart-drawer__error,
+.cart-page__error {
+  margin: 0 0 var(--space-3);
+}
+
+.cart-drawer__foot {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5) calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.cart-drawer__taxes,
+.cart-summary__taxes {
+  margin: 0;
+}
+
+.cart-drawer__checkout {
+  margin: 0;
+}
+
+.cart-drawer__checkout .btn .icon,
+.cart-summary__checkout .icon {
+  width: 1.8rem;
+  height: 1.8rem;
+  margin-right: 0.8rem;
+}
+
+.cart-drawer__links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-1) var(--space-3);
+}
+
+.cart-drawer__note {
+  margin-top: var(--space-4);
+}
+
+.cart-drawer__notice,
+.cart-summary__notice {
+  margin: 0;
+}
+
+.cart-drawer__notice p,
+.cart-summary__notice p {
+  margin: 0;
+}
+
+/* Busy state: fade the lines while a change is in flight. */
+
+.cart-drawer.is-busy .cart-lines,
+.cart-items.is-busy .cart-table,
+.cart-page-wrap.is-busy .cart-table {
+  opacity: 0.55;
+  pointer-events: none;
+  transition: opacity var(--duration) var(--ease);
+}
+
+/* -------------------------------------------------------- line items */
+
+.cart-lines {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cart-line {
+  display: grid;
+  grid-template-columns: 8rem minmax(0, 1fr);
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.cart-line:first-child {
+  padding-top: 0;
+}
+
+.cart-line__media {
+  display: block;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  border: var(--border-card, 1px solid var(--color-border));
+  line-height: 0;
+}
+
+.cart-line__media img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+.cart-line__details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.cart-line__title {
+  color: var(--color-ink);
+  font-family: var(--font-heading-family);
+  font-weight: 600;
+  font-size: 1.7rem;
+  line-height: 1.25;
+  text-decoration: none;
+}
+
+.cart-line__title:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.cart-line__variant,
+.cart-line__unit {
+  margin: 0;
+}
+
+.cart-line__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.cart-line__quantity {
+  max-width: 12.4rem;
+}
+
+.cart-line__quantity button .icon {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+
+.cart-line__price {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.2rem;
+  font-family: var(--font-heading-family);
+  font-weight: 700;
+  font-size: 1.6rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  text-align: right;
+}
+
+.cart-line__compare {
+  color: var(--color-muted);
+  font-weight: 400;
+  font-size: 1.3rem;
+  text-decoration: line-through;
+}
+
+.cart-line__final {
+  color: var(--color-ink);
+}
+
+.cart-line__discounts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+}
+
+.cart-line__remove {
+  align-self: flex-start;
+  margin-top: 0.2rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-muted);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+  min-height: 2.8rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.cart-line__remove:hover {
+  color: var(--color-ink);
+}
+
+/* ------------------------------------------------------------ totals */
+
+.cart-totals {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-size: 1.5rem;
+}
+
+.cart-totals--discount {
+  color: var(--color-success);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.cart-totals--subtotal {
+  font-family: var(--font-heading-family);
+  font-weight: 600;
+  font-size: 1.7rem;
+}
+
+.cart-totals__value {
+  font-weight: 700;
+  font-size: 2.2rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --------------------------------------------------------- trust row */
+
+.cart-trust {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--color-muted);
+  font-size: 1.3rem;
+  line-height: 1.4;
+}
+
+.cart-trust li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cart-trust .icon {
+  width: 1.6rem;
+  height: 1.6rem;
+  flex: none;
+  color: var(--color-brand);
+}
+
+.cart-trust a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.cart-trust a:hover {
+  color: var(--color-ink);
+}
+
+/* ----------------------------------------------------- bundle nudges */
+
+.cart-upsell {
+  margin-top: var(--space-4);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--color-brand-soft);
+  border: 1px solid var(--color-border);
+}
+
+.cart-upsell__title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  margin: 0 0 var(--space-3);
+  font-size: 1.6rem;
+  line-height: 1.3;
+}
+
+.cart-upsell__title-row .icon {
+  width: 2rem;
+  height: 2rem;
+  flex: none;
+  margin-top: 0.1rem;
+  color: var(--color-brand);
+}
+
+.cart-upsell__cards {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cart-upsell__card {
+  display: grid;
+  grid-template-columns: 6.4rem minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  padding: var(--space-2);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  border: var(--border-card, 1px solid var(--color-border));
+  box-shadow: var(--shadow-sm);
+}
+
+.cart-upsell__media {
+  display: block;
+  overflow: hidden;
+  border-radius: calc(var(--radius) - var(--space-2));
+  background: var(--color-bg);
+  line-height: 0;
+}
+
+.cart-upsell__media img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+.cart-upsell__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.cart-upsell__title {
+  color: var(--color-ink);
+  font-family: var(--font-heading-family);
+  font-weight: 600;
+  font-size: 1.5rem;
+  line-height: 1.25;
+  text-decoration: none;
+}
+
+.cart-upsell__title:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.cart-upsell__price {
+  font-family: var(--font-heading-family);
+  font-weight: 700;
+  font-size: 1.4rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.cart-upsell__badge {
+  align-self: flex-start;
+  margin-top: 0.2rem;
+}
+
+.cart-upsell__cta {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
+/* ------------------------------------------------------- empty state */
+
+.cart-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-5) 0;
+  text-align: center;
+}
+
+.cart-empty__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 7.2rem;
+  height: 7.2rem;
+  border-radius: 50%;
+  background: var(--color-surface-alt);
+  color: var(--color-brand);
+}
+
+.cart-empty__icon .icon {
+  width: 3.6rem;
+  height: 3.6rem;
+}
+
+.cart-empty__title,
+.cart-empty__body {
+  margin: 0;
+}
+
+.cart-empty__cta {
+  margin-top: var(--space-2);
+}
+
+.cart-empty__suggestions {
+  width: 100%;
+  margin-top: var(--space-5);
+  text-align: left;
+}
+
+/* --------------------------------------------------------- cart page */
+
+.cart-page-wrap {
+  display: block;
+}
+
+.cart-page__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.cart-page__title {
+  margin: 0;
+}
+
+.cart-page__count {
+  font-weight: 600;
+  font-size: 0.6em;
+  font-variant-numeric: tabular-nums;
+}
+
+.cart-page__head .btn--ghost .icon {
+  width: 1.6rem;
+  height: 1.6rem;
+  margin-left: 0.4rem;
+}
+
+.cart-page__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-6);
+  align-items: start;
+}
+
+.cart-page__main {
+  min-width: 0;
+}
+
+.cart-page__update {
+  margin-top: var(--space-3);
+}
+
+/* Table: stacked cards on mobile, real table from 750px. */
+
+.cart-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.cart-table thead {
+  display: none;
+}
+
+.cart-table th {
+  padding: 0 0 var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  font-family: var(--font-heading-family);
+  font-weight: 600;
+  font-size: 1.2rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.cart-table .cart-line--row {
+  display: grid;
+  grid-template-columns: 10rem minmax(0, 1fr);
+  grid-template-areas:
+    'media details'
+    'media qty'
+    'media total';
+  gap: var(--space-2) var(--space-3);
+  padding: var(--space-4) 0;
+}
+
+.cart-table td {
+  padding: 0;
+  vertical-align: top;
+}
+
+.cart-table__media {
+  grid-area: media;
+}
+
+.cart-table__details {
+  grid-area: details;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.cart-table__qty {
+  grid-area: qty;
+}
+
+.cart-table__total {
+  grid-area: total;
+}
+
+.cart-table__total .cart-line__price {
+  align-items: flex-start;
+  text-align: left;
+  font-size: 1.8rem;
+}
+
+.cart-table__details .cart-line__discounts {
+  margin-top: 0.2rem;
+}
+
+/* Summary card */
+
+.cart-summary {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--card-pad, var(--space-4));
+}
+
+.cart-summary__shipping {
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.cart-summary__note {
+  margin: 0;
+}
+
+.cart-summary__dynamic {
+  margin-top: calc(var(--space-2) * -1);
+}
+
+.cart-summary .cart-trust {
+  justify-content: flex-start;
+}
+
+/* --------------------------------------------------------- breakpoints */
+
+@media (min-width: 750px) {
+  .cart-table thead {
+    display: table-header-group;
+  }
+
+  .cart-table .cart-line--row {
+    display: table-row;
+  }
+
+  .cart-table td {
+    padding: var(--space-4) var(--space-2);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .cart-table td:first-child,
+  .cart-table th:first-child {
+    padding-left: 0;
+  }
+
+  .cart-table td:last-child,
+  .cart-table th:last-child {
+    padding-right: 0;
+  }
+
+  .cart-table th {
+    padding: 0 var(--space-2) var(--space-2);
+  }
+
+  .cart-table__media {
+    width: 10rem;
+  }
+
+  .cart-table__qty {
+    width: 14rem;
+  }
+
+  .cart-table__qty .cart-line__quantity {
+    margin-top: 0.2rem;
+  }
+
+  .cart-table th.cart-table__total,
+  .cart-table td.cart-table__total {
+    text-align: right;
+    width: 12rem;
+  }
+
+  .cart-table__total .cart-line__price {
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  .cart-upsell__cards {
+    grid-template-columns: repeat(auto-fill, minmax(26rem, 1fr));
+  }
+
+  .cart-drawer .cart-upsell__cards {
+    grid-template-columns: 1fr;
+  }
+
+  .cart-empty {
+    padding: var(--space-7) 0;
+  }
+}
+
+@media (min-width: 990px) {
+  .cart-page__grid {
+    grid-template-columns: minmax(0, 1fr) 36rem;
+    gap: var(--space-7);
+  }
+
+  .cart-summary {
+    position: sticky;
+    top: calc(var(--header-height, 68px) + var(--space-4));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cart-drawer__overlay,
+  .cart-drawer__panel {
+    transition: none;
+  }
+}

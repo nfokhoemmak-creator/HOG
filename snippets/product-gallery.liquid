@@ -1,0 +1,220 @@
+{%- comment -%}
+  Product media gallery: scroll-snap viewer + thumbnails + lightbox.
+
+  Accepts:
+  - product:         {Object} product (required)
+  - section_id:      {String} section id (required, used for element ids)
+  - current_variant: {Object} the variant whose featured media opens first
+  - enable_zoom:     {Boolean} click an image to open it full screen (default true)
+  - show_thumbnails: {Boolean} default true
+
+  Hooks consumed by product-form.js: the wrapper carries [data-gallery] and
+  exposes showMedia(mediaId); every slide carries [data-media-id]; thumbs
+  carry [data-thumb="<media id>"].
+
+  Usage:
+  {% render 'product-gallery', product: product, section_id: section.id, current_variant: current_variant %}
+{%- endcomment -%}
+
+{%- liquid
+  assign media_count = product.media.size
+  assign featured_media = current_variant.featured_media | default: product.featured_media
+  assign active_media_id = featured_media.id
+  assign gallery_id = 'Gallery-' | append: section_id
+  assign lightbox_id = 'Lightbox-' | append: section_id
+  assign zoom_enabled = true
+  if enable_zoom == false
+    assign zoom_enabled = false
+  endif
+  assign thumbs_enabled = true
+  if show_thumbnails == false
+    assign thumbs_enabled = false
+  endif
+  assign active_index = 1
+  assign has_images = false
+  assign lightbox_alt = product.title | escape
+-%}
+
+<product-gallery
+  id="{{ gallery_id }}"
+  class="product-gallery{% if media_count < 2 %} product-gallery--single{% endif %}"
+  data-gallery
+  data-active-media="{{ active_media_id }}"
+  data-lightbox="{{ lightbox_id }}"
+>
+  <div
+    class="product-gallery__viewer"
+    data-gallery-viewer
+    role="region"
+    aria-roledescription="carousel"
+    aria-label="{{ 'products.product.media.gallery_viewer' | t | escape }}"
+    tabindex="0"
+  >
+    {%- if media_count > 0 -%}
+      {%- for media in product.media -%}
+        {%- liquid
+          assign is_active = false
+          if media.id == active_media_id
+            assign is_active = true
+            assign active_index = forloop.index
+          endif
+          if forloop.first
+            assign img_loading = 'eager'
+            assign img_priority = 'high'
+          else
+            assign img_loading = 'lazy'
+            assign img_priority = 'auto'
+          endif
+          assign media_alt = media.alt | default: product.title | escape
+          if media.media_type == 'image'
+            assign has_images = true
+          endif
+        -%}
+        <div
+          class="product-gallery__slide{% if is_active %} is-active{% endif %}"
+          data-media-id="{{ media.id }}"
+          data-media-type="{{ media.media_type }}"
+          data-index="{{ forloop.index }}"
+          role="group"
+          aria-roledescription="slide"
+          aria-label="{{ forloop.index }} / {{ media_count }}"
+        >
+          {%- case media.media_type -%}
+            {%- when 'image' -%}
+              {%- if zoom_enabled -%}
+                <button
+                  type="button"
+                  class="product-gallery__zoom"
+                  data-lightbox-open
+                  data-large-src="{{ media.preview_image | image_url: width: 2048 }}"
+                  data-large-width="{{ media.preview_image.width }}"
+                  data-large-height="{{ media.preview_image.height }}"
+                  data-large-alt="{{ media_alt }}"
+                  aria-label="{{ 'products.product.media.open_lightbox' | t | escape }}"
+                >
+                  {{-
+                    media.preview_image
+                    | image_url: width: 1400
+                    | image_tag:
+                      widths: '400, 600, 800, 1000, 1200, 1400',
+                      sizes: '(min-width: 990px) min(55vw, 704px), 100vw',
+                      loading: img_loading,
+                      fetchpriority: img_priority,
+                      class: 'product-gallery__img',
+                      alt: media_alt
+                  -}}
+                </button>
+              {%- else -%}
+                {{-
+                  media.preview_image
+                  | image_url: width: 1400
+                  | image_tag:
+                    widths: '400, 600, 800, 1000, 1200, 1400',
+                    sizes: '(min-width: 990px) min(55vw, 704px), 100vw',
+                    loading: img_loading,
+                    fetchpriority: img_priority,
+                    class: 'product-gallery__img',
+                    alt: media_alt
+                -}}
+              {%- endif -%}
+            {%- when 'video' -%}
+              {{ media | video_tag: image_size: '1100x', controls: true, preload: 'none', class: 'product-gallery__video' }}
+            {%- when 'external_video' -%}
+              {{ media | external_video_tag: class: 'product-gallery__iframe', loading: 'lazy' }}
+            {%- when 'model' -%}
+              {{ media | model_viewer_tag: image_size: '1100x', class: 'product-gallery__model' }}
+            {%- else -%}
+              {{ media | media_tag: image_size: '1100x', class: 'product-gallery__media' }}
+          {%- endcase -%}
+        </div>
+      {%- endfor -%}
+    {%- else -%}
+      <div class="product-gallery__slide is-active" data-media-id="placeholder" data-index="1">
+        {{ 'product-1' | placeholder_svg_tag: 'product-gallery__placeholder' }}
+      </div>
+    {%- endif -%}
+  </div>
+
+  {%- if media_count > 1 -%}
+    <div class="product-gallery__controls">
+      <button
+        type="button"
+        class="product-gallery__arrow product-gallery__arrow--prev"
+        data-gallery-prev
+        aria-label="{{ 'accessibility.previous_slide' | t | escape }}"
+      >
+        {% render 'icon', name: 'chevron-left' %}
+      </button>
+      <span class="product-gallery__counter small" aria-live="polite">
+        <span data-gallery-current>{{ active_index }}</span> / {{ media_count }}
+      </span>
+      <button
+        type="button"
+        class="product-gallery__arrow product-gallery__arrow--next"
+        data-gallery-next
+        aria-label="{{ 'accessibility.next_slide' | t | escape }}"
+      >
+        {% render 'icon', name: 'chevron-right' %}
+      </button>
+    </div>
+
+    {%- if thumbs_enabled -%}
+      <div class="product-gallery__thumbs" data-gallery-thumbs>
+        {%- for media in product.media -%}
+          {%- liquid
+            assign thumb_active = false
+            if media.id == active_media_id
+              assign thumb_active = true
+            endif
+          -%}
+          <button
+            type="button"
+            class="product-gallery__thumb{% if thumb_active %} is-active{% endif %}"
+            data-thumb="{{ media.id }}"
+            aria-current="{{ thumb_active }}"
+            aria-label="{{ 'products.product.media.load_image' | t: index: forloop.index | escape }}"
+          >
+            {{-
+              media.preview_image
+              | image_url: width: 160
+              | image_tag: loading: 'lazy', width: 80, height: 80, class: 'product-gallery__thumb-img', alt: ''
+            -}}
+            {%- if media.media_type == 'video' or media.media_type == 'external_video' -%}
+              <span class="product-gallery__thumb-badge" aria-hidden="true">{% render 'icon', name: 'play' %}</span>
+            {%- elsif media.media_type == 'model' -%}
+              <span class="product-gallery__thumb-badge" aria-hidden="true">{% render 'icon', name: 'sparkle' %}</span>
+            {%- endif -%}
+          </button>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  {%- endif -%}
+</product-gallery>
+
+{%- if zoom_enabled and has_images -%}
+  {%- liquid
+    assign lightbox_image = featured_media.preview_image | default: product.featured_image
+    if featured_media.alt != blank
+      assign lightbox_alt = featured_media.alt | escape
+    endif
+  -%}
+  <sb-modal id="{{ lightbox_id }}" class="modal modal--lightbox" hidden aria-label="{{ 'products.product.media.gallery_viewer' | t | escape }}">
+    <div class="modal__overlay"></div>
+    <div class="modal__panel">
+      <button type="button" class="modal__close btn--icon" data-modal-close aria-label="{{ 'general.close' | t | escape }}">
+        {% render 'icon', name: 'close' %}
+      </button>
+      <div class="modal__body">
+        <img
+          class="product-gallery__lightbox-img"
+          data-lightbox-image
+          src="{{ lightbox_image | image_url: width: 2048 }}"
+          width="{{ lightbox_image.width | default: 2048 }}"
+          height="{{ lightbox_image.height | default: 2048 }}"
+          alt="{{ lightbox_alt }}"
+          loading="lazy"
+        >
+      </div>
+    </div>
+  </sb-modal>
+{%- endif -%}

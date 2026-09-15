@@ -1,0 +1,48 @@
+{%- comment -%}
+  Product trust rows (delivery, replacement, secure checkout, WhatsApp).
+
+  Accepts:
+  - block:           {Object} the `trust` block. Reads item_1_icon … item_5_icon and item_1_text … item_5_text.
+                     A row with blank text is skipped (row 5 is reserved for cash on delivery
+                     and stays blank until the merchant confirms it).
+  - whatsapp_number: {String} digits only, used to link the WhatsApp row
+
+  Usage:
+  {% render 'product-trust', block: block, whatsapp_number: whatsapp_number %}
+{%- endcomment -%}
+
+{%- liquid
+  assign row_count = 0
+  for i in (1..5)
+    assign text_key = 'item_' | append: i | append: '_text'
+    if block.settings[text_key] != blank
+      assign row_count = row_count | plus: 1
+    endif
+  endfor
+-%}
+
+{%- if row_count > 0 -%}
+  <ul class="trust" role="list">
+    {%- for i in (1..5) -%}
+      {%- liquid
+        assign text_key = 'item_' | append: i | append: '_text'
+        assign icon_key = 'item_' | append: i | append: '_icon'
+        assign row_text = block.settings[text_key]
+        assign row_icon = block.settings[icon_key] | default: 'check'
+      -%}
+      {%- if row_text != blank -%}
+        <li class="trust__item">
+          {% render 'icon', name: row_icon %}
+          {%- if row_icon == 'whatsapp' and whatsapp_number != blank -%}
+            <a class="trust__link" href="https://wa.me/{{ whatsapp_number }}" target="_blank" rel="noopener">
+              {{ row_text | escape }}
+              <span class="visually-hidden">{{ 'general.new_window' | t }}</span>
+            </a>
+          {%- else -%}
+            <span>{{ row_text | escape }}</span>
+          {%- endif -%}
+        </li>
+      {%- endif -%}
+    {%- endfor -%}
+  </ul>
+{%- endif -%}

@@ -3,8 +3,20 @@
     "main": {
       "type": "main-contact",
       "settings": {
-        "message_label": "Message",
-        "success_message": "Thanks — we'll get back to you."
+        "eyebrow": "We're all ears (and fins)",
+        "heading": "Say hi",
+        "text": "<p>Sizing questions, order updates, gift ideas — send it over. WhatsApp is the quickest way to reach us.</p>",
+        "whatsapp_display": "+961 71 801 588",
+        "whatsapp_text": "Send us a message and a real person replies — sizing help, order updates, anything.",
+        "whatsapp_prefill": "Hi Shark Bite! I have a question about",
+        "contact_email": "sharkbitee.lb@gmail.com",
+        "email_text": "Prefer email? Write to us and we'll get back to you.",
+        "response_time": "",
+        "show_trust": true,
+        "trust_delivery": "Delivery across Lebanon · standard 3–5 days ($3, free over $30)",
+        "trust_replacement": "Damaged on arrival? Replaced within 7 days",
+        "padding_top": 48,
+        "padding_bottom": 64
       }
     }
   },

@@ -2,7 +2,15 @@
   "sections": {
     "main": {
       "type": "main-article",
-      "settings": {}
+      "settings": {
+        "show_image": true,
+        "show_date": true,
+        "show_author": false,
+        "show_tags": true,
+        "show_share": true,
+        "padding_top": 48,
+        "padding_bottom": 64
+      }
     }
   },
   "order": ["main"]

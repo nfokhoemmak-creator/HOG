@@ -1,47 +1,122 @@
-<div class="section">
+{{ 'section-collection-list.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign s = section.settings
+
+  case s.color_scheme
+    when 'alt'
+      assign scheme_class = ' section--alt'
+    when 'brand'
+      assign scheme_class = ' section--brand'
+    else
+      assign scheme_class = ''
+  endcase
+
+  assign columns = s.columns | default: 2
+  assign grid_class = 'grid grid--' | append: columns
+  if columns == 2
+    assign card_sizes = '(min-width: 750px) 50vw, 100vw'
+  else
+    assign card_sizes = '(min-width: 990px) 33vw, (min-width: 750px) 50vw, 100vw'
+  endif
+
+  assign pt = s.padding_top
+  assign pb = s.padding_bottom
+  assign pt_mobile = pt | times: 0.75 | round
+  assign pb_mobile = pb | times: 0.75 | round
+-%}
+
+{%- style -%}
+  #shopify-section-{{ section.id }} .collection-list {
+    padding-top: {{ pt_mobile }}px;
+    padding-bottom: {{ pb_mobile }}px;
+  }
+  @media (min-width: 750px) {
+    #shopify-section-{{ section.id }} .collection-list {
+      padding-top: {{ pt }}px;
+      padding-bottom: {{ pb }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="section collection-list{{ scheme_class }}">
   <div class="container">
-    <div class="section__head">
-      <h2 class="h2">{{ section.settings.title }}</h2>
-      <a class="underline eyebrow" href="{{ routes.collections_url }}">
-        {{ 'sections.collection_list.view_all' | t }}
-      </a>
-    </div>
-
-    <div class="product-grid" style="--cols-desktop: {{ section.settings.columns_desktop }}; --cols-mobile: 2;">
-      {%- assign fallback_title = 'onboarding.collection_title' | t -%}
-      {%- for block in section.blocks -%}
-        {%- assign block_collection = collections[block.settings.collection] -%}
-        <div class="card" {{ block.shopify_attributes }}>
-          <a class="card__media card__media--portrait" href="{{ block_collection.url | default: routes.collections_url }}">
-            {%- if block_collection.image -%}
-              <img
-                class="card__image card__image--primary"
-                src="{{ block_collection.image | image_url: width: 800 }}"
-                alt="{{ block_collection.image.alt | escape }}"
-                width="{{ block_collection.image.width }}"
-                height="{{ block_collection.image.height }}"
-                loading="lazy"
-              >
-            {%- elsif block_collection.products.first.featured_media -%}
-              <img
-                class="card__image card__image--primary"
-                src="{{ block_collection.products.first.featured_media | image_url: width: 800 }}"
-                alt=""
-                width="800"
-                height="1067"
-                loading="lazy"
-              >
-            {%- else -%}
-              {{ 'collection-1' | placeholder_svg_tag: 'card__image' }}
-            {%- endif -%}
-          </a>
-
-          <div class="card__info">
-            <a class="card__title" href="{{ block_collection.url | default: routes.collections_url }}">
-              {{ block_collection.title | default: fallback_title }}
-            </a>
-          </div>
+    {%- if s.heading != blank or s.subtitle != blank -%}
+      <div class="section__header">
+        <div>
+          {%- if s.heading != blank -%}
+            <h2 class="section__title h2">{{ s.heading | escape }}</h2>
+          {%- endif -%}
+          {%- if s.subtitle != blank -%}
+            <p class="section__subtitle">{{ s.subtitle | escape }}</p>
+          {%- endif -%}
         </div>
+      </div>
+    {%- endif -%}
+
+    <div class="{{ grid_class }} grid--mobile-1 collection-list__grid">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign collection = block.settings.collection
+          assign card_image = block.settings.image
+          if card_image == blank and collection != blank
+            assign card_image = collection.featured_image
+          endif
+          assign card_title = block.settings.title
+          if card_title == blank and collection != blank
+            assign card_title = collection.title
+          endif
+          if card_title == blank
+            assign card_title = 'onboarding.collection_title' | t
+          endif
+          assign card_url = block.settings.link
+          if card_url == blank and collection != blank
+            assign card_url = collection.url
+          endif
+          if card_url == blank
+            assign card_url = routes.all_collections_url
+          endif
+        -%}
+
+        {%- if collection != blank or request.design_mode -%}
+          <article class="card collection-list__card" {{ block.shopify_attributes }}>
+            <a class="card__media card__media--landscape collection-list__media" href="{{ card_url }}" tabindex="-1" aria-hidden="true">
+              {%- if card_image != blank -%}
+                <img
+                  class="collection-list__image"
+                  src="{{ card_image | image_url: width: 800 }}"
+                  srcset="
+                    {{ card_image | image_url: width: 400 }} 400w,
+                    {{ card_image | image_url: width: 600 }} 600w,
+                    {{ card_image | image_url: width: 800 }} 800w,
+                    {{ card_image | image_url: width: 1200 }} 1200w
+                  "
+                  sizes="{{ card_sizes }}"
+                  alt=""
+                  width="{{ card_image.width }}"
+                  height="{{ card_image.height }}"
+                  loading="lazy"
+                >
+              {%- else -%}
+                {{ 'collection-' | append: forloop.index | placeholder_svg_tag: 'collection-list__placeholder' }}
+              {%- endif -%}
+            </a>
+            <div class="card__body collection-list__body">
+              <div class="collection-list__text">
+                <h3 class="card__title h4">
+                  <a href="{{ card_url }}">{{ card_title | escape }}</a>
+                </h3>
+                {%- if block.settings.text != blank -%}
+                  <p class="card__meta muted">{{ block.settings.text | escape }}</p>
+                {%- endif -%}
+              </div>
+              <span class="collection-list__cta" aria-hidden="true">
+                {{ 'collections.shop_now' | t }}
+                {% render 'icon', name: 'arrow-right' %}
+              </span>
+            </div>
+          </article>
+        {%- endif -%}
       {%- endfor -%}
     </div>
   </div>
@@ -49,47 +124,108 @@
 
 {% schema %}
 {
-  "name": "t:sections.collection_list.name",
+  "name": "Collection list",
   "tag": "section",
-  "class": "collection-list-section",
-  "max_blocks": 8,
+  "class": "section-collection-list",
+  "max_blocks": 6,
   "settings": [
     {
       "type": "text",
-      "id": "title",
-      "label": "t:sections.collection_list.settings.title.label",
-      "default": "Shop by category"
+      "id": "heading",
+      "label": "Heading",
+      "default": "Shop by shark"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subheading"
     },
     {
       "type": "range",
-      "id": "columns_desktop",
+      "id": "columns",
+      "label": "Columns on desktop",
       "min": 2,
       "max": 4,
       "step": 1,
-      "label": "t:sections.collection_list.settings.columns_desktop.label",
-      "default": 3
+      "default": 2
+    },
+    {
+      "type": "header",
+      "content": "Section"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "alt", "label": "Soft aqua" },
+        { "value": "brand", "label": "Navy" }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
     }
   ],
   "blocks": [
     {
-      "type": "featured_collection",
-      "name": "t:sections.collection_list.blocks.featured_collection.name",
+      "type": "collection",
+      "name": "Collection",
       "settings": [
         {
           "type": "collection",
           "id": "collection",
-          "label": "t:sections.collection_list.blocks.featured_collection.settings.collection.label"
+          "label": "Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image override",
+          "info": "Defaults to the collection image."
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title override"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Short line",
+          "info": "e.g. “Plush winter pairs and the airy Originals”"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link override"
         }
       ]
     }
   ],
   "presets": [
     {
-      "name": "t:sections.collection_list.name",
+      "name": "Collection list",
       "blocks": [
-        { "type": "featured_collection" },
-        { "type": "featured_collection" },
-        { "type": "featured_collection" }
+        { "type": "collection", "settings": { "text": "Plush Winter pairs and the airy Originals, sizes 36–45." } },
+        { "type": "collection", "settings": { "text": "The wearable shark blanket, four sizes." } }
       ]
     }
   ]

@@ -1,0 +1,288 @@
+/* ==========================================================================
+   Shark Bite — section-video-reels.css
+   Horizontal scroll-snap row of 9:16 video cards with per-card controls.
+   ========================================================================== */
+
+.video-reels {
+  overflow: hidden;
+}
+
+.video-reels__heading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.video-reels__mark {
+  display: inline-flex;
+  color: var(--color-accent);
+}
+
+.video-reels__mark .icon {
+  width: 1em;
+  height: 1em;
+}
+
+.video-reels__nav {
+  display: none;
+  gap: var(--space-2);
+}
+
+@media (min-width: 990px) {
+  .video-reels__nav {
+    display: flex;
+  }
+}
+
+.video-reels__arrow[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Track ------------------------------------------------------------------ */
+
+.video-reels__track {
+  display: flex;
+  gap: var(--grid-gap);
+  padding-inline: var(--gutter);
+  padding-block: var(--space-2);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--gutter);
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.video-reels__track::-webkit-scrollbar {
+  display: none;
+}
+
+.video-reels__track:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: -3px;
+}
+
+@media (min-width: 750px) {
+  .video-reels__track {
+    gap: calc(var(--grid-gap) * 1.5);
+  }
+}
+
+@media (min-width: 1200px) {
+  .video-reels__track {
+    padding-inline: max(var(--gutter), calc((100% - var(--container)) / 2 + var(--gutter)));
+    scroll-padding-inline: max(var(--gutter), calc((100% - var(--container)) / 2 + var(--gutter)));
+  }
+}
+
+/* Card ------------------------------------------------------------------- */
+
+.video-reels__card {
+  flex: 0 0 auto;
+  width: min(66vw, 26rem);
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+@media (min-width: 750px) {
+  .video-reels__card {
+    width: 28rem;
+  }
+}
+
+.video-reels__media {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.video-reels__media .video {
+  border-radius: 0;
+}
+
+.video-reels__media .video__el {
+  cursor: pointer;
+}
+
+/* Controls (play/pause + mute) ------------------------------------------- */
+
+.video-reels__control {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 4.4rem;
+  height: 4.4rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: rgb(251 248 242 / 92%);
+  color: var(--color-ink);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  z-index: 2;
+  transition: transform var(--duration) var(--ease), opacity var(--duration) var(--ease);
+}
+
+.video-reels__control .icon {
+  width: 2rem;
+  height: 2rem;
+}
+
+.video-reels__control--mute {
+  top: var(--space-3);
+  right: var(--space-3);
+}
+
+.video-reels__control--play {
+  top: var(--space-3);
+  left: var(--space-3);
+}
+
+.video-reels__control:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px var(--color-bg);
+}
+
+@media (hover: hover) {
+  .video-reels__control:hover {
+    transform: scale(1.06);
+  }
+}
+
+/* Icon state: default = muted + paused */
+.video-reels__icon-sound,
+.video-reels__icon-pause {
+  display: none;
+}
+
+.video-reels__control--mute[aria-pressed='false'] .video-reels__icon-muted {
+  display: none;
+}
+
+.video-reels__control--mute[aria-pressed='false'] .video-reels__icon-sound {
+  display: block;
+}
+
+.video-reels__card.is-playing .video-reels__icon-play {
+  display: none;
+}
+
+.video-reels__card.is-playing .video-reels__icon-pause {
+  display: block;
+}
+
+/* Fade the play button while the reel is playing; it comes back on hover/focus. */
+.video-reels__card.is-playing .video-reels__control--play {
+  opacity: 0;
+}
+
+.video-reels__card.is-playing:hover .video-reels__control--play,
+.video-reels__card.is-playing .video-reels__control--play:focus-visible,
+.video-reels__card.is-playing:focus-within .video-reels__control--play {
+  opacity: 1;
+}
+
+/* Caption ---------------------------------------------------------------- */
+
+.video-reels__caption {
+  position: absolute;
+  inset: auto 0 0 0;
+  margin: 0;
+  padding: var(--space-6) var(--space-4) var(--space-4);
+  background: linear-gradient(180deg, rgb(14 27 46 / 0) 0%, rgb(14 27 46 / 72%) 100%);
+  color: var(--color-brand-contrast);
+  font-family: var(--font-heading-family);
+  font-weight: 600;
+  font-size: 1.5rem;
+  line-height: 1.3;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.video-reels__caption a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  pointer-events: auto;
+}
+
+/* Product chip ----------------------------------------------------------- */
+
+.video-reels__product {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2);
+  border: var(--border-card);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  box-shadow: var(--shadow-sm);
+}
+
+.video-reels__thumb {
+  flex: none;
+  width: 4.8rem;
+  height: 4.8rem;
+  border-radius: calc(var(--radius) - var(--space-2));
+  object-fit: cover;
+  background: var(--color-surface-alt);
+}
+
+.video-reels__product-info {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.video-reels__product-title {
+  display: block;
+  overflow: hidden;
+  font-size: 1.4rem;
+  line-height: 1.25;
+  text-decoration: none;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.video-reels__product-title:hover {
+  text-decoration: underline;
+}
+
+.video-reels__product .price {
+  font-size: 1.4rem;
+}
+
+.video-reels__product .price__current {
+  font-size: 1.5rem;
+}
+
+.video-reels__shop {
+  flex: none;
+  padding-inline: var(--space-4);
+}
+
+/* Empty (design-mode placeholder) card ------------------------------------ */
+
+.video-reels__card--empty .video-reels__media {
+  box-shadow: none;
+}
+
+/* Reduced motion --------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .video-reels__track {
+    scroll-behavior: auto;
+  }
+
+  .video-reels__control {
+    transition: none;
+  }
+}

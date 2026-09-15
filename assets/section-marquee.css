@@ -1,0 +1,104 @@
+/* Marquee — duplicated track for a seamless loop; static wrap under reduced motion */
+
+.marquee {
+  overflow: hidden;
+  background: var(--color-bg);
+  color: var(--color-ink);
+}
+
+.marquee.section--alt {
+  background: var(--color-surface-alt);
+}
+
+.marquee.section--brand {
+  background: var(--color-brand);
+  color: var(--color-brand-contrast);
+}
+
+.marquee__viewport {
+  display: flex;
+  width: max-content;
+  min-width: 100%;
+  animation: marquee-scroll var(--marquee-duration, 30s) linear infinite;
+  will-change: transform;
+}
+
+.marquee__viewport:hover,
+.marquee__viewport:focus-within {
+  animation-play-state: paused;
+}
+
+.marquee__track {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--space-7);
+  list-style: none;
+  margin: 0;
+  padding: 0 calc(var(--space-7) / 2);
+}
+
+.marquee__item {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-heading-family);
+  font-weight: var(--font-heading-weight-medium);
+  font-size: 1.4rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.marquee__icon {
+  width: 1.8rem;
+  height: 1.8rem;
+  color: var(--color-brand);
+}
+
+.marquee.section--brand .marquee__icon {
+  color: var(--color-accent);
+}
+
+.marquee__item .icon--star {
+  color: var(--color-star);
+}
+
+@keyframes marquee-scroll {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+
+@media (min-width: 990px) {
+  .marquee__item {
+    font-size: 1.5rem;
+  }
+}
+
+/* Reduced motion: no scrolling — items wrap as a centred list and the clone disappears */
+@media (prefers-reduced-motion: reduce) {
+  .marquee__viewport {
+    animation: none;
+    width: auto;
+    min-width: 0;
+    max-width: var(--container);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  .marquee__track {
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-2) var(--space-5);
+    padding: 0;
+  }
+
+  .marquee__item {
+    white-space: normal;
+  }
+
+  .marquee__track--clone {
+    display: none;
+  }
+}

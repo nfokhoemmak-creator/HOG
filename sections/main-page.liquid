@@ -1,13 +1,102 @@
-<div class="container container--narrow">
-  <h1 class="h1" style="padding-top: var(--space-7);">{{ page.title | escape }}</h1>
-  <div class="page-content rte">{{ page.content }}</div>
+{%- liquid
+  assign padding_mobile_top = section.settings.padding_top | times: 0.75 | round
+  assign padding_mobile_bottom = section.settings.padding_bottom | times: 0.75 | round
+-%}
+
+{%- style -%}
+  #shopify-section-{{ section.id }} .main-page {
+    padding-top: {{ padding_mobile_top }}px;
+    padding-bottom: {{ padding_mobile_bottom }}px;
+  }
+  @media (min-width: 990px) {
+    #shopify-section-{{ section.id }} .main-page {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="main-page section">
+  <div class="container{% if section.settings.narrow %} container--narrow{% endif %}">
+    {%- if section.settings.show_title -%}
+      <header class="page-header{% if section.settings.text_alignment == 'center' %} page-header--center{% endif %}">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="eyebrow">
+            {% render 'icon', name: 'shark' %}
+            {{ section.settings.eyebrow | escape }}
+          </p>
+        {%- endif -%}
+        <h1 class="h1">{{ page.title | escape }}</h1>
+      </header>
+    {%- endif -%}
+
+    <div class="page-content rte">
+      {{ page.content }}
+    </div>
+  </div>
 </div>
 
 {% schema %}
 {
-  "name": "Page",
+  "name": "Page content",
   "tag": "section",
-  "class": "main-page-section",
-  "settings": []
+  "class": "section-main-page",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_title",
+      "label": "Show page title",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "info": "Optional short label above the title, shown with the shark mark."
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Title alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "checkbox",
+      "id": "narrow",
+      "label": "Narrow reading width",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    }
+  ],
+  "enabled_on": {
+    "templates": ["page"]
+  }
 }
 {% endschema %}

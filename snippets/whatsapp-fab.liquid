@@ -1,0 +1,106 @@
+{%- comment -%}
+  Floating WhatsApp button, bottom-left. Rendered once from layout/theme.liquid.
+  Hidden when no WhatsApp number is set and on the cart template; theme.js
+  also hides it while the sticky add-to-cart bar, the cart drawer, the menu
+  drawer or a modal is on screen (one bottom element at a time).
+
+  Usage:
+  {% render 'whatsapp-fab' %}
+{%- endcomment -%}
+
+{%- liquid
+  assign whatsapp_number = settings.social_whatsapp_number | remove: ' ' | remove: '+' | remove: '-'
+  assign whatsapp_label = 'general.whatsapp_cta' | t
+-%}
+
+{%- if whatsapp_number != blank and template.name != 'cart' -%}
+  <style>
+    .whatsapp-fab {
+      position: fixed;
+      left: max(1.6rem, env(safe-area-inset-left, 0px));
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 1.6rem + var(--sticky-atc-h, 0px));
+      z-index: 55;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.8rem;
+      min-width: 5.6rem;
+      min-height: 5.6rem;
+      padding: 0 1.6rem;
+      border-radius: var(--radius-pill, 999px);
+      background: #25d366;
+      color: #0b2e1a;
+      font-family: var(--font-heading-family, inherit);
+      font-weight: 600;
+      font-size: 1.4rem;
+      line-height: 1;
+      text-decoration: none;
+      box-shadow: var(--shadow-md, 0 2px 4px rgb(14 27 46 / 5%), 0 10px 24px rgb(14 27 46 / 8%));
+      transition:
+        transform var(--duration, 200ms) var(--ease, ease),
+        box-shadow var(--duration, 200ms) var(--ease, ease),
+        bottom var(--duration, 200ms) var(--ease, ease);
+    }
+
+    .whatsapp-fab:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg, 0 4px 8px rgb(14 27 46 / 6%), 0 24px 48px rgb(14 27 46 / 12%));
+    }
+
+    .whatsapp-fab:active {
+      transform: translateY(1px);
+    }
+
+    .whatsapp-fab:focus-visible {
+      outline: 2px solid var(--color-brand, #0b3b6f);
+      outline-offset: 3px;
+      box-shadow: 0 0 0 3px var(--color-bg, #fbf8f2);
+    }
+
+    .whatsapp-fab .icon {
+      width: 2.6rem;
+      height: 2.6rem;
+      flex: none;
+    }
+
+    .whatsapp-fab__label {
+      display: none;
+      white-space: nowrap;
+    }
+
+    .whatsapp-fab[hidden] {
+      display: none;
+    }
+
+    @media (max-width: 749.98px) {
+      .whatsapp-fab {
+        width: 5.6rem;
+        padding: 0;
+        justify-content: center;
+      }
+    }
+
+    @media (min-width: 750px) {
+      .whatsapp-fab__label {
+        display: inline;
+      }
+    }
+
+    @media print {
+      .whatsapp-fab {
+        display: none;
+      }
+    }
+  </style>
+
+  <a
+    class="whatsapp-fab"
+    data-whatsapp-fab
+    href="https://wa.me/{{ whatsapp_number }}"
+    target="_blank"
+    rel="noopener"
+    aria-label="{{ whatsapp_label | escape }}"
+  >
+    {% render 'icon', name: 'whatsapp' %}
+    <span class="whatsapp-fab__label" aria-hidden="true">{{ whatsapp_label }}</span>
+  </a>
+{%- endif -%}

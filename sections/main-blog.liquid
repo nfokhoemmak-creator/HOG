@@ -1,38 +1,121 @@
-{%- paginate blog.articles by 12 -%}
-  <div class="container">
-    <h1 class="h1" style="padding-top: var(--space-7);">{{ blog.title | escape }}</h1>
+{%- liquid
+  assign padding_mobile_top = section.settings.padding_top | times: 0.75 | round
+  assign padding_mobile_bottom = section.settings.padding_bottom | times: 0.75 | round
+  assign card_sizes = '(min-width: 990px) 33vw, (min-width: 750px) 50vw, calc(100vw - 40px)'
+-%}
 
-    {%- if blog.articles_count > 0 -%}
-      <div class="article-list">
-        {%- for article in blog.articles -%}
-          <article class="article-card">
-            <a href="{{ article.url }}" class="article-card__image">
-              {%- if article.image -%}
-                <img
-                  src="{{ article.image | image_url: width: 1000 }}"
-                  alt="{{ article.image.alt | escape }}"
-                  width="{{ article.image.width }}"
-                  height="{{ article.image.height }}"
-                  loading="lazy"
-                >
-              {%- endif -%}
-            </a>
+{%- style -%}
+  #shopify-section-{{ section.id }} .blog {
+    padding-top: {{ padding_mobile_top }}px;
+    padding-bottom: {{ padding_mobile_bottom }}px;
+  }
+  @media (min-width: 990px) {
+    #shopify-section-{{ section.id }} .blog {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
 
-            <p class="article-card__meta">{{ article.published_at | date: '%b %d, %Y' }}</p>
-            <h2 class="h4" style="margin-bottom: var(--space-2);">
-              <a href="{{ article.url }}">{{ article.title | escape }}</a>
-            </h2>
-            <p class="muted">{{ article.excerpt_or_content | strip_html | truncatewords: 28 }}</p>
-          </article>
-        {%- endfor -%}
-      </div>
+{%- paginate blog.articles by section.settings.articles_per_page -%}
+  <div class="blog section">
+    <div class="container">
+      <header class="page-header{% if section.settings.text_alignment == 'center' %} page-header--center{% endif %}">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="eyebrow">
+            {% render 'icon', name: 'shark' %}
+            {{ section.settings.eyebrow | escape }}
+          </p>
+        {%- endif -%}
+        <h1 class="h1">{{ blog.title | escape }}</h1>
+        {%- if section.settings.text != blank -%}
+          <p class="lead muted">{{ section.settings.text | escape }}</p>
+        {%- endif -%}
+        {%- if current_tags -%}
+          {%- assign tag_list = current_tags | join: ', ' -%}
+          <p class="cluster" style="margin-top: var(--space-3);">
+            <span class="badge badge--outline">{{ 'general.meta.tags' | t: tags: tag_list }}</span>
+            <a class="underline small" href="{{ blog.url }}">{{ 'collections.clear' | t }}</a>
+          </p>
+        {%- endif -%}
+      </header>
 
-      {% render 'pagination', paginate: paginate %}
-    {%- else -%}
-      <div class="empty-state">
-        <p class="h3">{{ 'sections.blog.no_articles' | t }}</p>
-      </div>
-    {%- endif -%}
+      {%- if blog.articles.size > 0 -%}
+        <ul class="article-list" role="list">
+          {%- for article in blog.articles -%}
+            {%- liquid
+              assign loading = 'lazy'
+              if forloop.index <= 3
+                assign loading = 'eager'
+              endif
+            -%}
+            <li>
+              <article class="card article-card{% if settings.animations_enabled %} reveal{% endif %}">
+                {%- if section.settings.show_image and article.image -%}
+                  <a class="card__media" href="{{ article.url }}" tabindex="-1" aria-hidden="true">
+                    <img
+                      src="{{ article.image | image_url: width: 900 }}"
+                      srcset="
+                        {{ article.image | image_url: width: 450 }} 450w,
+                        {{ article.image | image_url: width: 700 }} 700w,
+                        {{ article.image | image_url: width: 900 }} 900w,
+                        {{ article.image | image_url: width: 1200 }} 1200w
+                      "
+                      sizes="{{ card_sizes }}"
+                      alt="{{ article.image.alt | default: article.title | escape }}"
+                      width="{{ article.image.width }}"
+                      height="{{ article.image.height }}"
+                      loading="{{ loading }}"
+                    >
+                  </a>
+                {%- endif -%}
+
+                <div class="card__body">
+                  {%- if section.settings.show_date or section.settings.show_author -%}
+                    <p class="article-card__meta">
+                      {%- if section.settings.show_date -%}
+                        <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">{{ article.published_at | date: '%B %-d, %Y' }}</time>
+                      {%- endif -%}
+                      {%- if section.settings.show_date and section.settings.show_author %} · {% endif -%}
+                      {%- if section.settings.show_author -%}
+                        {{ 'blog.by' | t: author: article.author }}
+                      {%- endif -%}
+                    </p>
+                  {%- endif -%}
+
+                  <h2 class="card__title h4">
+                    <a href="{{ article.url }}">{{ article.title | escape }}</a>
+                  </h2>
+
+                  {%- if section.settings.show_excerpt -%}
+                    {%- assign excerpt = article.excerpt_or_content | strip_html | truncatewords: 30 -%}
+                    {%- if excerpt != blank -%}
+                      <p class="article-card__excerpt">{{ excerpt }}</p>
+                    {%- endif -%}
+                  {%- endif -%}
+
+                  <a class="btn btn--ghost btn--sm" href="{{ article.url }}">
+                    {{ 'blog.read_more' | t }}
+                    {% render 'icon', name: 'arrow-right' %}
+                    <span class="visually-hidden">: {{ article.title | escape }}</span>
+                  </a>
+                </div>
+              </article>
+            </li>
+          {%- endfor -%}
+        </ul>
+
+        {% render 'pagination', paginate: paginate %}
+      {%- else -%}
+        <div class="empty-state">
+          {% render 'icon', name: 'shark' %}
+          <h2 class="empty-state__title h3">{{ 'blog.no_articles' | t }}</h2>
+          <div class="btn-row">
+            <a class="btn" href="{{ section.settings.empty_button_link }}">{{ section.settings.empty_button_label | escape }}</a>
+          </div>
+        </div>
+      {%- endif -%}
+    </div>
   </div>
 {%- endpaginate -%}
 
@@ -40,7 +123,101 @@
 {
   "name": "Blog posts",
   "tag": "section",
-  "class": "main-blog-section",
-  "settings": []
+  "class": "section-main-blog",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "From the shark tank"
+    },
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Intro text"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Heading alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "articles_per_page",
+      "label": "Posts per page",
+      "min": 3,
+      "max": 24,
+      "step": 3,
+      "default": 9
+    },
+    {
+      "type": "checkbox",
+      "id": "show_image",
+      "label": "Show featured image",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_date",
+      "label": "Show date",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_author",
+      "label": "Show author",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_excerpt",
+      "label": "Show excerpt",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "empty_button_label",
+      "label": "Empty state button label",
+      "default": "Shop slippers"
+    },
+    {
+      "type": "url",
+      "id": "empty_button_link",
+      "label": "Empty state button link",
+      "default": "/collections/shark-slippers"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    }
+  ],
+  "enabled_on": {
+    "templates": ["blog"]
+  }
 }
 {% endschema %}

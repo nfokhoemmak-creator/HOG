@@ -1,0 +1,201 @@
+{%- comment -%}
+  Bundle nudges for the cart drawer and the cart page.
+
+  Accepts:
+  - context: 'drawer' | 'page' (default 'drawer') — only affects class names.
+
+  Classifies cart lines by collection handle (summed quantities, never line
+  counts) and shows, in priority order:
+    (a) 1 pair of slippers      → "Add a 2nd pair" with both slipper products
+    (b) slippers, no blanket    → "Complete the set" with the blanket
+    (c) blanket, no slippers    → "Add any pair and the blanket drops to $X"
+    (d) empty cart              → empty state with all three products
+
+  Usage:
+  {% render 'cart-upsell', context: 'drawer' %}
+{%- endcomment -%}
+
+{%- liquid
+  assign ctx = context | default: 'drawer'
+  assign slipper_qty = 0
+  assign blanket_qty = 0
+
+  for item in cart.items
+    assign handles = item.product.collections | map: 'handle'
+    if handles contains 'shark-slippers'
+      assign slipper_qty = slipper_qty | plus: item.quantity
+    endif
+    if handles contains 'shark-blankets'
+      assign blanket_qty = blanket_qty | plus: item.quantity
+    endif
+  endfor
+
+  assign tier_percent = settings.bundle_tier_percent | default: 0
+  assign set_percent = settings.set_discount_percent | default: 0
+
+  assign product_a = all_products['sharkbite-winter-collection']
+  if product_a == blank
+    assign product_a = collections['shark-slippers'].products[0]
+  endif
+  assign product_b = all_products['the-sharkbite™-originals']
+  if product_b == blank
+    assign product_b = collections['shark-slippers'].products[1]
+  endif
+  assign product_blanket = all_products['sharkbite-blanket']
+  if product_blanket == blank
+    assign product_blanket = collections['shark-blankets'].products[0]
+  endif
+
+  assign rule = ''
+  if cart.item_count == 0
+    assign rule = 'empty'
+  elsif settings.cart_show_upsells
+    if slipper_qty == 1 and tier_percent > 0
+      assign rule = 'pair'
+    elsif slipper_qty >= 1 and blanket_qty == 0 and set_percent > 0 and product_blanket != blank
+      assign rule = 'set'
+    elsif slipper_qty == 0 and blanket_qty >= 1 and set_percent > 0
+      assign rule = 'blanket_only'
+    endif
+  endif
+-%}
+
+{%- capture slipper_cards -%}
+  {%- for candidate in (1..2) -%}
+    {%- liquid
+      if candidate == 1
+        assign upsell_product = product_a
+      else
+        assign upsell_product = product_b
+      endif
+    -%}
+    {%- if upsell_product != blank and upsell_product.available -%}
+      <li class="cart-upsell__card">
+        <a class="cart-upsell__media" href="{{ upsell_product.url }}" tabindex="-1" aria-hidden="true">
+          {%- if upsell_product.featured_image != blank -%}
+            <img
+              src="{{ upsell_product.featured_image | image_url: width: 160 }}"
+              srcset="{{ upsell_product.featured_image | image_url: width: 160 }} 1x, {{ upsell_product.featured_image | image_url: width: 320 }} 2x"
+              alt="{{ upsell_product.featured_image.alt | default: upsell_product.title | escape }}"
+              width="80"
+              height="80"
+              loading="lazy"
+            >
+          {%- endif -%}
+        </a>
+        <div class="cart-upsell__body">
+          <a class="cart-upsell__title" href="{{ upsell_product.url }}">{{ upsell_product.title }}</a>
+          <span class="cart-upsell__price">
+            {%- if upsell_product.price_varies %}{{ 'products.product.from' | t }} {% endif -%}
+            {{ upsell_product.price | money }}
+          </span>
+        </div>
+        <a class="btn btn--sm btn--outline cart-upsell__cta" href="{{ upsell_product.url }}">
+          {{ 'cart.upsell_cta' | t }}
+        </a>
+      </li>
+    {%- endif -%}
+  {%- endfor -%}
+{%- endcapture -%}
+
+{%- capture blanket_card -%}
+  {%- if product_blanket != blank and product_blanket.available -%}
+    <li class="cart-upsell__card">
+      <a class="cart-upsell__media" href="{{ product_blanket.url }}" tabindex="-1" aria-hidden="true">
+        {%- if product_blanket.featured_image != blank -%}
+          <img
+            src="{{ product_blanket.featured_image | image_url: width: 160 }}"
+            srcset="{{ product_blanket.featured_image | image_url: width: 160 }} 1x, {{ product_blanket.featured_image | image_url: width: 320 }} 2x"
+            alt="{{ product_blanket.featured_image.alt | default: product_blanket.title | escape }}"
+            width="80"
+            height="80"
+            loading="lazy"
+          >
+        {%- endif -%}
+      </a>
+      <div class="cart-upsell__body">
+        <a class="cart-upsell__title" href="{{ product_blanket.url }}">{{ product_blanket.title }}</a>
+        <span class="cart-upsell__price">
+          {%- if product_blanket.price_varies %}{{ 'products.product.from' | t }} {% endif -%}
+          {{ product_blanket.price | money }}
+        </span>
+        {%- if set_percent > 0 -%}
+          <span class="badge badge--accent cart-upsell__badge">{{ 'products.product.set_hint' | t: percent: set_percent }}</span>
+        {%- endif -%}
+      </div>
+      <a class="btn btn--sm btn--outline cart-upsell__cta" href="{{ product_blanket.url }}">
+        {{ 'cart.upsell_cta' | t }}
+      </a>
+    </li>
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- case rule -%}
+  {%- when 'pair' -%}
+    {%- if slipper_cards contains 'cart-upsell__card' -%}
+      <aside class="cart-upsell cart-upsell--{{ ctx }}" aria-label="{{ 'cart.upsell_pair_title' | t: percent: tier_percent | escape }}">
+        <p class="cart-upsell__title-row h5">
+          {% render 'icon', name: 'gift' %}
+          <span>{{ 'cart.upsell_pair_title' | t: percent: tier_percent }}</span>
+        </p>
+        <ul class="cart-upsell__cards" role="list">
+          {{ slipper_cards }}
+        </ul>
+      </aside>
+    {%- endif -%}
+
+  {%- when 'set' -%}
+    {%- if blanket_card contains 'cart-upsell__card' -%}
+      <aside class="cart-upsell cart-upsell--{{ ctx }}" aria-label="{{ 'cart.upsell_set_title' | t: percent: set_percent | escape }}">
+        <p class="cart-upsell__title-row h5">
+          {% render 'icon', name: 'sparkle' %}
+          <span>{{ 'cart.upsell_set_title' | t: percent: set_percent }}</span>
+        </p>
+        <ul class="cart-upsell__cards" role="list">
+          {{ blanket_card }}
+        </ul>
+      </aside>
+    {%- endif -%}
+
+  {%- when 'blanket_only' -%}
+    {%- if slipper_cards contains 'cart-upsell__card' -%}
+      {%- liquid
+        assign blanket_price = product_blanket.price
+        for item in cart.items
+          assign item_handles = item.product.collections | map: 'handle'
+          if item_handles contains 'shark-blankets'
+            assign blanket_price = item.final_price
+            break
+          endif
+        endfor
+        assign blanket_discount = blanket_price | times: set_percent | divided_by: 100.0 | round
+        assign blanket_after = blanket_price | minus: blanket_discount | money
+      -%}
+      <aside class="cart-upsell cart-upsell--{{ ctx }}" aria-label="{{ 'cart.upsell_blanket_only' | t: price: blanket_after | escape }}">
+        <p class="cart-upsell__title-row h5">
+          {% render 'icon', name: 'gift' %}
+          <span>{{ 'cart.upsell_blanket_only' | t: price: blanket_after }}</span>
+        </p>
+        <ul class="cart-upsell__cards" role="list">
+          {{ slipper_cards }}
+        </ul>
+      </aside>
+    {%- endif -%}
+
+  {%- when 'empty' -%}
+    <div class="cart-empty cart-empty--{{ ctx }}">
+      <span class="cart-empty__icon">{% render 'icon', name: 'shark' %}</span>
+      <p class="cart-empty__title h4">{{ 'cart.empty' | t }}</p>
+      <p class="cart-empty__body muted">{{ 'cart.empty_body' | t }}</p>
+      <a class="btn cart-empty__cta" href="{{ collections['shark-slippers'].url | default: routes.all_products_collection_url }}">
+        {{ 'general.continue_shopping' | t }}
+      </a>
+
+      {%- if slipper_cards contains 'cart-upsell__card' or blanket_card contains 'cart-upsell__card' -%}
+        <ul class="cart-upsell__cards cart-empty__suggestions" role="list">
+          {{ slipper_cards }}
+          {{ blanket_card }}
+        </ul>
+      {%- endif -%}
+    </div>
+{%- endcase -%}

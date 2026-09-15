@@ -1,62 +1,177 @@
+{{ 'section-header.css' | asset_url | stylesheet_tag }}
+
 {%- liquid
   assign menu = linklists[section.settings.menu]
+  assign whatsapp_number = settings.social_whatsapp_number | remove: ' ' | remove: '+' | remove: '-'
+  assign threshold_cents = settings.free_shipping_threshold | times: 100
+  assign free_shipping_line = ''
+  if threshold_cents > 0 and settings.free_shipping_text != blank
+    assign amt = threshold_cents | money_without_trailing_zeros
+    assign free_shipping_line = settings.free_shipping_text | replace: '{{ amount }}', amt
+  endif
+  assign logo_width = settings.logo_width | default: 150
+  if settings.logo != blank
+    assign logo_height = logo_width | times: settings.logo.height | divided_by: settings.logo.width
+    assign logo_width_2x = logo_width | times: 2
+  endif
+  assign account_label = 'customer.account.title' | t
 -%}
 
-<header class="header{% if section.settings.sticky %} header--sticky{% endif %}">
+{%- if section.settings.sticky -%}
+  <style>
+    #shopify-section-{{ section.id }} {
+      position: sticky;
+      top: 0;
+      z-index: 60;
+    }
+  </style>
+{%- endif -%}
+
+<header class="header header--logo-{{ section.settings.logo_position }}{% if section.settings.sticky %} header--sticky{% endif %}">
   <div class="container header__inner">
-    <menu-drawer class="menu-toggle">
-      <button
-        type="button"
-        class="header__icon"
-        data-menu-open
-        aria-expanded="false"
-        aria-controls="MenuDrawer"
-        aria-label="{{ 'general.menu' | t }}"
-      >
-        {% render 'icon', name: 'menu' %}
-      </button>
+    <div class="header__start">
+      <menu-drawer class="menu-drawer-wrap">
+        <button
+          type="button"
+          class="header__icon header__icon--menu"
+          data-menu-open
+          aria-expanded="false"
+          aria-controls="MenuDrawer-{{ section.id }}"
+          aria-label="{{ 'general.menu' | t }}"
+        >
+          {% render 'icon', name: 'menu' %}
+        </button>
 
-      <div class="menu-drawer" id="MenuDrawer" role="dialog" aria-modal="true" aria-label="{{ 'general.menu' | t }}">
-        <div class="menu-drawer__head">
-          <span class="eyebrow">{{ 'general.menu' | t }}</span>
-          <button type="button" class="header__icon" data-menu-close aria-label="{{ 'general.close' | t }}">
-            {% render 'icon', name: 'close' %}
-          </button>
+        <div class="menu-drawer__overlay" data-menu-overlay></div>
+
+        <div
+          class="menu-drawer"
+          id="MenuDrawer-{{ section.id }}"
+          data-menu-panel
+          role="dialog"
+          aria-modal="true"
+          aria-label="{{ 'general.menu' | t }}"
+          aria-hidden="true"
+          hidden
+        >
+          <div class="menu-drawer__head">
+            <span class="eyebrow">{{ 'general.menu' | t }}</span>
+            <button type="button" class="header__icon" data-menu-close aria-label="{{ 'general.close' | t }}">
+              {% render 'icon', name: 'close' %}
+            </button>
+          </div>
+
+          <nav class="menu-drawer__nav" aria-label="{{ 'general.menu' | t }}">
+            <ul class="menu-drawer__list">
+              {%- for link in menu.links -%}
+                <li class="menu-drawer__item">
+                  {%- if link.links.size > 0 -%}
+                    <details class="menu-drawer__group">
+                      <summary class="menu-drawer__link">
+                        <span>{{ link.title }}</span>
+                        {% render 'icon', name: 'chevron-down' %}
+                      </summary>
+                      <ul class="menu-drawer__sublist">
+                        <li>
+                          <a class="menu-drawer__sublink" href="{{ link.url }}" {% if link.current %}aria-current="page"{% endif %}>{{ link.title }}</a>
+                        </li>
+                        {%- for child in link.links -%}
+                          <li>
+                            <a class="menu-drawer__sublink" href="{{ child.url }}" {% if child.current %}aria-current="page"{% endif %}>{{ child.title }}</a>
+                          </li>
+                        {%- endfor -%}
+                      </ul>
+                    </details>
+                  {%- else -%}
+                    <a class="menu-drawer__link" href="{{ link.url }}" {% if link.current %}aria-current="page"{% endif %}>
+                      <span>{{ link.title }}</span>
+                      {% render 'icon', name: 'arrow-right' %}
+                    </a>
+                  {%- endif -%}
+                </li>
+              {%- endfor -%}
+            </ul>
+          </nav>
+
+          <div class="menu-drawer__foot">
+            {%- if whatsapp_number != blank -%}
+              <a
+                class="btn btn--full menu-drawer__whatsapp"
+                href="https://wa.me/{{ whatsapp_number }}"
+                target="_blank"
+                rel="noopener"
+              >
+                {% render 'icon', name: 'whatsapp' %}
+                {{ 'general.whatsapp_cta' | t }}
+              </a>
+            {%- endif -%}
+
+            {%- if free_shipping_line != blank -%}
+              <p class="menu-drawer__shipping small">
+                {% render 'icon', name: 'truck' %}
+                <span>{{ free_shipping_line }}</span>
+              </p>
+            {%- endif -%}
+
+            {%- if section.settings.show_account and shop.customer_accounts_enabled -%}
+              <a class="menu-drawer__account small" href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}">
+                {% render 'icon', name: 'account' %}
+                <span>{{ account_label }}</span>
+              </a>
+            {%- endif -%}
+          </div>
         </div>
+      </menu-drawer>
 
-        <nav class="menu-drawer__list" aria-label="{{ 'general.menu' | t }}">
+      <nav class="header__nav" aria-label="{{ 'general.menu' | t }}">
+        <ul class="nav">
           {%- for link in menu.links -%}
-            <div>
-              <a href="{{ link.url }}" {% if link.active %}aria-current="page"{% endif %}>{{ link.title }}</a>
+            <li class="nav__item{% if link.links.size > 0 %} nav__item--has-children{% endif %}">
+              <a
+                class="nav__link"
+                href="{{ link.url }}"
+                {% if link.current %}aria-current="page"{% endif %}
+                {% if link.links.size > 0 %}aria-haspopup="true" aria-expanded="false"{% endif %}
+              >
+                {{ link.title }}
+                {%- if link.links.size > 0 -%}
+                  {% render 'icon', name: 'chevron-down' %}
+                {%- endif -%}
+              </a>
               {%- if link.links.size > 0 -%}
-                <div class="menu-drawer__sublist">
+                <ul class="nav__dropdown">
                   {%- for child in link.links -%}
-                    <a href="{{ child.url }}">{{ child.title }}</a>
+                    <li>
+                      <a class="nav__sublink" href="{{ child.url }}" {% if child.current %}aria-current="page"{% endif %}>{{ child.title }}</a>
+                    </li>
                   {%- endfor -%}
-                </div>
+                </ul>
               {%- endif -%}
-            </div>
+            </li>
           {%- endfor -%}
-        </nav>
-      </div>
-    </menu-drawer>
+        </ul>
+      </nav>
+    </div>
 
     {%- if request.page_type == 'index' -%}
       <h1 class="header__logo">
     {%- else -%}
       <div class="header__logo">
     {%- endif -%}
-      <a href="{{ routes.root_url }}">
+      <a class="header__logo-link" href="{{ routes.root_url }}" aria-label="{{ shop.name | escape }}">
         {%- if settings.logo != blank -%}
           <img
-            src="{{ settings.logo | image_url: width: 600 }}"
-            alt="{{ shop.name | escape }}"
-            width="{{ settings.logo.width }}"
-            height="{{ settings.logo.height }}"
-            style="width: {{ settings.logo_width }}px;"
+            class="header__logo-img"
+            src="{{ settings.logo | image_url: width: logo_width_2x }}"
+            srcset="{{ settings.logo | image_url: width: logo_width }} 1x, {{ settings.logo | image_url: width: logo_width_2x }} 2x"
+            alt="{{ settings.logo.alt | default: shop.name | escape }}"
+            width="{{ logo_width }}"
+            height="{{ logo_height }}"
+            style="--logo-width: {{ logo_width }}px;"
+            fetchpriority="high"
           >
         {%- else -%}
-          {{ shop.name }}
+          <span class="header__wordmark">{{ shop.name }}</span>
         {%- endif -%}
       </a>
     {%- if request.page_type == 'index' -%}
@@ -65,37 +180,38 @@
       </div>
     {%- endif -%}
 
-    <nav class="header__nav" aria-label="{{ 'general.menu' | t }}">
-      {%- for link in menu.links -%}
-        <a href="{{ link.url }}" {% if link.active %}aria-current="page"{% endif %}>{{ link.title }}</a>
-      {%- endfor -%}
-    </nav>
-
     <div class="header__actions">
+      {%- if section.settings.show_free_shipping_pill and free_shipping_line != blank -%}
+        <span class="header__pill">
+          {% render 'icon', name: 'truck' %}
+          <span>{{ free_shipping_line }}</span>
+        </span>
+      {%- endif -%}
+
       {%- if section.settings.show_search -%}
-        <a class="header__icon" href="{{ routes.search_url }}" aria-label="{{ 'general.search.search' | t }}">
+        <a class="header__icon" href="{{ routes.search_url }}" aria-label="{{ 'general.search.submit' | t }}">
           {% render 'icon', name: 'search' %}
         </a>
       {%- endif -%}
 
       {%- if section.settings.show_account and shop.customer_accounts_enabled -%}
         <a
-          class="header__icon"
+          class="header__icon header__icon--account"
           href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}"
-          aria-label="{{ 'general.account' | t }}"
+          aria-label="{{ account_label }}"
         >
           {% render 'icon', name: 'account' %}
         </a>
       {%- endif -%}
 
       <a
-        class="header__icon"
+        class="header__icon header__icon--cart"
         href="{{ routes.cart_url }}"
         aria-label="{{ 'general.cart' | t }}"
         {% if settings.cart_type == 'drawer' %}data-cart-trigger{% endif %}
       >
         {% render 'icon', name: 'cart' %}
-        <span class="cart-count" data-cart-count {% if cart.item_count == 0 %}hidden{% endif %}>
+        <span class="header__count" data-cart-count {% if cart.item_count == 0 %}hidden{% endif %}>
           {{- cart.item_count -}}
         </span>
       </a>
@@ -103,18 +219,42 @@
   </div>
 </header>
 
-{%- comment -%} Structured data so search results carry the brand correctly. {%- endcomment -%}
+{%- comment -%} Organization structured data so search results carry the brand. {%- endcomment -%}
+{%- liquid
+  assign same_as = ''
+  if settings.social_instagram_link != blank
+    assign same_as = same_as | append: settings.social_instagram_link | append: '|'
+  endif
+  if settings.social_tiktok_link != blank
+    assign same_as = same_as | append: settings.social_tiktok_link | append: '|'
+  endif
+  if settings.social_facebook_link != blank
+    assign same_as = same_as | append: settings.social_facebook_link | append: '|'
+  endif
+  assign same_as_list = same_as | split: '|'
+-%}
 <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": {{ shop.name | json }},
     "url": {{ shop.url | append: routes.root_url | json }},
-    {%- if settings.logo -%}
-      "logo": {{ settings.logo | image_url: width: 600 | prepend: "https:" | json }},
+    {%- if settings.logo != blank -%}
+      "logo": {{ settings.logo | image_url: width: 600 | prepend: 'https:' | json }},
     {%- endif -%}
-    {%- if settings.social_instagram_link != blank -%}
-      "sameAs": [{{ settings.social_instagram_link | json }}],
+    {%- if same_as_list.size > 0 -%}
+      "sameAs": {{ same_as_list | json }},
+    {%- endif -%}
+    {%- if whatsapp_number != blank or shop.email != blank -%}
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer service",
+        {%- if whatsapp_number != blank -%}
+          "telephone": {{ whatsapp_number | prepend: '+' | json }},
+          "url": {{ whatsapp_number | prepend: 'https://wa.me/' | json }},
+        {%- endif -%}
+        "email": {{ shop.email | json }}
+      },
     {%- endif -%}
     "description": {{ shop.description | default: settings.brand_tagline | json }}
   }
@@ -122,33 +262,56 @@
 
 {% schema %}
 {
-  "name": "t:sections.header.name",
+  "name": "Header",
   "tag": "div",
   "class": "header-section",
+  "enabled_on": {
+    "groups": ["header"]
+  },
   "settings": [
     {
       "type": "link_list",
       "id": "menu",
-      "label": "t:sections.header.settings.menu.label",
+      "label": "Menu",
       "default": "main-menu"
+    },
+    {
+      "type": "select",
+      "id": "logo_position",
+      "label": "Logo position (desktop)",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "left",
+      "info": "Logo image and width are set in Theme settings > Brand."
     },
     {
       "type": "checkbox",
       "id": "sticky",
-      "label": "t:sections.header.settings.sticky.label",
-      "default": true
+      "label": "Sticky header",
+      "default": true,
+      "info": "Only the header sticks; the announcement bar scrolls away."
     },
     {
       "type": "checkbox",
       "id": "show_search",
-      "label": "t:sections.header.settings.show_search.label",
+      "label": "Show search icon",
       "default": true
     },
     {
       "type": "checkbox",
       "id": "show_account",
-      "label": "t:sections.header.settings.show_account.label",
-      "default": true
+      "label": "Show account icon",
+      "default": false,
+      "info": "Only shows when customer accounts are enabled."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_free_shipping_pill",
+      "label": "Show free-shipping pill (desktop)",
+      "default": true,
+      "info": "Uses the free-shipping text and threshold from Theme settings > Offers."
     }
   ]
 }

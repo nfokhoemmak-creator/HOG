@@ -1,0 +1,61 @@
+{%- comment -%}
+  Free standard shipping progress bar.
+
+  Accepts:
+  - total:   {Number} cart total in cents (usually cart.total_price, already net of automatic discounts)
+  - compact: {Boolean} text only, no track (product page)
+  - boxed:   {Boolean} adds a soft tinted background
+  - class:   {String} extra classes
+
+  Reads settings.free_shipping_threshold (dollars). Renders nothing when the
+  threshold is 0 (disabled). Unlocked when total >= threshold (mirrors
+  Shopify's "minimum purchase" rule, which triggers at exactly the amount).
+
+  Usage:
+  {% render 'free-shipping-bar', total: cart.total_price, compact: false %}
+{%- endcomment -%}
+
+{%- liquid
+  assign threshold_cents = settings.free_shipping_threshold | default: 0 | times: 100
+  assign total_cents = total | default: 0
+-%}
+
+{%- if threshold_cents > 0 -%}
+  {%- liquid
+    assign unlocked = false
+    if total_cents >= threshold_cents
+      assign unlocked = true
+      assign progress = 100
+    else
+      assign away = threshold_cents | minus: total_cents
+      assign away_money = away | money_without_trailing_zeros
+      assign progress = total_cents | times: 100 | divided_by: threshold_cents
+    endif
+    assign threshold_money = threshold_cents | money_without_trailing_zeros
+  -%}
+  <div
+    class="ship-bar{% if unlocked %} ship-bar--unlocked{% endif %}{% if compact %} ship-bar--compact{% endif %}{% if boxed %} ship-bar--boxed{% endif %}{% if class != blank %} {{ class }}{% endif %}"
+    data-ship-bar
+    data-threshold="{{ threshold_cents }}"
+    data-total="{{ total_cents }}"
+    aria-live="polite"
+  >
+    <p class="ship-bar__text">
+      {%- if unlocked -%}
+        {% render 'icon', name: 'check' %}
+        <span>{{ 'cart.free_shipping_unlocked' | t }}</span>
+      {%- elsif total_cents > 0 -%}
+        {% render 'icon', name: 'truck' %}
+        <span>{{ 'cart.free_shipping_away' | t: amount: away_money }}</span>
+      {%- else -%}
+        {% render 'icon', name: 'truck' %}
+        <span>{{ 'cart.free_shipping_start' | t: amount: threshold_money }}</span>
+      {%- endif -%}
+    </p>
+    {%- unless compact -%}
+      <div class="ship-bar__track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ progress }}" aria-label="{{ 'cart.free_shipping_start' | t: amount: threshold_money | escape }}">
+        <span class="ship-bar__fill" style="width: {{ progress }}%"></span>
+      </div>
+    {%- endunless -%}
+  </div>
+{%- endif -%}

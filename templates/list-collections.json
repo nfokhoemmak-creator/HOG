@@ -2,7 +2,20 @@
   "sections": {
     "main": {
       "type": "main-list-collections",
-      "settings": {}
+      "settings": {
+        "heading": "Shop by shark",
+        "text": "Slippers for cold floors, slides for warm days, one legendary blanket.",
+        "text_alignment": "left",
+        "hide_empty": true,
+        "show_count": true,
+        "image_ratio": "landscape",
+        "columns_desktop": 3,
+        "collections_per_page": 12,
+        "empty_button_label": "Shop slippers",
+        "empty_button_link": "/collections/shark-slippers",
+        "padding_top": 48,
+        "padding_bottom": 64
+      }
     }
   },
   "order": ["main"]

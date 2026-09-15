@@ -1,0 +1,66 @@
+{%- comment -%}
+  Size guide modal (<sb-modal>). Opened by any element with
+  data-modal-open="SizeGuide-<section_id>".
+
+  Shows the merchant's size chart page when one exists (block setting `page`,
+  falling back to pages['winter-size-chart']); otherwise the chart image and
+  the fallback text from the block settings. Never invents a cm table.
+
+  Accepts:
+  - section_id:      {String} section id (required)
+  - block:           {Object} the `size_guide` block (settings: page, image, fallback_text)
+  - whatsapp_number: {String} digits only, for the "Ask us on WhatsApp" button
+
+  Usage:
+  {% render 'size-guide-modal', section_id: section.id, block: block, whatsapp_number: whatsapp_number %}
+{%- endcomment -%}
+
+{%- liquid
+  assign modal_id = 'SizeGuide-' | append: section_id
+  assign guide_page = block.settings.page
+  if guide_page == blank
+    assign guide_page = pages['winter-size-chart']
+  endif
+  assign has_page_content = false
+  if guide_page.content != blank
+    assign has_page_content = true
+  endif
+-%}
+
+<sb-modal id="{{ modal_id }}" class="modal size-guide" hidden aria-labelledby="{{ modal_id }}-title">
+  <div class="modal__overlay"></div>
+  <div class="modal__panel">
+    <div class="modal__header">
+      <h2 id="{{ modal_id }}-title" class="modal__title h4">{{ 'products.product.size_guide' | t }}</h2>
+      <button type="button" class="modal__close btn--icon" data-modal-close aria-label="{{ 'general.close' | t | escape }}">
+        {% render 'icon', name: 'close' %}
+      </button>
+    </div>
+    <div class="modal__body size-guide__body">
+      {%- if has_page_content -%}
+        <div class="rte">{{ guide_page.content }}</div>
+      {%- else -%}
+        {%- if block.settings.image != blank -%}
+          {{
+            block.settings.image
+            | image_url: width: 1200
+            | image_tag: loading: 'lazy', widths: '470, 940, 1200', sizes: '(min-width: 750px) 60rem, 100vw', class: 'size-guide__image', alt: block.settings.image.alt
+          }}
+        {%- endif -%}
+        {%- if block.settings.fallback_text != blank -%}
+          <div class="rte">{{ block.settings.fallback_text }}</div>
+        {%- endif -%}
+      {%- endif -%}
+      <p class="size-guide__help small muted">{{ 'products.product.size_help' | t }}</p>
+    </div>
+    {%- if whatsapp_number != blank -%}
+      <div class="modal__footer">
+        <a class="btn btn--secondary btn--full" href="https://wa.me/{{ whatsapp_number }}" target="_blank" rel="noopener">
+          {% render 'icon', name: 'whatsapp' %}
+          {{ 'products.product.ask_whatsapp' | t }}
+          <span class="visually-hidden">{{ 'general.new_window' | t }}</span>
+        </a>
+      </div>
+    {%- endif -%}
+  </div>
+</sb-modal>

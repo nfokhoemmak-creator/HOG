@@ -1,226 +1,523 @@
 /* ==========================================================================
-   House of Garments — cart-drawer.js
-   Talks to the Shopify Ajax Cart API and keeps the drawer in sync.
+   Shark Bite — cart-drawer.js
+   Ajax cart: SB.addToCart / openCart / closeCart / refreshCart / getCart,
+   the <cart-drawer> element, the <cart-items> element on the cart page and
+   quick-add form interception.
 
    The drawer is progressive enhancement over /cart. Every trigger that opens
-   it is a real link to the cart page, so a JS failure costs the visitor a page
-   load, not the purchase.
+   it is a real link to the cart page and every form posts natively, so a JS
+   failure costs the visitor a page load, not the purchase.
+
+   Every mutation asks Shopify to bundle the freshly rendered `cart-drawer`
+   section (Section Rendering API) so the drawer updates in one round-trip.
    ========================================================================== */
 
 (function () {
   'use strict';
 
-  const routes = (window.theme && window.theme.routes) || {};
-  const strings = (window.theme && window.theme.strings) || {};
+  const theme = window.theme || {};
+  const routes = theme.routes || {};
+  const strings = theme.strings || {};
+  const SB = (window.SB = window.SB || {});
 
-  /* ------------------------------------------------------------- fetching */
+  const DRAWER_SECTION = 'cart-drawer';
+  const root = routes.root || '/';
+  const cartUrl = routes.cart || '/cart';
+  const addUrl = routes.cartAdd || '/cart/add';
+  const changeUrl = routes.cartChange || '/cart/change';
+  const updateUrl = routes.cartUpdate || '/cart/update';
 
-  async function postJSON(url, body) {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json'
-      },
-      body: JSON.stringify(body)
+  const jsUrl = (url) => (url.endsWith('.js') ? url : `${url}.js`);
+  const errorText = () => strings.cartError || 'Something went wrong. Please try again.';
+
+  /* -------------------------------------------------------------- fetching */
+
+  function sectionsToRender() {
+    const ids = [DRAWER_SECTION];
+    document.querySelectorAll('cart-items[data-section-id]').forEach((node) => {
+      const id = node.getAttribute('data-section-id');
+      if (id && !ids.includes(id)) ids.push(id);
     });
+    return ids;
+  }
 
-    const data = await response.json();
+  async function parseResponse(response) {
+    const text = await response.text();
+    let data = {};
+    try {
+      data = text ? JSON.parse(text) : {};
+    } catch (error) {
+      data = {};
+    }
     if (!response.ok) {
-      throw new Error(data.description || data.message || strings.cartError);
+      const message = data.description || data.message || errorText();
+      const err = new Error(typeof message === 'string' ? message : errorText());
+      err.status = response.status;
+      err.data = data;
+      throw err;
     }
     return data;
   }
 
-  async function getSectionHTML(section) {
-    const url = `${routes.root || '/'}?section_id=${section}`;
-    const response = await fetch(url);
+  async function postJSON(url, body) {
+    const response = await fetch(jsUrl(url), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: JSON.stringify(body)
+    });
+    return parseResponse(response);
+  }
+
+  async function postForm(url, formData) {
+    const response = await fetch(jsUrl(url), {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: formData
+    });
+    return parseResponse(response);
+  }
+
+  async function getCart() {
+    const response = await fetch(`${root.replace(/\/$/, '')}/cart.js`, {
+      headers: { Accept: 'application/json' }
+    });
+    return parseResponse(response);
+  }
+
+  async function fetchSectionHTML(sectionId, pathname) {
+    const base = pathname || window.location.pathname;
+    const url = `${base}${base.includes('?') ? '&' : '?'}section_id=${encodeURIComponent(sectionId)}`;
+    const response = await fetch(url, { headers: { Accept: 'text/html' } });
+    if (!response.ok) throw new Error(errorText());
     return response.text();
   }
 
-  /* -------------------------------------------------------------- <cart-drawer> */
+  /* ------------------------------------------------------------- rendering */
+
+  function drawerElement() {
+    return document.querySelector('cart-drawer');
+  }
+
+  function renderSections(sections) {
+    if (!sections) return false;
+    let rendered = false;
+
+    const drawer = drawerElement();
+    if (drawer && sections[DRAWER_SECTION]) {
+      drawer.render(sections[DRAWER_SECTION]);
+      rendered = true;
+    }
+
+    document.querySelectorAll('cart-items[data-section-id]').forEach((node) => {
+      const id = node.getAttribute('data-section-id');
+      if (id && sections[id]) {
+        node.render(sections[id]);
+        rendered = true;
+      }
+    });
+
+    return rendered;
+  }
+
+  async function refreshDrawerFromServer() {
+    const drawer = drawerElement();
+    if (!drawer) return;
+    try {
+      const html = await fetchSectionHTML(DRAWER_SECTION, root);
+      drawer.render(html);
+    } catch (error) {
+      // A stale drawer is recoverable on the next interaction.
+    }
+  }
+
+  /**
+   * Re-fetches /cart.js, syncs header counts, dispatches `cart:updated` and
+   * returns the cart JSON. Called after every mutation.
+   */
+  async function broadcast() {
+    const cart = await getCart();
+    if (typeof SB.updateCartCount === 'function') SB.updateCartCount(cart.item_count);
+    document.dispatchEvent(new CustomEvent('cart:updated', { detail: { cart } }));
+    return cart;
+  }
+
+  async function refreshCart() {
+    await refreshDrawerFromServer();
+    return broadcast();
+  }
+
+  /* ------------------------------------------------------------ public API */
+
+  function openCart(opener) {
+    const drawer = drawerElement();
+    if (!drawer || theme.cartType === 'page') {
+      window.location.href = cartUrl;
+      return;
+    }
+    drawer.open(opener);
+  }
+
+  function closeCart() {
+    const drawer = drawerElement();
+    if (drawer) drawer.close();
+  }
+
+  /**
+   * SB.addToCart(payload, opener)
+   * payload: FormData (from a product form) or { items: [{ id, quantity, properties? }] }.
+   */
+  async function addToCart(payload, opener) {
+    const sections = sectionsToRender().join(',');
+    const sectionsUrl = window.location.pathname;
+    let data;
+
+    if (typeof FormData !== 'undefined' && payload instanceof FormData) {
+      payload.set('sections', sections);
+      payload.set('sections_url', sectionsUrl);
+      data = await postForm(addUrl, payload);
+    } else {
+      const body = Object.assign({}, payload || {});
+      if (!Array.isArray(body.items)) {
+        throw new Error(errorText());
+      }
+      body.sections = sections;
+      body.sections_url = sectionsUrl;
+      data = await postJSON(addUrl, body);
+    }
+
+    if (!renderSections(data.sections)) await refreshDrawerFromServer();
+    const cart = await broadcast();
+    data.cart = cart;
+
+    SB.announce(strings.itemAdded || strings.added || 'Added to cart');
+
+    if (theme.cartType === 'page' || !drawerElement()) {
+      window.location.href = cartUrl;
+    } else {
+      openCart(opener);
+    }
+
+    return data;
+  }
+
+  async function changeLine(key, quantity) {
+    const data = await postJSON(changeUrl, {
+      id: key,
+      quantity,
+      sections: sectionsToRender().join(','),
+      sections_url: window.location.pathname
+    });
+    if (!renderSections(data.sections)) await refreshDrawerFromServer();
+    await broadcast();
+    return data;
+  }
+
+  async function updateNote(note) {
+    return postJSON(updateUrl, { note });
+  }
+
+  Object.assign(SB, {
+    addToCart,
+    openCart,
+    closeCart,
+    refreshCart,
+    getCart,
+    changeLine,
+    updateNote,
+    fetchSectionHTML
+  });
+
+  /* --------------------------------------------------------- <cart-drawer> */
 
   class CartDrawer extends HTMLElement {
     connectedCallback() {
-      this.panel = this.querySelector('.cart-drawer__panel');
-      this.overlay = this.querySelector('.cart-drawer__overlay');
-      this.closeButton = this.querySelector('[data-cart-close]');
       this.releaseFocus = null;
       this.opener = null;
+      this.isOpen = false;
+      this.pending = 0;
 
-      if (this.overlay) this.overlay.addEventListener('click', () => this.close());
-      if (this.closeButton) this.closeButton.addEventListener('click', () => this.close());
+      if (this.bound) return;
+      this.bound = true;
 
-      this.bindLineItems();
+      // Delegated listeners survive innerHTML swaps.
+      this.addEventListener('click', (event) => this.onClick(event));
+      this.addEventListener('change', (event) => this.onChange(event));
+      this.addEventListener('input', (event) => this.onInput(event));
 
-      document.addEventListener('cart:updated', (event) => {
-        this.render(event.detail && event.detail.sections);
-      });
-
+      // Other scripts may dispatch `cart:open` to ask for the drawer; open()
+      // is idempotent so the event it fires itself is ignored.
       document.addEventListener('cart:open', (event) => {
         this.open(event.detail && event.detail.opener);
       });
-
-      // Any link to the cart opens the drawer instead, when the drawer is on.
-      document.addEventListener('click', (event) => {
-        const trigger = event.target.closest('[data-cart-trigger]');
-        if (!trigger) return;
-        event.preventDefault();
-        this.open(trigger);
-      });
+      document.addEventListener('cart:close', () => this.close());
     }
 
-    bindLineItems() {
-      this.querySelectorAll('[data-line-remove]').forEach((button) => {
-        button.addEventListener('click', (event) => {
-          event.preventDefault();
-          this.change(button.dataset.lineRemove, 0);
-        });
-      });
+    get panel() {
+      return this.querySelector('[data-cart-panel]') || this;
+    }
 
-      this.querySelectorAll('[data-line-quantity]').forEach((input) => {
-        input.addEventListener('change', () => {
-          this.change(input.dataset.lineQuantity, parseInt(input.value, 10));
-        });
-      });
+    onClick(event) {
+      const close = event.target.closest('[data-cart-close]');
+      if (close) {
+        event.preventDefault();
+        this.close();
+        return;
+      }
+      if (event.target.closest('[data-cart-overlay]')) {
+        this.close();
+        return;
+      }
+      const remove = event.target.closest('[data-line-remove]');
+      if (remove) {
+        event.preventDefault();
+        this.change(remove.getAttribute('data-line-remove'), 0, remove);
+      }
+    }
+
+    onChange(event) {
+      const input = event.target.closest('[data-line-quantity]');
+      if (!input) return;
+      const quantity = parseInt(input.value, 10);
+      if (Number.isNaN(quantity)) return;
+      this.change(input.getAttribute('data-line-quantity'), quantity, input);
+    }
+
+    onInput(event) {
+      const note = event.target.closest('[data-cart-note]');
+      if (!note) return;
+      if (!this.saveNote) {
+        this.saveNote = SB.debounce((value) => updateNote(value).catch(() => {}), 500);
+      }
+      this.saveNote(note.value);
+    }
+
+    async change(key, quantity, source) {
+      if (!key) return;
+      this.setBusy(true);
+      this.hideError();
+      try {
+        await changeLine(key, quantity);
+      } catch (error) {
+        this.showError(error.message);
+        // Put the server's numbers back.
+        await refreshDrawerFromServer();
+      } finally {
+        this.setBusy(false);
+        this.restoreFocus(source);
+      }
+    }
+
+    restoreFocus(source) {
+      if (!this.isOpen) return;
+      if (document.activeElement && this.contains(document.activeElement) && document.activeElement !== document.body) return;
+      let target = null;
+      if (source && source.hasAttribute && source.hasAttribute('data-line-quantity')) {
+        target = this.querySelector(`[data-line-quantity="${source.getAttribute('data-line-quantity')}"]`);
+      }
+      (target || this.querySelector('[data-cart-close]') || this.panel).focus({ preventScroll: true });
     }
 
     open(opener) {
-      this.opener = opener || null;
-      this.classList.add('is-open');
+      if (this.isOpen) return;
+      this.isOpen = true;
+      this.opener = opener && typeof opener.focus === 'function' ? opener : document.activeElement;
+      this.removeAttribute('hidden');
       this.setAttribute('aria-hidden', 'false');
-      if (window.HOG) {
-        window.HOG.lockScroll(true);
-        this.releaseFocus = window.HOG.trapFocus(this.panel, () => this.close());
-      }
+      void this.offsetWidth;
+      this.classList.add('is-open');
+      SB.lockScroll(true);
+      this.releaseFocus = SB.trapFocus(this.panel, () => this.close());
+      document.dispatchEvent(new CustomEvent('cart:open', { detail: { opener: this.opener } }));
     }
 
     close() {
+      if (!this.isOpen) return;
+      this.isOpen = false;
       this.classList.remove('is-open');
       this.setAttribute('aria-hidden', 'true');
-      if (window.HOG) window.HOG.lockScroll(false);
+      SB.lockScroll(false);
       if (this.releaseFocus) this.releaseFocus();
+      this.releaseFocus = null;
+      window.setTimeout(() => {
+        if (!this.isOpen) this.setAttribute('hidden', '');
+      }, SB.reducedMotion ? 0 : 260);
       if (this.opener && document.body.contains(this.opener)) this.opener.focus();
+      this.opener = null;
+      document.dispatchEvent(new CustomEvent('cart:close'));
     }
 
-    async change(key, quantity) {
-      this.setBusy(true);
-      try {
-        await postJSON(routes.cartChange || '/cart/change.js', { id: key, quantity });
-        await this.refresh();
-      } catch (error) {
-        this.showError(error.message);
-      } finally {
-        this.setBusy(false);
-      }
-    }
-
-    async refresh() {
-      const html = await getSectionHTML('cart-drawer');
+    /**
+     * Replaces the drawer body with freshly rendered section HTML. Accepts the
+     * full section markup returned by the Section Rendering API.
+     */
+    render(html) {
       const parsed = new DOMParser().parseFromString(html, 'text/html');
       const fresh = parsed.querySelector('cart-drawer');
       if (!fresh) return;
-
-      const wasOpen = this.classList.contains('is-open');
+      const scroller = this.querySelector('[data-cart-body]');
+      const scrollTop = scroller ? scroller.scrollTop : 0;
       this.innerHTML = fresh.innerHTML;
-      this.connectedCallback();
-      if (wasOpen) this.classList.add('is-open');
-
-      updateCartCount();
-    }
-
-    render() {
-      this.refresh();
+      const nextScroller = this.querySelector('[data-cart-body]');
+      if (nextScroller) nextScroller.scrollTop = scrollTop;
+      const count = fresh.getAttribute('data-item-count');
+      if (count !== null && typeof SB.updateCartCount === 'function') SB.updateCartCount(count);
+      if (this.isOpen) this.restoreFocus();
     }
 
     setBusy(busy) {
-      this.toggleAttribute('aria-busy', busy);
-      this.querySelectorAll('button, input').forEach((node) => {
-        node.disabled = busy;
-      });
+      this.pending = Math.max(0, this.pending + (busy ? 1 : -1));
+      const active = this.pending > 0;
+      this.setAttribute('aria-busy', String(active));
+      this.classList.toggle('is-busy', active);
     }
 
     showError(message) {
       const target = this.querySelector('[data-cart-error]');
       if (!target) return;
-      target.textContent = message || strings.cartError;
-      target.hidden = false;
+      target.textContent = message || errorText();
+      target.removeAttribute('hidden');
+    }
+
+    hideError() {
+      const target = this.querySelector('[data-cart-error]');
+      if (target) target.setAttribute('hidden', '');
     }
   }
 
-  if (!customElements.get('cart-drawer')) {
-    customElements.define('cart-drawer', CartDrawer);
-  }
+  if (!customElements.get('cart-drawer')) customElements.define('cart-drawer', CartDrawer);
 
-  /* --------------------------------------------------------- header count */
+  /* ----------------------------------------------------------- <cart-items>
+     The cart page. Quantity changes go through /cart/change.js and the
+     section is re-rendered from the bundled HTML; without JS the form posts
+     `updates[]` to /cart as usual. */
 
-  async function updateCartCount() {
-    try {
-      const response = await fetch(`${routes.root || '/'}cart.js`);
-      const cart = await response.json();
-      document.querySelectorAll('[data-cart-count]').forEach((node) => {
-        node.textContent = cart.item_count;
-        node.hidden = cart.item_count === 0;
+  class CartItems extends HTMLElement {
+    connectedCallback() {
+      if (this.bound) return;
+      this.bound = true;
+      this.addEventListener('change', (event) => {
+        const input = event.target.closest('[data-line-quantity]');
+        if (!input) return;
+        const quantity = parseInt(input.value, 10);
+        if (Number.isNaN(quantity)) return;
+        this.change(input.getAttribute('data-line-quantity'), quantity);
       });
-    } catch (error) {
-      // A stale count is not worth surfacing to the visitor.
+      this.addEventListener('click', (event) => {
+        const remove = event.target.closest('[data-line-remove]');
+        if (!remove) return;
+        event.preventDefault();
+        this.change(remove.getAttribute('data-line-remove'), 0);
+      });
+      this.addEventListener('input', (event) => {
+        const note = event.target.closest('[data-cart-note]');
+        if (!note) return;
+        if (!this.saveNote) {
+          this.saveNote = SB.debounce((value) => updateNote(value).catch(() => {}), 500);
+        }
+        this.saveNote(note.value);
+      });
+    }
+
+    async change(key, quantity) {
+      this.setAttribute('aria-busy', 'true');
+      this.classList.add('is-busy');
+      this.hideError();
+      try {
+        await changeLine(key, quantity);
+      } catch (error) {
+        this.showError(error.message);
+        try {
+          const html = await fetchSectionHTML(this.getAttribute('data-section-id'));
+          this.render(html);
+        } catch (refreshError) {
+          // Leave the visible numbers; the next action re-syncs.
+        }
+      } finally {
+        this.setAttribute('aria-busy', 'false');
+        this.classList.remove('is-busy');
+      }
+    }
+
+    render(html) {
+      const parsed = new DOMParser().parseFromString(html, 'text/html');
+      const fresh = parsed.querySelector('cart-items');
+      if (!fresh) return;
+      this.innerHTML = fresh.innerHTML;
+    }
+
+    showError(message) {
+      const target = this.querySelector('[data-cart-error]');
+      if (!target) return;
+      target.textContent = message || errorText();
+      target.removeAttribute('hidden');
+    }
+
+    hideError() {
+      const target = this.querySelector('[data-cart-error]');
+      if (target) target.setAttribute('hidden', '');
     }
   }
 
-  /* -------------------------------------------------------------- add API */
+  if (!customElements.get('cart-items')) customElements.define('cart-items', CartItems);
 
-  async function addToCart(formData, opener) {
-    const body = {};
-    formData.forEach((value, key) => {
-      body[key] = value;
-    });
+  /* --------------------------------------------------------- cart triggers */
 
-    const data = await postJSON(routes.cartAdd || '/cart/add.js', body);
+  document.addEventListener('click', (event) => {
+    const trigger = event.target.closest('[data-cart-trigger]');
+    if (!trigger) return;
+    if (theme.cartType === 'page' || !drawerElement()) return; // follow the link
+    event.preventDefault();
+    openCart(trigger);
+  });
 
-    document.dispatchEvent(new CustomEvent('cart:updated', { detail: { item: data } }));
-
-    if (window.HOG) window.HOG.announce(strings.itemAdded);
-
-    const drawer = document.querySelector('cart-drawer');
-    if (drawer && window.theme && window.theme.cartType === 'drawer') {
-      await drawer.refresh();
-      drawer.open(opener);
-    } else {
-      window.location.href = routes.cart || '/cart';
-    }
-
-    return data;
-  }
-
-  window.HOG = Object.assign(window.HOG || {}, { addToCart, updateCartCount });
-
-  /* ------------------------------------------------------------ quick add */
+  /* ------------------------------------------------------------- quick add */
 
   document.addEventListener('submit', async (event) => {
     const form = event.target.closest('[data-quick-add-form]');
     if (!form) return;
 
     event.preventDefault();
-    const button = form.querySelector('button[type="submit"]');
-    const original = button ? button.textContent : '';
+    const button = form.querySelector('[type="submit"]');
+    const label = button ? button.querySelector('[data-add-text]') || button : null;
+    const original = label ? label.textContent : '';
 
     if (button) {
+      button.setAttribute('aria-busy', 'true');
       button.disabled = true;
-      button.textContent = strings.adding || 'Adding…';
     }
+    if (label && strings.adding) label.textContent = strings.adding;
 
     try {
       await addToCart(new FormData(form), button);
-    } catch (error) {
-      if (button) button.textContent = error.message;
+      if (label) label.textContent = strings.added || original;
       window.setTimeout(() => {
-        if (button) button.textContent = original;
-      }, 2500);
-      return;
+        if (label) label.textContent = original;
+      }, 1800);
+    } catch (error) {
+      if (label) label.textContent = error.message || errorText();
+      SB.announce(error.message || errorText());
+      window.setTimeout(() => {
+        if (label) label.textContent = original;
+      }, 3000);
     } finally {
-      if (button) button.disabled = false;
+      if (button) {
+        button.removeAttribute('aria-busy');
+        button.disabled = false;
+      }
     }
+  });
 
-    if (button) button.textContent = original;
+  /* ---------------------------------------------------------- theme editor */
+
+  document.addEventListener('shopify:section:load', (event) => {
+    const drawer = event.target && event.target.querySelector && event.target.querySelector('cart-drawer');
+    if (drawer && typeof drawer.connectedCallback === 'function') drawer.connectedCallback();
   });
 })();

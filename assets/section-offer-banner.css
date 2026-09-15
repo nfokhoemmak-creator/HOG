@@ -1,0 +1,184 @@
+/* Offer banner — navy / coral / image band with exactly one coral element per viewport */
+
+.offer-banner__band {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  padding: var(--space-6) var(--space-5);
+  background: var(--color-brand);
+  color: var(--color-brand-contrast);
+}
+
+.offer-banner--full .offer-banner__band {
+  border-radius: 0;
+  padding-inline: var(--gutter);
+}
+
+.offer-banner__band--accent {
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+}
+
+.offer-banner__band--image {
+  background: var(--color-brand);
+  color: var(--color-brand-contrast);
+  min-height: 36rem;
+  display: flex;
+  align-items: flex-end;
+}
+
+.offer-banner__media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.offer-banner__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.offer-banner__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgb(11 59 111 / 0) 30%, rgb(11 59 111 / var(--overlay, 0.6)));
+}
+
+.offer-banner__band--image .offer-banner__content {
+  padding-top: 12rem;
+}
+
+.offer-banner__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  max-width: 64rem;
+}
+
+.offer-banner__band--center .offer-banner__content {
+  align-items: center;
+  text-align: center;
+  margin-inline: auto;
+}
+
+.offer-banner__eyebrow-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.offer-banner__eyebrow {
+  margin: 0;
+  color: var(--color-brand-muted);
+}
+
+.offer-banner__eyebrow .icon {
+  width: 1.4rem;
+  height: 1.4rem;
+  color: var(--color-accent);
+}
+
+.offer-banner__band--accent .offer-banner__eyebrow {
+  color: var(--color-ink);
+}
+
+.offer-banner__band--accent .offer-banner__eyebrow .icon {
+  color: var(--color-ink);
+}
+
+.offer-banner__badge {
+  transform: rotate(-2deg);
+}
+
+.offer-banner__heading {
+  margin: 0;
+  color: inherit;
+  text-wrap: balance;
+}
+
+.offer-banner__text {
+  margin: 0;
+  color: inherit;
+}
+
+.offer-banner__text > :last-child {
+  margin-bottom: 0;
+}
+
+.offer-banner__band--brand .offer-banner__text,
+.offer-banner__band--image .offer-banner__text {
+  color: var(--color-brand-contrast);
+}
+
+.offer-banner__actions {
+  width: 100%;
+  align-items: center;
+  margin-top: var(--space-2);
+}
+
+.offer-banner__band--center .offer-banner__actions {
+  justify-content: center;
+}
+
+.offer-banner__button {
+  width: 100%;
+}
+
+.offer-banner__link {
+  color: inherit;
+}
+
+.offer-banner__link:hover {
+  text-decoration-color: currentColor;
+}
+
+/* Coral band: the button is navy so coral stays the single accent */
+.offer-banner__band--accent .btn--secondary:hover {
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+  color: var(--color-bg);
+}
+
+@media (min-width: 750px) {
+  .offer-banner__band {
+    padding: var(--space-7) var(--space-7);
+  }
+
+  .offer-banner--full .offer-banner__band {
+    padding-inline: var(--gutter);
+  }
+
+  .offer-banner--full .offer-banner__content {
+    max-width: var(--container);
+    margin-inline: auto;
+  }
+
+  .offer-banner__button {
+    width: auto;
+  }
+
+  .offer-banner__band--image {
+    min-height: 42rem;
+  }
+}
+
+@media (min-width: 990px) {
+  .offer-banner__band {
+    padding: var(--space-8) var(--space-8);
+  }
+
+  .offer-banner__content {
+    gap: var(--space-4);
+    max-width: 72rem;
+  }
+
+  .offer-banner__band--image .offer-banner__content {
+    padding-top: 16rem;
+  }
+}

@@ -1,103 +1,346 @@
-<div class="section">
+{{ 'section-image-with-text.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign s = section.settings
+  assign image = s.image
+
+  case s.color_scheme
+    when 'alt'
+      assign scheme_class = ' section--alt'
+    when 'brand'
+      assign scheme_class = ' section--brand'
+    else
+      assign scheme_class = ''
+  endcase
+
+  case s.image_ratio
+    when 'square'
+      assign ratio_class = 'iwt__media--square'
+    when 'landscape'
+      assign ratio_class = 'iwt__media--landscape'
+    when 'natural'
+      assign ratio_class = 'iwt__media--natural'
+    else
+      assign ratio_class = 'iwt__media--portrait'
+  endcase
+
+  assign is_gif = false
+  if image != blank and image.src contains '.gif'
+    assign is_gif = true
+  endif
+
+  assign pt = s.padding_top
+  assign pb = s.padding_bottom
+  assign pt_mobile = pt | times: 0.75 | round
+  assign pb_mobile = pb | times: 0.75 | round
+-%}
+
+{%- style -%}
+  #shopify-section-{{ section.id }} .iwt {
+    padding-top: {{ pt_mobile }}px;
+    padding-bottom: {{ pb_mobile }}px;
+  }
+  @media (min-width: 750px) {
+    #shopify-section-{{ section.id }} .iwt {
+      padding-top: {{ pt }}px;
+      padding-bottom: {{ pb }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="section iwt iwt--{{ s.layout | default: 'image_first' }}{{ scheme_class }}">
   <div class="container">
-    <div
-      class="image-with-text{% if settings.animations_enabled %} reveal{% endif %}"
-      style="display: grid; gap: var(--space-6); align-items: center;{% if section.settings.layout == 'right' %} direction: rtl;{% endif %}"
-    >
-      <div style="direction: ltr;">
-        {%- if section.settings.image != blank -%}
-          <img
-            src="{{ section.settings.image | image_url: width: 1400 }}"
-            srcset="
-              {{ section.settings.image | image_url: width: 700 }} 700w,
-              {{ section.settings.image | image_url: width: 1400 }} 1400w
-            "
-            sizes="(min-width: 990px) 50vw, 100vw"
-            alt="{{ section.settings.image.alt | escape }}"
-            width="{{ section.settings.image.width }}"
-            height="{{ section.settings.image.height }}"
-            loading="lazy"
-            style="width: 100%; border-radius: var(--radius);"
-          >
-        {%- else -%}
-          {{ 'lifestyle-2' | placeholder_svg_tag: '' }}
-        {%- endif -%}
+    <div class="iwt__inner">
+      <div class="iwt__media-col">
+        <div class="iwt__media {{ ratio_class }}{% if s.video != blank %} iwt__media--video{% endif %}">
+          {%- if s.video != blank -%}
+            {%- render 'video',
+              video: s.video,
+              poster: image,
+              autoplay: true,
+              loop: true,
+              muted: true,
+              controls: false,
+              aspect: '4/5',
+              preload: 'metadata',
+              class: 'iwt__video video--flush',
+              label: s.heading
+            -%}
+          {%- elsif image != blank -%}
+            {%- if is_gif -%}
+              <img
+                class="iwt__image"
+                src="{{ image | image_url: width: image.width }}"
+                alt="{{ image.alt | default: s.heading | escape }}"
+                width="{{ image.width }}"
+                height="{{ image.height }}"
+                loading="lazy"
+              >
+            {%- else -%}
+              <img
+                class="iwt__image"
+                src="{{ image | image_url: width: 1000 }}"
+                srcset="
+                  {{ image | image_url: width: 400 }} 400w,
+                  {{ image | image_url: width: 600 }} 600w,
+                  {{ image | image_url: width: 800 }} 800w,
+                  {{ image | image_url: width: 1000 }} 1000w,
+                  {{ image | image_url: width: 1400 }} 1400w
+                "
+                sizes="(min-width: 990px) 50vw, 100vw"
+                alt="{{ image.alt | default: s.heading | escape }}"
+                width="{{ image.width }}"
+                height="{{ image.height }}"
+                loading="lazy"
+              >
+            {%- endif -%}
+          {%- else -%}
+            {{ 'lifestyle-1' | placeholder_svg_tag: 'iwt__placeholder' }}
+          {%- endif -%}
+
+          {%- if s.badge != blank -%}
+            <span class="badge sticker iwt__badge">{{ s.badge | escape }}</span>
+          {%- endif -%}
+        </div>
       </div>
 
-      <div style="direction: ltr; display: grid; gap: var(--space-4); justify-items: start;">
-        {%- if section.settings.heading != blank -%}
-          <h2 class="h2">{{ section.settings.heading }}</h2>
+      <div class="iwt__copy">
+        {%- if s.eyebrow != blank -%}
+          <p class="eyebrow iwt__eyebrow">
+            <span class="accent" aria-hidden="true">{% render 'icon', name: 'shark' %}</span>
+            {{ s.eyebrow | escape }}
+          </p>
         {%- endif -%}
 
-        {%- if section.settings.text != blank -%}
-          <div>{{ section.settings.text }}</div>
+        {%- if s.heading != blank -%}
+          <h2 class="h2 iwt__heading">{{ s.heading | escape }}</h2>
         {%- endif -%}
 
-        {%- if section.settings.button_label != blank -%}
-          <a class="btn btn--outline" href="{{ section.settings.button_link }}">
-            {{ section.settings.button_label }}
-          </a>
+        {%- if s.text != blank -%}
+          <div class="rte lead iwt__text">{{ s.text }}</div>
+        {%- endif -%}
+
+        {%- if section.blocks.size > 0 -%}
+          <dl class="iwt__stats">
+            {%- for block in section.blocks -%}
+              {%- liquid
+                assign stat_number = block.settings.number
+                if block.settings.source == 'store_rating'
+                  assign stat_number = settings.store_rating | append: '★'
+                elsif block.settings.source == 'store_review_count'
+                  assign stat_number = settings.store_review_count
+                endif
+              -%}
+              {%- if stat_number != blank -%}
+                <div class="iwt__stat" {{ block.shopify_attributes }}>
+                  <dt class="iwt__stat-label small">{{ block.settings.label | escape }}</dt>
+                  <dd class="iwt__stat-number">{{ stat_number | escape }}</dd>
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
+          </dl>
+        {%- endif -%}
+
+        {%- if s.button_label != blank -%}
+          <div class="btn-row iwt__actions">
+            <a class="btn" href="{{ s.button_link | default: '/collections/shark-slippers' }}">{{ s.button_label | escape }}</a>
+            {%- if s.link_label != blank and s.link_url != blank -%}
+              <a class="btn btn--ghost" href="{{ s.link_url }}">
+                {{ s.link_label | escape }}
+                {% render 'icon', name: 'arrow-right' %}
+              </a>
+            {%- endif -%}
+          </div>
         {%- endif -%}
       </div>
     </div>
   </div>
 </div>
 
-{% style %}
-  @media screen and (min-width: 750px) {
-    #shopify-section-{{ section.id }} .image-with-text {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-{% endstyle %}
-
 {% schema %}
 {
-  "name": "t:sections.image_with_text.name",
+  "name": "Image with text",
   "tag": "section",
-  "class": "image-with-text-section",
+  "class": "section-image-with-text",
   "settings": [
     {
       "type": "image_picker",
       "id": "image",
-      "label": "t:sections.image_with_text.settings.image.label"
+      "label": "Image",
+      "info": "Also used as the poster when a video is set."
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "Video (optional, replaces the image)",
+      "info": "Plays muted on loop."
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image shape",
+      "options": [
+        { "value": "portrait", "label": "Portrait (4:5)" },
+        { "value": "square", "label": "Square" },
+        { "value": "landscape", "label": "Landscape (4:3)" },
+        { "value": "natural", "label": "Natural" }
+      ],
+      "default": "portrait"
     },
     {
       "type": "select",
       "id": "layout",
-      "label": "t:sections.image_with_text.settings.layout.label",
+      "label": "Layout",
       "options": [
-        { "value": "left", "label": "t:sections.image_with_text.settings.layout.options__1" },
-        { "value": "right", "label": "t:sections.image_with_text.settings.layout.options__2" }
+        { "value": "image_first", "label": "Image first" },
+        { "value": "text_first", "label": "Text first" }
       ],
-      "default": "left"
+      "default": "image_first"
+    },
+    {
+      "type": "text",
+      "id": "badge",
+      "label": "Badge on image",
+      "info": "Short, e.g. “The famous shark blanket”."
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow"
     },
     {
       "type": "text",
       "id": "heading",
-      "label": "t:sections.image_with_text.settings.heading.label",
-      "default": "Made in limited runs"
+      "label": "Heading",
+      "default": "The coziest shark you'll ever wear"
     },
     {
       "type": "richtext",
       "id": "text",
-      "label": "t:sections.image_with_text.settings.text.label",
-      "default": "<p>Small batches, heavyweight fabric, and no restocks. What you see is what exists.</p>"
+      "label": "Text",
+      "default": "<p>Who knew sharks could be this soft? Slip into the SharkBite blanket and turn chilly nights into jaw-dropping comfort — perfect for lounging, snoozing, or scaring your siblings.</p>"
     },
     {
       "type": "text",
       "id": "button_label",
-      "label": "t:sections.image_with_text.settings.button_label.label"
+      "label": "Button label",
+      "default": "Shop the blanket"
     },
     {
       "type": "url",
       "id": "button_link",
-      "label": "t:sections.image_with_text.settings.button_link.label"
+      "label": "Button link",
+      "default": "/products/sharkbite-blanket"
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "Secondary link label"
+    },
+    {
+      "type": "url",
+      "id": "link_url",
+      "label": "Secondary link"
+    },
+    {
+      "type": "header",
+      "content": "Section"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "alt", "label": "Soft aqua" },
+        { "value": "brand", "label": "Navy" }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    }
+  ],
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "Stat",
+      "settings": [
+        {
+          "type": "select",
+          "id": "source",
+          "label": "Number comes from",
+          "options": [
+            { "value": "custom", "label": "Custom number" },
+            { "value": "store_rating", "label": "Store rating (theme settings)" },
+            { "value": "store_review_count", "label": "Review count (theme settings)" }
+          ],
+          "default": "custom"
+        },
+        {
+          "type": "text",
+          "id": "number",
+          "label": "Number",
+          "default": "36–45",
+          "info": "Used when “Number comes from” is Custom."
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "EU sizes"
+        }
+      ]
     }
   ],
   "presets": [
     {
-      "name": "t:sections.image_with_text.name"
+      "name": "Image with text",
+      "settings": {
+        "layout": "image_first",
+        "badge": "The famous shark blanket",
+        "heading": "The coziest shark you'll ever wear",
+        "text": "<p>Who knew sharks could be this soft? Slip into the SharkBite blanket and turn chilly nights into jaw-dropping comfort — perfect for lounging, snoozing, or scaring your siblings.</p>",
+        "button_label": "Shop the blanket",
+        "button_link": "/products/sharkbite-blanket"
+      },
+      "blocks": [
+        { "type": "stat", "settings": { "source": "store_rating", "label": "Average rating" } },
+        { "type": "stat", "settings": { "source": "store_review_count", "label": "Reviews from shark fans" } },
+        { "type": "stat", "settings": { "source": "custom", "number": "4", "label": "Blanket sizes" } }
+      ]
+    },
+    {
+      "name": "Text with image",
+      "settings": {
+        "layout": "text_first",
+        "heading": "Ride the wave in every room",
+        "text": "<p>Fluffy in winter, airy in summer. Every pair has a grippy sole, a fin that makes people smile, and sizes from 36 to 45.</p>",
+        "button_label": "Shop slippers",
+        "button_link": "/collections/shark-slippers"
+      },
+      "blocks": [
+        { "type": "stat", "settings": { "source": "custom", "number": "36–45", "label": "EU sizes" } },
+        { "type": "stat", "settings": { "source": "custom", "number": "2", "label": "Styles: Winter & Originals" } },
+        { "type": "stat", "settings": { "source": "store_rating", "label": "Average rating" } }
+      ]
     }
   ]
 }
