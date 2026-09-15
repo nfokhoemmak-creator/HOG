@@ -173,7 +173,7 @@ matters commercially:
 | Setting | Default | What it drives |
 | --- | --- | --- |
 | `free_shipping_threshold` | `30` | Free-shipping bar in the drawer, product page note, hero/announcement pills. `0` disables the bar. |
-| `free_shipping_text` | `Free standard shipping over {{ amount }} across Lebanon` | Header pill and menu drawer; `{{ amount }}` becomes `$30` |
+| `free_shipping_text` | `Free standard shipping over [amount] across Lebanon` | Header pill and menu drawer; `[amount]` becomes `$30` |
 | `bundle_tier_min` | `2` | Pairs needed before the tier discount shows |
 | `bundle_tier_percent` | `20` | Percent shown on cards, tiers, bundle builder, cart nudges. `0` hides the offer |
 | `set_discount_percent` | `25` | Blanket discount shown when slippers are in the cart. `0` hides the offer |
