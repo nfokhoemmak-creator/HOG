@@ -163,7 +163,7 @@
         "heading": "What shark fans say",
         "text": "",
         "anchor_id": "reviews",
-        "show_summary": true,
+        "show_summary": false,
         "rating_value": "",
         "rating_count": "",
         "color_scheme": "alt",

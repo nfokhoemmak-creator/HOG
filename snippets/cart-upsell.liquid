@@ -188,7 +188,7 @@
       <p class="cart-empty__title h4">{{ 'cart.empty' | t }}</p>
       <p class="cart-empty__body muted">{{ 'cart.empty_body' | t }}</p>
       <a class="btn cart-empty__cta" href="{{ collections['shark-slippers'].url | default: routes.all_products_collection_url }}">
-        {{ 'general.continue_shopping' | t }}
+        {{ 'cart.empty_cta' | t }}
       </a>
 
       {%- if slipper_cards contains 'cart-upsell__card' or blanket_card contains 'cart-upsell__card' -%}

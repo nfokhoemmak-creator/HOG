@@ -77,10 +77,10 @@
         {%- if section.settings.button_label != blank or section.settings.link_label != blank -%}
           <div class="offer-banner__actions btn-row">
             {%- if section.settings.button_label != blank -%}
-              <a class="{{ button_class }} offer-banner__button" href="{{ section.settings.button_link | default: routes.all_products_collection_url }}">{{ section.settings.button_label | escape }}</a>
+              <a class="{{ button_class }} offer-banner__button" href="{{ section.settings.button_link | default: '/pages/bundles#bundle-builder' }}">{{ section.settings.button_label | escape }}</a>
             {%- endif -%}
             {%- if section.settings.link_label != blank -%}
-              <a class="btn btn--ghost offer-banner__link" href="{{ section.settings.link_url | default: routes.all_products_collection_url }}">
+              <a class="btn btn--ghost offer-banner__link" href="{{ section.settings.link_url | default: '/products/sharkbite-blanket' }}">
                 <span>{{ section.settings.link_label | escape }}</span>
                 {% render 'icon', name: 'arrow-right' %}
               </a>

@@ -75,7 +75,16 @@
           <h2 class="empty-state__title h3">{{ 'general.search.no_results' | t: terms: search.terms | escape }}</h2>
           <div class="btn-row">
             <a class="btn" href="{{ section.settings.empty_button_link | default: '/collections/shark-slippers' }}">{{ section.settings.empty_button_label | escape }}</a>
-            <a class="btn btn--ghost" href="{{ section.settings.empty_link_2 | default: '/pages/contact' }}">
+            {%- liquid
+              assign whatsapp_number = settings.social_whatsapp_number | default: '' | remove: ' ' | remove: '+' | remove: '-'
+              assign whatsapp_url = 'https://wa.me/' | append: whatsapp_number
+              assign empty_link_2 = section.settings.empty_link_2 | default: whatsapp_url
+              assign empty_link_2_external = false
+              if empty_link_2 contains 'wa.me' or empty_link_2 contains 'whatsapp.com'
+                assign empty_link_2_external = true
+              endif
+            -%}
+            <a class="btn btn--ghost" href="{{ empty_link_2 }}"{% if empty_link_2_external %} target="_blank" rel="noopener"{% endif %}>
               {{ section.settings.empty_link_label_2 | escape }}
               {% render 'icon', name: 'arrow-right' %}
             </a>

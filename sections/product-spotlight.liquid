@@ -202,7 +202,7 @@
                 <div id="{{ price_id }}" class="price price--lg{% if on_sale %} price--on-sale{% endif %}" data-price-target>
                   <span class="price__current" data-price data-price-current>{{ price_money }}</span>
                   <s class="price__compare" data-compare-price data-price-compare{% unless on_sale %} hidden{% endunless %}>
-                    <span class="visually-hidden">{{ 'bundles.was' | t }} </span>{% if on_sale %}{{ compare_money }}{% endif %}
+                    <span class="visually-hidden">{{ 'bundles.was' | t }} </span><span data-compare-amount>{% if on_sale %}{{ compare_money }}{% endif %}</span>
                   </s>
                   <span class="price__save badge badge--accent" data-save-badge data-price-save{% unless on_sale %} hidden{% endunless %}>{{ saving_text }}</span>
                 </div>

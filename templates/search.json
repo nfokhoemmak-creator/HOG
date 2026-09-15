@@ -9,7 +9,7 @@
         "empty_button_label": "Shop slippers",
         "empty_button_link": "/collections/shark-slippers",
         "empty_link_label_2": "Ask us on WhatsApp",
-        "empty_link_2": "/pages/contact",
+        "empty_link_2": "https://wa.me/96171801588",
         "color_scheme": "default",
         "padding_top": 48,
         "padding_bottom": 64

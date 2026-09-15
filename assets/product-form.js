@@ -47,6 +47,23 @@
     else node.setAttribute('hidden', '');
   }
 
+  /**
+   * Writes a compare-at amount without wiping the visually-hidden
+   * "Regular price" label the Liquid markup renders inside the <s>.
+   */
+  function setCompare(node, text) {
+    if (!node) return;
+    const amount = node.querySelector('[data-compare-amount]');
+    if (amount) {
+      amount.textContent = text;
+      return;
+    }
+    const label = node.querySelector('.visually-hidden');
+    node.textContent = '';
+    if (label) node.appendChild(label);
+    node.appendChild(document.createTextNode(text));
+  }
+
   /* --------------------------------------------------------- <product-form> */
 
   class ProductForm extends HTMLElement {
@@ -235,7 +252,7 @@
       setText(this.querySelector('[data-price]'), money(variant.price));
       const compare = this.querySelector('[data-compare-price]');
       if (compare) {
-        compare.textContent = onSale ? money(variant.compare_at_price) : '';
+        setCompare(compare, onSale ? money(variant.compare_at_price) : '');
         show(compare, onSale);
       }
       const badge = this.querySelector('[data-save-badge]');
@@ -249,7 +266,7 @@
         setText(this.priceTarget.querySelector('[data-price-current]'), money(variant.price));
         const compareTarget = this.priceTarget.querySelector('[data-price-compare]');
         if (compareTarget) {
-          compareTarget.textContent = onSale ? money(variant.compare_at_price) : '';
+          setCompare(compareTarget, onSale ? money(variant.compare_at_price) : '');
           show(compareTarget, onSale);
         }
         const saveTarget = this.priceTarget.querySelector('[data-price-save]');
@@ -339,8 +356,16 @@
       if (!this.productUrl) return;
       // Only rewrite the URL when this form belongs to the page's own product
       // (a spotlight on the homepage must not add ?variant= to /).
+      // The handle may contain non-ASCII (the Originals "™"), which the
+      // browser percent-encodes in pathname; compare both forms.
       const productPath = this.productUrl.split('?')[0];
-      if (!window.location.pathname.endsWith(productPath)) return;
+      let livePath = window.location.pathname;
+      try {
+        livePath = decodeURIComponent(livePath);
+      } catch (error) {
+        // Malformed escape: fall through with the raw pathname.
+      }
+      if (!livePath.endsWith(productPath) && !window.location.pathname.endsWith(productPath)) return;
       const url = new URL(window.location.href);
       url.searchParams.set('variant', variant.id);
       window.history.replaceState({}, '', url.toString());

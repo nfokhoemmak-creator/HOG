@@ -173,7 +173,7 @@
       {%- if section.settings.button_label != blank or section.settings.button_label_2 != blank -%}
         <div class="hero__actions btn-row">
           {%- if section.settings.button_label != blank -%}
-            <a class="btn btn--lg hero__cta" href="{{ section.settings.button_link | default: routes.all_products_collection_url }}">{{ section.settings.button_label | escape }}</a>
+            <a class="btn btn--lg hero__cta" href="{{ section.settings.button_link | default: '/collections/shark-slippers' }}">{{ section.settings.button_label | escape }}</a>
           {%- endif -%}
           {%- if section.settings.button_label_2 != blank -%}
             <a class="btn btn--lg btn--outline hero__cta-secondary hero__cta-secondary--desktop" href="{{ section.settings.button_link_2 | default: '/pages/bundles' }}">{{ section.settings.button_label_2 | escape }}</a>

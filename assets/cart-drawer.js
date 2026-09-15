@@ -308,6 +308,9 @@
       if (!key) return;
       this.setBusy(true);
       this.hideError();
+      // render() replaces the whole body while this request is in flight;
+      // remember the source so focus lands back on the same line's field.
+      this.pendingFocusSource = source || null;
       try {
         await changeLine(key, quantity);
       } catch (error) {
@@ -318,6 +321,7 @@
         SB.announce(error.message || errorText());
       } finally {
         this.setBusy(false);
+        this.pendingFocusSource = null;
         this.restoreFocus(source);
       }
     }
@@ -378,7 +382,7 @@
       if (nextScroller) nextScroller.scrollTop = scrollTop;
       const count = fresh.getAttribute('data-item-count');
       if (count !== null && typeof SB.updateCartCount === 'function') SB.updateCartCount(count);
-      if (this.isOpen) this.restoreFocus();
+      if (this.isOpen) this.restoreFocus(this.pendingFocusSource);
     }
 
     setBusy(busy) {

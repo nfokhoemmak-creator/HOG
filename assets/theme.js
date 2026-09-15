@@ -359,7 +359,13 @@
     setValue(value, fromInput) {
       const limits = this.bounds();
       const current = parseInt(this.input.value, 10);
-      let next = Number.isNaN(value) ? limits.min : value;
+      // A cleared field (select-all + delete) must not read as 0, which cart
+      // listeners treat as "remove this line": restore the last valid value.
+      let fallback = limits.min;
+      if (fromInput && typeof this.lastValue === 'number' && !Number.isNaN(this.lastValue)) {
+        fallback = this.lastValue;
+      }
+      let next = Number.isNaN(value) ? fallback : value;
       next = Math.min(limits.max, Math.max(limits.min, next));
       const changed = next !== current;
       this.input.value = next;
@@ -376,6 +382,7 @@
     sync() {
       const limits = this.bounds();
       const value = parseInt(this.input.value, 10) || 0;
+      this.lastValue = value;
       const decrease = this.querySelector('[data-action="decrease"]');
       const increase = this.querySelector('[data-action="increase"]');
       // Cart lines allow 0 (= remove); the product form's min is 1.

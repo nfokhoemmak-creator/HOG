@@ -61,7 +61,7 @@
 
   {%- if show_compare != false -%}
     <s class="price__compare"{% if data_hooks %} data-compare-price{% endif %}{% unless on_sale %} hidden{% endunless %}>
-      <span class="visually-hidden">{{ 'bundles.was' | t }} </span>{{ money_compare }}
+      <span class="visually-hidden">{{ 'bundles.was' | t }} </span><span{% if data_hooks %} data-compare-amount{% endif %}>{{ money_compare }}</span>
     </s>
   {%- endif -%}
 
