@@ -214,6 +214,12 @@
       sections: sectionsToRender().join(','),
       sections_url: window.location.pathname
     });
+    // Shopify answers 200 with the unchanged cart plus an `errors` message when
+    // the requested quantity exceeds available inventory.
+    if (data && data.errors) {
+      const message = Array.isArray(data.errors) ? data.errors.join(' ') : String(data.errors);
+      throw new Error(message || errorText());
+    }
     if (!renderSections(data.sections)) await refreshDrawerFromServer();
     await broadcast();
     return data;
@@ -305,9 +311,11 @@
       try {
         await changeLine(key, quantity);
       } catch (error) {
-        this.showError(error.message);
-        // Put the server's numbers back.
+        // Put the server's numbers back first: the refresh replaces the whole
+        // drawer body (including the error node), so the message goes in after.
         await refreshDrawerFromServer();
+        this.showError(error.message);
+        SB.announce(error.message || errorText());
       } finally {
         this.setBusy(false);
         this.restoreFocus(source);
@@ -333,7 +341,9 @@
       void this.offsetWidth;
       this.classList.add('is-open');
       SB.lockScroll(true);
-      this.releaseFocus = SB.trapFocus(this.panel, () => this.close());
+      // Trap on the host element: render() replaces the panel's markup after
+      // every mutation, so a trap bound to the panel would be lost.
+      this.releaseFocus = SB.trapFocus(this, () => this.close());
       document.dispatchEvent(new CustomEvent('cart:open', { detail: { opener: this.opener } }));
     }
 
@@ -432,13 +442,15 @@
       try {
         await changeLine(key, quantity);
       } catch (error) {
-        this.showError(error.message);
         try {
           const html = await fetchSectionHTML(this.getAttribute('data-section-id'));
           this.render(html);
         } catch (refreshError) {
           // Leave the visible numbers; the next action re-syncs.
         }
+        // Show the message after the re-render replaced the error node.
+        this.showError(error.message);
+        SB.announce(error.message || errorText());
       } finally {
         this.setAttribute('aria-busy', 'false');
         this.classList.remove('is-busy');

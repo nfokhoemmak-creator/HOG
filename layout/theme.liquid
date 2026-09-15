@@ -16,7 +16,9 @@
 
     <title>
       {{ page_title }}
-      {%- if current_tags %} &ndash; {{ 'general.meta.tags' | t: tags: current_tags | join: ', ' }}{% endif -%}
+      {%- if current_tags -%}
+        {%- assign tag_list = current_tags | join: ', ' %} &ndash; {{ 'general.meta.tags' | t: tags: tag_list }}
+      {%- endif -%}
       {%- if current_page != 1 %} &ndash; {{ 'general.meta.page' | t: page: current_page }}{% endif -%}
       {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
     </title>
@@ -118,6 +120,8 @@
           unavailable: {{ 'products.product.unavailable' | t | json }},
           preorder: {{ 'products.product.preorder' | t | json }},
           lowStock: {{ 'products.product.low_stock' | t: count: '[count]' | json }},
+          inStock: {{ 'products.product.in_stock' | t | json }},
+          saveAmount: {{ 'products.product.save_amount' | t: amount: '[amount]' | json }},
           cartError: {{ 'cart.error' | t | json }},
           itemAdded: {{ 'cart.item_added' | t | json }},
           bundleAdded: {{ 'bundles.added' | t | json }},

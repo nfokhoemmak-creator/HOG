@@ -3,73 +3,541 @@
     "hero": {
       "type": "hero",
       "settings": {
-        "height": "full",
-        "overlay_opacity": 45,
-        "heading": "NEW DROP",
-        "subheading": "Limited pieces, made in Lebanon. Once they're gone, they're gone.",
+        "layout": "split",
+        "image": "shopify://shop_images/Ha6681894375648f594ba0252188886f7c.jpg_960x960_903221c1-5490-49f9-bc53-aa5a5c6bfb35.webp",
+        "overlay_opacity": 60,
+        "eyebrow": "Made for cozy people",
+        "heading": "The coziest shark you'll ever wear.",
+        "text": "<p>Plush shark slippers and the famous shark blanket, delivered anywhere in Lebanon. Buy two pairs and save 20% — automatically.</p>",
+        "button_label": "Shop slippers",
+        "button_link": "/collections/shark-slippers",
+        "button_label_2": "Build a bundle & save",
+        "button_link_2": "/#bundle-builder",
+        "show_rating": true,
+        "rating_value": "",
+        "rating_count": "",
+        "height": "medium",
         "text_alignment": "left",
-        "button_label": "Shop the drop",
-        "show_countdown": false,
-        "countdown_heading": "Drops in"
-      }
+        "color_scheme": "default",
+        "padding_top": 32,
+        "padding_bottom": 64
+      },
+      "blocks": {
+        "trust-shipping": {
+          "type": "trust",
+          "settings": {
+            "icon": "truck",
+            "text": "Free standard shipping over $30"
+          }
+        },
+        "trust-express": {
+          "type": "trust",
+          "settings": {
+            "icon": "bolt",
+            "text": "Express courier option (1–2 days)"
+          }
+        },
+        "trust-whatsapp": {
+          "type": "trust",
+          "settings": {
+            "icon": "whatsapp",
+            "text": "WhatsApp support"
+          }
+        }
+      },
+      "block_order": ["trust-shipping", "trust-express", "trust-whatsapp"]
     },
-    "featured": {
+    "marquee": {
+      "type": "marquee",
+      "settings": {
+        "speed": 30,
+        "color_scheme": "alt",
+        "padding_top": 16,
+        "padding_bottom": 16
+      },
+      "blocks": {
+        "marquee-shipping": {
+          "type": "item",
+          "settings": {
+            "text": "Free standard shipping over $30",
+            "icon": "truck"
+          }
+        },
+        "marquee-pairs": {
+          "type": "item",
+          "settings": {
+            "text": "Buy 2 pairs, save 20%",
+            "icon": "gift"
+          }
+        },
+        "marquee-lebanon": {
+          "type": "item",
+          "settings": {
+            "text": "Delivery all over Lebanon",
+            "icon": "shark"
+          }
+        },
+        "marquee-rating": {
+          "type": "rating",
+          "settings": {
+            "text": "Rated {{ rating }}★ by {{ count }} shark fans",
+            "icon": "star"
+          }
+        },
+        "marquee-replacement": {
+          "type": "item",
+          "settings": {
+            "text": "Damaged on arrival? Replaced within 7 days",
+            "icon": "shield"
+          }
+        }
+      },
+      "block_order": [
+        "marquee-shipping",
+        "marquee-pairs",
+        "marquee-lebanon",
+        "marquee-rating",
+        "marquee-replacement"
+      ]
+    },
+    "featured-collection": {
       "type": "featured-collection",
       "settings": {
-        "title": "New drop",
-        "products_to_show": 8,
-        "columns_desktop": 4,
+        "heading": "Meet the sharks",
+        "subtitle": "Two slippers, one legendary blanket.",
+        "products": ["sharkbite-winter-collection", "the-sharkbite™-originals", "sharkbite-blanket"],
+        "collection": "shark-slippers",
+        "products_to_show": 3,
+        "columns_desktop": 3,
         "columns_mobile": "2",
-        "show_view_all": true
+        "show_rating": true,
+        "show_view_all": false,
+        "color_scheme": "default",
+        "padding_top": 64,
+        "padding_bottom": 64
       }
     },
-    "drop-banner": {
-      "type": "drop-banner",
+    "bundle-builder": {
+      "type": "bundle-builder",
       "settings": {
-        "eyebrow": "Limited run",
-        "heading": "NO RESTOCKS",
-        "text": "<p>Every piece is made in a small batch. When a size sells out, that's it.</p>",
-        "button_label": "Shop the catalog",
-        "marquee": "EVERYBODY CAN'T HAVE LIMITED ITEMS ·"
-      }
-    },
-    "categories": {
-      "type": "collection-list",
-      "blocks": {
-        "col-1": { "type": "featured_collection", "settings": {} },
-        "col-2": { "type": "featured_collection", "settings": {} },
-        "col-3": { "type": "featured_collection", "settings": {} }
+        "heading": "Bundle & save",
+        "text": "Mix any styles and sizes. The discount is applied automatically in your cart — no code needed.",
+        "anchor_id": "bundle-builder",
+        "product_a": "sharkbite-winter-collection",
+        "label_a": "Winter",
+        "product_b": "the-sharkbite™-originals",
+        "label_b": "Originals",
+        "product_blanket": "sharkbite-blanket",
+        "label_blanket": "Blanket",
+        "color_scheme": "alt",
+        "padding_top": 64,
+        "padding_bottom": 64
       },
-      "block_order": ["col-1", "col-2", "col-3"],
-      "settings": {
-        "title": "Shop by category",
-        "columns_desktop": 3
-      }
+      "blocks": {
+        "bundle-solo": {
+          "type": "bundle",
+          "settings": {
+            "title": "Solo",
+            "subtitle": "Start here",
+            "pairs": 1,
+            "include_blanket": false,
+            "badge": "",
+            "description": "One pair of shark slippers in your style and size."
+          }
+        },
+        "bundle-pair": {
+          "type": "bundle",
+          "settings": {
+            "title": "The Pair",
+            "subtitle": "Two pairs, 20% off both. Free standard shipping unlocked.",
+            "pairs": 2,
+            "include_blanket": false,
+            "badge": "Most popular",
+            "description": "Mix styles and sizes — one for you, one for someone you like."
+          }
+        },
+        "bundle-family": {
+          "type": "bundle",
+          "settings": {
+            "title": "Family Pack",
+            "subtitle": "Three pairs, 20% off",
+            "pairs": 3,
+            "include_blanket": false,
+            "badge": "",
+            "description": "Three pairs, any mix. The whole house gets fins."
+          }
+        },
+        "bundle-cozy-set": {
+          "type": "bundle",
+          "settings": {
+            "title": "The Cozy Set",
+            "subtitle": "Slippers + the shark blanket, 25% off the blanket",
+            "pairs": 1,
+            "include_blanket": true,
+            "badge": "Best gift",
+            "description": "One pair of slippers and the wearable shark blanket."
+          }
+        }
+      },
+      "block_order": ["bundle-solo", "bundle-pair", "bundle-family", "bundle-cozy-set"]
     },
-    "image-with-text": {
+    "benefits": {
+      "type": "benefits",
+      "settings": {
+        "heading": "Why Shark Bite",
+        "text": "",
+        "color_scheme": "default",
+        "padding_top": 64,
+        "padding_bottom": 64
+      },
+      "blocks": {
+        "benefit-lining": {
+          "type": "benefit",
+          "settings": {
+            "icon": "snowflake",
+            "title": "Plush, warm lining",
+            "text": "Thick fuzzy lining that keeps toes toasty on cold floors."
+          }
+        },
+        "benefit-sole": {
+          "type": "benefit",
+          "settings": {
+            "icon": "shield",
+            "title": "Grippy sole",
+            "text": "Sure-footed on tile, balcony, kitchen — anywhere at home."
+          }
+        },
+        "benefit-breathable": {
+          "type": "benefit",
+          "settings": {
+            "icon": "sun",
+            "title": "Light & breathable",
+            "text": "The Originals slide is airy EVA — perfect for warm days."
+          }
+        },
+        "benefit-gift": {
+          "type": "benefit",
+          "settings": {
+            "icon": "gift",
+            "title": "The gift that always lands",
+            "text": "Sizes 36–45 and a wearable shark blanket for the whole family."
+          }
+        }
+      },
+      "block_order": ["benefit-lining", "benefit-sole", "benefit-breathable", "benefit-gift"]
+    },
+    "video-reels": {
+      "type": "video-reels",
+      "settings": {
+        "heading": "As seen on your feed",
+        "text": "Real sharks, real homes. Tap a reel for sound.",
+        "autoplay": true,
+        "show_arrows": true,
+        "color_scheme": "default",
+        "padding_top": 64,
+        "padding_bottom": 64
+      },
+      "blocks": {
+        "reel-winter": {
+          "type": "reel",
+          "settings": {
+            "caption": "Cozy mornings in the Winter slippers"
+          }
+        },
+        "reel-blanket": {
+          "type": "reel",
+          "settings": {
+            "caption": "The shark blanket, unboxed"
+          }
+        },
+        "reel-originals": {
+          "type": "reel",
+          "settings": {
+            "caption": "Originals on a sunny day"
+          }
+        },
+        "reel-family": {
+          "type": "reel",
+          "settings": {
+            "caption": "Sizes 36–45 for the whole family"
+          }
+        }
+      },
+      "block_order": ["reel-winter", "reel-blanket", "reel-originals", "reel-family"]
+    },
+    "story-blanket": {
       "type": "image-with-text",
       "settings": {
-        "layout": "left",
-        "heading": "Made in limited runs",
-        "text": "<p>Heavyweight fabric, boxy fits, and nothing that gets remade. House of Garments releases in drops — follow along on Instagram so you don't miss one.</p>",
-        "button_label": "Follow @houseofgarments.co",
-        "button_link": "https://www.instagram.com/houseofgarments.co/"
+        "image": "shopify://shop_images/1DB3D204-1CC0-494C-8296-445D7576B483.gif",
+        "image_ratio": "portrait",
+        "layout": "image_first",
+        "badge": "The famous shark blanket",
+        "eyebrow": "",
+        "heading": "Wrap up in a shark",
+        "text": "<p>Who knew sharks could be this soft? Slip into the SharkBite blanket and turn chilly nights into jaw-dropping comfort — perfect for lounging, snoozing, or scaring your siblings.</p>",
+        "button_label": "Shop the blanket",
+        "button_link": "/products/sharkbite-blanket",
+        "link_label": "",
+        "color_scheme": "default",
+        "padding_top": 64,
+        "padding_bottom": 64
+      },
+      "blocks": {
+        "stat-rating": {
+          "type": "stat",
+          "settings": {
+            "source": "store_rating",
+            "number": "",
+            "label": "Average rating"
+          }
+        },
+        "stat-reviews": {
+          "type": "stat",
+          "settings": {
+            "source": "store_review_count",
+            "number": "",
+            "label": "Reviews from shark fans"
+          }
+        },
+        "stat-sizes": {
+          "type": "stat",
+          "settings": {
+            "source": "custom",
+            "number": "4",
+            "label": "Blanket sizes, 120–183 cm"
+          }
+        }
+      },
+      "block_order": ["stat-rating", "stat-reviews", "stat-sizes"]
+    },
+    "story-slippers": {
+      "type": "image-with-text",
+      "settings": {
+        "image": "shopify://shop_images/cloudsharks_the_shark_slides_made_for_comfort_and_style_1.jpg",
+        "image_ratio": "landscape",
+        "layout": "text_first",
+        "badge": "",
+        "eyebrow": "",
+        "heading": "Ride the wave in every room",
+        "text": "<p>Fluffy in winter, airy in summer. Every pair has a grippy sole, a fin that makes people smile, and sizes from 36 to 45.</p>",
+        "button_label": "Shop slippers",
+        "button_link": "/collections/shark-slippers",
+        "link_label": "",
+        "color_scheme": "default",
+        "padding_top": 64,
+        "padding_bottom": 64
+      },
+      "blocks": {
+        "stat-eu-sizes": {
+          "type": "stat",
+          "settings": {
+            "source": "custom",
+            "number": "36–45",
+            "label": "EU sizes"
+          }
+        },
+        "stat-styles": {
+          "type": "stat",
+          "settings": {
+            "source": "custom",
+            "number": "2",
+            "label": "Styles: Winter & Originals"
+          }
+        },
+        "stat-store-rating": {
+          "type": "stat",
+          "settings": {
+            "source": "store_rating",
+            "number": "",
+            "label": "Average rating"
+          }
+        }
+      },
+      "block_order": ["stat-eu-sizes", "stat-styles", "stat-store-rating"]
+    },
+    "offer-cozy-set": {
+      "type": "offer-banner",
+      "settings": {
+        "style": "brand",
+        "overlay_opacity": 60,
+        "badge": "Best gift",
+        "eyebrow": "The Cozy Set",
+        "heading": "Add the blanket, get 25% off it",
+        "text": "<p>Any pair of slippers plus the wearable shark blanket. The discount is applied automatically in your cart.</p>",
+        "button_label": "Build the Cozy Set",
+        "button_link": "/#bundle-builder",
+        "link_label": "Shop the blanket on its own",
+        "link_url": "/products/sharkbite-blanket",
+        "text_alignment": "left",
+        "full_width": false,
+        "color_scheme": "default",
+        "padding_top": 32,
+        "padding_bottom": 32
+      }
+    },
+    "testimonials": {
+      "type": "testimonials",
+      "settings": {
+        "heading": "Hear it from the shark fans",
+        "text": "",
+        "anchor_id": "",
+        "show_summary": true,
+        "rating_value": "",
+        "rating_count": "",
+        "color_scheme": "alt",
+        "padding_top": 64,
+        "padding_bottom": 64
+      },
+      "blocks": {
+        "testimonial-rahaf": {
+          "type": "testimonial",
+          "settings": {
+            "quote": "<p>Cozy, warm, and hilariously fun – the SharkBite Winter Slippers keep my feet toasty while making me smile every time I wear them! 🦈❄️</p>",
+            "author": "Rahaf L.",
+            "product": "Winter slippers",
+            "stars": 5
+          }
+        },
+        "testimonial-wael": {
+          "type": "testimonial",
+          "settings": {
+            "quote": "<p>Light, comfy, and breathable – the SharkBite Summer Slippers are perfect for sunny days with a splash of fun!</p>",
+            "author": "Wael K.",
+            "product": "Originals slides",
+            "stars": 5
+          }
+        },
+        "testimonial-ghida": {
+          "type": "testimonial",
+          "settings": {
+            "quote": "<p>Amazing customer support and super fast shipping – my SharkBite Slippers arrived in no time, and the team was so helpful!</p>",
+            "author": "Ghida L.",
+            "product": "Shark slippers",
+            "stars": 5
+          }
+        }
+      },
+      "block_order": ["testimonial-rahaf", "testimonial-wael", "testimonial-ghida"]
+    },
+    "video-showcase": {
+      "type": "video-showcase",
+      "settings": {
+        "aspect": "16/9",
+        "autoplay": false,
+        "show_controls": true,
+        "layout": "media-left",
+        "eyebrow": "",
+        "heading": "See them in action",
+        "text": "<p>Plush lining, a fin that wobbles when you walk, and a sole that grips the kitchen tiles. Press play.</p>",
+        "button_label": "Shop slippers",
+        "button_link": "/collections/shark-slippers",
+        "link_label": "",
+        "color_scheme": "default",
+        "padding_top": 64,
+        "padding_bottom": 64
+      }
+    },
+    "faq": {
+      "type": "faq",
+      "settings": {
+        "heading": "Questions? Bitten answers.",
+        "text": "",
+        "open_first": false,
+        "show_json_ld": true,
+        "color_scheme": "default",
+        "padding_top": 64,
+        "padding_bottom": 64
+      },
+      "blocks": {
+        "faq-size": {
+          "type": "question",
+          "settings": {
+            "question": "How do I pick my size?",
+            "answer": "<p>Sizes run in EU pairs (36-37 … 44-45). Pick the pair that contains your usual EU size; if you're between sizes, go up. See the size guide.</p>"
+          }
+        },
+        "faq-delivery": {
+          "type": "question",
+          "settings": {
+            "question": "How fast is delivery?",
+            "answer": "<p>Orders are prepared within 3–5 business days, then delivered by standard courier (3–5 days, $3 — free over $30) or express courier (1–2 days, $6).</p>"
+          }
+        },
+        "faq-bundles": {
+          "type": "question",
+          "settings": {
+            "question": "How do bundle discounts work?",
+            "answer": "<p>Add 2 or more pairs and 20% comes off automatically in your cart. Add the shark blanket with any slippers and the blanket is 25% off. No codes.</p>"
+          }
+        },
+        "faq-returns": {
+          "type": "question",
+          "settings": {
+            "question": "Can I exchange or return?",
+            "answer": "<p>All sales are final, but if your order arrives damaged or defective, message us on WhatsApp within 7 days and we'll replace it.</p>"
+          }
+        },
+        "faq-payment": {
+          "type": "payment_methods",
+          "settings": {
+            "question": "How do I pay?",
+            "intro": "Pay securely with:",
+            "contact_text": "Questions? WhatsApp us at +961 71 801 588."
+          }
+        }
+      },
+      "block_order": ["faq-size", "faq-delivery", "faq-bundles", "faq-returns", "faq-payment"]
+    },
+    "offer-closing": {
+      "type": "offer-banner",
+      "settings": {
+        "style": "brand",
+        "overlay_opacity": 60,
+        "badge": "",
+        "eyebrow": "Bundle & save",
+        "heading": "Bite into comfort",
+        "text": "<p>Two pairs, 20% off, free standard shipping.</p>",
+        "button_label": "Shop slippers",
+        "button_link": "/collections/shark-slippers",
+        "link_label": "Build a bundle",
+        "link_url": "/#bundle-builder",
+        "text_alignment": "center",
+        "full_width": false,
+        "color_scheme": "default",
+        "padding_top": 32,
+        "padding_bottom": 32
       }
     },
     "newsletter": {
       "type": "newsletter",
       "settings": {
-        "heading": "Get the drop first",
-        "text": "<p>New releases go to the list before anywhere else. Delivery all over Lebanon.</p>"
+        "layout": "card",
+        "eyebrow": "",
+        "heading": "Join the shark pack",
+        "text": "<p>New styles, restocks and bundle deals — no spam.</p>",
+        "privacy_text": "Unsubscribe any time.",
+        "show_whatsapp": true,
+        "whatsapp_intro": "Prefer to chat?",
+        "color_scheme": "alt",
+        "padding_top": 64,
+        "padding_bottom": 64
       }
     }
   },
   "order": [
     "hero",
-    "featured",
-    "drop-banner",
-    "categories",
-    "image-with-text",
+    "marquee",
+    "featured-collection",
+    "bundle-builder",
+    "benefits",
+    "video-reels",
+    "story-blanket",
+    "story-slippers",
+    "offer-cozy-set",
+    "testimonials",
+    "video-showcase",
+    "faq",
+    "offer-closing",
     "newsletter"
   ]
 }

@@ -398,6 +398,16 @@
   }
 }
 
+/* Pause/play for the uploaded background video (theme.js drives it) */
+.hero__video-toggle {
+  z-index: 2;
+}
+
+.hero--full-bleed .hero__video-toggle {
+  right: var(--gutter);
+  bottom: var(--space-4);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hero__play,
   .hero__play:hover {

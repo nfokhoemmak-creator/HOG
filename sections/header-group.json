@@ -4,34 +4,48 @@
   "sections": {
     "announcement-bar": {
       "type": "announcement-bar",
+      "settings": {
+        "color_scheme": "brand",
+        "autoplay": true,
+        "speed": 5,
+        "show_arrows": false
+      },
       "blocks": {
-        "announcement-1": {
+        "announcement-shipping": {
           "type": "announcement",
           "settings": {
-            "text": "DELIVERY ALL OVER LEBANON"
+            "text": "Free standard shipping over $30 across Lebanon",
+            "link": "/collections/shark-slippers",
+            "icon": "shark"
           }
         },
-        "announcement-2": {
+        "announcement-pairs": {
           "type": "announcement",
           "settings": {
-            "text": "EVERYBODY CAN'T HAVE LIMITED ITEMS"
+            "text": "Buy 2 pairs, save 20% — applied automatically",
+            "link": "/pages/bundles",
+            "icon": "gift"
+          }
+        },
+        "announcement-rating": {
+          "type": "rating",
+          "settings": {
+            "text": "Rated {{ rating }}★ by {{ count }} shark fans",
+            "icon": "star"
           }
         }
       },
-      "block_order": ["announcement-1", "announcement-2"],
-      "settings": {
-        "color_scheme": "accent",
-        "rotate": true,
-        "rotate_speed": 5
-      }
+      "block_order": ["announcement-shipping", "announcement-pairs", "announcement-rating"]
     },
     "header": {
       "type": "header",
       "settings": {
         "menu": "main-menu",
+        "logo_position": "left",
         "sticky": true,
         "show_search": true,
-        "show_account": true
+        "show_account": false,
+        "show_free_shipping_pill": true
       }
     }
   },

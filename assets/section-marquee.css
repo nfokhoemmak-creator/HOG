@@ -1,6 +1,7 @@
 /* Marquee — duplicated track for a seamless loop; static wrap under reduced motion */
 
 .marquee {
+  position: relative;
   overflow: hidden;
   background: var(--color-bg);
   color: var(--color-ink);
@@ -24,8 +25,51 @@
 }
 
 .marquee__viewport:hover,
-.marquee__viewport:focus-within {
+.marquee__viewport:focus-within,
+.marquee--paused .marquee__viewport {
   animation-play-state: paused;
+}
+
+/* Pause/play toggle (WCAG 2.2.2) — aria-pressed="true" = paused */
+.marquee__pause {
+  position: absolute;
+  top: 50%;
+  right: var(--space-2);
+  z-index: 1;
+  transform: translateY(-50%);
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+}
+
+.marquee.section--brand .marquee__pause {
+  border-color: var(--color-brand-contrast);
+  background: var(--color-brand);
+  color: var(--color-brand-contrast);
+}
+
+.marquee__pause .icon {
+  width: 1.8rem;
+  height: 1.8rem;
+}
+
+.marquee__pause-icon {
+  display: inline-flex;
+}
+
+.marquee__pause-icon--play,
+.marquee__pause[aria-pressed='true'] .marquee__pause-icon--pause {
+  display: none;
+}
+
+.marquee__pause[aria-pressed='true'] .marquee__pause-icon--play {
+  display: inline-flex;
+}
+
+.no-js .marquee__pause {
+  display: none;
 }
 
 .marquee__track {
@@ -99,6 +143,10 @@
   }
 
   .marquee__track--clone {
+    display: none;
+  }
+
+  .marquee__pause {
     display: none;
   }
 }

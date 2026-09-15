@@ -32,11 +32,11 @@
           "type": "bundle",
           "settings": {
             "title": "The Pair",
-            "subtitle": "Two pairs, 20% off both.",
+            "subtitle": "Two pairs, 20% off both. Free standard shipping unlocked.",
             "pairs": 2,
             "include_blanket": false,
             "badge": "Most popular",
-            "description": "Two pairs, 20% off both. Free standard shipping unlocked."
+            "description": "Mix styles and sizes — one for you, one for someone you like."
           }
         },
         "bundle-family": {
@@ -54,11 +54,11 @@
           "type": "bundle",
           "settings": {
             "title": "The Cozy Set",
-            "subtitle": "Slippers + the shark blanket",
+            "subtitle": "Slippers + the shark blanket, 25% off the blanket",
             "pairs": 1,
             "include_blanket": true,
             "badge": "Best gift",
-            "description": "Slippers + the shark blanket, 25% off the blanket."
+            "description": "One pair of slippers and the wearable shark blanket."
           }
         }
       },
@@ -106,7 +106,7 @@
           "type": "question",
           "settings": {
             "question": "Can I mix sizes and styles in a bundle?",
-            "answer": "<p>Yes. Any two or more pairs count — Winter or Originals, any size, any colour. The discount applies to every pair in your cart, and the blanket discount applies as soon as there is at least one pair with it.</p>"
+            "answer": "<p>Yes. Any two or more pairs count — Winter or Originals, any size, any colour. The 20% applies to every pair in your cart, and one blanket gets 25% off as soon as there is at least one pair with it.</p>"
           }
         },
         "faq-delivery": {
@@ -133,8 +133,8 @@
         "text": "",
         "anchor_id": "",
         "show_summary": true,
-        "rating_value": "4.9",
-        "rating_count": "26",
+        "rating_value": "",
+        "rating_count": "",
         "color_scheme": "alt",
         "padding_top": 64,
         "padding_bottom": 64

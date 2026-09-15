@@ -22,7 +22,7 @@
 -%}
 
 {%- if row_count > 0 -%}
-  <ul class="trust" role="list">
+  <ul class="product-trust" role="list">
     {%- for i in (1..5) -%}
       {%- liquid
         assign text_key = 'item_' | append: i | append: '_text'
@@ -31,10 +31,10 @@
         assign row_icon = block.settings[icon_key] | default: 'check'
       -%}
       {%- if row_text != blank -%}
-        <li class="trust__item">
+        <li class="product-trust__item">
           {% render 'icon', name: row_icon %}
           {%- if row_icon == 'whatsapp' and whatsapp_number != blank -%}
-            <a class="trust__link" href="https://wa.me/{{ whatsapp_number }}" target="_blank" rel="noopener">
+            <a class="product-trust__link" href="https://wa.me/{{ whatsapp_number }}" target="_blank" rel="noopener">
               {{ row_text | escape }}
               <span class="visually-hidden">{{ 'general.new_window' | t }}</span>
             </a>

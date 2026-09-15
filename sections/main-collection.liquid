@@ -1,6 +1,10 @@
 {{ 'section-main-collection.css' | asset_url | stylesheet_tag }}
 
 {%- liquid
+  assign scheme_class = ''
+  if section.settings.color_scheme != blank and section.settings.color_scheme != 'default'
+    assign scheme_class = ' section--' | append: section.settings.color_scheme
+  endif
   assign padding_mobile_top = section.settings.padding_top | times: 0.75 | round
   assign padding_mobile_bottom = section.settings.padding_bottom | times: 0.75 | round
   assign form_id = 'CollectionFilters-' | append: section.id
@@ -61,7 +65,7 @@
 {%- endstyle -%}
 
 {%- paginate collection.products by section.settings.products_per_page -%}
-  <collection-filters class="collection section" data-form="{{ form_id }}">
+  <collection-filters class="collection section{{ scheme_class }}" data-form="{{ form_id }}">
     <div class="container">
       {%- if section.settings.show_heading -%}
         <header class="page-header collection__header">
@@ -214,6 +218,7 @@
                   {%- case filter.type -%}
                     {%- when 'price_range' -%}
                       {%- assign range_max = filter.range_max | money_without_currency | replace: ',', '' -%}
+                      {%- assign range_max_money = filter.range_max | money -%}
                       <details class="accordion collection-filters__group" open>
                         <summary>
                           <span>{{ filter.label | escape }}</span>
@@ -221,7 +226,7 @@
                         </summary>
                         <div class="accordion__content collection-filters__content">
                           <p class="small muted collection-filters__hint">
-                            {{ 'products.facets.max_price' | t: price: filter.range_max | money }}
+                            {{ 'products.facets.max_price' | t: price: range_max_money }}
                           </p>
                           <div class="collection-filters__price">
                             <div class="field">
@@ -579,6 +584,21 @@
       "id": "empty_button_link",
       "label": "Empty state button link",
       "default": "/collections/shark-slippers"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "alt", "label": "Soft aqua" },
+        { "value": "brand", "label": "Navy" }
+      ],
+      "default": "default"
     },
     {
       "type": "header",

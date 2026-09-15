@@ -12,6 +12,7 @@
         "link_label_3": "",
         "link_3": "/pages/bundles",
         "show_search": true,
+        "color_scheme": "default",
         "padding_top": 32,
         "padding_bottom": 64
       }

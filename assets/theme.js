@@ -11,6 +11,9 @@
 (function () {
   'use strict';
 
+  // Reveal-on-scroll content is only hidden once this script is running.
+  document.documentElement.classList.add('sb-reveal');
+
   const theme = window.theme || {};
   const strings = theme.strings || {};
   const REDUCED_MOTION =
@@ -361,9 +364,11 @@
       const changed = next !== current;
       this.input.value = next;
       this.sync();
-      // A button click must notify listeners; a manual edit already fired
-      // `change`, so only re-fire when we clamped the typed value.
-      if (changed && (!fromInput || next !== value)) {
+      // A button click must notify listeners. A manual edit already fired
+      // `change` (still propagating; the clamped value is written to the input
+      // before ancestors read it), so never re-dispatch for it — a nested
+      // event would reach the cart listeners twice for the same line.
+      if (changed && !fromInput) {
         this.input.dispatchEvent(new Event('change', { bubbles: true }));
       }
     }
@@ -563,10 +568,52 @@
 
   /* ------------------------------------------------------------------ boot */
 
+  /* ---------------------------------------------- autoplaying videos */
+
+  /**
+   * Autoplaying background videos (hero, video snippet) get a pause/play
+   * toggle rendered in Liquid ([data-video-toggle], aria-pressed = paused).
+   * Under prefers-reduced-motion they never start on their own.
+   */
+  function initAutoplayVideos() {
+    if (REDUCED_MOTION) {
+      document.querySelectorAll('video[autoplay]').forEach((video) => {
+        video.removeAttribute('autoplay');
+        video.removeAttribute('loop');
+        video.pause();
+      });
+    }
+
+    document.querySelectorAll('[data-video-toggle]').forEach((button) => {
+      if (button.dataset.bound === 'true') return;
+      const scope = button.parentElement;
+      const video = scope ? scope.querySelector('video') : null;
+      if (!video) {
+        button.hidden = true;
+        return;
+      }
+      button.dataset.bound = 'true';
+      const setPaused = (paused) => button.setAttribute('aria-pressed', String(paused));
+
+      button.addEventListener('click', () => {
+        if (video.paused) {
+          const played = video.play();
+          if (played && typeof played.catch === 'function') played.catch(() => {});
+        } else {
+          video.pause();
+        }
+      });
+      video.addEventListener('play', () => setPaused(false));
+      video.addEventListener('pause', () => setPaused(true));
+      setPaused(video.paused);
+    });
+  }
+
   function boot() {
     initReveal();
     initDetailsDismiss();
     initWhatsAppFab();
+    initAutoplayVideos();
   }
 
   if (document.readyState === 'loading') {

@@ -310,7 +310,10 @@ h5, .h5, h6 {
 }
 
 .muted { color: var(--color-muted); }
-.accent { color: var(--color-accent); }
+/* Coral is never running text (2.68:1 on sand): `.accent` only paints icons. */
+.icon.accent,
+.accent > .icon,
+.accent > svg { color: var(--color-accent); }
 .accent-text { color: var(--color-accent-text); }
 .brand { color: var(--color-brand); }
 .success { color: var(--color-success); }
@@ -736,14 +739,12 @@ strong, b {
   color: var(--color-bg);
 }
 
-.section--brand .btn--outline,
-.footer .btn--outline {
+.section--brand .btn--outline {
   border-color: var(--color-brand-contrast);
   color: var(--color-brand-contrast);
 }
 
-.section--brand .btn--outline:hover,
-.footer .btn--outline:hover {
+.section--brand .btn--outline:hover {
   background: var(--color-brand-contrast);
   color: var(--color-brand);
 }
@@ -832,6 +833,47 @@ strong, b {
 
 .icon-btn:hover {
   background: color-mix(in srgb, currentColor 8%, transparent);
+}
+
+/* Pause/play toggle over autoplaying videos (WCAG 2.2.2; wired by theme.js).
+   aria-pressed="true" = paused. Hidden without JS because it cannot work. */
+.video-toggle {
+  position: absolute;
+  right: var(--space-3);
+  bottom: var(--space-3);
+  z-index: 2;
+  padding: 0;
+  border: 2px solid var(--color-ink);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  box-shadow: var(--shadow-sticker);
+  cursor: pointer;
+}
+
+.video-toggle:hover {
+  background: var(--color-surface-alt);
+}
+
+.video-toggle .icon {
+  width: 2rem;
+  height: 2rem;
+}
+
+.video-toggle__icon {
+  display: inline-flex;
+}
+
+.video-toggle__icon--play,
+.video-toggle[aria-pressed='true'] .video-toggle__icon--pause {
+  display: none;
+}
+
+.video-toggle[aria-pressed='true'] .video-toggle__icon--play {
+  display: inline-flex;
+}
+
+.no-js .video-toggle {
+  display: none;
 }
 
 /* 7. Forms ---------------------------------------------------------------- */
@@ -2631,13 +2673,15 @@ a.pagination__item:hover {
   to { transform: translateX(100%); }
 }
 
-.animate .reveal {
+/* `.sb-reveal` is set by theme.js itself, so content stays visible when the
+   script never loads (the head swaps `no-js` for `js` before theme.js runs). */
+.sb-reveal .animate .reveal {
   opacity: 0;
   transform: translateY(16px);
   transition: opacity 500ms var(--ease), transform 500ms var(--ease);
 }
 
-.animate .reveal.is-visible {
+.sb-reveal .animate .reveal.is-visible {
   opacity: 1;
   transform: none;
 }

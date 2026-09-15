@@ -22,31 +22,14 @@
         "bullets": {
           "type": "bullets",
           "settings": {
-            "text": "<ul><li>Winter: plush fuzzy lining, warm on cold tiles · Originals: lightweight, airy EVA</li><li>Grippy sole for slippery floors</li><li>Sizes 36–45 (EU)</li><li>Free standard shipping over $30</li></ul>"
+            "text": "<ul><li>Wearable shark blanket — cozy from head to toe</li><li>Soft cotton/polyester</li><li>4 sizes, 120 cm to 183 cm — pick by height</li><li>Free standard shipping (over $30)</li></ul>"
           }
         },
         "variant_picker": {
           "type": "variant_picker",
           "settings": {
             "picker_type": "swatches",
-            "show_size_help": true
-          }
-        },
-        "size_guide": {
-          "type": "size_guide",
-          "settings": {
-            "image": "shopify://shop_images/WhatsAppImage2023-04-27at11.01.47AM.jpg",
-            "fallback_text": "<p>Sizes come in EU pairs (36-37 … 44-45). Pick the pair that contains your usual EU size. Between sizes? Go up.</p>"
-          }
-        },
-        "tiers": {
-          "type": "tiers",
-          "settings": {
-            "show_tiers": true,
-            "heading": "Pick your pack",
-            "single_note": "+ $3 standard shipping",
-            "second_pair_text": "2nd pair just [price]",
-            "bundle_link": "/pages/bundles#bundle-builder"
+            "show_size_help": false
           }
         },
         "quantity": {
@@ -84,20 +67,29 @@
             "collapse": true
           }
         },
+        "accordion-included": {
+          "type": "accordion",
+          "settings": {
+            "heading": "What's included",
+            "content": "<p>One wearable SharkBite blanket in the style and size you pick, made of soft cotton/polyester.</p>",
+            "metafield": "",
+            "open_by_default": false
+          }
+        },
+        "accordion-sizing": {
+          "type": "accordion",
+          "settings": {
+            "heading": "Sizing (pick by height, 120–183 cm)",
+            "content": "<p>Four sizes: 120-125 cm, 150-155 cm, 160-168 cm and 168-183 cm. Pick the size that contains the height of the person wearing it. Between sizes? Go up.</p>",
+            "metafield": "",
+            "open_by_default": false
+          }
+        },
         "accordion-delivery": {
           "type": "accordion",
           "settings": {
             "heading": "Delivery",
             "content": "<p>Orders are prepared within 3–5 business days, then delivered by standard courier (3–5 days, $3 — free over $30) or express courier (1–2 days, $6).</p>",
-            "metafield": "",
-            "open_by_default": false
-          }
-        },
-        "accordion-bundles": {
-          "type": "accordion",
-          "settings": {
-            "heading": "Bundle & save",
-            "content": "<p>Add 2 or more pairs and 20% comes off automatically in your cart. Add the shark blanket with any slippers and the blanket is 25% off. No codes.</p>",
             "metafield": "",
             "open_by_default": false
           }
@@ -114,9 +106,9 @@
         "complementary": {
           "type": "complementary",
           "settings": {
-            "product": "sharkbite-blanket",
+            "product": "sharkbite-winter-collection",
             "heading": "Complete the set",
-            "text": "Add the shark blanket and it's 25% off — applied automatically in your cart."
+            "text": "Buy any slippers and this blanket is 25% off — applied automatically in your cart."
           }
         },
         "share": {
@@ -134,15 +126,14 @@
         "price",
         "bullets",
         "variant_picker",
-        "size_guide",
-        "tiers",
         "quantity",
         "buy_buttons",
         "free_shipping",
         "trust",
         "description",
+        "accordion-included",
+        "accordion-sizing",
         "accordion-delivery",
-        "accordion-bundles",
         "accordion-replacement",
         "complementary",
         "share",
@@ -220,8 +211,8 @@
         "faq-size": {
           "type": "question",
           "settings": {
-            "question": "How do I pick my size?",
-            "answer": "<p>Sizes run in EU pairs (36-37 … 44-45). Pick the pair that contains your usual EU size; if you're between sizes, go up. See the size guide.</p>"
+            "question": "How do I pick my blanket size?",
+            "answer": "<p>The blanket comes in four sizes — 120-125 cm, 150-155 cm, 160-168 cm and 168-183 cm. Pick the size that contains the height of the person wearing it; between sizes, go up.</p>"
           }
         },
         "faq-returns": {

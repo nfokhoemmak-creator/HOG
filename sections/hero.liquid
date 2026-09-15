@@ -58,6 +58,15 @@
   }
 {%- endstyle -%}
 
+{%- capture video_toggle -%}
+  {%- if video != blank -%}
+    <button type="button" class="icon-btn video-toggle hero__video-toggle" data-video-toggle aria-pressed="false" aria-label="{{ 'accessibility.pause_video' | t }}">
+      <span class="video-toggle__icon video-toggle__icon--pause">{% render 'icon', name: 'pause' %}</span>
+      <span class="video-toggle__icon video-toggle__icon--play">{% render 'icon', name: 'play' %}</span>
+    </button>
+  {%- endif -%}
+{%- endcapture -%}
+
 {%- capture media_markup -%}
   {%- if video != blank -%}
     {{ video | video_tag: image_size: '1400x', autoplay: true, loop: true, muted: true, controls: false, preload: 'metadata', class: 'hero__video' }}
@@ -134,6 +143,7 @@
       {{ media_markup }}
       <div class="hero__scrim"></div>
     </div>
+    {{ video_toggle }}
   {%- endif -%}
 
   <div class="container hero__inner">
@@ -200,6 +210,7 @@
         <div class="hero__frame-wrap{% if video_url != blank and video == blank %} hero__frame-wrap--wide{% endif %}">
           <div class="hero__frame{% if video_url != blank and video == blank %} hero__frame--wide{% endif %}">
             {{ media_markup }}
+            {{ video_toggle }}
           </div>
           {{ rating_markup }}
         </div>

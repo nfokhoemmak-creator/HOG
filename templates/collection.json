@@ -5,9 +5,10 @@
       "settings": {
         "eyebrow": "Shark Bite",
         "show_description": true,
-        "show_image": false,
-        "layout": "stacked",
+        "show_image": true,
+        "layout": "split",
         "text_alignment": "left",
+        "color_scheme": "default",
         "padding_top": 48,
         "padding_bottom": 16
       }
@@ -30,6 +31,7 @@
         "columns_mobile": "2",
         "empty_button_label": "Shop slippers",
         "empty_button_link": "/collections/shark-slippers",
+        "color_scheme": "default",
         "padding_top": 16,
         "padding_bottom": 64
       }

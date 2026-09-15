@@ -1,4 +1,8 @@
 {%- liquid
+  assign scheme_class = ''
+  if section.settings.color_scheme != blank and section.settings.color_scheme != 'default'
+    assign scheme_class = ' section--' | append: section.settings.color_scheme
+  endif
   assign padding_mobile_top = section.settings.padding_top | times: 0.75 | round
   assign padding_mobile_bottom = section.settings.padding_bottom | times: 0.75 | round
   assign card_sizes = '(min-width: 990px) 33vw, (min-width: 750px) 50vw, calc(100vw - 40px)'
@@ -18,7 +22,7 @@
 {%- endstyle -%}
 
 {%- paginate blog.articles by section.settings.articles_per_page -%}
-  <div class="blog section">
+  <div class="blog section{{ scheme_class }}">
     <div class="container">
       <header class="page-header{% if section.settings.text_alignment == 'center' %} page-header--center{% endif %}">
         {%- if section.settings.eyebrow != blank -%}
@@ -190,6 +194,21 @@
       "id": "empty_button_link",
       "label": "Empty state button link",
       "default": "/collections/shark-slippers"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "alt", "label": "Soft aqua" },
+        { "value": "brand", "label": "Navy" }
+      ],
+      "default": "default"
     },
     {
       "type": "header",

@@ -1,0 +1,153 @@
+{{ 'section-product-recommendations.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'section-product-recommendations.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign s = section.settings
+  assign limit = s.products_to_show | default: 4
+  assign columns = s.columns_desktop | default: 4
+
+  case s.color_scheme
+    when 'alt'
+      assign scheme_class = ' section--alt'
+    when 'brand'
+      assign scheme_class = ' section--brand'
+    else
+      assign scheme_class = ''
+  endcase
+
+  assign pt = s.padding_top
+  assign pb = s.padding_bottom
+  assign pt_mobile = pt | times: 0.75 | round
+  assign pb_mobile = pb | times: 0.75 | round
+-%}
+
+{%- style -%}
+  #shopify-section-{{ section.id }} .recommendations {
+    padding-top: {{ pt_mobile }}px;
+    padding-bottom: {{ pb_mobile }}px;
+  }
+  @media (min-width: 750px) {
+    #shopify-section-{{ section.id }} .recommendations {
+      padding-top: {{ pt }}px;
+      padding-bottom: {{ pb }}px;
+    }
+  }
+{%- endstyle -%}
+
+<product-recommendations
+  class="recommendations-wrapper"
+  data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit={{ limit }}&intent=related"
+  data-section-id="{{ section.id }}"
+>
+  {%- if recommendations.performed and recommendations.products_count > 0 -%}
+    <div class="section recommendations{{ scheme_class }}">
+      <div class="container">
+        <div class="section__header">
+          <div>
+            {%- if s.heading != blank -%}
+              <h2 class="section__title h2">{{ s.heading | escape }}</h2>
+            {%- endif -%}
+            {%- if s.text != blank -%}
+              <p class="section__subtitle">{{ s.text | escape }}</p>
+            {%- endif -%}
+          </div>
+        </div>
+        <div class="grid grid--{{ columns }} recommendations__grid">
+          {%- for recommended in recommendations.products -%}
+            {% render 'product-card', card_product: recommended, sizes: '(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw' %}
+          {%- endfor -%}
+        </div>
+      </div>
+    </div>
+  {%- elsif recommendations.performed == false and request.design_mode -%}
+    <div class="section recommendations{{ scheme_class }}">
+      <div class="container">
+        <div class="section__header">
+          <div>
+            {%- if s.heading != blank -%}
+              <h2 class="section__title h2">{{ s.heading | escape }}</h2>
+            {%- endif -%}
+          </div>
+        </div>
+        <p class="muted small recommendations__note">Recommendations load on the live product page once the store has enough order data.</p>
+      </div>
+    </div>
+  {%- endif -%}
+</product-recommendations>
+
+{% schema %}
+{
+  "name": "Recommendations",
+  "tag": "section",
+  "class": "section-product-recommendations",
+  "enabled_on": {
+    "templates": ["product"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "You may also like"
+    },
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Text"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "label": "Products to show",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns on desktop",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "Section"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "alt", "label": "Soft aqua" },
+        { "value": "brand", "label": "Navy" }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    }
+  ]
+}
+{% endschema %}

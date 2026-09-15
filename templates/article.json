@@ -8,6 +8,7 @@
         "show_author": false,
         "show_tags": true,
         "show_share": true,
+        "color_scheme": "default",
         "padding_top": 48,
         "padding_bottom": 64
       }

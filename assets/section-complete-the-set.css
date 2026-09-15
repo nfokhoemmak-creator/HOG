@@ -1,0 +1,152 @@
+/* ==========================================================================
+   Shark Bite — section-complete-the-set.css
+   Standalone "Complete the set" band: copy on the left, the companion card
+   (<bundle-companion>, styled in section-main-product.css) on the right.
+   ========================================================================== */
+
+.complete-set__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-6);
+  align-items: center;
+}
+
+.complete-set__copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.complete-set__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.complete-set__eyebrow .icon {
+  width: 1em;
+  height: 1em;
+}
+
+.complete-set__heading,
+.complete-set__text {
+  margin: 0;
+}
+
+.complete-set__card {
+  min-width: 0;
+}
+
+.complete-set__empty {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: center;
+  padding: var(--space-6);
+  border: 2px dashed var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+
+.complete-set__placeholder {
+  width: 12rem;
+  height: 12rem;
+  color: var(--color-brand);
+  opacity: 0.5;
+}
+
+/* Companion card (the snippet's classes live in section-main-product.css when
+   that section is on the page; repeated here so the band works on its own). */
+
+.complete-set .companion {
+  display: grid;
+  grid-template-columns: 9.6rem minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.complete-set .companion__media {
+  display: block;
+  border-radius: calc(var(--radius-lg) - var(--card-pad));
+  overflow: hidden;
+  background: var(--color-surface-alt);
+  aspect-ratio: 1 / 1;
+}
+
+.complete-set .companion__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.complete-set .companion__img--placeholder {
+  color: var(--color-brand);
+  opacity: 0.6;
+}
+
+.complete-set .companion__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.complete-set .companion__chip {
+  align-self: flex-start;
+}
+
+.complete-set .companion__title,
+.complete-set .companion__text,
+.complete-set .companion__error {
+  margin: 0;
+}
+
+.complete-set .companion__title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.complete-set .companion__title a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.complete-set .companion__options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: var(--space-2);
+}
+
+.complete-set .companion__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.complete-set .companion__label {
+  font-weight: var(--font-body-weight-bold);
+}
+
+.complete-set .companion__add {
+  margin-top: var(--space-1);
+}
+
+.complete-set .companion__add .icon {
+  width: 1.8rem;
+  height: 1.8rem;
+}
+
+@media (min-width: 750px) {
+  .complete-set .companion {
+    grid-template-columns: 12rem minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 990px) {
+  .complete-set__inner {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: var(--space-8);
+  }
+}

@@ -131,8 +131,9 @@
   margin-top: var(--space-3);
 }
 
-.newsletter__row {
+.footer .newsletter__row {
   display: flex;
+  flex-direction: row;
   flex-wrap: wrap;
   gap: var(--space-2);
 }

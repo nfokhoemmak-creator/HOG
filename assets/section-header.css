@@ -502,7 +502,7 @@
 }
 
 .announcement-bar__link {
-  min-height: 2.8rem;
+  min-height: 4.4rem;
   text-decoration: underline;
   text-decoration-color: transparent;
   text-underline-offset: 0.2em;
@@ -532,8 +532,8 @@
   align-items: center;
   justify-content: center;
   flex: none;
-  width: 3.2rem;
-  height: 3.2rem;
+  width: 4.4rem;
+  height: 4.4rem;
   padding: 0;
   border: 0;
   border-radius: var(--radius-btn);

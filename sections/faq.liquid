@@ -88,7 +88,7 @@
       {%- endif -%}
       {%- liquid
         if block.type == 'payment_methods'
-          assign answer_text = block.settings.intro | strip | append: ' the payment methods shown at checkout.'
+          assign answer_text = block.settings.intro | strip | remove_last: ':' | append: ' the payment methods shown at checkout.'
         else
           assign answer_text = block.settings.answer | strip_html | strip_newlines | strip
         endif
@@ -211,7 +211,7 @@
           "type": "text",
           "id": "intro",
           "label": "Intro",
-          "default": "Pay securely at checkout with:",
+          "default": "Pay securely with:",
           "info": "The payment icons come from your store's enabled payment methods."
         },
         {
@@ -259,7 +259,7 @@
           "type": "payment_methods",
           "settings": {
             "question": "How do I pay?",
-            "intro": "Pay securely at checkout with:",
+            "intro": "Pay securely with:",
             "contact_text": "Questions? WhatsApp us at +961 71 801 588."
           }
         }

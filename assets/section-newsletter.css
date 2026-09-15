@@ -64,27 +64,28 @@
   width: 100%;
 }
 
-.newsletter__row {
+/* Scoped to the section: the footer renders its own .newsletter__row */
+.newsletter .newsletter__row {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
 }
 
-.newsletter__input {
+.newsletter .newsletter__input {
   flex: 1 1 auto;
   min-height: 5.2rem;
 }
 
-.newsletter__submit {
+.newsletter .newsletter__submit {
   flex: none;
 }
 
-@media (min-width: 500px) {
-  .newsletter__row {
+@media (min-width: 750px) {
+  .newsletter .newsletter__row {
     flex-direction: row;
   }
 
-  .newsletter__row .newsletter__input {
+  .newsletter .newsletter__row .newsletter__input {
     min-width: 0;
   }
 }

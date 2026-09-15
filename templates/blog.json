@@ -13,6 +13,7 @@
         "show_excerpt": true,
         "empty_button_label": "Shop slippers",
         "empty_button_link": "/collections/shark-slippers",
+        "color_scheme": "default",
         "padding_top": 48,
         "padding_bottom": 64
       }

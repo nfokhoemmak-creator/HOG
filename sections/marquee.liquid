@@ -69,7 +69,25 @@
         {{ items_clone }}
       </ul>
     </div>
+    <button type="button" class="icon-btn marquee__pause" data-marquee-toggle aria-pressed="false" aria-label="{{ 'accessibility.pause_animation' | t }}">
+      <span class="marquee__pause-icon marquee__pause-icon--pause">{% render 'icon', name: 'pause' %}</span>
+      <span class="marquee__pause-icon marquee__pause-icon--play">{% render 'icon', name: 'play' %}</span>
+    </button>
   </div>
+  <script>
+    (function () {
+      document.querySelectorAll('[data-marquee-toggle]').forEach(function (button) {
+        if (button.dataset.bound === 'true') return;
+        button.dataset.bound = 'true';
+        var marquee = button.closest('.marquee');
+        if (!marquee) return;
+        button.addEventListener('click', function () {
+          var paused = marquee.classList.toggle('marquee--paused');
+          button.setAttribute('aria-pressed', String(paused));
+        });
+      });
+    })();
+  </script>
 {%- endif -%}
 
 {% schema %}
@@ -187,7 +205,7 @@
         { "type": "item", "settings": { "text": "Buy 2 pairs, save 20%", "icon": "gift" } },
         { "type": "item", "settings": { "text": "Delivery all over Lebanon", "icon": "shark" } },
         { "type": "rating", "settings": { "text": "Rated {{ rating }}★ by {{ count }} shark fans", "icon": "star" } },
-        { "type": "item", "settings": { "text": "Replacement guarantee on damaged items", "icon": "shield" } }
+        { "type": "item", "settings": { "text": "Damaged on arrival? Replaced within 7 days", "icon": "shield" } }
       ]
     }
   ]

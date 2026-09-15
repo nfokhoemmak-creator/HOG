@@ -61,6 +61,7 @@
     "close_menu": "Close menu",
     "play_video": "Play video",
     "pause_video": "Pause video",
+    "pause_animation": "Pause animation",
     "mute_video": "Mute",
     "unmute_video": "Unmute",
     "star_rating": "{{ rating }} out of 5 stars"
@@ -90,7 +91,7 @@
       "ask_whatsapp": "Ask us on WhatsApp",
       "tiers_mixed": "Different sizes or styles? Build a bundle",
       "free_shipping_qualifies": "Free standard shipping over {{ amount }} — this order qualifies ✓",
-      "free_shipping_needs": "Add {{ amount }} more for free standard shipping — or grab a 2nd pair: save {{ percent }}% and ship free",
+      "free_shipping_needs": "Add {{ amount }} more for free standard shipping — or grab a 2nd pair: save {{ percent }}% and standard shipping is free",
       "share": "Share",
       "share_whatsapp": "Share on WhatsApp",
       "copy_link": "Copy link",

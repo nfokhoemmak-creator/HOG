@@ -4,36 +4,40 @@
   "sections": {
     "footer": {
       "type": "footer",
+      "settings": {
+        "show_newsletter": true,
+        "newsletter_heading": "Join the shark pack",
+        "newsletter_text": "New styles, restocks and bundle deals — no spam.",
+        "show_social": true,
+        "show_payment_icons": true,
+        "show_policies": true
+      },
       "blocks": {
-        "text-1": {
-          "type": "text",
+        "brand": {
+          "type": "brand",
           "settings": {
-            "heading": "House of Garments",
-            "text": "<p>Limited-run streetwear out of Lebanon. Delivery all over Lebanon.</p>"
+            "show_logo": true,
+            "text": "<p>Shark Bite — plush shark slippers and the famous shark blanket, made for cozy people in Lebanon.</p>",
+            "show_whatsapp": true,
+            "email": "sharkbitee.lb@gmail.com"
           }
         },
-        "menu-1": {
+        "menu-shop": {
           "type": "menu",
           "settings": {
             "heading": "Shop",
             "menu": "main-menu"
           }
         },
-        "menu-2": {
+        "menu-help": {
           "type": "menu",
           "settings": {
-            "heading": "Info",
+            "heading": "Help & policies",
             "menu": "footer"
           }
         }
       },
-      "block_order": ["text-1", "menu-1", "menu-2"],
-      "settings": {
-        "show_newsletter": true,
-        "newsletter_heading": "Get the drop first",
-        "show_payment_icons": true,
-        "show_social": true
-      }
+      "block_order": ["brand", "menu-shop", "menu-help"]
     }
   },
   "order": ["footer"]

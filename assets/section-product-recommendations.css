@@ -1,0 +1,24 @@
+/* ==========================================================================
+   Shark Bite — section-product-recommendations.css
+   "You may also like" grid fetched from the Product Recommendations API.
+   The cards come from snippets/product-card (styled in base.css).
+   ========================================================================== */
+
+product-recommendations {
+  display: block;
+}
+
+.recommendations__grid {
+  align-items: stretch;
+}
+
+.recommendations__note {
+  margin: 0;
+}
+
+/* The API renders two columns on small phones; keep card titles legible. */
+@media (max-width: 749px) {
+  .recommendations__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

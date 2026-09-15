@@ -1,0 +1,155 @@
+{{ 'section-complete-the-set.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'section-main-product.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign s = section.settings
+  assign companion = s.product
+  if companion == blank
+    assign companion = collections['shark-blankets'].products[0]
+  endif
+  if companion != blank and product != blank and companion.id == product.id
+    assign companion = collections['shark-slippers'].products[0]
+  endif
+
+  case s.color_scheme
+    when 'alt'
+      assign scheme_class = ' section--alt'
+    when 'brand'
+      assign scheme_class = ' section--brand'
+    else
+      assign scheme_class = ''
+  endcase
+
+  assign pt = s.padding_top
+  assign pb = s.padding_bottom
+  assign pt_mobile = pt | times: 0.75 | round
+  assign pb_mobile = pb | times: 0.75 | round
+-%}
+
+{%- style -%}
+  #shopify-section-{{ section.id }} .complete-set {
+    padding-top: {{ pt_mobile }}px;
+    padding-bottom: {{ pb_mobile }}px;
+  }
+  @media (min-width: 750px) {
+    #shopify-section-{{ section.id }} .complete-set {
+      padding-top: {{ pt }}px;
+      padding-bottom: {{ pb }}px;
+    }
+  }
+{%- endstyle -%}
+
+{%- if companion != blank -%}
+  <div class="section complete-set{{ scheme_class }}">
+    <div class="container container--narrow">
+      <div class="complete-set__inner">
+        <div class="complete-set__copy">
+          {%- if s.eyebrow != blank -%}
+            <p class="eyebrow complete-set__eyebrow">
+              <span class="accent" aria-hidden="true">{% render 'icon', name: 'shark' %}</span>
+              {{ s.eyebrow | escape }}
+            </p>
+          {%- endif -%}
+          {%- if s.heading != blank -%}
+            <h2 class="h2 complete-set__heading">{{ s.heading | escape }}</h2>
+          {%- endif -%}
+          {%- if s.text != blank -%}
+            <div class="rte complete-set__text">{{ s.text }}</div>
+          {%- endif -%}
+        </div>
+        <div class="complete-set__card">
+          {% render 'bundle-companion', companion: companion, section_id: section.id, text: s.card_text %}
+        </div>
+      </div>
+    </div>
+  </div>
+{%- elsif request.design_mode -%}
+  <div class="section complete-set{{ scheme_class }}">
+    <div class="container container--narrow">
+      <div class="complete-set__empty">
+        {{ 'product-2' | placeholder_svg_tag: 'complete-set__placeholder' }}
+        <p class="muted">Pick a companion product in the sidebar. Until then this section is hidden on the live store.</p>
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Complete the set",
+  "tag": "section",
+  "class": "section-complete-the-set",
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Companion product",
+      "info": "Falls back to the first product in the shark-blankets collection."
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "The Cozy Set"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Complete the set"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Add the shark blanket with any pair of slippers and it's 25% off — applied automatically in your cart.</p>"
+    },
+    {
+      "type": "text",
+      "id": "card_text",
+      "label": "Card text",
+      "default": "Wearable shark blanket, four sizes from 120 to 183 cm."
+    },
+    {
+      "type": "header",
+      "content": "Section"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "alt", "label": "Soft aqua" },
+        { "value": "brand", "label": "Navy" }
+      ],
+      "default": "alt"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    }
+  ],
+  "presets": [
+    {
+      "name": "Complete the set"
+    }
+  ]
+}
+{% endschema %}

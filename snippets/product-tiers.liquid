@@ -28,7 +28,10 @@
   assign tier_max = tier_min | plus: 1
   assign tiers_id = 'ProductTiers-' | append: section_id
   assign save_template = 'products.product.save_amount' | t: amount: '[amount]'
-  assign second_template = block.settings.second_pair_text
+  assign price_placeholder = '{{' | append: ' price }}'
+  assign second_template = block.settings.second_pair_text | default: '' | replace: price_placeholder, '[price]'
+  assign single_note = block.settings.single_note | default: ''
+  assign bundle_link = block.settings.bundle_link | default: ''
 -%}
 
 {%- if percent > 0 -%}
@@ -46,9 +49,13 @@
     data-second-template="{{ second_template | escape }}"
   >
     <fieldset class="tiers__fieldset">
-      {%- if block.settings.heading != blank -%}
-        <legend class="tiers__legend h5">{{ block.settings.heading | escape }}</legend>
-      {%- endif -%}
+      <legend class="tiers__legend h5">
+        {%- if block.settings.heading != blank -%}
+          {{ block.settings.heading | escape }}
+        {%- else -%}
+          {{ 'products.product.quantity' | t }}
+        {%- endif -%}
+      </legend>
       <div class="tiers__list">
         {%- for q in (1..tier_max) -%}
           {%- liquid
@@ -63,13 +70,16 @@
             if threshold_cents > 0 and projected >= threshold_cents
               assign ships_free = true
             endif
-            assign second_money = total | minus: price | money
+            assign second_price = total | minus: price
+            assign second_money = second_price | money
+            assign second_text = second_template | replace: '[price]', second_money
             assign saving_rem = discount | modulo: 100
             if saving_rem == 0
               assign saving_money = discount | money_without_trailing_zeros
             else
               assign saving_money = discount | money
             endif
+            assign saving_text = save_template | replace: '[amount]', saving_money
             assign is_popular = false
             if q == tier_min
               assign is_popular = true
@@ -101,7 +111,7 @@
                 {% if q == 1 %}{{ 'products.product.pair' | t }}{% else %}{{ 'products.product.pairs' | t }}{% endif %}
               </span>
               {%- if is_popular -%}
-                <span class="badge badge--accent tier__badge">{{ 'products.product.most_popular' | t }}</span>
+                <span class="badge sticker tier__badge">{{ 'products.product.most_popular' | t }}</span>
               {%- elsif is_best -%}
                 <span class="badge tier__badge">{{ 'products.product.best_value' | t }}</span>
               {%- endif -%}
@@ -113,26 +123,26 @@
               </s>
             </span>
             <span class="tier__meta">
-              <span class="tier__saving" data-tier-saving{% unless discount > 0 %} hidden{% endunless %}>
-                {%- if discount > 0 %}{{ save_template | replace: '[amount]', saving_money }}{% endif -%}
+              <span class="tier__saving badge badge--accent" data-tier-saving{% unless discount > 0 %} hidden{% endunless %}>
+                {%- if discount > 0 %}{{ saving_text }}{% endif -%}
               </span>
               {%- if q == 2 and second_template != blank -%}
-                <span class="tier__second" data-tier-second>{{ second_template | escape | replace: '{{ price }}', second_money }}</span>
+                <span class="tier__second" data-tier-second>{{ second_text | escape }}</span>
               {%- endif -%}
               <span class="tier__ship" data-tier-ship{% unless ships_free %} hidden{% endunless %}>
                 {% render 'icon', name: 'check' %}
                 {{ 'bundles.free_shipping_included' | t }}
               </span>
-              {%- if q == 1 and block.settings.single_note != blank -%}
-                <span class="tier__note" data-tier-note{% if ships_free %} hidden{% endif %}>{{ block.settings.single_note | escape }}</span>
+              {%- if q == 1 and single_note != blank -%}
+                <span class="tier__note" data-tier-note{% if ships_free %} hidden{% endif %}>{{ single_note | escape }}</span>
               {%- endif -%}
             </span>
           </label>
         {%- endfor -%}
       </div>
     </fieldset>
-    {%- if block.settings.bundle_link != blank -%}
-      <a class="tiers__link" href="{{ block.settings.bundle_link }}">
+    {%- if bundle_link != blank -%}
+      <a class="tiers__link" href="{{ bundle_link }}">
         {{ 'products.product.tiers_mixed' | t }}
         {% render 'icon', name: 'arrow-right' %}
       </a>

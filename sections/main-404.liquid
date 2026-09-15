@@ -1,4 +1,8 @@
 {%- liquid
+  assign scheme_class = ''
+  if section.settings.color_scheme != blank and section.settings.color_scheme != 'default'
+    assign scheme_class = ' section--' | append: section.settings.color_scheme
+  endif
   assign padding_mobile_top = section.settings.padding_top | times: 0.75 | round
   assign padding_mobile_bottom = section.settings.padding_bottom | times: 0.75 | round
 
@@ -41,7 +45,7 @@
   }
 {%- endstyle -%}
 
-<div class="not-found-section section">
+<div class="not-found-section section{{ scheme_class }}">
   <div class="container container--narrow">
     <div class="not-found">
       <p class="eyebrow">
@@ -153,6 +157,21 @@
       "id": "show_search",
       "label": "Show search box",
       "default": true
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "alt", "label": "Soft aqua" },
+        { "value": "brand", "label": "Navy" }
+      ],
+      "default": "default"
     },
     {
       "type": "header",

@@ -1,0 +1,9 @@
+# Shopify Theme Check configuration for the Shark Bite theme.
+# Runs with `npm run check` (shopify theme check). The recommended preset is the
+# gate: zero errors AND zero warnings before anything is pushed.
+extends: theme-check:recommended
+
+ignore:
+  - node_modules/**
+  - .shopify/**
+  - scripts/**

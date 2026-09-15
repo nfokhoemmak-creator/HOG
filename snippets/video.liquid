@@ -69,7 +69,10 @@
     assign poster_loading = 'eager'
   endif
 
-  assign play_label = label | default: 'accessibility.play_video' | t
+  assign play_label = label
+  if play_label == blank
+    assign play_label = 'accessibility.play_video' | t
+  endif
 
   assign source = ''
   if video != blank
@@ -101,6 +104,15 @@
   {{ 'component-video.css' | asset_url | stylesheet_tag }}
 {%- endif -%}
 
+{%- capture video_toggle -%}
+  {%- if is_autoplay and has_controls == false -%}
+    <button type="button" class="icon-btn video-toggle" data-video-toggle aria-pressed="false" aria-label="{{ 'accessibility.pause_video' | t }}">
+      <span class="video-toggle__icon video-toggle__icon--pause">{% render 'icon', name: 'pause' %}</span>
+      <span class="video-toggle__icon video-toggle__icon--play">{% render 'icon', name: 'play' %}</span>
+    </button>
+  {%- endif -%}
+{%- endcapture -%}
+
 {%- if source == 'shopify' -%}
   <div class="{{ wrapper_class }}" style="--video-aspect: {{ aspect_css }};" data-video-source="shopify">
     {%- if poster_url != blank -%}
@@ -108,6 +120,7 @@
     {%- else -%}
       {{ video | video_tag: image_size: '1100x', autoplay: is_autoplay, loop: is_loop, muted: is_muted, controls: has_controls, preload: preload_mode, loading: 'lazy', class: 'video__el' }}
     {%- endif -%}
+    {{ video_toggle }}
   </div>
 
 {%- elsif source == 'external' -%}
@@ -167,6 +180,7 @@
     >
       <source src="{{ mp4_url }}" type="video/mp4">
     </video>
+    {{ video_toggle }}
   </div>
 
 {%- elsif request.design_mode -%}
