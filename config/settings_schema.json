@@ -293,7 +293,7 @@
         "unit": "%",
         "label": "Tier discount on slippers",
         "info": "Must match the automatic 'Slipper pairs' discount. 0 hides the offer.",
-        "default": 20
+        "default": 15
       },
       {
         "type": "range",
@@ -356,9 +356,18 @@
         "id": "card_image_ratio",
         "label": "Image ratio",
         "options": [
-          { "value": "square", "label": "Square" },
-          { "value": "portrait", "label": "Portrait" },
-          { "value": "natural", "label": "Natural" }
+          {
+            "value": "square",
+            "label": "Square"
+          },
+          {
+            "value": "portrait",
+            "label": "Portrait"
+          },
+          {
+            "value": "natural",
+            "label": "Natural"
+          }
         ],
         "default": "square"
       },
@@ -404,8 +413,14 @@
         "id": "cart_type",
         "label": "Cart type",
         "options": [
-          { "value": "drawer", "label": "Drawer" },
-          { "value": "page", "label": "Page" }
+          {
+            "value": "drawer",
+            "label": "Drawer"
+          },
+          {
+            "value": "page",
+            "label": "Page"
+          }
         ],
         "default": "drawer"
       },

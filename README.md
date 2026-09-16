@@ -177,7 +177,7 @@ matters commercially:
 | `bundle_tier_min` | `2` | Pairs needed before the tier discount shows |
 | `bundle_tier_percent` | `20` | Percent shown on cards, tiers, bundle builder, cart nudges. `0` hides the offer |
 | `set_discount_percent` | `25` | Blanket discount shown when slippers are in the cart. `0` hides the offer |
-| `show_offer_badges` | on | "Buy 2, save 20%" chips |
+| `show_offer_badges` | on | "Buy 2, save 15%" chips |
 | `store_rating` / `store_review_count` | `4.9` / `26` | The store-wide figure every section reads (hero, announcement bar, marquee, testimonials, stats) — edit it in one place |
 | `low_stock_threshold` | `3` | "Only N left" from real inventory; `0` disables |
 | `structured_data_rating` | off | Adds `aggregateRating` to Product JSON-LD — leave off while the Fera embed is active |
@@ -187,7 +187,7 @@ matters commercially:
 The theme never applies a discount itself. Three **automatic, combinable** discounts live in
 Shopify admin and the theme settings above must mirror them:
 
-1. **Slipper pairs 20%** — 20% off products in collection `shark-slippers`, minimum quantity 2.
+1. **Slipper pairs 15%** — 15% off products in collection `shark-slippers`, minimum quantity 2.
    One Winter + one Originals qualifies because the discount targets the collection.
 2. **Blanket 25% with slippers** — Buy X get Y: buy 1 from `shark-slippers`, get 1 from
    `shark-blankets` at 25% off, maximum one per order.
@@ -198,8 +198,8 @@ Shopify admin and the theme settings above must mirror them:
 Every place the theme shows a price — the bundle builder, the product-page quantity tiers, the
 cart nudges, the free-shipping bar — computes it per cart line exactly the way Shopify rounds:
 `discount = round(line_price × percent / 100)`, line totals summed. Identical variants merge into
-one line, so three pairs of the same variant come to $47.98 while three different variants come
-to $47.97; both are correct and both match the cart. The tier percent applies to every
+one line, so three pairs of the same variant come to $50.97 while three different variants come
+to $50.97; both are correct and both match the cart. The tier percent applies to every
 `shark-slippers` line once the **summed** slipper quantity reaches `bundle_tier_min`; the set
 percent applies to one blanket unit when at least one pair is present; free standard shipping
 unlocks when the post-discount total is `>=` the threshold.

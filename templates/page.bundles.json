@@ -32,7 +32,7 @@
           "type": "bundle",
           "settings": {
             "title": "The Pair",
-            "subtitle": "Two pairs, 20% off both. Free standard shipping unlocked.",
+            "subtitle": "Two pairs, 15% off both. Free standard shipping unlocked.",
             "pairs": 2,
             "include_blanket": false,
             "badge": "Most popular",
@@ -43,11 +43,11 @@
           "type": "bundle",
           "settings": {
             "title": "Family Pack",
-            "subtitle": "Three pairs, 20% off",
+            "subtitle": "Three pairs, 15% off",
             "pairs": 3,
             "include_blanket": false,
             "badge": "",
-            "description": "Three pairs, 20% off every one. Mix winter and summer, any sizes."
+            "description": "Three pairs, 15% off every one. Mix winter and summer, any sizes."
           }
         },
         "bundle-cozy-set": {
@@ -99,14 +99,14 @@
           "type": "question",
           "settings": {
             "question": "How do bundle discounts work?",
-            "answer": "<p>Add 2 or more pairs and 20% comes off automatically in your cart. Add the shark blanket with any slippers and the blanket is 25% off. No codes.</p>"
+            "answer": "<p>Add 2 or more pairs and 15% comes off automatically in your cart. Add the shark blanket with any slippers and the blanket is 25% off. No codes.</p>"
           }
         },
         "faq-mix": {
           "type": "question",
           "settings": {
             "question": "Can I mix sizes and styles in a bundle?",
-            "answer": "<p>Yes. Any two or more pairs count — Winter or Originals, any size, any colour. The 20% applies to every pair in your cart, and one blanket gets 25% off as soon as there is at least one pair with it.</p>"
+            "answer": "<p>Yes. Any two or more pairs count — Winter or Originals, any size, any colour. The 15% applies to every pair in your cart, and one blanket gets 25% off as soon as there is at least one pair with it.</p>"
           }
         },
         "faq-delivery": {
@@ -176,7 +176,7 @@
         "eyebrow": "Ready?",
         "heading": "Pick your pack",
         "heading_size": "medium",
-        "text": "<p>Two pairs, 20% off both, free standard shipping. Or add the blanket and save on that too — all applied automatically in your cart.</p>",
+        "text": "<p>Two pairs, 15% off both, free standard shipping. Or add the blanket and save on that too — all applied automatically in your cart.</p>",
         "button_label": "Build a bundle",
         "button_link": "/pages/bundles#bundle-builder",
         "button_label_2": "Shop single pairs",

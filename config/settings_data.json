@@ -28,7 +28,7 @@
     "free_shipping_threshold": 30,
     "free_shipping_text": "Free standard shipping over [amount] across Lebanon",
     "bundle_tier_min": 2,
-    "bundle_tier_percent": 20,
+    "bundle_tier_percent": 15,
     "set_discount_percent": 25,
     "show_offer_badges": true,
     "store_rating": "4.9",

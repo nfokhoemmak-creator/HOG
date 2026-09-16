@@ -22,7 +22,7 @@
         "announcement-pairs": {
           "type": "announcement",
           "settings": {
-            "text": "Buy 2 pairs, save 20% — applied automatically",
+            "text": "Buy 2 pairs, save 15% — applied automatically",
             "link": "/pages/bundles",
             "icon": "gift"
           }
