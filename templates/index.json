@@ -62,7 +62,7 @@
           "settings": {
             "icon": "paw",
             "text": "120 soft chews",
-            "subtext": "Per resealable bag"
+            "subtext": "Per jar"
           }
         }
       },
@@ -89,7 +89,7 @@
         "bad_items": "Crushing tablets into food they then refuse to eat\nFour different bottles for joints, coat, gut and immunity\nHard, chalky tablets seniors and small breeds struggle with\nNo idea where it was made, or by whom\nMoney down the drain when the dog says no",
         "good_label": "The Goodest way",
         "good_heading": "One soft chew. Eight benefits. Zero drama.",
-        "good_items": "Tastes like a treat — dogs ask for it\n8 benefits in one chew, one bag, one price\nSoft texture that's easy on every jaw\nMade in an ISO 9001, HACCP & NSF GMP-certified facility\n[days]-day Happy Dog Guarantee if they don't love it"
+        "good_items": "Tastes like a treat — dogs ask for it\n8 benefits in one chew, one jar, one price\nSoft texture that's easy on every jaw\nMade in an ISO 9001, HACCP & NSF GMP-certified facility\n[days]-day Happy Dog Guarantee if they don't love it"
       }
     },
     "marquee": {
@@ -228,7 +228,7 @@
           "type": "step",
           "settings": {
             "title": "Pick your bundle",
-            "text": "Start with one bag or stock up and save. Every order is covered by the Happy Dog Guarantee."
+            "text": "Start with one jar or stock up and save. Every order is covered by the Happy Dog Guarantee."
           }
         },
         "s2": {
@@ -255,7 +255,7 @@
         "anchor": "how-it-works",
         "eyebrow": "How it works",
         "heading": "Easier than a walk in the rain",
-        "note": "Follow the feeding guide on the bag for your dog's weight. Fresh water always available."
+        "note": "Follow the feeding guide on the jar for your dog's weight. Fresh water always available."
       }
     },
     "inside": {
@@ -281,7 +281,7 @@
           "type": "point",
           "settings": {
             "icon": "package",
-            "title": "120 chews per resealable bag",
+            "title": "120 chews per jar",
             "text": "Stays fresh from the first chew to the last."
           }
         },
@@ -330,8 +330,8 @@
             "subtitle": "Save 10%",
             "badge": "Most popular",
             "featured": true,
-            "perks": "240 soft chews\nSave 10% vs. buying single bags\n[days]-day Happy Dog Guarantee\nTracked shipping",
-            "button_label": "Get 2 bags"
+            "perks": "240 soft chews\nSave 10% vs. buying single jars\n[days]-day Happy Dog Guarantee\nTracked shipping",
+            "button_label": "Get 2 jars"
           }
         },
         "value": {
@@ -341,8 +341,8 @@
             "subtitle": "Save 20%",
             "badge": "Best value",
             "featured": false,
-            "perks": "360 soft chews\nSave 20% — lowest price per bag\n[days]-day Happy Dog Guarantee\nTracked shipping",
-            "button_label": "Get 3 bags"
+            "perks": "360 soft chews\nSave 20% — lowest price per jar\n[days]-day Happy Dog Guarantee\nTracked shipping",
+            "button_label": "Get 3 jars"
           }
         }
       },
@@ -354,8 +354,8 @@
       "settings": {
         "anchor": "bundles",
         "eyebrow": "Pick your bundle",
-        "heading": "More bags, more savings, more tail wags",
-        "text": "120 soft chews per bag. Every bundle ships fast and is covered by the Happy Dog Guarantee.",
+        "heading": "More jars, more savings, more tail wags",
+        "text": "120 soft chews per jar. Every bundle ships fast and is covered by the Happy Dog Guarantee.",
         "chews_per_bag": 120
       }
     },
@@ -399,8 +399,8 @@
           "type": "review",
           "settings": {
             "rating": 4,
-            "title": "Great chews, wish the bag was bigger",
-            "body": "Our two huskies go through a bag fast so we switched to the 3-bag bundle. Would love an even bigger pack. The chews themselves are excellent and both dogs love them.",
+            "title": "Great chews, wish the jar was bigger",
+            "body": "Our two huskies go through a jar fast so we switched to the 3-jar bundle. Would love an even bigger pack. The chews themselves are excellent and both dogs love them.",
             "name": "Tom W.",
             "dog": "Luna & Nova, Huskies",
             "verified": true
@@ -422,7 +422,7 @@
           "settings": {
             "rating": 5,
             "title": "Puppy loves them",
-            "body": "Got these for our 8-month-old golden after our vet suggested a multivitamin. Easy to give, no mess, and she sits perfectly the second she hears the bag.",
+            "body": "Got these for our 8-month-old golden after our vet suggested a multivitamin. Easy to give, no mess, and she sits perfectly the second she hears the jar open.",
             "name": "Daniel F.",
             "dog": "Honey, 8mo Golden Retriever",
             "verified": true
@@ -433,7 +433,7 @@
           "settings": {
             "rating": 5,
             "title": "Finally, no more cheese",
-            "body": "I have been hiding pills in cheese for four years. Four years! These get eaten straight from my hand. Ordered the 2-bag bundle, will be back.",
+            "body": "I have been hiding pills in cheese for four years. Four years! These get eaten straight from my hand. Ordered the 2-jar bundle, will be back.",
             "name": "Layla H.",
             "dog": "Rocky, 6yo French Bulldog",
             "verified": true
@@ -455,7 +455,7 @@
           "settings": {
             "rating": 5,
             "title": "Worth every penny",
-            "body": "Three dogs, one bag, zero arguments. The 3-bag bundle is the only way we buy now. Even our fussy terrier queues up for hers.",
+            "body": "Three dogs, one jar, zero arguments. The 3-jar bundle is the only way we buy now. Even our fussy terrier queues up for hers.",
             "name": "Fatima A.",
             "dog": "Pepper, Coco & Bruno",
             "verified": true
@@ -643,14 +643,14 @@
           "type": "question",
           "settings": {
             "question": "How many chews does my dog need each day?",
-            "answer": "<p>Follow the feeding guide printed on the bag — it's based on your dog's weight. Give the chews as a treat, ideally at the same time each day so it becomes a routine. Always keep fresh water available.</p>"
+            "answer": "<p>Follow the feeding guide printed on the jar — it's based on your dog's weight. Give the chews as a treat, ideally at the same time each day so it becomes a routine. Always keep fresh water available.</p>"
           }
         },
         "q2": {
           "type": "question",
           "settings": {
             "question": "What's in Goodest Chews?",
-            "answer": "<p>An 8-in-1 formula that supports joints, heart, skin &amp; coat, digestion, immunity, liver, antioxidant defense and everyday energy, in a soft, treat-style chew. The full ingredient list and guaranteed analysis are printed on every bag — email us if you'd like a copy before you order.</p>"
+            "answer": "<p>An 8-in-1 formula that supports joints, heart, skin &amp; coat, digestion, immunity, liver, antioxidant defense and everyday energy, in a soft, treat-style chew. The full ingredient list and guaranteed analysis are printed on every jar — email us if you'd like a copy before you order.</p>"
           }
         },
         "q3": {
@@ -692,7 +692,7 @@
           "type": "question",
           "settings": {
             "question": "How do the bundles work?",
-            "answer": "<p>Every bundle is the same 120-chew bag — you just save more when you buy more. Two bags saves 10%, three bags saves 20%, and every bundle ships together with tracking.</p>"
+            "answer": "<p>Every bundle is the same 120-chew jar — you just save more when you buy more. Two jars saves 10%, three jars saves 20%, and every bundle ships together with tracking.</p>"
           }
         },
         "q9": {

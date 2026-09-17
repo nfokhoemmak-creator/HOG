@@ -95,7 +95,7 @@
         });
       });
 
-      // "Upgrade to 2 bags and save" — swap the line for the bigger bundle.
+      // "Upgrade to 2 jars and save" — swap the line for the bigger bundle.
       this.querySelectorAll('[data-upsell-swap]').forEach((button) => {
         button.addEventListener('click', async (event) => {
           event.preventDefault();

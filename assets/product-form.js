@@ -4,7 +4,7 @@
 
    Variant data is embedded as JSON by sections/main-product.liquid. Picking a
    bundle finds the matching variant, updates the hidden id input, the price,
-   the compare-at price, the savings badge, the per-bag price, availability,
+   the compare-at price, the savings badge, the per-jar price, availability,
    the URL and the sticky bar.
 
    Without JS the form still posts to /cart/add with the first available
@@ -147,7 +147,7 @@
 
       if (this.perBagTarget) {
         if (bags > 1) {
-          this.perBagTarget.textContent = fill(strings.perBag || '{{ price }} per bag', 'price', money(variant.price / bags));
+          this.perBagTarget.textContent = fill(strings.perBag || '{{ price }} per jar', 'price', money(variant.price / bags));
           this.perBagTarget.hidden = false;
         } else {
           this.perBagTarget.hidden = true;

@@ -132,7 +132,7 @@
       "shop_now": "Shop now",
       "save_amount": "Save {{ amount }}",
       "save_percent": "Save {{ percent }}%",
-      "per_bag": "{{ price }} per bag",
+      "per_bag": "{{ price }} per jar",
       "from_price": "From {{ price }}",
       "chews_per_bag": "{{ count }} soft chews",
       "quantity": {

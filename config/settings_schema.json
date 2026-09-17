@@ -127,7 +127,7 @@
     "settings": [
       { "type": "range", "id": "guarantee_days", "min": 14, "max": 120, "step": 2, "unit": "d", "label": "Guarantee length (days)", "default": 60 },
       { "type": "text", "id": "guarantee_title", "label": "Guarantee name", "default": "Happy Dog Guarantee" },
-      { "type": "text", "id": "guarantee_short", "label": "Guarantee one-liner", "default": "If your dog doesn't love them, we refund you. No bag returns, no questions." },
+      { "type": "text", "id": "guarantee_short", "label": "Guarantee one-liner", "default": "If your dog doesn't love them, we refund you. Nothing to send back, no questions." },
       { "type": "text", "id": "shipping_short", "label": "Shipping one-liner", "default": "Ships within 1–2 business days · tracked delivery" },
       { "type": "text", "id": "rating_value", "label": "Average rating (hero, product page)", "info": "Leave empty until you have real reviews. Enter e.g. 4.8 to show stars in the hero and on the product page. The reviews section computes its own average from the reviews it shows." },
       { "type": "text", "id": "rating_label", "label": "Rating label", "default": "from happy dog parents" }

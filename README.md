@@ -52,11 +52,11 @@ templates/        JSON templates. index.json is the landing page; product.json t
 ## The one product
 
 Everything points at the product chosen in **Theme settings → Brand → The product**.
-Bundles are plain variants of that product (option "Bundle": `1 Bag`, `2 Bags`, `3 Bags`).
-The theme reads the number of bags from the variant title, so:
+Bundles are plain variants of that product (option "Bundle": `1 Jar`, `2 Jars`, `3 Jars`).
+The theme reads the number of jars from the variant title, so:
 
-- the bundle cards and the product-page picker show per-bag price and % saved from `compare_at_price`,
-- the cart drawer offers to upgrade a single bag to the next bundle,
+- the bundle cards and the product-page picker show per-jar price and % saved from `compare_at_price`,
+- the cart drawer offers to upgrade a single jar to the next bundle,
 - the sticky bars always show the selected bundle's price.
 
 To change prices or savings, edit the variants in Shopify admin — no theme change needed.
@@ -109,7 +109,7 @@ Tokens are emitted from theme settings in `layout/theme.liquid`:
 | --- | --- |
 | `assets/theme.js` | Menu drawer, announcement rotation, header shadow, reveal-on-scroll, count-ups, `<sticky-bar>`, `<product-gallery>`, one-open FAQ |
 | `assets/cart-drawer.js` | Ajax cart, drawer open/close, quick-add forms, bundle upsell swap |
-| `assets/product-form.js` | Bundle picker → price / savings / per-bag / availability / sticky bar |
+| `assets/product-form.js` | Bundle picker → price / savings / per-jar / availability / sticky bar |
 
 All custom elements degrade to working HTML: forms post to `/cart/add`, the cart page works without the drawer.
 

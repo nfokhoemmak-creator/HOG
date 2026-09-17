@@ -12,7 +12,7 @@
         "title": {
           "type": "title",
           "settings": {
-            "eyebrow": "Soft chews · 120 per bag"
+            "eyebrow": "Soft chews · 120 per jar"
           }
         },
         "benefits": {
@@ -75,7 +75,7 @@
           "type": "accordion",
           "settings": {
             "heading": "Feeding guide",
-            "content": "<p>Give as a treat once a day, following the guide printed on the bag for your dog's weight. Keep fresh water available. If your dog is pregnant, nursing, on medication or has a medical condition, check with your vet first.</p>",
+            "content": "<p>Give as a treat once a day, following the guide printed on the jar for your dog's weight. Keep fresh water available. If your dog is pregnant, nursing, on medication or has a medical condition, check with your vet first.</p>",
             "open": false
           }
         },
@@ -83,7 +83,7 @@
           "type": "accordion",
           "settings": {
             "heading": "Ingredients & guaranteed analysis",
-            "content": "<p>The full ingredient list and guaranteed analysis are printed on every bag. Want a copy before you order? Email <a href=\"mailto:goodestchews@outlook.com\">goodestchews@outlook.com</a> and we'll send it over.</p>",
+            "content": "<p>The full ingredient list and guaranteed analysis are printed on every jar. Want a copy before you order? Email <a href=\"mailto:goodestchews@outlook.com\">goodestchews@outlook.com</a> and we'll send it over.</p>",
             "metafield": "custom.ingredients"
           }
         },
@@ -304,8 +304,8 @@
           "type": "review",
           "settings": {
             "rating": 4,
-            "title": "Great chews, wish the bag was bigger",
-            "body": "Our two huskies go through a bag fast so we switched to the 3-bag bundle. Would love an even bigger pack. The chews themselves are excellent and both dogs love them.",
+            "title": "Great chews, wish the jar was bigger",
+            "body": "Our two huskies go through a jar fast so we switched to the 3-jar bundle. Would love an even bigger pack. The chews themselves are excellent and both dogs love them.",
             "name": "Tom W.",
             "dog": "Luna & Nova, Huskies",
             "verified": true
@@ -327,7 +327,7 @@
           "settings": {
             "rating": 5,
             "title": "Finally, no more cheese",
-            "body": "I have been hiding pills in cheese for four years. Four years! These get eaten straight from my hand. Ordered the 2-bag bundle, will be back.",
+            "body": "I have been hiding pills in cheese for four years. Four years! These get eaten straight from my hand. Ordered the 2-jar bundle, will be back.",
             "name": "Layla H.",
             "dog": "Rocky, 6yo French Bulldog",
             "verified": true
@@ -359,7 +359,7 @@
           "type": "question",
           "settings": {
             "question": "How many chews does my dog need each day?",
-            "answer": "<p>Follow the feeding guide printed on the bag — it's based on your dog's weight. Give the chews as a treat, ideally at the same time each day so it becomes a routine.</p>"
+            "answer": "<p>Follow the feeding guide printed on the jar — it's based on your dog's weight. Give the chews as a treat, ideally at the same time each day so it becomes a routine.</p>"
           }
         },
         "q2": {
@@ -387,7 +387,7 @@
           "type": "question",
           "settings": {
             "question": "How do the bundles work?",
-            "answer": "<p>Every bundle is the same 120-chew bag — you just save more when you buy more. Two bags saves 10%, three bags saves 20%, and every bundle ships together with tracking.</p>"
+            "answer": "<p>Every bundle is the same 120-chew jar — you just save more when you buy more. Two jars saves 10%, three jars saves 20%, and every bundle ships together with tracking.</p>"
           }
         }
       },
