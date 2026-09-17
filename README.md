@@ -183,6 +183,16 @@ Evergreen Chrome, Safari, Firefox and Edge, plus iOS Safari 15+. The theme uses
 - All decorative imagery has empty `alt`; product imagery uses the media alt text.
 - Color pairs in the default palette meet WCAG AA at body sizes.
 
+## AI marketing creative
+
+[`tools/arcads-claude-code/`](tools/arcads-claude-code/) is the [Arcads](https://arcads.ai/?via=claude-code)
+AI video/image Claude Code skill pack, vendored as its own subproject for
+generating House of Garments ad creative (UGC-style product videos, static
+Meta image ads, YouTube thumbnails, etc.) via the Arcads API. It has its own
+`.env`, setup script, and skills — see its
+[README](tools/arcads-claude-code/README.md) to get started. It does not
+affect the theme build.
+
 ## License
 
 MIT — see [LICENSE](LICENSE). Brand assets, product photography, logos and the
