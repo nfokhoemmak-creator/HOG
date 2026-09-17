@@ -1,6 +1,7 @@
 {
   "current": {
-    "logo_width": 190,
+    "logo": "shopify://shop_images/goodest-chews-logo-transparent.png",
+    "logo_width": 100,
     "brand_tagline": "For the goodest dogs.",
     "featured_product": "goodest-chews-8-in-1-multivitamin-chews",
     "color_background": "#FFFBF4",
