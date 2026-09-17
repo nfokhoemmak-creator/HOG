@@ -133,11 +133,17 @@
       this.items = Array.from(this.querySelectorAll('.announcement-bar__item'));
       if (this.items.length < 2 || REDUCED_MOTION || this.hasAttribute('data-static')) return;
 
-      const seconds = parseInt(this.dataset.speed, 10) || 5;
+      this.seconds = parseInt(this.dataset.speed, 10) || 5;
       this.index = 0;
-      this.timer = window.setInterval(() => this.next(), seconds * 1000);
+      this.start();
 
       this.addEventListener('mouseenter', () => window.clearInterval(this.timer));
+      this.addEventListener('mouseleave', () => this.start());
+    }
+
+    start() {
+      window.clearInterval(this.timer);
+      this.timer = window.setInterval(() => this.next(), this.seconds * 1000);
     }
 
     disconnectedCallback() {
@@ -304,8 +310,12 @@
       this.thumbs.forEach((thumb) => {
         const active = thumb.dataset.thumb === String(id);
         thumb.setAttribute('aria-current', String(active));
-        if (active && thumb.scrollIntoView) {
-          thumb.scrollIntoView({ block: 'nearest', inline: 'center', behavior: REDUCED_MOTION ? 'auto' : 'smooth' });
+        if (active && thumb.parentElement && typeof thumb.parentElement.scrollTo === 'function') {
+          const strip = thumb.parentElement;
+          strip.scrollTo({
+            left: thumb.offsetLeft - (strip.clientWidth - thumb.offsetWidth) / 2,
+            behavior: REDUCED_MOTION ? 'auto' : 'smooth'
+          });
         }
       });
     }
@@ -319,7 +329,8 @@
 
   function initHeader() {
     const header = document.querySelector('.header');
-    if (!header) return;
+    if (!header || header.dataset.bound) return;
+    header.dataset.bound = 'true';
     const update = () => header.classList.toggle('is-scrolled', window.scrollY > 8);
     update();
     window.addEventListener('scroll', update, { passive: true });

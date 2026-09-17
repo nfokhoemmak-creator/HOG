@@ -10,23 +10,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>{{ gift_card_title }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    {% render 'css-variables' %}
     {{ 'base.css' | asset_url | stylesheet_tag }}
-    <style>
-      :root {
-        --color-bg: {{ settings.color_background }};
-        --color-bg-alt: {{ settings.color_background_alt }};
-        --color-fg: {{ settings.color_text }};
-        --color-muted: {{ settings.color_text_muted }};
-        --color-accent: {{ settings.color_accent }};
-        --color-accent-contrast: {{ settings.color_accent_contrast }};
-        --color-border: {{ settings.color_border }};
-        --color-btn-bg: {{ settings.color_button_background }};
-        --color-btn-fg: {{ settings.color_button_text }};
-        --radius: {{ settings.layout_corner_radius }}px;
-        --container: 60rem;
-        --gutter: 24px;
-      }
-    </style>
   </head>
 
   <body>
@@ -39,23 +27,23 @@
       {%- endif -%}
 
       <div style="display: inline-block; padding: var(--space-6); border: 1px solid var(--color-border); border-radius: var(--radius);">
-        <p class="h1 accent">{{ gift_card.balance | money }}</p>
+        <p class="h1 text-orange">{{ gift_card.balance | money }}</p>
 
         {%- if gift_card.balance != gift_card.initial_value -%}
           <p class="muted">{{ 'gift_cards.issued.remaining_html' | t: balance: balance_value }}</p>
         {%- endif -%}
 
-        <p style="margin-top: var(--space-4); font-family: var(--font-heading-family); letter-spacing: 0.2em;">
+        <p style="margin-top: var(--space-4); font-family: var(--font-heading); letter-spacing: 0.2em;">
           {{ gift_card.code | format_code }}
         </p>
       </div>
 
       <p style="margin-top: var(--space-6);">
-        <a class="btn btn--accent" href="{{ shop.url }}">{{ 'gift_cards.issued.shop_link' | t }}</a>
+        <a class="btn" href="{{ shop.url }}">{{ 'gift_cards.issued.shop_link' | t }}</a>
       </p>
 
       <p style="margin-top: var(--space-4);">
-        <button type="button" class="btn btn--outline btn--small" onclick="window.print()">
+        <button type="button" class="btn btn--outline btn--sm" onclick="window.print()">
           {{ 'gift_cards.issued.print_gift_card' | t }}
         </button>
       </p>

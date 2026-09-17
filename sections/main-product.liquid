@@ -189,6 +189,13 @@
               <script type="application/json" data-variants>
                 {{ product.variants | json }}
               </script>
+              <script type="application/json" data-inventory>
+                {
+                  {%- for v in product.variants -%}
+                    {{ v.id | json }}: { "quantity": {{ v.inventory_quantity | default: 0 }}, "managed": {% if v.inventory_management == 'shopify' %}true{% else %}false{% endif %} }{% unless forloop.last %},{% endunless %}
+                  {%- endfor -%}
+                }
+              </script>
 
               {%- form 'product', product, id: form_id, novalidate: 'novalidate' -%}
                 <input type="hidden" name="id" value="{{ current_variant.id }}">
@@ -246,18 +253,20 @@
           {%- when 'accordion' -%}
             {%- liquid
               assign content = block.settings.content
+              assign from_metafield = false
               if block.settings.metafield != blank
                 assign parts = block.settings.metafield | split: '.'
                 assign meta_value = product.metafields[parts[0]][parts[1]]
                 if meta_value != blank
                   assign content = meta_value
+                  assign from_metafield = true
                 endif
               endif
             -%}
             {%- if content != blank -%}
               <details class="accordion" {% if block.settings.open %}open{% endif %} {{ block.shopify_attributes }}>
                 <summary>{{ block.settings.heading | escape }}<span class="accordion__icon">{% render 'icon', name: 'plus' %}</span></summary>
-                <div class="accordion__content rte">{{ content }}</div>
+                <div class="accordion__content rte">{% if from_metafield %}{{ content | metafield_tag }}{% else %}{{ content }}{% endif %}</div>
               </details>
             {%- endif -%}
 

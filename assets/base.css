@@ -2885,12 +2885,15 @@ textarea.field__input {
   border-top: 1px solid var(--color-border);
   box-shadow: 0 -12px 30px -18px rgba(31, 45, 38, 0.35);
   transform: translateY(110%);
-  transition: transform 0.4s var(--ease-out);
+  visibility: hidden;
+  transition: transform 0.4s var(--ease-out), visibility 0s linear 0.4s;
   padding-bottom: env(safe-area-inset-bottom);
 }
 
 .sticky-bar.is-visible {
   transform: none;
+  visibility: visible;
+  transition-delay: 0s;
 }
 
 .sticky-bar__inner {
@@ -3660,27 +3663,27 @@ textarea.field__input {
 
 /* ------------------------------------------------------------- animations */
 
-.animate .reveal {
+html.js .animate .reveal {
   opacity: 0;
   transform: translateY(26px);
   transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
   transition-delay: calc(var(--i, 0) * 90ms);
 }
 
-.animate .reveal.is-visible {
+html.js .animate .reveal.is-visible {
   opacity: 1;
   transform: none;
 }
 
-.animate .reveal--scale {
+html.js .animate .reveal--scale {
   transform: scale(0.94);
 }
 
-.animate .reveal--left {
+html.js .animate .reveal--left {
   transform: translateX(-30px);
 }
 
-.animate .reveal--right {
+html.js .animate .reveal--right {
   transform: translateX(30px);
 }
 
@@ -3727,7 +3730,7 @@ textarea.field__input {
     scroll-behavior: auto !important;
   }
 
-  .animate .reveal {
+  html.js .animate .reveal {
     opacity: 1;
     transform: none;
   }

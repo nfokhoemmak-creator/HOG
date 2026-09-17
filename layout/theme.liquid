@@ -18,9 +18,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
+    {%- assign tag_list = current_tags | join: ', ' -%}
     <title>
       {{ page_title }}
-      {%- if current_tags %} &ndash; {{ 'general.meta.tags' | t: tags: current_tags | join: ', ' }}{% endif -%}
+      {%- if current_tags %} &ndash; {{ 'general.meta.tags' | t: tags: tag_list }}{% endif -%}
       {%- if current_page != 1 %} &ndash; {{ 'general.meta.page' | t: page: current_page }}{% endif -%}
       {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
     </title>
@@ -36,13 +37,10 @@
     {%- liquid
       case settings.type_heading_font
         when 'baloo'
-          assign heading_family = "'Baloo 2', 'Fredoka', 'Nunito', system-ui, sans-serif"
           assign google_heading = 'Baloo+2:wght@600;700;800'
         when 'nunito'
-          assign heading_family = "'Nunito', system-ui, sans-serif"
           assign google_heading = ''
         else
-          assign heading_family = "'Fredoka', 'Nunito', system-ui, sans-serif"
           assign google_heading = 'Fredoka:wght@500;600;700'
       endcase
     -%}
@@ -53,38 +51,20 @@
       <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     {%- endif -%}
 
-    <style>
-      :root {
-        --font-heading: {{ heading_family }};
-        --font-body: 'Nunito', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-        --heading-scale: {{ settings.type_heading_scale | divided_by: 100.0 }};
-        --body-scale: {{ settings.type_body_scale | divided_by: 100.0 }};
-
-        --color-bg: {{ settings.color_background }};
-        --color-bg-alt: {{ settings.color_background_alt }};
-        --color-border: {{ settings.color_border }};
-        --color-fg: {{ settings.color_text }};
-        --color-muted: {{ settings.color_text_muted }};
-        --color-green: {{ settings.color_primary }};
-        --color-green-dark: {{ settings.color_primary_dark }};
-        --color-orange: {{ settings.color_accent }};
-        --color-orange-dark: {{ settings.color_accent_dark }};
-        --color-star: {{ settings.color_star }};
-        --color-sale: {{ settings.color_sale }};
-        --color-green-rgb: {{ settings.color_primary | color_extract: 'red' }}, {{ settings.color_primary | color_extract: 'green' }}, {{ settings.color_primary | color_extract: 'blue' }};
-        --color-orange-rgb: {{ settings.color_accent | color_extract: 'red' }}, {{ settings.color_accent | color_extract: 'green' }}, {{ settings.color_accent | color_extract: 'blue' }};
-        --color-green-soft: {{ settings.color_primary | color_mix: settings.color_background, 12 }};
-        --color-orange-soft: {{ settings.color_accent | color_mix: settings.color_background, 16 }};
-
-        --container: {{ settings.layout_max_width }}px;
-        --gutter: {{ settings.layout_gutter }}px;
-        --radius: {{ settings.layout_corner_radius }}px;
-        --radius-sm: {{ settings.layout_corner_radius | divided_by: 2 | at_least: 6 }}px;
-      }
-    </style>
+    {% render 'css-variables' %}
 
     {{ 'base.css' | asset_url | stylesheet_tag }}
 
+    {%- liquid
+      comment
+        Placeholders the JS swaps at runtime. Built inside a tag because an
+        output tag would end at the first "}}".
+      endcomment
+      assign ph_count = '{{ count }}'
+      assign ph_price = '{{ price }}'
+      assign ph_amount = '{{ amount }}'
+      assign ph_percent = '{{ percent }}'
+    -%}
     <script>
       document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
       window.theme = {
@@ -94,10 +74,10 @@
           added: {{ 'products.product.added' | t | json }},
           soldOut: {{ 'products.product.sold_out' | t | json }},
           unavailable: {{ 'products.product.unavailable' | t | json }},
-          lowStock: {{ 'products.product.low_stock' | t: count: '{{ count }}' | json }},
-          perBag: {{ 'products.product.per_bag' | t: price: '{{ price }}' | json }},
-          save: {{ 'products.product.save_amount' | t: amount: '{{ amount }}' | json }},
-          savePercent: {{ 'products.product.save_percent' | t: percent: '{{ percent }}' | json }},
+          lowStock: {{ 'products.product.low_stock' | t: count: ph_count | json }},
+          perBag: {{ 'products.product.per_bag' | t: price: ph_price | json }},
+          save: {{ 'products.product.save_amount' | t: amount: ph_amount | json }},
+          savePercent: {{ 'products.product.save_percent' | t: percent: ph_percent | json }},
           cartError: {{ 'sections.cart.error' | t | json }},
           itemAdded: {{ 'sections.cart.item_added' | t | json }}
         },

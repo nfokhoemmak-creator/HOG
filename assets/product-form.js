@@ -41,6 +41,7 @@
       this.gallery = document.querySelector('product-gallery');
 
       this.variants = this.readVariants();
+      this.inventory = this.readJSON('[type="application/json"][data-inventory]') || {};
       this.optionInputs = Array.from(this.section.querySelectorAll('[data-option-index]'));
 
       this.optionInputs.forEach((input) => {
@@ -54,14 +55,18 @@
       this.onOptionChange({ silent: true });
     }
 
-    readVariants() {
-      const script = this.querySelector('[type="application/json"][data-variants]');
-      if (!script) return [];
+    readJSON(selector) {
+      const script = this.querySelector(selector);
+      if (!script) return null;
       try {
         return JSON.parse(script.textContent);
       } catch (error) {
-        return [];
+        return null;
       }
+    }
+
+    readVariants() {
+      return this.readJSON('[type="application/json"][data-variants]') || [];
     }
 
     selectedOptions() {
@@ -157,8 +162,10 @@
     updateInventory(variant) {
       if (!this.inventoryTarget) return;
 
-      const quantity = variant.inventory_quantity;
-      const managed = variant.inventory_management === 'shopify';
+      // Shopify's variant JSON omits inventory_quantity; the section emits a map.
+      const stock = this.inventory[String(variant.id)] || {};
+      const quantity = typeof stock.quantity === 'number' ? stock.quantity : variant.inventory_quantity;
+      const managed = typeof stock.managed === 'boolean' ? stock.managed : variant.inventory_management === 'shopify';
       const low = managed && variant.available && quantity > 0 && quantity <= 10;
 
       if (low) {

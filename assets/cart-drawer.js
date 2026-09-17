@@ -25,9 +25,15 @@
       body: JSON.stringify(body)
     });
 
-    const data = await response.json();
+    let data = null;
+    try {
+      data = await response.json();
+    } catch (error) {
+      // Non-JSON body (rate limit page, redirect, interrupted response).
+    }
+
     if (!response.ok) {
-      throw new Error(data.description || data.message || strings.cartError);
+      throw new Error((data && (data.description || data.message)) || strings.cartError || 'Something went wrong. Please try again.');
     }
     return data;
   }
@@ -42,34 +48,40 @@
 
   class CartDrawer extends HTMLElement {
     connectedCallback() {
+      this.releaseFocus = null;
+      this.opener = null;
+      this.bind();
+
+      this.onCartUpdated = () => this.refresh();
+      this.onCartOpen = (event) => this.open(event.detail && event.detail.opener);
+      this.onTriggerClick = (event) => {
+        const trigger = event.target.closest('[data-cart-trigger]');
+        if (!trigger) return;
+        event.preventDefault();
+        this.open(trigger);
+      };
+
+      document.addEventListener('cart:updated', this.onCartUpdated);
+      document.addEventListener('cart:open', this.onCartOpen);
+      document.addEventListener('click', this.onTriggerClick);
+    }
+
+    disconnectedCallback() {
+      document.removeEventListener('cart:updated', this.onCartUpdated);
+      document.removeEventListener('cart:open', this.onCartOpen);
+      document.removeEventListener('click', this.onTriggerClick);
+      if (this.releaseFocus) this.releaseFocus();
+    }
+
+    /** Binds the drawer's own controls. Re-run after every innerHTML swap. */
+    bind() {
       this.panel = this.querySelector('.cart-drawer__panel');
       this.overlay = this.querySelector('.cart-drawer__overlay');
       this.closeButton = this.querySelector('[data-cart-close]');
-      this.releaseFocus = null;
-      this.opener = null;
 
       if (this.overlay) this.overlay.addEventListener('click', () => this.close());
       if (this.closeButton) this.closeButton.addEventListener('click', () => this.close());
 
-      this.bindLineItems();
-
-      if (!this.listening) {
-        this.listening = true;
-
-        document.addEventListener('cart:updated', () => this.refresh());
-        document.addEventListener('cart:open', (event) => this.open(event.detail && event.detail.opener));
-
-        // Any link to the cart opens the drawer instead, when the drawer is on.
-        document.addEventListener('click', (event) => {
-          const trigger = event.target.closest('[data-cart-trigger]');
-          if (!trigger) return;
-          event.preventDefault();
-          this.open(trigger);
-        });
-      }
-    }
-
-    bindLineItems() {
       this.querySelectorAll('[data-line-remove]').forEach((button) => {
         button.addEventListener('click', (event) => {
           event.preventDefault();
@@ -103,11 +115,12 @@
     }
 
     open(opener) {
-      this.opener = opener || null;
+      if (opener) this.opener = opener;
       this.classList.add('is-open');
       this.setAttribute('aria-hidden', 'false');
       if (window.GC) {
         window.GC.lockScroll(true);
+        if (this.releaseFocus) this.releaseFocus();
         this.releaseFocus = window.GC.trapFocus(this.panel, () => this.close());
       }
     }
@@ -116,8 +129,12 @@
       this.classList.remove('is-open');
       this.setAttribute('aria-hidden', 'true');
       if (window.GC) window.GC.lockScroll(false);
-      if (this.releaseFocus) this.releaseFocus();
+      if (this.releaseFocus) {
+        this.releaseFocus();
+        this.releaseFocus = null;
+      }
       if (this.opener && document.body.contains(this.opener)) this.opener.focus();
+      this.opener = null;
     }
 
     async change(key, quantity) {
@@ -140,8 +157,15 @@
 
       const wasOpen = this.classList.contains('is-open');
       this.innerHTML = fresh.innerHTML;
-      this.connectedCallback();
-      if (wasOpen) this.classList.add('is-open');
+      this.bind();
+
+      if (wasOpen) {
+        this.classList.add('is-open');
+        if (window.GC) {
+          if (this.releaseFocus) this.releaseFocus();
+          this.releaseFocus = window.GC.trapFocus(this.panel, () => this.close());
+        }
+      }
 
       updateCartCount();
     }
@@ -169,7 +193,7 @@
 
   async function updateCartCount() {
     try {
-      const response = await fetch(`${routes.root || '/'}cart.js`);
+      const response = await fetch(`${routes.cart || '/cart'}.js`);
       const cart = await response.json();
       document.querySelectorAll('[data-cart-count]').forEach((node) => {
         node.textContent = cart.item_count;
