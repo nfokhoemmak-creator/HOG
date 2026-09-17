@@ -7,13 +7,13 @@
         "heading": "8 health benefits. One chew your dog will [beg for].",
         "lead": "Joints, heart, skin & coat, digestion, immunity, liver, antioxidants and energy — covered in one treat-shaped chew. No more pills hidden in cheese.",
         "bullet_1": "Replaces 4+ separate supplements with one daily chew",
-        "bullet_2": "Soft & chewy — easy for puppies, seniors and small breeds",
+        "bullet_2": "Soft & chewy — easy for seniors and small breeds",
         "bullet_3": "Made in an NSF GMP-certified, FDA-registered facility",
         "cta_label": "Get Goodest Chews",
         "secondary_label": "See how it works",
         "show_rating": true,
         "proof_1": "ISO 9001 & HACCP certified",
-        "proof_2": "60-day money-back guarantee",
+        "proof_2": "[days]-day money-back guarantee",
         "proof_3": "Ships in 1–2 business days",
         "show_guarantee_badge": true,
         "chip_1": "Joints & mobility",
@@ -25,14 +25,57 @@
     "trust": {
       "type": "trust-bar",
       "blocks": {
-        "t1": { "type": "item", "settings": { "icon": "award", "text": "NSF GMP certified", "subtext": "Animal supplement manufacturing" } },
-        "t2": { "type": "item", "settings": { "icon": "flag", "text": "FDA-registered facility", "subtext": "Registration no. 11941654272" } },
-        "t3": { "type": "item", "settings": { "icon": "badge-check", "text": "ISO 9001:2015 & HACCP", "subtext": "Audited quality & food safety" } },
-        "t4": { "type": "item", "settings": { "icon": "shield-check", "text": "60-day guarantee", "subtext": "Happy dog or your money back" } },
-        "t5": { "type": "item", "settings": { "icon": "paw", "text": "120 soft chews", "subtext": "Per resealable bag" } }
+        "t1": {
+          "type": "item",
+          "settings": {
+            "icon": "award",
+            "text": "NSF GMP certified",
+            "subtext": "Animal supplement manufacturing"
+          }
+        },
+        "t2": {
+          "type": "item",
+          "settings": {
+            "icon": "flag",
+            "text": "FDA-registered facility",
+            "subtext": "Registration no. 11941654272"
+          }
+        },
+        "t3": {
+          "type": "item",
+          "settings": {
+            "icon": "badge-check",
+            "text": "ISO 9001:2015 & HACCP",
+            "subtext": "Audited quality & food safety"
+          }
+        },
+        "t4": {
+          "type": "item",
+          "settings": {
+            "icon": "shield-check",
+            "text": "[days]-day guarantee",
+            "subtext": "Happy dog or your money back"
+          }
+        },
+        "t5": {
+          "type": "item",
+          "settings": {
+            "icon": "paw",
+            "text": "120 soft chews",
+            "subtext": "Per resealable bag"
+          }
+        }
       },
-      "block_order": ["t1", "t2", "t3", "t4", "t5"],
-      "settings": { "marquee": true }
+      "block_order": [
+        "t1",
+        "t2",
+        "t3",
+        "t4",
+        "t5"
+      ],
+      "settings": {
+        "marquee": true
+      }
     },
     "problem": {
       "type": "problem-solution",
@@ -46,34 +89,130 @@
         "bad_items": "Crushing tablets into food they then refuse to eat\nFour different bottles for joints, coat, gut and immunity\nHard, chalky tablets seniors and small breeds struggle with\nNo idea where it was made, or by whom\nMoney down the drain when the dog says no",
         "good_label": "The Goodest way",
         "good_heading": "One soft chew. Eight benefits. Zero drama.",
-        "good_items": "Tastes like a treat — dogs ask for it\n8 benefits in one chew, one bag, one price\nSoft texture that's easy on every jaw\nMade in an ISO 9001, HACCP & NSF GMP-certified facility\n60-day Happy Dog Guarantee if they don't love it"
+        "good_items": "Tastes like a treat — dogs ask for it\n8 benefits in one chew, one bag, one price\nSoft texture that's easy on every jaw\nMade in an ISO 9001, HACCP & NSF GMP-certified facility\n[days]-day Happy Dog Guarantee if they don't love it"
       }
     },
     "marquee": {
       "type": "marquee",
       "blocks": {
-        "m1": { "type": "text", "settings": { "text": "8 benefits in 1 chew" } },
-        "m2": { "type": "text", "settings": { "text": "Tastes like a treat" } },
-        "m3": { "type": "text", "settings": { "text": "Soft & easy to chew" } },
-        "m4": { "type": "text", "settings": { "text": "Certified facility" } },
-        "m5": { "type": "text", "settings": { "text": "60-day guarantee" } }
+        "m1": {
+          "type": "text",
+          "settings": {
+            "text": "8 benefits in 1 chew"
+          }
+        },
+        "m2": {
+          "type": "text",
+          "settings": {
+            "text": "Tastes like a treat"
+          }
+        },
+        "m3": {
+          "type": "text",
+          "settings": {
+            "text": "Soft & easy to chew"
+          }
+        },
+        "m4": {
+          "type": "text",
+          "settings": {
+            "text": "Certified facility"
+          }
+        },
+        "m5": {
+          "type": "text",
+          "settings": {
+            "text": "[days]-day guarantee"
+          }
+        }
       },
-      "block_order": ["m1", "m2", "m3", "m4", "m5"],
+      "block_order": [
+        "m1",
+        "m2",
+        "m3",
+        "m4",
+        "m5"
+      ],
       "settings": {}
     },
     "benefits": {
       "type": "benefits",
       "blocks": {
-        "b1": { "type": "benefit", "settings": { "icon": "bone", "title": "Joints & mobility", "text": "Support for hips, knees and everyday bounce — from zoomies to the stairs." } },
-        "b2": { "type": "benefit", "settings": { "icon": "heart", "title": "Heart health", "text": "Helps keep the engine running strong through long walks and longer naps." } },
-        "b3": { "type": "benefit", "settings": { "icon": "sparkles", "title": "Skin & coat", "text": "For a glossy coat, less itch and fewer tumbleweeds of fur on the sofa." } },
-        "b4": { "type": "benefit", "settings": { "icon": "stomach", "title": "Digestion", "text": "Supports a settled tummy, steady appetite and pick-ups you can live with." } },
-        "b5": { "type": "benefit", "settings": { "icon": "shield-check", "title": "Immunity", "text": "Everyday support for the defences that keep a good dog going." } },
-        "b6": { "type": "benefit", "settings": { "icon": "droplet", "title": "Liver support", "text": "Helps the body's filter do its quiet, important work." } },
-        "b7": { "type": "benefit", "settings": { "icon": "sun", "title": "Antioxidants", "text": "Support against everyday wear and tear, for dogs of every age." } },
-        "b8": { "type": "benefit", "settings": { "icon": "bolt", "title": "Everyday energy", "text": "Because a dog with pep in its step is a dog living its best life." } }
+        "b1": {
+          "type": "benefit",
+          "settings": {
+            "icon": "bone",
+            "title": "Joints & mobility",
+            "text": "Support for hips, knees and everyday bounce — from zoomies to the stairs."
+          }
+        },
+        "b2": {
+          "type": "benefit",
+          "settings": {
+            "icon": "heart",
+            "title": "Heart health",
+            "text": "Helps keep the engine running strong through long walks and longer naps."
+          }
+        },
+        "b3": {
+          "type": "benefit",
+          "settings": {
+            "icon": "sparkles",
+            "title": "Skin & coat",
+            "text": "For a glossy coat, healthy skin and fewer tumbleweeds of fur on the sofa."
+          }
+        },
+        "b4": {
+          "type": "benefit",
+          "settings": {
+            "icon": "stomach",
+            "title": "Digestion",
+            "text": "Supports a settled tummy, steady appetite and pick-ups you can live with."
+          }
+        },
+        "b5": {
+          "type": "benefit",
+          "settings": {
+            "icon": "shield-check",
+            "title": "Immunity",
+            "text": "Everyday support for the defenses that keep a good dog going."
+          }
+        },
+        "b6": {
+          "type": "benefit",
+          "settings": {
+            "icon": "droplet",
+            "title": "Liver support",
+            "text": "Helps the body's filter do its quiet, important work."
+          }
+        },
+        "b7": {
+          "type": "benefit",
+          "settings": {
+            "icon": "sun",
+            "title": "Antioxidants",
+            "text": "Support against everyday wear and tear, for dogs of every age."
+          }
+        },
+        "b8": {
+          "type": "benefit",
+          "settings": {
+            "icon": "bolt",
+            "title": "Everyday energy",
+            "text": "Because a dog with pep in its step is a dog living its best life."
+          }
+        }
       },
-      "block_order": ["b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8"],
+      "block_order": [
+        "b1",
+        "b2",
+        "b3",
+        "b4",
+        "b5",
+        "b6",
+        "b7",
+        "b8"
+      ],
       "settings": {
         "anchor": "benefits",
         "eyebrow": "8 benefits in every chew",
@@ -85,11 +224,33 @@
     "how": {
       "type": "how-it-works",
       "blocks": {
-        "s1": { "type": "step", "settings": { "title": "Pick your bundle", "text": "Start with one bag or stock up and save. Every order is covered by the Happy Dog Guarantee." } },
-        "s2": { "type": "step", "settings": { "title": "Give it like a treat", "text": "One chew, straight from your hand. No crushing, no hiding, no wrestling on the kitchen floor." } },
-        "s3": { "type": "step", "settings": { "title": "Watch the tail wag", "text": "Give it a few weeks. Shinier coat, easier mornings, bouncier walks — and a dog who waits by the cupboard." } }
+        "s1": {
+          "type": "step",
+          "settings": {
+            "title": "Pick your bundle",
+            "text": "Start with one bag or stock up and save. Every order is covered by the Happy Dog Guarantee."
+          }
+        },
+        "s2": {
+          "type": "step",
+          "settings": {
+            "title": "Give it like a treat",
+            "text": "Straight from your hand, like a treat. No crushing, no hiding, no wrestling on the kitchen floor."
+          }
+        },
+        "s3": {
+          "type": "step",
+          "settings": {
+            "title": "Watch the tail wag",
+            "text": "Give it a few weeks. Shinier coat, easier mornings, bouncier walks — and a dog who waits by the cupboard."
+          }
+        }
       },
-      "block_order": ["s1", "s2", "s3"],
+      "block_order": [
+        "s1",
+        "s2",
+        "s3"
+      ],
       "settings": {
         "anchor": "how-it-works",
         "eyebrow": "How it works",
@@ -100,12 +261,45 @@
     "inside": {
       "type": "inside",
       "blocks": {
-        "i1": { "type": "point", "settings": { "icon": "paw", "title": "8 benefits in every chew", "text": "Joints, heart, skin & coat, digestion, immunity, liver, antioxidants and energy." } },
-        "i2": { "type": "point", "settings": { "icon": "heart", "title": "Soft, treat-style texture", "text": "Gentle on senior teeth and small jaws. Dogs take it straight from your hand." } },
-        "i3": { "type": "point", "settings": { "icon": "package", "title": "120 chews per resealable bag", "text": "Stays fresh from the first chew to the last." } },
-        "i4": { "type": "point", "settings": { "icon": "award", "title": "Made under ISO 9001, HACCP & NSF GMP", "text": "Produced in an independently audited, FDA-registered facility." } }
+        "i1": {
+          "type": "point",
+          "settings": {
+            "icon": "paw",
+            "title": "8 benefits in every chew",
+            "text": "Joints, heart, skin & coat, digestion, immunity, liver, antioxidants and energy."
+          }
+        },
+        "i2": {
+          "type": "point",
+          "settings": {
+            "icon": "heart",
+            "title": "Soft, treat-style texture",
+            "text": "Gentle on senior teeth and small jaws. Dogs take it straight from your hand."
+          }
+        },
+        "i3": {
+          "type": "point",
+          "settings": {
+            "icon": "package",
+            "title": "120 chews per resealable bag",
+            "text": "Stays fresh from the first chew to the last."
+          }
+        },
+        "i4": {
+          "type": "point",
+          "settings": {
+            "icon": "award",
+            "title": "Made under ISO 9001, HACCP & NSF GMP",
+            "text": "Produced in an independently audited, FDA-registered facility."
+          }
+        }
       },
-      "block_order": ["i1", "i2", "i3", "i4"],
+      "block_order": [
+        "i1",
+        "i2",
+        "i3",
+        "i4"
+      ],
       "settings": {
         "anchor": "inside",
         "layout": "left",
@@ -119,11 +313,44 @@
     "bundles": {
       "type": "bundles",
       "blocks": {
-        "starter": { "type": "bundle", "settings": { "name": "Starter", "subtitle": "Try it out", "featured": false, "perks": "120 soft chews\n60-day Happy Dog Guarantee\nTracked shipping", "button_label": "Add to cart" } },
-        "popular": { "type": "bundle", "settings": { "name": "Most Popular", "subtitle": "Save 10%", "badge": "Most popular", "featured": true, "perks": "240 soft chews\nSave 10% vs. buying single bags\n60-day Happy Dog Guarantee\nTracked shipping", "button_label": "Get 2 bags" } },
-        "value": { "type": "bundle", "settings": { "name": "Best Value", "subtitle": "Save 20%", "badge": "Best value", "featured": false, "perks": "360 soft chews\nSave 20% — lowest price per bag\n60-day Happy Dog Guarantee\nTracked shipping", "button_label": "Get 3 bags" } }
+        "starter": {
+          "type": "bundle",
+          "settings": {
+            "name": "Starter",
+            "subtitle": "Try it out",
+            "featured": false,
+            "perks": "120 soft chews\n[days]-day Happy Dog Guarantee\nTracked shipping",
+            "button_label": "Add to cart"
+          }
+        },
+        "popular": {
+          "type": "bundle",
+          "settings": {
+            "name": "Most Popular",
+            "subtitle": "Save 10%",
+            "badge": "Most popular",
+            "featured": true,
+            "perks": "240 soft chews\nSave 10% vs. buying single bags\n[days]-day Happy Dog Guarantee\nTracked shipping",
+            "button_label": "Get 2 bags"
+          }
+        },
+        "value": {
+          "type": "bundle",
+          "settings": {
+            "name": "Best Value",
+            "subtitle": "Save 20%",
+            "badge": "Best value",
+            "featured": false,
+            "perks": "360 soft chews\nSave 20% — lowest price per bag\n[days]-day Happy Dog Guarantee\nTracked shipping",
+            "button_label": "Get 3 bags"
+          }
+        }
       },
-      "block_order": ["starter", "popular", "value"],
+      "block_order": [
+        "starter",
+        "popular",
+        "value"
+      ],
       "settings": {
         "anchor": "bundles",
         "eyebrow": "Pick your bundle",
@@ -135,28 +362,122 @@
     "reviews": {
       "type": "reviews",
       "blocks": {
-        "r1": { "type": "review", "settings": { "rating": 5, "title": "He thinks it's a treat", "body": "Biscuit has refused every supplement I've ever bought. Crushed, hidden, wrapped in ham, you name it. He now sits by the cupboard at 7am waiting for his Goodest Chew. Three weeks in and he's bouncing up the stairs again.", "name": "Sarah M.", "dog": "Biscuit, 7yo Beagle", "verified": true } },
-        "r2": { "type": "review", "settings": { "rating": 5, "title": "Replaced three bottles", "body": "I was giving my lab a joint tablet, fish oil for his coat and a probiotic. This does all of it and he actually eats it. Coat is noticeably softer after about a month.", "name": "James R.", "dog": "Cooper, 5yo Labrador", "verified": true } },
-        "r3": { "type": "review", "settings": { "rating": 5, "title": "Senior dog approved", "body": "Our 12-year-old dachshund has hardly any teeth left and these are soft enough that she manages them easily. She's more alert in the mornings and her tummy has settled.", "name": "Priya K.", "dog": "Maple, 12yo Dachshund", "verified": true } },
-        "r4": { "type": "review", "settings": { "rating": 4, "title": "Great chews, wish the bag was bigger", "body": "Our two huskies go through a bag fast so we switched to the 3-bag bundle. Would love an even bigger pack. The chews themselves are excellent and both dogs love them.", "name": "Tom W.", "dog": "Luna & Nova, Huskies", "verified": true } },
-        "r5": { "type": "review", "settings": { "rating": 5, "title": "The scratching calmed down", "body": "Milo used to scratch constantly in summer. About six weeks in, the scratching has calmed down a lot and his coat looks glossy. He also thinks it's the best part of his day.", "name": "Aisha D.", "dog": "Milo, 3yo Cocker Spaniel", "verified": true } },
-        "r6": { "type": "review", "settings": { "rating": 5, "title": "Puppy loves them", "body": "Got these for our 8-month-old golden after our vet suggested a multivitamin. Easy to give, no mess, and she sits perfectly the second she hears the bag.", "name": "Daniel F.", "dog": "Honey, 8mo Golden Retriever", "verified": true } },
-        "r7": { "type": "review", "settings": { "rating": 5, "title": "Finally, no more cheese", "body": "I have been hiding pills in cheese for four years. Four years! These get eaten straight from my hand. Ordered the 2-bag bundle, will be back.", "name": "Layla H.", "dog": "Rocky, 6yo French Bulldog", "verified": true } },
-        "r8": { "type": "review", "settings": { "rating": 4, "title": "Solid chews, quick delivery", "body": "Arrived in two days, well packed. Zeus took to them immediately. Too early to comment on long-term benefits but so far so good.", "name": "Omar S.", "dog": "Zeus, 4yo German Shepherd", "verified": true } },
-        "r9": { "type": "review", "settings": { "rating": 5, "title": "Worth every dirham", "body": "Three dogs, one bag, zero arguments. The 3-bag bundle is the only way we buy now. Even our fussy terrier queues up for hers.", "name": "Fatima A.", "dog": "Pepper, Coco & Bruno", "verified": true } }
+        "r1": {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "title": "He thinks it's a treat",
+            "body": "Biscuit has refused every supplement I've ever bought. Crushed, hidden, wrapped in ham, you name it. He now sits by the cupboard at 7am waiting for his Goodest Chew. Three weeks in and he's bouncing up the stairs again.",
+            "name": "Sarah M.",
+            "dog": "Biscuit, 7yo Beagle",
+            "verified": true
+          }
+        },
+        "r2": {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "title": "Replaced three bottles",
+            "body": "I was giving my lab a joint tablet, fish oil for his coat and a probiotic. This does all of it and he actually eats it. Coat is noticeably softer after about a month.",
+            "name": "James R.",
+            "dog": "Cooper, 5yo Labrador",
+            "verified": true
+          }
+        },
+        "r3": {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "title": "Senior dog approved",
+            "body": "Our 12-year-old dachshund has hardly any teeth left and these are soft enough that she manages them easily. She's more alert in the mornings and her tummy has settled.",
+            "name": "Priya K.",
+            "dog": "Maple, 12yo Dachshund",
+            "verified": true
+          }
+        },
+        "r4": {
+          "type": "review",
+          "settings": {
+            "rating": 4,
+            "title": "Great chews, wish the bag was bigger",
+            "body": "Our two huskies go through a bag fast so we switched to the 3-bag bundle. Would love an even bigger pack. The chews themselves are excellent and both dogs love them.",
+            "name": "Tom W.",
+            "dog": "Luna & Nova, Huskies",
+            "verified": true
+          }
+        },
+        "r5": {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "title": "Glossy coat, happy dog",
+            "body": "Milo's coat has never looked this glossy. Six weeks in and he still thinks it's the best part of his day — he sits by the drawer at breakfast waiting for it.",
+            "name": "Aisha D.",
+            "dog": "Milo, 3yo Cocker Spaniel",
+            "verified": true
+          }
+        },
+        "r6": {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "title": "Puppy loves them",
+            "body": "Got these for our 8-month-old golden after our vet suggested a multivitamin. Easy to give, no mess, and she sits perfectly the second she hears the bag.",
+            "name": "Daniel F.",
+            "dog": "Honey, 8mo Golden Retriever",
+            "verified": true
+          }
+        },
+        "r7": {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "title": "Finally, no more cheese",
+            "body": "I have been hiding pills in cheese for four years. Four years! These get eaten straight from my hand. Ordered the 2-bag bundle, will be back.",
+            "name": "Layla H.",
+            "dog": "Rocky, 6yo French Bulldog",
+            "verified": true
+          }
+        },
+        "r8": {
+          "type": "review",
+          "settings": {
+            "rating": 4,
+            "title": "Solid chews, quick delivery",
+            "body": "Arrived in two days, well packed. Zeus took to them immediately. Too early to comment on long-term benefits but so far so good.",
+            "name": "Omar S.",
+            "dog": "Zeus, 4yo German Shepherd",
+            "verified": true
+          }
+        },
+        "r9": {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "title": "Worth every penny",
+            "body": "Three dogs, one bag, zero arguments. The 3-bag bundle is the only way we buy now. Even our fussy terrier queues up for hers.",
+            "name": "Fatima A.",
+            "dog": "Pepper, Coco & Bruno",
+            "verified": true
+          }
+        }
       },
-      "block_order": ["r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8", "r9"],
+      "block_order": [
+        "r1",
+        "r2",
+        "r3",
+        "r4",
+        "r5",
+        "r6",
+        "r7",
+        "r8",
+        "r9"
+      ],
       "settings": {
         "anchor": "reviews",
         "eyebrow": "Reviews",
         "heading": "Rated by the toughest critics: the dogs",
         "show_summary": true,
-        "count_label": "Based on 127 reviews",
-        "bar_5": 88,
-        "bar_4": 9,
-        "bar_3": 2,
-        "bar_2": 1,
-        "bar_1": 0,
         "cta_label": "Try them risk-free",
         "write_email": "goodestchews@outlook.com"
       }
@@ -164,14 +485,76 @@
     "compare": {
       "type": "comparison",
       "blocks": {
-        "c1": { "type": "row", "settings": { "feature": "Dogs actually want to eat it", "us": "yes", "alt1": "no", "alt2": "text", "alt2_text": "Hit and miss" } },
-        "c2": { "type": "row", "settings": { "feature": "Covers 8 health areas in one", "us": "yes", "alt1": "no", "alt2": "text", "alt2_text": "4+ bottles" } },
-        "c3": { "type": "row", "settings": { "feature": "One simple daily routine", "us": "yes", "alt1": "no", "alt2": "no" } },
-        "c4": { "type": "row", "settings": { "feature": "Soft enough for seniors & small breeds", "us": "yes", "alt1": "no", "alt2": "text", "alt2_text": "Varies" } },
-        "c5": { "type": "row", "settings": { "feature": "Made in an NSF GMP-certified facility", "us": "yes", "alt1": "text", "alt1_text": "Rarely stated", "alt2": "text", "alt2_text": "Rarely stated" } },
-        "c6": { "type": "row", "settings": { "feature": "60-day money-back guarantee", "us": "yes", "alt1": "no", "alt2": "no" } }
+        "c1": {
+          "type": "row",
+          "settings": {
+            "feature": "Dogs actually want to eat it",
+            "us": "yes",
+            "alt1": "no",
+            "alt2": "text",
+            "alt2_text": "Hit and miss"
+          }
+        },
+        "c2": {
+          "type": "row",
+          "settings": {
+            "feature": "Covers 8 health areas in one",
+            "us": "yes",
+            "alt1": "no",
+            "alt2": "text",
+            "alt2_text": "4+ bottles"
+          }
+        },
+        "c3": {
+          "type": "row",
+          "settings": {
+            "feature": "One simple daily routine",
+            "us": "yes",
+            "alt1": "no",
+            "alt2": "no"
+          }
+        },
+        "c4": {
+          "type": "row",
+          "settings": {
+            "feature": "Soft enough for seniors & small breeds",
+            "us": "yes",
+            "alt1": "no",
+            "alt2": "text",
+            "alt2_text": "Varies"
+          }
+        },
+        "c5": {
+          "type": "row",
+          "settings": {
+            "feature": "Made in an NSF GMP-certified facility",
+            "us": "yes",
+            "alt1": "text",
+            "alt1_text": "Rarely stated",
+            "alt2": "text",
+            "alt2_text": "Rarely stated"
+          }
+        },
+        "c6": {
+          "type": "row",
+          "settings": {
+            "feature": "[days]-day money-back guarantee",
+            "us": "yes",
+            "alt1": "text",
+            "alt2": "text",
+            "alt1_text": "Varies",
+            "alt2_text": "Varies"
+          }
+        }
       },
-      "block_order": ["c1", "c2", "c3", "c4", "c5", "c6"],
+      "block_order": [
+        "c1",
+        "c2",
+        "c3",
+        "c4",
+        "c5",
+        "c6"
+      ],
       "settings": {
         "anchor": "compare",
         "eyebrow": "Why switch",
@@ -184,18 +567,63 @@
     "certs": {
       "type": "certifications",
       "blocks": {
-        "iso": { "type": "cert", "settings": { "icon": "award", "name": "ISO 9001:2015", "issuer": "China Quality Certification Centre (CQC)", "text": "The international standard for quality management systems. Covers the production of solid, semi-solid and liquid pet feed additives at the facility.", "number": "00124Q34337R0M/4100", "link": "http://www.cqc.com.cn" } },
-        "haccp": { "type": "cert", "settings": { "icon": "shield-check", "name": "HACCP System", "issuer": "China Quality Certification Centre (CQC)", "text": "Hazard Analysis & Critical Control Points: a food-safety system that identifies and controls risks at every step of production.", "number": "001HACCP2400412", "link": "http://www.cqc.com.cn" } },
-        "nsf": { "type": "cert", "settings": { "icon": "badge-check", "name": "NSF Animal Supplements GMP", "issuer": "NSF Shanghai Co., Ltd.", "text": "Good Manufacturing Practices for animal supplements, audited against U.S. FDA 21 CFR Part 111 & 507. Includes an initial factory inspection and ongoing surveillance.", "number": "NSF25NWDS012002", "link": "https://www.nsf.org/certificates" } },
-        "fda": { "type": "cert", "settings": { "icon": "flag", "name": "FDA Food Facility Registration", "issuer": "U.S. Food and Drug Administration", "text": "The manufacturing facility is registered with the U.S. FDA under the Public Health Security and Bioterrorism Preparedness and Response Act (fiscal year 2025–2026).", "number": "11941654272", "link": "https://www.fda.gov/food/online-registration-food-facilities" } }
+        "iso": {
+          "type": "cert",
+          "settings": {
+            "icon": "award",
+            "name": "ISO 9001:2015",
+            "issuer": "China Quality Certification Centre (CQC)",
+            "text": "The international standard for quality management systems. Covers the production of solid, semi-solid and liquid pet feed additives at the facility.",
+            "number": "00124Q34337R0M/4100",
+            "link": "http://www.cqc.com.cn"
+          }
+        },
+        "haccp": {
+          "type": "cert",
+          "settings": {
+            "icon": "shield-check",
+            "name": "HACCP System",
+            "issuer": "China Quality Certification Centre (CQC)",
+            "text": "Hazard Analysis & Critical Control Points: a food-safety system that identifies and controls risks at every step of production.",
+            "number": "001HACCP2400412",
+            "link": "http://www.cqc.com.cn"
+          }
+        },
+        "nsf": {
+          "type": "cert",
+          "settings": {
+            "icon": "badge-check",
+            "name": "NSF Animal Supplements GMP",
+            "issuer": "NSF Shanghai Co., Ltd.",
+            "text": "Good Manufacturing Practices for animal supplements, audited against U.S. FDA 21 CFR Part 111 & 507. Includes an initial factory inspection and ongoing surveillance.",
+            "number": "NSF25NWDS012002",
+            "link": "https://www.nsf.org/certificates"
+          }
+        },
+        "fda": {
+          "type": "cert",
+          "settings": {
+            "icon": "flag",
+            "name": "FDA Food Facility Registration",
+            "issuer": "U.S. Food and Drug Administration",
+            "text": "The manufacturing facility is registered with the U.S. FDA under the Public Health Security and Bioterrorism Preparedness and Response Act (fiscal year 2025–2026). Registration is not an approval of the product.",
+            "number": "11941654272",
+            "number_label": "Registration no."
+          }
+        }
       },
-      "block_order": ["iso", "haccp", "nsf", "fda"],
+      "block_order": [
+        "iso",
+        "haccp",
+        "nsf",
+        "fda"
+      ],
       "settings": {
         "anchor": "certifications",
         "eyebrow": "Made properly",
-        "heading": "Certified, audited, and registered — because it's going in your dog",
-        "text": "Goodest Chews are produced in a facility that carries four independent quality certifications. Every certificate number is listed so you can check it yourself.",
-        "footnote": "Certifications are held by the manufacturing facility that produces Goodest Chews. FDA facility registration confirms the facility is registered with the U.S. Food and Drug Administration; it is not an FDA approval of the product."
+        "heading": "Certified, audited and registered — because it's going in your dog",
+        "text": "Goodest Chews are produced in a facility that holds three independent quality certifications plus U.S. FDA facility registration. Every number is listed so you can check it yourself.",
+        "footnote": "Certifications and the FDA registration are held by the manufacturing facility that produces Goodest Chews: Hs·viko Bioengineering (Luohe) Co., Ltd., Luohe, Henan, China. FDA facility registration confirms the facility is registered with the U.S. Food and Drug Administration; it is not an FDA approval of the product."
       }
     },
     "guarantee": {
@@ -211,17 +639,81 @@
     "faq": {
       "type": "faq",
       "blocks": {
-        "q1": { "type": "question", "settings": { "question": "How many chews does my dog need each day?", "answer": "<p>Follow the feeding guide printed on the bag — it's based on your dog's weight. Give the chews as a treat, ideally at the same time each day so it becomes a routine. Always keep fresh water available.</p>" } },
-        "q2": { "type": "question", "settings": { "question": "What's in Goodest Chews?", "answer": "<p>An 8-in-1 formula that supports joints, heart, skin &amp; coat, digestion, immunity, liver, antioxidant defence and everyday energy, in a soft, treat-style chew. The full ingredient list and guaranteed analysis are printed on every bag — email us if you'd like a copy before you order.</p>" } },
-        "q3": { "type": "question", "settings": { "question": "Are they suitable for puppies, seniors and small breeds?", "answer": "<p>The chews are soft, so seniors with sensitive teeth and small breeds manage them easily. For puppies, pregnant or nursing dogs, or dogs on medication, check with your vet first. Goodest Chews are a supplement, not a substitute for veterinary care.</p>" } },
-        "q4": { "type": "question", "settings": { "question": "How long until I notice a difference?", "answer": "<p>Most dogs decide they love the chew on day one. Like any supplement, the benefits build over time — give it at least 4–6 weeks of daily use. If your dog isn't enjoying them, the 60-day Happy Dog Guarantee has you covered.</p>" } },
-        "q5": { "type": "question", "settings": { "question": "Can I give them alongside other supplements or medication?", "answer": "<p>Goodest Chews are designed to replace a cupboard of separate supplements, so you usually won't need to double up. If your dog takes medication or a vet-prescribed supplement, check with your vet before adding anything new.</p>" } },
-        "q6": { "type": "question", "settings": { "question": "Where are Goodest Chews made?", "answer": "<p>In a partner facility that holds ISO 9001:2015, HACCP and NSF Animal Supplements GMP certification and is registered with the U.S. FDA. All four certificate numbers are listed on this page so you can verify them yourself.</p>" } },
-        "q7": { "type": "question", "settings": { "question": "How does the Happy Dog Guarantee work?", "answer": "<p>Simple. If your dog doesn't love Goodest Chews, email us within 60 days of delivery with your order number and we'll refund you in full. You don't need to return anything.</p>" } },
-        "q8": { "type": "question", "settings": { "question": "How do the bundles work?", "answer": "<p>Every bundle is the same 120-chew bag — you just save more when you buy more. Two bags saves 10%, three bags saves 20%, and every bundle ships together with tracking.</p>" } },
-        "q9": { "type": "question", "settings": { "question": "How fast is shipping?", "answer": "<p>Orders are packed and dispatched within 1–2 business days, and you'll get a tracking link by email the moment your parcel leaves us. Delivery estimates for your address are shown at checkout.</p>" } }
+        "q1": {
+          "type": "question",
+          "settings": {
+            "question": "How many chews does my dog need each day?",
+            "answer": "<p>Follow the feeding guide printed on the bag — it's based on your dog's weight. Give the chews as a treat, ideally at the same time each day so it becomes a routine. Always keep fresh water available.</p>"
+          }
+        },
+        "q2": {
+          "type": "question",
+          "settings": {
+            "question": "What's in Goodest Chews?",
+            "answer": "<p>An 8-in-1 formula that supports joints, heart, skin &amp; coat, digestion, immunity, liver, antioxidant defense and everyday energy, in a soft, treat-style chew. The full ingredient list and guaranteed analysis are printed on every bag — email us if you'd like a copy before you order.</p>"
+          }
+        },
+        "q3": {
+          "type": "question",
+          "settings": {
+            "question": "Are they suitable for puppies, seniors and small breeds?",
+            "answer": "<p>The chews are soft, so seniors with sensitive teeth and small breeds manage them easily. For puppies, pregnant or nursing dogs, or dogs on medication, check with your vet first. Goodest Chews are a supplement, not a substitute for veterinary care.</p>"
+          }
+        },
+        "q4": {
+          "type": "question",
+          "settings": {
+            "question": "How long until I notice a difference?",
+            "answer": "<p>Most dogs decide they love the chew on day one. Like any supplement, the benefits build over time — give it at least 4–6 weeks of daily use. If your dog isn't enjoying them, the [days]-day Happy Dog Guarantee has you covered.</p>"
+          }
+        },
+        "q5": {
+          "type": "question",
+          "settings": {
+            "question": "Can I give them alongside other supplements or medication?",
+            "answer": "<p>Goodest Chews are designed to replace a cupboard of separate supplements, so you usually won't need to double up. If your dog takes medication or a vet-prescribed supplement, check with your vet before adding anything new.</p>"
+          }
+        },
+        "q6": {
+          "type": "question",
+          "settings": {
+            "question": "Where are Goodest Chews made?",
+            "answer": "<p>In Luohe, Henan, China, at the Hs·viko Bioengineering facility, which holds ISO 9001:2015, HACCP and NSF Animal Supplements GMP certification and is registered with the U.S. FDA. All four numbers are listed in the certifications section so you can check them yourself.</p>"
+          }
+        },
+        "q7": {
+          "type": "question",
+          "settings": {
+            "question": "How does the Happy Dog Guarantee work?",
+            "answer": "<p>Simple. If your dog doesn't love Goodest Chews, email us within [days] days of delivery with your order number and we'll refund you in full. You don't need to return anything.</p>"
+          }
+        },
+        "q8": {
+          "type": "question",
+          "settings": {
+            "question": "How do the bundles work?",
+            "answer": "<p>Every bundle is the same 120-chew bag — you just save more when you buy more. Two bags saves 10%, three bags saves 20%, and every bundle ships together with tracking.</p>"
+          }
+        },
+        "q9": {
+          "type": "question",
+          "settings": {
+            "question": "How fast is shipping?",
+            "answer": "<p>Orders are packed and dispatched within 1–2 business days, and you'll get a tracking link by email the moment your parcel leaves us. Delivery estimates for your address are shown at checkout.</p>"
+          }
+        }
       },
-      "block_order": ["q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9"],
+      "block_order": [
+        "q1",
+        "q2",
+        "q3",
+        "q4",
+        "q5",
+        "q6",
+        "q7",
+        "q8",
+        "q9"
+      ],
       "settings": {
         "anchor": "faq",
         "eyebrow": "Questions",
@@ -235,10 +727,25 @@
       "settings": {
         "eyebrow": "Ready when they are",
         "heading": "Give them the goodest years of their life.",
-        "text": "One chew a day, eight benefits, zero fuss. Pick a bundle and let the tail do the talking.",
+        "text": "A daily treat, eight benefits, zero fuss. Pick a bundle and let the tail do the talking.",
         "cta_label": "Choose your bundle"
       }
     }
   },
-  "order": ["hero", "trust", "problem", "marquee", "benefits", "how", "inside", "bundles", "reviews", "compare", "certs", "guarantee", "faq", "cta"]
+  "order": [
+    "hero",
+    "trust",
+    "problem",
+    "marquee",
+    "benefits",
+    "how",
+    "inside",
+    "bundles",
+    "reviews",
+    "compare",
+    "certs",
+    "guarantee",
+    "faq",
+    "cta"
+  ]
 }

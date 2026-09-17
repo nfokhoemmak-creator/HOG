@@ -1,3 +1,4 @@
+{%- assign days = settings.guarantee_days -%}
 <section class="section section--alt" id="{{ section.settings.anchor | default: 'compare' }}">
   <div class="container container--narrow">
     <div class="section-head reveal">
@@ -19,7 +20,7 @@
         <tbody>
           {%- for block in section.blocks -%}
             <tr {{ block.shopify_attributes }}>
-              <th scope="row">{{ block.settings.feature | escape }}</th>
+              <th scope="row">{{ block.settings.feature | escape | replace: '[days]', days }}</th>
               <td class="is-us">
                 {%- if block.settings.us == 'yes' -%}<span class="yes">{% render 'icon', name: 'check' %}<span class="visually-hidden">{{ 'general.yes' | t }}</span></span>
                 {%- elsif block.settings.us == 'no' -%}<span class="no">{% render 'icon', name: 'x' %}<span class="visually-hidden">{{ 'general.no' | t }}</span></span>

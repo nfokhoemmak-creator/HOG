@@ -153,7 +153,11 @@
       "dog_parent": "Parent of {{ dog }}",
       "breakdown": "Rating breakdown",
       "write": "Bought Goodest Chews? Tell us how it went.",
-      "write_subject": "My Goodest Chews review"
+      "write_subject": "My Goodest Chews review",
+      "based_on": {
+        "one": "Based on {{ count }} review",
+        "other": "Based on {{ count }} reviews"
+      }
     },
     "facets": {
       "from": "From"

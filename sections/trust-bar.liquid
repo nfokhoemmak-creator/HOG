@@ -1,3 +1,4 @@
+{%- assign days = settings.guarantee_days -%}
 {%- if section.blocks.size > 0 -%}
   <div class="trust-bar{% if section.settings.marquee %} trust-bar--marquee{% endif %}">
     <div class="container">
@@ -6,8 +7,8 @@
           <li class="trust-bar__item" {{ block.shopify_attributes }}>
             {% render 'icon', name: block.settings.icon %}
             <span>
-              {{ block.settings.text | escape }}
-              {%- if block.settings.subtext != blank -%}<small>{{ block.settings.subtext | escape }}</small>{%- endif -%}
+              {{ block.settings.text | escape | replace: '[days]', days }}
+              {%- if block.settings.subtext != blank -%}<small>{{ block.settings.subtext | escape | replace: '[days]', days }}</small>{%- endif -%}
             </span>
           </li>
         {%- endfor -%}
@@ -16,8 +17,8 @@
             <li class="trust-bar__item" aria-hidden="true">
               {% render 'icon', name: block.settings.icon %}
               <span>
-                {{ block.settings.text | escape }}
-                {%- if block.settings.subtext != blank -%}<small>{{ block.settings.subtext | escape }}</small>{%- endif -%}
+                {{ block.settings.text | escape | replace: '[days]', days }}
+                {%- if block.settings.subtext != blank -%}<small>{{ block.settings.subtext | escape | replace: '[days]', days }}</small>{%- endif -%}
               </span>
             </li>
           {%- endfor -%}

@@ -40,10 +40,12 @@
     {%- endif -%}
   </a>
 
-  <div class="rating-line">
-    {% render 'stars', rating: settings.rating_value, class: 'stars--sm' %}
-    <span class="muted small">{{ settings.rating_value }}</span>
-  </div>
+  {%- if settings.rating_value != blank -%}
+    <div class="rating-line">
+      {% render 'stars', rating: settings.rating_value, class: 'stars--sm' %}
+      <span class="muted small">{{ settings.rating_value }}</span>
+    </div>
+  {%- endif -%}
 
   <a class="product-card__title" href="{{ card_product.url }}">{{ card_product.title | escape }}</a>
 

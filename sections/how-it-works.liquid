@@ -1,3 +1,4 @@
+{%- assign days = settings.guarantee_days -%}
 <section class="section section--alt" id="{{ section.settings.anchor | default: 'how-it-works' }}">
   <div class="container">
     <div class="section-head reveal">
@@ -11,7 +12,7 @@
         <div class="step reveal" style="--i: {{ forloop.index0 }};" {{ block.shopify_attributes }}>
           <div class="step__num">{{ forloop.index }}</div>
           <h3>{{ block.settings.title | escape }}</h3>
-          <p>{{ block.settings.text | escape }}</p>
+          <p>{{ block.settings.text | escape | replace: '[days]', days }}</p>
         </div>
       {%- endfor -%}
     </div>

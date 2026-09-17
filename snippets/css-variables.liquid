@@ -33,6 +33,7 @@
     --color-star: {{ settings.color_star }};
     --color-sale: {{ settings.color_sale }};
     --color-green-rgb: {{ settings.color_primary | color_extract: 'red' }}, {{ settings.color_primary | color_extract: 'green' }}, {{ settings.color_primary | color_extract: 'blue' }};
+    --color-bg-rgb: {{ settings.color_background | color_extract: 'red' }}, {{ settings.color_background | color_extract: 'green' }}, {{ settings.color_background | color_extract: 'blue' }};
     --color-orange-rgb: {{ settings.color_accent | color_extract: 'red' }}, {{ settings.color_accent | color_extract: 'green' }}, {{ settings.color_accent | color_extract: 'blue' }};
     --color-green-soft: {{ settings.color_primary | color_mix: settings.color_background, 12 }};
     --color-orange-soft: {{ settings.color_accent | color_mix: settings.color_background, 16 }};

@@ -5,6 +5,7 @@
     assign image = product.featured_image
   endif
   assign from_price = product.price_min | money
+  assign days = settings.guarantee_days
 -%}
 
 <section class="section section--tight">
@@ -13,7 +14,7 @@
       <div class="cta-banner__copy">
         {%- if section.settings.eyebrow != blank -%}<p class="eyebrow">{{ section.settings.eyebrow | escape }}</p>{%- endif -%}
         <h2>{{ section.settings.heading | escape }}</h2>
-        <p class="lead">{{ section.settings.text | escape }}</p>
+        <p class="lead">{{ section.settings.text | escape | replace: '[days]', days }}</p>
         <div class="cta-banner__actions">
           <a class="btn btn--lg" href="{{ section.settings.cta_link | default: '#bundles' }}">{{ section.settings.cta_label | escape }}{% render 'icon', name: 'arrow-right' %}</a>
           {%- if product != blank -%}
@@ -37,7 +38,7 @@
   "settings": [
     { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Ready when they are" },
     { "type": "text", "id": "heading", "label": "Heading", "default": "Give them the goodest years of their life." },
-    { "type": "textarea", "id": "text", "label": "Text", "default": "One chew a day, eight benefits, zero fuss. Pick a bundle and let the tail do the talking." },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "A daily treat, eight benefits, zero fuss. Pick a bundle and let the tail do the talking." },
     { "type": "text", "id": "cta_label", "label": "Button label", "default": "Choose your bundle" },
     { "type": "url", "id": "cta_link", "label": "Button link" },
     { "type": "image_picker", "id": "image", "label": "Image", "info": "Defaults to the product's featured image." }

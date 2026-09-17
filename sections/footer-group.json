@@ -22,9 +22,12 @@
           }
         }
       },
-      "block_order": ["menu-1", "contact-1"],
+      "block_order": [
+        "menu-1",
+        "contact-1"
+      ],
       "settings": {
-        "brand_text": "8 daily health benefits in one soft chew your dog will beg for. Made in a certified facility, backed by a 60-day guarantee.",
+        "brand_text": "8 daily health benefits in one soft chew your dog will beg for. Made in a certified facility, backed by a [days]-day guarantee.",
         "show_social": true,
         "show_newsletter": true,
         "newsletter_heading": "Treats for your inbox",
@@ -33,5 +36,7 @@
       }
     }
   },
-  "order": ["footer"]
+  "order": [
+    "footer"
+  ]
 }

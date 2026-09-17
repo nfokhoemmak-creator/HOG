@@ -9,6 +9,7 @@
   if cta_link == blank
     assign cta_link = '#bundles'
   endif
+  assign days = settings.guarantee_days
 -%}
 
 <section class="hero" id="top">
@@ -21,14 +22,14 @@
       <h2 class="h1 hero__title reveal" style="--i: 1;">{{ heading }}</h2>
 
       {%- if section.settings.lead != blank -%}
-        <p class="lead hero__lead reveal" style="--i: 2;">{{ section.settings.lead | escape }}</p>
+        <p class="lead hero__lead reveal" style="--i: 2;">{{ section.settings.lead | escape | replace: '[days]', days }}</p>
       {%- endif -%}
 
       {%- if section.settings.bullet_1 != blank or section.settings.bullet_2 != blank or section.settings.bullet_3 != blank -%}
         <ul class="check-list hero__benefits reveal" style="--i: 3;">
-          {%- if section.settings.bullet_1 != blank -%}<li>{{ section.settings.bullet_1 }}</li>{%- endif -%}
-          {%- if section.settings.bullet_2 != blank -%}<li>{{ section.settings.bullet_2 }}</li>{%- endif -%}
-          {%- if section.settings.bullet_3 != blank -%}<li>{{ section.settings.bullet_3 }}</li>{%- endif -%}
+          {%- if section.settings.bullet_1 != blank -%}<li>{{ section.settings.bullet_1 | escape | replace: '[days]', days }}</li>{%- endif -%}
+          {%- if section.settings.bullet_2 != blank -%}<li>{{ section.settings.bullet_2 | escape | replace: '[days]', days }}</li>{%- endif -%}
+          {%- if section.settings.bullet_3 != blank -%}<li>{{ section.settings.bullet_3 | escape | replace: '[days]', days }}</li>{%- endif -%}
         </ul>
       {%- endif -%}
 
@@ -45,7 +46,7 @@
         {%- endif -%}
       </div>
 
-      {%- if section.settings.show_rating -%}
+      {%- if section.settings.show_rating and settings.rating_value != blank -%}
         <div class="hero__rating reveal" style="--i: 5;">
           {% render 'stars', rating: settings.rating_value %}
           <span class="rating-line">{{ settings.rating_value }}/5 <span class="muted">{{ settings.rating_label | escape }}</span></span>
@@ -53,9 +54,9 @@
       {%- endif -%}
 
       <div class="hero__proof reveal" style="--i: 6;">
-        {%- if section.settings.proof_1 != blank -%}<span>{% render 'icon', name: 'badge-check' %}{{ section.settings.proof_1 | escape }}</span>{%- endif -%}
-        {%- if section.settings.proof_2 != blank -%}<span>{% render 'icon', name: 'shield-check' %}{{ section.settings.proof_2 | escape }}</span>{%- endif -%}
-        {%- if section.settings.proof_3 != blank -%}<span>{% render 'icon', name: 'truck' %}{{ section.settings.proof_3 | escape }}</span>{%- endif -%}
+        {%- if section.settings.proof_1 != blank -%}<span>{% render 'icon', name: 'badge-check' %}{{ section.settings.proof_1 | escape | replace: '[days]', days }}</span>{%- endif -%}
+        {%- if section.settings.proof_2 != blank -%}<span>{% render 'icon', name: 'shield-check' %}{{ section.settings.proof_2 | escape | replace: '[days]', days }}</span>{%- endif -%}
+        {%- if section.settings.proof_3 != blank -%}<span>{% render 'icon', name: 'truck' %}{{ section.settings.proof_3 | escape | replace: '[days]', days }}</span>{%- endif -%}
       </div>
     </div>
 
@@ -104,7 +105,7 @@
     { "type": "textarea", "id": "lead", "label": "Subheadline", "default": "Joints, heart, skin & coat, digestion, immunity, liver, antioxidants and energy — covered in one treat-shaped chew. No more pills hidden in cheese." },
     { "type": "header", "content": "Benefit bullets" },
     { "type": "text", "id": "bullet_1", "label": "Bullet 1", "default": "Replaces 4+ separate supplements with one daily chew" },
-    { "type": "text", "id": "bullet_2", "label": "Bullet 2", "default": "Soft & chewy — easy for puppies, seniors and small breeds" },
+    { "type": "text", "id": "bullet_2", "label": "Bullet 2", "default": "Soft & chewy — easy for seniors and small breeds" },
     { "type": "text", "id": "bullet_3", "label": "Bullet 3", "default": "Made in an NSF GMP-certified, FDA-registered facility" },
     { "type": "header", "content": "Buttons" },
     { "type": "text", "id": "cta_label", "label": "Main button", "default": "Get Goodest Chews" },
@@ -112,9 +113,9 @@
     { "type": "text", "id": "secondary_label", "label": "Secondary link", "default": "See how it works" },
     { "type": "url", "id": "secondary_link", "label": "Secondary link URL" },
     { "type": "header", "content": "Social proof" },
-    { "type": "checkbox", "id": "show_rating", "label": "Show star rating", "default": true },
+    { "type": "checkbox", "id": "show_rating", "label": "Show star rating", "default": true, "info": "Only shows once an average rating is set in Theme settings → Trust & guarantee." },
     { "type": "text", "id": "proof_1", "label": "Proof point 1", "default": "ISO 9001 & HACCP certified" },
-    { "type": "text", "id": "proof_2", "label": "Proof point 2", "default": "60-day money-back guarantee" },
+    { "type": "text", "id": "proof_2", "label": "Proof point 2", "default": "[days]-day money-back guarantee" },
     { "type": "text", "id": "proof_3", "label": "Proof point 3", "default": "Ships in 1–2 business days" },
     { "type": "header", "content": "Visual" },
     { "type": "image_picker", "id": "image", "label": "Image", "info": "Defaults to the product's featured image. A PNG with a transparent background looks best." },

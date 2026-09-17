@@ -116,6 +116,15 @@ hr {
   display: none !important;
 }
 
+announcement-rotator,
+menu-drawer,
+product-gallery,
+product-form,
+sticky-bar,
+cart-drawer {
+  display: block;
+}
+
 /* -------------------------------------------------------------- typography */
 
 h1,
@@ -327,7 +336,7 @@ p:last-child {
   text-align: left;
 }
 
-.section-head p {
+.section-head p:not(.eyebrow) {
   color: var(--color-muted);
 }
 
@@ -556,7 +565,7 @@ p:last-child {
 
 .badge--orange {
   background: var(--color-orange);
-  color: #fff;
+  color: var(--color-green-dark);
 }
 
 .badge--green {
@@ -878,7 +887,7 @@ textarea.field__input {
 .header {
   position: relative;
   isolation: isolate;
-  background: rgba(255, 251, 244, 0.92);
+  background: rgba(var(--color-bg-rgb), 0.92);
   border-bottom: 1px solid transparent;
   transition: box-shadow var(--dur), border-color var(--dur), background var(--dur);
 }
@@ -915,9 +924,10 @@ textarea.field__input {
   display: inline-block;
 }
 
-.header__logo img {
+.logo-img {
   width: var(--logo-width, 190px);
   max-width: 46vw;
+  height: auto;
 }
 
 .header__nav {
@@ -1392,7 +1402,7 @@ textarea.field__input {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-5) var(--space-7);
+  gap: var(--space-4) var(--space-6);
   flex-wrap: wrap;
 }
 
@@ -1402,7 +1412,7 @@ textarea.field__input {
   gap: 10px;
   font-family: var(--font-heading);
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: var(--color-green-dark);
   white-space: nowrap;
 }
@@ -1421,13 +1431,23 @@ textarea.field__input {
   color: var(--color-muted);
 }
 
+@media (min-width: 750px) {
+  .trust-bar__item[aria-hidden='true'] {
+    display: none;
+  }
+}
+
 @media (max-width: 749px) {
   .trust-bar--marquee .trust-bar__list {
     width: max-content;
     flex-wrap: nowrap;
     justify-content: flex-start;
-    gap: var(--space-7);
+    gap: 0;
     animation: marquee 28s linear infinite;
+  }
+
+  .trust-bar--marquee .trust-bar__item {
+    padding-inline-end: var(--space-7);
   }
 
   .trust-bar--marquee .container {
@@ -2131,6 +2151,7 @@ textarea.field__input {
 
 .compare-table {
   width: 100%;
+  table-layout: fixed;
   border-collapse: separate;
   border-spacing: 0;
   background: #fff;
@@ -2161,6 +2182,7 @@ textarea.field__input {
 
 .compare-table th:first-child,
 .compare-table td:first-child {
+  width: 34%;
   text-align: left;
   font-weight: 700;
   color: var(--color-fg);
@@ -2216,13 +2238,20 @@ textarea.field__input {
     border-radius: 0;
   }
 
-  .compare-table {
-    min-width: 560px;
+  .compare-table th:first-child,
+  .compare-table td:first-child {
+    width: 30%;
   }
 
   .compare-table th,
   .compare-table td {
-    padding: 12px 10px;
+    padding: 12px 5px;
+    font-size: 0.78rem;
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+
+  .compare-table th.is-us {
     font-size: 0.85rem;
   }
 }
@@ -2537,6 +2566,13 @@ textarea.field__input {
   opacity: 1;
   pointer-events: auto;
   position: relative;
+  height: 100%;
+}
+
+@media (min-width: 990px) {
+  .product__stage {
+    max-height: calc(100vh - var(--header-height) - 150px);
+  }
 }
 
 .product__stage .badge {
@@ -2947,15 +2983,21 @@ textarea.field__input {
   font-size: 0.95rem;
 }
 
+.sticky-bar__extra {
+  font-style: normal;
+}
+
 @media (max-width: 749px) {
-  .sticky-bar__text strong {
+  .sticky-bar__text strong,
+  .sticky-bar__extra {
     display: none;
   }
 
   .sticky-bar__text span {
     display: block;
-    font-size: 1rem;
+    font-size: 1.05rem;
     color: var(--color-green-dark);
+    white-space: nowrap;
   }
 }
 
@@ -3151,7 +3193,11 @@ textarea.field__input {
   color: var(--color-green-dark);
 }
 
-.cart-upsell a {
+.cart-upsell a,
+.cart-upsell button {
+  display: inline-block;
+  min-height: 32px;
+  padding: 4px 0;
   font-weight: 800;
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -3663,28 +3709,73 @@ textarea.field__input {
 
 /* ------------------------------------------------------------- animations */
 
-html.js .animate .reveal {
+html.reveal-ready .reveal:not(.is-visible) {
   opacity: 0;
-  transform: translateY(26px);
-  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
-  transition-delay: calc(var(--i, 0) * 90ms);
 }
 
-html.js .animate .reveal.is-visible {
-  opacity: 1;
-  transform: none;
+html.reveal-ready .reveal.is-visible {
+  animation: reveal-up 0.7s var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 90ms);
 }
 
-html.js .animate .reveal--scale {
-  transform: scale(0.94);
+html.reveal-ready .reveal--scale.is-visible {
+  animation-name: reveal-scale;
 }
 
-html.js .animate .reveal--left {
-  transform: translateX(-30px);
+html.reveal-ready .reveal--left.is-visible {
+  animation-name: reveal-left;
 }
 
-html.js .animate .reveal--right {
-  transform: translateX(30px);
+html.reveal-ready .reveal--right.is-visible {
+  animation-name: reveal-right;
+}
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    translate: 0 26px;
+  }
+
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes reveal-scale {
+  from {
+    opacity: 0;
+    scale: 0.94;
+  }
+
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+@keyframes reveal-left {
+  from {
+    opacity: 0;
+    translate: -30px 0;
+  }
+
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes reveal-right {
+  from {
+    opacity: 0;
+    translate: 30px 0;
+  }
+
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
 }
 
 .count-up {
@@ -3705,7 +3796,6 @@ html.js .animate .reveal--right {
 
 .marquee__track {
   display: inline-flex;
-  gap: 40px;
   animation: marquee 30s linear infinite;
 }
 
@@ -3713,6 +3803,7 @@ html.js .animate .reveal--right {
   display: inline-flex;
   align-items: center;
   gap: 40px;
+  padding-inline-end: 40px;
 }
 
 .marquee__track svg {
@@ -3730,9 +3821,8 @@ html.js .animate .reveal--right {
     scroll-behavior: auto !important;
   }
 
-  html.js .animate .reveal {
+  html.reveal-ready .reveal:not(.is-visible) {
     opacity: 1;
-    transform: none;
   }
 
   .hero__image img,
@@ -3745,12 +3835,6 @@ html.js .animate .reveal--right {
 }
 
 /* ------------------------------------------------------------ theme editor */
-
-.shopify-section-group-header-group {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
 
 .placeholder-svg {
   width: 100%;
@@ -3778,7 +3862,15 @@ html.js .animate .reveal--right {
 /* --------------------------------------------------------- customer pages */
 
 .account {
+  display: grid;
+  gap: var(--space-6);
   padding-block: clamp(var(--space-6), 5vw, var(--space-8));
+}
+
+@media (min-width: 990px) {
+  .account {
+    grid-template-columns: 280px 1fr;
+  }
 }
 
 .account h1,

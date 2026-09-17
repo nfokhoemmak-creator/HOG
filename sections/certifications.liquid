@@ -20,7 +20,7 @@
           {%- if block.settings.issuer != blank -%}<span class="cert__issuer">{{ block.settings.issuer | escape }}</span>{%- endif -%}
           <p>{{ block.settings.text | escape }}</p>
           {%- if block.settings.number != blank -%}
-            <p class="cert__number">{{ 'sections.certifications.number' | t }} <strong>{{ block.settings.number | escape }}</strong></p>
+            <p class="cert__number">{{ block.settings.number_label | default: 'Certificate no.' | escape }} <strong>{{ block.settings.number | escape }}</strong></p>
           {%- endif -%}
           {%- if block.settings.certificate != blank -%}
             <a class="link-arrow cert__link" href="{{ block.settings.certificate | image_url: width: 1600 }}" target="_blank" rel="noopener" aria-describedby="a11y-new-window-message">{{ 'sections.certifications.view' | t }}{% render 'icon', name: 'arrow-right' %}</a>
@@ -45,7 +45,7 @@
   "settings": [
     { "type": "text", "id": "anchor", "label": "Anchor id", "default": "certifications" },
     { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Made properly" },
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Certified, audited, and registered — because it's going in your dog" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Certified, audited and registered — because it's going in your dog" },
     { "type": "textarea", "id": "text", "label": "Text", "default": "Goodest Chews are produced in a facility that carries four independent quality certifications. Every certificate number is listed so you can check it yourself." },
     { "type": "textarea", "id": "footnote", "label": "Footnote", "default": "Certifications are held by the manufacturing facility that produces Goodest Chews. FDA facility registration confirms the facility is registered with the U.S. Food and Drug Administration; it is not an FDA approval of the product." }
   ],
@@ -72,6 +72,7 @@
         { "type": "text", "id": "name", "label": "Name", "default": "ISO 9001:2015" },
         { "type": "text", "id": "issuer", "label": "Issued by", "default": "China Quality Certification Centre (CQC)" },
         { "type": "textarea", "id": "text", "label": "What it means", "default": "International standard for quality management systems." },
+        { "type": "text", "id": "number_label", "label": "Number label", "default": "Certificate no." },
         { "type": "text", "id": "number", "label": "Certificate number" },
         { "type": "image_picker", "id": "certificate", "label": "Certificate scan (optional)", "info": "Upload the certificate image to add a 'View certificate' link." },
         { "type": "url", "id": "link", "label": "Verification link (optional)" }

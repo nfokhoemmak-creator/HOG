@@ -70,7 +70,7 @@
           <span>{% render 'icon', name: 'lock' %} {{ 'sections.cart.secure' | t }}</span>
         </div>
 
-        {%- if settings.cart_notice != blank -%}<div class="cart-notice">{{ settings.cart_notice }}</div>{%- endif -%}
+        {%- if settings.cart_notice != blank -%}<div class="cart-notice">{{ settings.cart_notice | replace: '[days]', settings.guarantee_days }}</div>{%- endif -%}
       </aside>
     </form>
   {%- endif -%}

@@ -1,10 +1,11 @@
+{%- assign days = settings.guarantee_days -%}
 <footer class="footer">
   <div class="container">
     <div class="footer__grid">
       <div class="footer__brand">
         <a href="{{ routes.root_url }}" aria-label="{{ shop.name | escape }}">{% render 'logo', size: 26, inverse: true %}</a>
         {%- if section.settings.brand_text != blank -%}
-          <p>{{ section.settings.brand_text }}</p>
+          <p>{{ section.settings.brand_text | escape | replace: '[days]', days }}</p>
         {%- endif -%}
         {%- if section.settings.show_social -%}
           {% render 'social-links' %}
@@ -109,7 +110,7 @@
   "class": "footer-section",
   "max_blocks": 3,
   "settings": [
-    { "type": "textarea", "id": "brand_text", "label": "About line", "default": "8 daily health benefits in one soft chew your dog will beg for. Made in a certified facility, backed by a 60-day guarantee." },
+    { "type": "textarea", "id": "brand_text", "label": "About line", "default": "8 daily health benefits in one soft chew your dog will beg for. Made in a certified facility, backed by a [days]-day guarantee." },
     { "type": "checkbox", "id": "show_social", "label": "Show social icons", "default": true },
     { "type": "checkbox", "id": "show_newsletter", "label": "Show newsletter signup", "default": true },
     { "type": "text", "id": "newsletter_heading", "label": "Newsletter heading", "default": "Treats for your inbox" },

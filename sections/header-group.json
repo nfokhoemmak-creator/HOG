@@ -8,7 +8,7 @@
         "announcement-1": {
           "type": "announcement",
           "settings": {
-            "text": "60-day Happy Dog Guarantee — if they don't love it, we refund you",
+            "text": "[days]-day Happy Dog Guarantee — if they don't love it, we refund you",
             "icon": "shield-check"
           }
         },
@@ -22,13 +22,17 @@
         "announcement-3": {
           "type": "announcement",
           "settings": {
-            "text": "Bundle & save up to 20% — most dog parents pick 2 bags",
+            "text": "Bundle & save up to 20% on 2 and 3 bags",
             "icon": "tag",
             "link": "/#bundles"
           }
         }
       },
-      "block_order": ["announcement-1", "announcement-2", "announcement-3"],
+      "block_order": [
+        "announcement-1",
+        "announcement-2",
+        "announcement-3"
+      ],
       "settings": {
         "color_scheme": "green",
         "rotate": true,
@@ -38,13 +42,49 @@
     "header": {
       "type": "header",
       "blocks": {
-        "nav-1": { "type": "link", "settings": { "label": "Benefits", "url": "#benefits" } },
-        "nav-2": { "type": "link", "settings": { "label": "Bundles", "url": "#bundles" } },
-        "nav-3": { "type": "link", "settings": { "label": "Reviews", "url": "#reviews" } },
-        "nav-4": { "type": "link", "settings": { "label": "FAQ", "url": "#faq" } },
-        "nav-5": { "type": "link", "settings": { "label": "Our story", "url": "/pages/about" } }
+        "nav-1": {
+          "type": "link",
+          "settings": {
+            "label": "Benefits",
+            "url": "#benefits"
+          }
+        },
+        "nav-2": {
+          "type": "link",
+          "settings": {
+            "label": "Bundles",
+            "url": "#bundles"
+          }
+        },
+        "nav-3": {
+          "type": "link",
+          "settings": {
+            "label": "Reviews",
+            "url": "#reviews"
+          }
+        },
+        "nav-4": {
+          "type": "link",
+          "settings": {
+            "label": "FAQ",
+            "url": "#faq"
+          }
+        },
+        "nav-5": {
+          "type": "link",
+          "settings": {
+            "label": "Our story",
+            "url": "/pages/about"
+          }
+        }
       },
-      "block_order": ["nav-1", "nav-2", "nav-3", "nav-4", "nav-5"],
+      "block_order": [
+        "nav-1",
+        "nav-2",
+        "nav-3",
+        "nav-4",
+        "nav-5"
+      ],
       "settings": {
         "cta_label": "Shop now",
         "show_search": false,
@@ -52,5 +92,8 @@
       }
     }
   },
-  "order": ["announcement-bar", "header"]
+  "order": [
+    "announcement-bar",
+    "header"
+  ]
 }

@@ -1,3 +1,4 @@
+{%- assign days = settings.guarantee_days -%}
 <section class="section" id="{{ section.settings.anchor | default: 'faq' }}">
   <div class="container">
     <div class="section-head reveal">
@@ -13,7 +14,7 @@
             {{ block.settings.question | escape }}
             <span class="accordion__icon">{% render 'icon', name: 'plus' %}</span>
           </summary>
-          <div class="accordion__content rte">{{ block.settings.answer }}</div>
+          <div class="accordion__content rte">{{ block.settings.answer | replace: '[days]', days }}</div>
         </details>
       {%- endfor -%}
     </div>
@@ -34,7 +35,7 @@
           {
             "@type": "Question",
             "name": {{ block.settings.question | json }},
-            "acceptedAnswer": { "@type": "Answer", "text": {{ block.settings.answer | strip_html | json }} }
+            "acceptedAnswer": { "@type": "Answer", "text": {{ block.settings.answer | replace: '[days]', days | strip_html | json }} }
           }{% unless forloop.last %},{% endunless %}
         {%- endfor -%}
       ]

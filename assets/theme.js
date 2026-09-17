@@ -12,6 +12,7 @@
 
   const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const ANIMATE = Boolean(window.theme && window.theme.animations) && !REDUCED_MOTION;
+  if (ANIMATE) document.documentElement.classList.add('reveal-ready');
   const moneyFormat = (window.theme && window.theme.moneyFormat) || '${{amount}}';
 
   /* ---------------------------------------------------------------- utils */

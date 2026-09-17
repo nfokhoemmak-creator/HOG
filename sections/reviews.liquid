@@ -1,26 +1,64 @@
-{%- assign avg = settings.rating_value -%}
+{%- liquid
+  assign days = settings.guarantee_days
+  assign count = section.blocks.size
+  assign total = 0
+  assign n5 = 0
+  assign n4 = 0
+  assign n3 = 0
+  assign n2 = 0
+  assign n1 = 0
+  for block in section.blocks
+    assign r = block.settings.rating | default: 5
+    assign total = total | plus: r
+    case r
+      when 5
+        assign n5 = n5 | plus: 1
+      when 4
+        assign n4 = n4 | plus: 1
+      when 3
+        assign n3 = n3 | plus: 1
+      when 2
+        assign n2 = n2 | plus: 1
+      else
+        assign n1 = n1 | plus: 1
+    endcase
+  endfor
+  assign avg = 0
+  if count > 0
+    assign half = count | divided_by: 2
+    assign avg_tenths = total | times: 10 | plus: half | divided_by: count
+    assign avg_whole = avg_tenths | divided_by: 10
+    assign avg_frac = avg_tenths | modulo: 10
+    assign avg = avg_whole | append: '.' | append: avg_frac
+    assign p5 = n5 | times: 100 | divided_by: count
+    assign p4 = n4 | times: 100 | divided_by: count
+    assign p3 = n3 | times: 100 | divided_by: count
+    assign p2 = n2 | times: 100 | divided_by: count
+    assign p1 = n1 | times: 100 | divided_by: count
+  endif
+-%}
 
 <section class="section" id="{{ section.settings.anchor | default: 'reviews' }}">
   <div class="container">
     <div class="section-head reveal">
       {%- if section.settings.eyebrow != blank -%}<p class="eyebrow eyebrow--center">{{ section.settings.eyebrow | escape }}</p>{%- endif -%}
       <h2>{{ section.settings.heading | escape }}</h2>
-      {%- if section.settings.text != blank -%}<p class="lead">{{ section.settings.text | escape }}</p>{%- endif -%}
+      {%- if section.settings.text != blank -%}<p class="lead">{{ section.settings.text | escape | replace: '[days]', days }}</p>{%- endif -%}
     </div>
 
-    {%- if section.settings.show_summary -%}
+    {%- if section.settings.show_summary and count > 0 -%}
       <div class="reviews__summary reveal">
         <div class="reviews__score">
           <strong>{{ avg }}</strong>
           {% render 'stars', rating: avg, class: 'stars--lg' %}
-          <span class="reviews__count">{{ section.settings.count_label | escape }}</span>
+          <span class="reviews__count">{{ 'products.reviews.based_on' | t: count: count }}</span>
         </div>
 
         <div class="rating-bars" aria-label="{{ 'products.reviews.breakdown' | t }}">
           {%- assign bars = '5,4,3,2,1' | split: ',' -%}
+          {%- assign pcts = p5 | append: ',' | append: p4 | append: ',' | append: p3 | append: ',' | append: p2 | append: ',' | append: p1 | split: ',' -%}
           {%- for star in bars -%}
-            {%- assign key = 'bar_' | append: star -%}
-            {%- assign pct = section.settings[key] -%}
+            {%- assign pct = pcts[forloop.index0] -%}
             <div class="rating-bar">
               <span>{{ star }} ★</span>
               <span class="rating-bar__track"><span class="rating-bar__fill" style="--w: {{ pct }}%;"></span></span>
@@ -91,13 +129,7 @@
     { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Reviews" },
     { "type": "text", "id": "heading", "label": "Heading", "default": "Rated by the toughest critics: the dogs" },
     { "type": "textarea", "id": "text", "label": "Text" },
-    { "type": "checkbox", "id": "show_summary", "label": "Show rating summary", "default": true },
-    { "type": "text", "id": "count_label", "label": "Count label", "default": "Based on 127 reviews" },
-    { "type": "range", "id": "bar_5", "min": 0, "max": 100, "step": 1, "unit": "%", "label": "5-star share", "default": 88 },
-    { "type": "range", "id": "bar_4", "min": 0, "max": 100, "step": 1, "unit": "%", "label": "4-star share", "default": 9 },
-    { "type": "range", "id": "bar_3", "min": 0, "max": 100, "step": 1, "unit": "%", "label": "3-star share", "default": 2 },
-    { "type": "range", "id": "bar_2", "min": 0, "max": 100, "step": 1, "unit": "%", "label": "2-star share", "default": 1 },
-    { "type": "range", "id": "bar_1", "min": 0, "max": 100, "step": 1, "unit": "%", "label": "1-star share", "default": 0 },
+    { "type": "checkbox", "id": "show_summary", "label": "Show rating summary", "default": true, "info": "The average, count and star breakdown are calculated from the reviews below." },
     { "type": "text", "id": "cta_label", "label": "Button label", "default": "Try them risk-free" },
     { "type": "url", "id": "cta_link", "label": "Button link" },
     { "type": "text", "id": "write_email", "label": "Email for new reviews", "default": "goodestchews@outlook.com" }

@@ -11,7 +11,7 @@
     "color_primary": "#0F5132",
     "color_primary_dark": "#0A3B24",
     "color_accent": "#F07F1F",
-    "color_accent_dark": "#D66A0C",
+    "color_accent_dark": "#B45309",
     "color_star": "#F5B301",
     "color_sale": "#D93A3A",
     "type_heading_font": "fredoka",
@@ -25,12 +25,12 @@
     "guarantee_title": "Happy Dog Guarantee",
     "guarantee_short": "If your dog doesn't love them, we refund you. No bag returns, no questions.",
     "shipping_short": "Ships within 1–2 business days · tracked delivery",
-    "rating_value": "4.9",
+    "rating_value": "",
     "rating_label": "from happy dog parents",
     "cart_type": "drawer",
     "cart_show_note": false,
     "cart_show_upsell": true,
-    "cart_notice": "<p>Backed by our 60-day Happy Dog Guarantee.</p>",
+    "cart_notice": "<p>Backed by our [days]-day Happy Dog Guarantee.</p>",
     "social_instagram_link": "",
     "social_tiktok_link": "",
     "social_facebook_link": "",
@@ -40,6 +40,11 @@
     "predictive_search_enabled": true
   },
   "platform_customizations": {
-    "custom_colors": ["#0F5132", "#F07F1F", "#FFFBF4", "#1F2D26"]
+    "custom_colors": [
+      "#0F5132",
+      "#F07F1F",
+      "#FFFBF4",
+      "#1F2D26"
+    ]
   }
 }

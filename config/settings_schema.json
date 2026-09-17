@@ -17,6 +17,12 @@
         "info": "Upload the Goodest Chews logo (PNG with transparent background). Until one is uploaded the theme draws the wordmark in brand colours."
       },
       {
+        "type": "image_picker",
+        "id": "logo_inverse",
+        "label": "Logo for dark backgrounds",
+        "info": "Used in the footer. If empty, the footer draws the cream wordmark."
+      },
+      {
         "type": "range",
         "id": "logo_width",
         "min": 100,
@@ -53,7 +59,7 @@
     ]
   },
   {
-    "name": "Colours",
+    "name": "Colors",
     "settings": [
       { "type": "header", "content": "Surfaces" },
       { "type": "color", "id": "color_background", "label": "Background (cream)", "default": "#FFFBF4" },
@@ -66,7 +72,7 @@
       { "type": "color", "id": "color_primary", "label": "Green", "default": "#0F5132" },
       { "type": "color", "id": "color_primary_dark", "label": "Green (dark)", "default": "#0A3B24" },
       { "type": "color", "id": "color_accent", "label": "Orange", "default": "#F07F1F" },
-      { "type": "color", "id": "color_accent_dark", "label": "Orange (dark)", "default": "#D66A0C" },
+      { "type": "color", "id": "color_accent_dark", "label": "Orange (dark)", "default": "#B45309" },
       { "type": "color", "id": "color_star", "label": "Review stars", "default": "#F5B301" },
       { "type": "color", "id": "color_sale", "label": "Savings / sale", "default": "#D93A3A" }
     ]
@@ -123,7 +129,7 @@
       { "type": "text", "id": "guarantee_title", "label": "Guarantee name", "default": "Happy Dog Guarantee" },
       { "type": "text", "id": "guarantee_short", "label": "Guarantee one-liner", "default": "If your dog doesn't love them, we refund you. No bag returns, no questions." },
       { "type": "text", "id": "shipping_short", "label": "Shipping one-liner", "default": "Ships within 1–2 business days · tracked delivery" },
-      { "type": "text", "id": "rating_value", "label": "Average rating (shown next to stars)", "default": "4.9", "info": "Keep this in line with the reviews you actually have." },
+      { "type": "text", "id": "rating_value", "label": "Average rating (hero, product page)", "info": "Leave empty until you have real reviews. Enter e.g. 4.8 to show stars in the hero and on the product page. The reviews section computes its own average from the reviews it shows." },
       { "type": "text", "id": "rating_label", "label": "Rating label", "default": "from happy dog parents" }
     ]
   },
@@ -142,7 +148,7 @@
       },
       { "type": "checkbox", "id": "cart_show_note", "label": "Show order note", "default": false },
       { "type": "checkbox", "id": "cart_show_upsell", "label": "Show 'bundle & save' nudge", "default": true },
-      { "type": "richtext", "id": "cart_notice", "label": "Cart notice", "default": "<p>Backed by our 60-day Happy Dog Guarantee.</p>" }
+      { "type": "richtext", "id": "cart_notice", "label": "Cart notice", "default": "<p>Backed by our [days]-day Happy Dog Guarantee.</p>", "info": "[days] is replaced with the guarantee length." }
     ]
   },
   {
@@ -151,7 +157,7 @@
       { "type": "text", "id": "social_instagram_link", "label": "Instagram URL" },
       { "type": "text", "id": "social_tiktok_link", "label": "TikTok URL" },
       { "type": "text", "id": "social_facebook_link", "label": "Facebook URL" },
-      { "type": "text", "id": "social_whatsapp_link", "label": "WhatsApp link", "info": "Format: https://wa.me/9715XXXXXXX" }
+      { "type": "text", "id": "social_whatsapp_link", "label": "WhatsApp link", "info": "Format: https://wa.me/ followed by country code and number, no spaces or plus sign." }
     ]
   },
   {
