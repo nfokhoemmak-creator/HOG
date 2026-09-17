@@ -68,11 +68,21 @@ what's inside → **bundles** → reviews → comparison table → certification
 
 Every section is editable in the theme editor; every heading, bullet and review is a setting.
 
-## Reviews
+## Reviews and ratings
 
-`sections/reviews.liquid` renders review blocks from the template. The ones shipped in
-`templates/index.json` and `templates/product.json` are **sample placeholders** — replace them
-with real customer reviews (or a reviews app) before launch.
+`sections/reviews.liquid` renders review blocks from the template and computes the average,
+count and star breakdown from those blocks. The reviews shipped in `templates/index.json` and
+`templates/product.json` are **sample placeholders** — replace them with real customer reviews
+(or a reviews app) before launch.
+
+The star rating in the hero and on the product page reads **Theme settings → Trust & guarantee →
+Average rating**. It is empty by default and nothing renders until you set it.
+
+## Guarantee length
+
+**Theme settings → Trust & guarantee → Guarantee length** drives the hero badge, guarantee seal,
+cart, sticky bars and every text setting that contains the `[days]` token (announcements, hero
+bullets, bundle perks, FAQ answers, footer). Write `[days]` in copy instead of a number.
 
 ## Certifications
 
