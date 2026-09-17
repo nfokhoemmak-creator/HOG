@@ -25,6 +25,25 @@ curl -sS -u "$ARCADS_API_KEY:" "https://external-api.arcads.ai/v1/products"
 
 (`-u 'key:'` means password empty.)
 
+## Credit balance (real billing endpoint — supersedes "no billing endpoint")
+
+**Correction (confirmed against the OpenAPI spec dated 2026-09):** earlier notes in this file and in `SKILL.md` said Arcads has no billing endpoint. That is no longer true — use it instead of asking the user or estimating from logs alone when you just need the current balance.
+
+`GET /v1/credits` → `CreditsBalanceDto`:
+
+- `creditsRemaining` — credits still available to spend (use this to warn before an expensive batch).
+- `creditsIncluded` — credits granted for the current period, top-ups included.
+- `mcpCreditsSpentThisPeriod` — spent via MCP this period (excludes app/API usage on the same balance; nullable).
+- `additionalCreditsUsed` — overage billed beyond the included allowance.
+- `currentPeriodStart` / `currentPeriodEnd` — billing period bounds (nullable if no subscription).
+- `plan` — current plan name, nullable.
+
+Call this at session start (or before a large batch) and compare against the estimated cost from [Credit cost estimation](SKILL.md#credit-cost-estimation-mandatory--show-before-generating) — it does **not** replace per-call cost estimates (Arcads still has no per-generation price lookup), but it does replace asking the user for their balance.
+
+```bash
+curl -sS -u "$ARCADS_API_KEY:" "https://external-api.arcads.ai/v1/credits"
+```
+
 ## Model → route mapping
 
 ### Primary: unified v2 video endpoint
@@ -412,6 +431,34 @@ Several endpoints (e.g. `POST /v1/b-roll`, `POST /V2/images/generate`) reject im
 
 This should happen transparently — never ask the user about it.
 
+## Presets — templated actor generation (incl. Fashion Try-On)
+
+**New in the 2026-09 OpenAPI spec, not yet in the decision-tree table below.** Presets are single-call, template-driven video generations built on a library of pre-shot "situations" (an actor + scene combo). Unlike the manual Nano-Banana-still-then-video flow described under **Product showcase workflow** below, a preset call goes straight from your reference image(s) to a finished video.
+
+**⭐ Fashion Try-On is the standout preset for a clothing brand** — it drops a garment reference image onto an actor in a pre-shot situation, producing a try-on/lookbook-style video with no character-sheet setup needed. Worth trying for House of Garments drops before reaching for the full Seedance/Nano-Banana influencer pipeline.
+
+### Flow
+
+1. `GET /v1/presets` → list preset types: `camera-movement`, `fashion-tryon`, `gameplay-ad`, `gestures`, `product-showcase`, `showyourapp`, `unboxing-pov`.
+2. `GET /v1/presets/{presetType}/templates` (paginated) → browse available situations for that type. Each `PresetTemplateDto` has `id` (use as `situationId`), `previewUrl`, `imageUrl`, `tags`, `emotions` — show the user thumbnails/tags to pick from, or pick one whose `tags` match the brief (e.g. `"street"`, `"studio"`).
+3. `POST /v1/presets/{presetType}/generate` with the matching DTO (see below). **Response schema isn't specified in the OpenAPI doc** — treat it like other generation calls: expect an asset-like object in the response and poll `GET /v1/assets/{id}` until `generated`/`failed`, same as other flows.
+
+### Per-preset request bodies
+
+All require `productId` and `situationId` (from step 2); `projectId` optional on all.
+
+| Preset | Endpoint | Extra required fields | Notes |
+|---|---|---|---|
+| **Fashion Try-On** | `POST /v1/presets/fashion-tryon/generate` | `referenceImages` (garment photo(s)) | `aspectRatio` optional — enum `21:9`, `16:9`, `4:3`, `1:1`, `3:4`, `9:16` (wider set than the video models). |
+| **Product Showcase** (preset variant) | `POST /v1/presets/product-showcase/generate` | `referenceImages` (product photo), `prompt` (10–1000 chars) | Different from the manual two-step workflow below — this is one call. |
+| **Gestures** | `POST /v1/presets/gestures/generate` | `referenceImages` (avatar photo) | |
+| **Camera Movement** | `POST /v1/presets/camera-movement/generate` | `referenceImages` (avatar photo) | Optional `strength` (number, e.g. `0.75`). |
+| **Show Your App** | `POST /v1/presets/showyourapp/generate` | `referenceImages` (app screenshot) | |
+| **Unboxing POV** | `POST /v1/presets/unboxing-pov/generate` | `referenceImages` (product photo) | |
+| **Gameplay Ad** | `POST /v1/presets/gameplay-ad/generate` | `referenceVideos` (gameplay clip) | Optional `prompt` to guide script generation. Not relevant to House of Garments. |
+
+`referenceImages`/`referenceVideos` are `filePath` strings from the same `POST /v1/file-upload/get-presigned-url` flow used elsewhere (see [File upload](#file-upload-for-reference-images-videos-audio) below).
+
 ## Product showcase workflow
 
 The flow for generating videos of an AI person holding/using a physical product:
@@ -426,10 +473,12 @@ See [prompting/prompt-library/product-showcase.md](prompting/prompt-library/prod
 
 ### Product context via `ProductCreationDto`
 
-Products in Arcads carry marketing context (not images via the API):
+**Naming update (2026-09 spec):** the platform now calls these **brands**, not products — `/v1/products*` is marked `deprecated` in favor of `/v1/brands`, `/v1/brands/{brandId}`, `/v1/brands/{brandId}/folders` (same request/response shapes, just renamed routes). **The `productId` field name is unchanged everywhere else** — every generation DTO (`CreateVideoDto`, `CreateImageDto`, the preset DTOs, etc.) still takes `productId`, even though you create/list the entity via `/v1/brands` now. Prefer `/v1/brands*` for CRUD going forward; keep using `productId` in generation payloads.
+
+Products/brands in Arcads carry marketing context (not images via the API):
 
 ```
-POST /v1/products
+POST /v1/brands
 {
   "name": "Product Name",
   "description": "What the product is",
@@ -463,6 +512,21 @@ These text fields feed into script/prompt context. Product images are currently 
 ### Remove asset from project
 
 `POST /v1/assets/remove-from-project` — `{"assetId": "...", "projectId": "..."}`.
+
+## Not yet covered by this skill (present in the 2026-09 OpenAPI spec)
+
+These exist in the live API but don't have prompting guides or decision-tree rows yet. Check the Swagger UI for exact schemas before using; treat generation-style ones (talking-actors v2, omni-flash) like other asset endpoints — poll `GET /v1/assets/{id}` or `GET /v1/videos/{id}` per the `type` returned.
+
+| Area | Endpoints | What it's for |
+|---|---|---|
+| **Actors & situations library** | `GET /v1/actors`, `GET /v1/actors/{actorId}/situations`, `GET /v1/situations`, `GET /v1/situations/mine`, `GET /v1/situations/{id}` | Browse the actor/scene library that presets and talking-actor generations draw `situationId` from. Filterable by gender/age/skin tone and by content-type flags (`fashionTryOnEnabled`, `productShowcaseEnabled`, etc.). |
+| **Talking Actors v2** | `POST /v2/talking-actors/generate`, `GET /v2/talking-actors/{id}`, `GET /v2/talking-actors/{id}/watch` | Newer talking-avatar route alongside the `/v1/scripts` pipeline already documented above. |
+| **Voices + ElevenLabs import** | `GET /v1/voices`, `GET /v1/voices/{id}`, `DELETE /v1/voices/mine`, `POST/GET/DELETE /v1/elevenlabs/credentials`, `POST /v1/elevenlabs/trigger-import` | Connect an ElevenLabs account and import its voices into the Arcads voice library for scripts/actors. |
+| **Competitor ad scraping** | `GET /v1/ads`, `POST /v1/ads/competitors` | Arcads-native competitor ad library per brand (`AddCompetitorsDto: {productId, competitors}`) — separate from this repo's `shared/skills/meta-ad-builder/scripts/pull-competitor-ads.py`, which goes through the Meta Marketing API directly. Worth comparing before reaching for the Meta script. |
+| **Asset/video library search** | `GET /v1/assets` (full-text `q`, filter by `kind`/`aspectRatio`/`origin`), `GET /v1/videos` (filter by product/folder/script/status, `updatedSince` for incremental sync) | Listing/search over everything already generated — useful for "what have we made for this brand" instead of tracking only via `logs/arcads-api.jsonl`. |
+| **Gemini Omni Flash** | `POST /v1/omni-flash/generate/video` (`StartOmniFlashDto`) | Video generation/editing via Gemini. There's a prompting stub already at `shared/skills/gemini-omni-flash/prompting/guide.md` but no registered `SKILL.md` yet. |
+| **Workflows / Notion** | `GET /v1/workflows/{id}/runs`, `GET /v1/workflows/runs/{runId}`, `POST /v1/workflows/{id}/webhook`, `POST /v1/workflows/notion/generate-video-from-script-template` | Webhook-triggered generation workflows, including a Notion script-template integration. |
+| **File upload (asset variant)** | `POST /v1/file-upload/create-asset` | Alongside the presigned-URL flow already documented — check the Swagger UI for how it differs before using. |
 
 ## Health
 
