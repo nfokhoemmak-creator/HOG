@@ -16,6 +16,8 @@
   {%- assign og_image = collection.image -%}
 {%- elsif settings.share_image -%}
   {%- assign og_image = settings.share_image -%}
+{%- elsif settings.featured_product != blank and settings.featured_product.featured_image -%}
+  {%- assign og_image = settings.featured_product.featured_image -%}
 {%- endif -%}
 
 {%- if og_image -%}
