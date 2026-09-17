@@ -21,6 +21,8 @@
   if upsell_variant != blank and upsell_variant.compare_at_price > upsell_variant.price
     assign upsell_saving = upsell_variant.compare_at_price | minus: upsell_variant.price
   endif
+  assign upsell_saving_money = upsell_saving | money
+  assign upsell_price_money = upsell_variant.price | money
 -%}
 
 <cart-drawer class="cart-drawer" aria-hidden="true">
@@ -106,13 +108,13 @@
             <div>
               <strong>
                 {%- if upsell_saving > 0 -%}
-                  {{ 'sections.cart.upsell_heading_saving' | t: bundle: upsell_variant.title, amount: upsell_saving | money }}
+                  {{ 'sections.cart.upsell_heading_saving' | t: bundle: upsell_variant.title, amount: upsell_saving_money }}
                 {%- else -%}
                   {{ 'sections.cart.upsell_heading' | t: bundle: upsell_variant.title }}
                 {%- endif -%}
               </strong>
               <button type="button" data-upsell-swap="{{ upsell_line.key }}" data-upsell-variant="{{ upsell_variant.id }}">
-                {{ 'sections.cart.upsell_cta' | t: price: upsell_variant.price | money }} &rarr;
+                {{ 'sections.cart.upsell_cta' | t: price: upsell_price_money }} &rarr;
               </button>
             </div>
           </div>

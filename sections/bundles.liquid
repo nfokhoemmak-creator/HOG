@@ -30,7 +30,10 @@
               assign pct = saving | times: 100.0 | divided_by: variant.compare_at_price | round
             endif
             assign per_bag = variant.price | times: 1.0 | divided_by: bags | round
+            assign per_bag_money = per_bag | money
+            assign saving_money = saving | money
             assign perks = block.settings.perks | newline_to_br | split: '<br />'
+            assign default_button = 'products.product.add_to_cart' | t
           -%}
           <div
             class="bundle{% if block.settings.featured %} bundle--featured{% endif %} reveal"
@@ -65,7 +68,7 @@
             </div>
             <p class="bundle__per">
               {%- if bags > 1 -%}
-                {{ 'products.product.per_bag' | t: price: per_bag | money }}{% if saving > 0 %} · {{ 'products.product.save_amount' | t: amount: saving | money }}{% endif %}
+                {{ 'products.product.per_bag' | t: price: per_bag_money }}{% if saving > 0 %} · {{ 'products.product.save_amount' | t: amount: saving_money }}{% endif %}
               {%- else -%}
                 {{ 'products.product.chews_per_bag' | t: count: section.settings.chews_per_bag }}
               {%- endif -%}
@@ -86,7 +89,7 @@
                   <input type="hidden" name="id" value="{{ variant.id }}">
                   <input type="hidden" name="quantity" value="1">
                   <button type="submit" class="btn btn--full{% if block.settings.featured %} btn--lg btn--pulse{% else %} btn--green{% endif %}">
-                    <span data-button-text>{{ block.settings.button_label | default: 'products.product.add_to_cart' | t | escape }}</span>
+                    <span data-button-text>{{ block.settings.button_label | default: default_button | escape }}</span>
                   </button>
                 </form>
               {%- else -%}

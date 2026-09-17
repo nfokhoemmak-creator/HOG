@@ -16,6 +16,8 @@
     assign current_bags = 1
   endif
   assign per_bag = current_variant.price | times: 1.0 | divided_by: current_bags | round
+  assign per_bag_money = per_bag | money
+  assign saving_money = saving | money
 -%}
 
 <div class="container">
@@ -104,10 +106,10 @@
                 <span class="price__current" data-price-current>{{ current_variant.price | money }}</span>
                 <s class="price__compare" data-price-compare {% unless on_sale %}hidden{% endunless %}>{{ current_variant.compare_at_price | money }}</s>
                 <span class="badge badge--sale" id="ProductSavings-{{ section.id }}" {% unless on_sale %}hidden{% endunless %}>
-                  {{- 'products.product.save_amount' | t: amount: saving | money }} ({{ 'products.product.save_percent' | t: percent: pct }})
+                  {{- 'products.product.save_amount' | t: amount: saving_money }} ({{ 'products.product.save_percent' | t: percent: pct }})
                 </span>
               </div>
-              <p class="product__per-bag" id="ProductPerBag-{{ section.id }}" {% if current_bags < 2 %}hidden{% endif %}>{{ 'products.product.per_bag' | t: price: per_bag | money }}</p>
+              <p class="product__per-bag" id="ProductPerBag-{{ section.id }}" {% if current_bags < 2 %}hidden{% endif %}>{{ 'products.product.per_bag' | t: price: per_bag_money }}</p>
               <p class="product__inventory" id="ProductInventory-{{ section.id }}" hidden></p>
             </div>
 
