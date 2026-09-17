@@ -76,6 +76,13 @@
             "label": "Our story",
             "url": "/pages/about"
           }
+        },
+        "nav-6": {
+          "type": "link",
+          "settings": {
+            "label": "Full details",
+            "url": "/products/goodest-chews-8-in-1-multivitamin-chews"
+          }
         }
       },
       "block_order": [
@@ -83,7 +90,8 @@
         "nav-2",
         "nav-3",
         "nav-4",
-        "nav-5"
+        "nav-5",
+        "nav-6"
       ],
       "settings": {
         "cta_label": "Shop now",

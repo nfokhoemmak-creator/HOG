@@ -89,6 +89,9 @@
       "submit": "Send message",
       "success": "Thanks! We'll get back to you within one business day."
     },
+    "inside": {
+      "view_full_details": "See full ingredients, guaranteed analysis & reviews"
+    },
     "collection_template": {
       "empty": "No products found.",
       "sort_by_label": "Sort by",
