@@ -2988,6 +2988,7 @@ textarea.field__input {
 }
 
 @media (max-width: 749px) {
+  .sticky-bar__thumb,
   .sticky-bar__text strong,
   .sticky-bar__extra {
     display: none;
@@ -2998,6 +2999,8 @@ textarea.field__input {
     font-size: 1.05rem;
     color: var(--color-green-dark);
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 
