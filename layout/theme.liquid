@@ -4,15 +4,19 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="theme-color" content="{{ settings.color_background }}">
+    <meta name="theme-color" content="{{ settings.color_primary }}">
     <link rel="canonical" href="{{ canonical_url }}">
 
     {%- if settings.favicon != blank -%}
       <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
       <link rel="apple-touch-icon" href="{{ settings.favicon | image_url: width: 180, height: 180 }}">
+    {%- else -%}
+      <link rel="icon" href="data:image/svg+xml,{{ '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><circle cx="32" cy="32" r="30" fill="#0F5132"/><path d="M18 30c0 9 6.3 14 14 14s14-5 14-14" fill="none" stroke="#F07F1F" stroke-width="7" stroke-linecap="round"/><circle cx="23" cy="24" r="4" fill="#FFFBF4"/><circle cx="41" cy="24" r="4" fill="#FFFBF4"/></svg>' | url_encode }}">
     {%- endif -%}
 
     <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <title>
       {{ page_title }}
@@ -30,49 +34,52 @@
     {{ content_for_header }}
 
     {%- liquid
-      assign body_font = settings.type_body_font
-      assign body_font_bold = body_font | font_modify: 'weight', 'bold'
-      assign body_font_italic = body_font | font_modify: 'style', 'italic'
-      assign heading_font = settings.type_heading_font
+      case settings.type_heading_font
+        when 'baloo'
+          assign heading_family = "'Baloo 2', 'Fredoka', 'Nunito', system-ui, sans-serif"
+          assign google_heading = 'Baloo+2:wght@600;700;800'
+        when 'nunito'
+          assign heading_family = "'Nunito', system-ui, sans-serif"
+          assign google_heading = ''
+        else
+          assign heading_family = "'Fredoka', 'Nunito', system-ui, sans-serif"
+          assign google_heading = 'Fredoka:wght@500;600;700'
+      endcase
     -%}
 
-    {{ body_font | font_face: font_display: 'swap' }}
-    {{ body_font_bold | font_face: font_display: 'swap' }}
-    {{ body_font_italic | font_face: font_display: 'swap' }}
-    {{ heading_font | font_face: font_display: 'swap' }}
+    {%- if google_heading != blank -%}
+      <link href="https://fonts.googleapis.com/css2?family={{ google_heading }}&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    {%- else -%}
+      <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    {%- endif -%}
 
     <style>
       :root {
-        --font-body-family: {{ body_font.family }}, {{ body_font.fallback_families }};
-        --font-body-style: {{ body_font.style }};
-        --font-body-weight: {{ body_font.weight }};
-        --font-body-weight-bold: {{ body_font.weight | plus: 300 | at_most: 1000 }};
-
-        --font-heading-family: {{ heading_font.family }}, {{ heading_font.fallback_families }};
-        --font-heading-style: {{ heading_font.style }};
-        --font-heading-weight: {{ heading_font.weight }};
-        --font-heading-tracking: {{ settings.type_heading_tracking }}px;
-
-        --font-body-scale: {{ settings.type_body_scale | divided_by: 100.0 }};
-        --font-heading-scale: {{ settings.type_heading_scale | divided_by: 100.0 }};
+        --font-heading: {{ heading_family }};
+        --font-body: 'Nunito', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        --heading-scale: {{ settings.type_heading_scale | divided_by: 100.0 }};
+        --body-scale: {{ settings.type_body_scale | divided_by: 100.0 }};
 
         --color-bg: {{ settings.color_background }};
         --color-bg-alt: {{ settings.color_background_alt }};
+        --color-border: {{ settings.color_border }};
         --color-fg: {{ settings.color_text }};
         --color-muted: {{ settings.color_text_muted }};
-        --color-accent: {{ settings.color_accent }};
-        --color-accent-contrast: {{ settings.color_accent_contrast }};
-        --color-border: {{ settings.color_border }};
+        --color-green: {{ settings.color_primary }};
+        --color-green-dark: {{ settings.color_primary_dark }};
+        --color-orange: {{ settings.color_accent }};
+        --color-orange-dark: {{ settings.color_accent_dark }};
+        --color-star: {{ settings.color_star }};
         --color-sale: {{ settings.color_sale }};
-
-        --color-btn-bg: {{ settings.color_button_background }};
-        --color-btn-fg: {{ settings.color_button_text }};
+        --color-green-rgb: {{ settings.color_primary | color_extract: 'red' }}, {{ settings.color_primary | color_extract: 'green' }}, {{ settings.color_primary | color_extract: 'blue' }};
+        --color-orange-rgb: {{ settings.color_accent | color_extract: 'red' }}, {{ settings.color_accent | color_extract: 'green' }}, {{ settings.color_accent | color_extract: 'blue' }};
+        --color-green-soft: {{ settings.color_primary | color_mix: settings.color_background, 12 }};
+        --color-orange-soft: {{ settings.color_accent | color_mix: settings.color_background, 16 }};
 
         --container: {{ settings.layout_max_width }}px;
         --gutter: {{ settings.layout_gutter }}px;
         --radius: {{ settings.layout_corner_radius }}px;
-
-        --grid-gap: {{ settings.grid_gap }}px;
+        --radius-sm: {{ settings.layout_corner_radius | divided_by: 2 | at_least: 6 }}px;
       }
     </style>
 
@@ -86,9 +93,11 @@
           adding: {{ 'products.product.adding' | t | json }},
           added: {{ 'products.product.added' | t | json }},
           soldOut: {{ 'products.product.sold_out' | t | json }},
-          preorder: {{ 'products.product.preorder' | t | json }},
           unavailable: {{ 'products.product.unavailable' | t | json }},
           lowStock: {{ 'products.product.low_stock' | t: count: '{{ count }}' | json }},
+          perBag: {{ 'products.product.per_bag' | t: price: '{{ price }}' | json }},
+          save: {{ 'products.product.save_amount' | t: amount: '{{ amount }}' | json }},
+          savePercent: {{ 'products.product.save_percent' | t: percent: '{{ percent }}' | json }},
           cartError: {{ 'sections.cart.error' | t | json }},
           itemAdded: {{ 'sections.cart.item_added' | t | json }}
         },
@@ -100,7 +109,8 @@
           predictiveSearch: {{ routes.predictive_search_url | json }}
         },
         moneyFormat: {{ shop.money_format | json }},
-        cartType: {{ settings.cart_type | json }}
+        cartType: {{ settings.cart_type | json }},
+        animations: {{ settings.animations_enabled | json }}
       };
     </script>
 
@@ -109,10 +119,19 @@
     <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
   </head>
 
-  <body class="template-{{ template.name | handle }} {% if settings.animations_enabled %}animate{% endif %}">
+  <body class="template-{{ template.name | handle }}{% if template.suffix %} template-{{ template.name | handle }}-{{ template.suffix | handle }}{% endif %}{% if settings.animations_enabled %} animate{% endif %}">
     <a class="skip-to-content visually-hidden" href="#MainContent">
       {{ 'accessibility.skip_to_text' | t }}
     </a>
+
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="gc-star-half" x1="0" x2="1" y1="0" y2="0">
+          <stop offset="50%" stop-color="currentColor"/>
+          <stop offset="50%" stop-color="transparent"/>
+        </linearGradient>
+      </defs>
+    </svg>
 
     {% sections 'header-group' %}
 
@@ -124,6 +143,10 @@
 
     {%- if settings.cart_type == 'drawer' -%}
       {% section 'cart-drawer' %}
+    {%- endif -%}
+
+    {%- if template.name == 'index' -%}
+      {% render 'sticky-cta' %}
     {%- endif -%}
 
     <div class="visually-hidden" aria-live="polite" role="status" id="LiveRegion"></div>

@@ -1,10 +1,10 @@
 {
-  "name": "house-of-garments-theme",
+  "name": "goodest-chews-theme",
   "version": "1.0.0",
-  "description": "Custom Shopify Online Store 2.0 theme for House of Garments (houseofgarments.co)",
+  "description": "Custom Shopify Online Store 2.0 theme for Goodest Chews (goodestchews.com) — a one-product store for 8-in-1 multivitamin soft chews for dogs",
   "private": true,
   "license": "MIT",
-  "homepage": "https://houseofgarments.co",
+  "homepage": "https://goodestchews.com",
   "scripts": {
     "dev": "shopify theme dev",
     "check": "shopify theme check",

@@ -1,0 +1,71 @@
+<section class="section" id="{{ section.settings.anchor | default: 'benefits' }}">
+  <div class="container">
+    <div class="section-head reveal">
+      {%- if section.settings.eyebrow != blank -%}<p class="eyebrow eyebrow--center">{{ section.settings.eyebrow | escape }}</p>{%- endif -%}
+      <h2>{{ section.settings.heading | escape }}</h2>
+      {%- if section.settings.text != blank -%}<p class="lead">{{ section.settings.text | escape }}</p>{%- endif -%}
+    </div>
+
+    <div class="benefits">
+      {%- for block in section.blocks -%}
+        <div class="benefit reveal" style="--i: {{ forloop.index0 }};" {{ block.shopify_attributes }}>
+          <span class="benefit__num">0{{ forloop.index }}</span>
+          <div class="benefit__icon">{% render 'icon', name: block.settings.icon %}</div>
+          <h3>{{ block.settings.title | escape }}</h3>
+          <p>{{ block.settings.text | escape }}</p>
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- if section.settings.cta_label != blank -%}
+      <div class="text-center" style="margin-top: var(--space-7);">
+        <a class="btn btn--lg" href="{{ section.settings.cta_link | default: '#bundles' }}">{{ section.settings.cta_label | escape }}{% render 'icon', name: 'arrow-right' %}</a>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Benefits grid",
+  "tag": "div",
+  "max_blocks": 8,
+  "settings": [
+    { "type": "text", "id": "anchor", "label": "Anchor id", "default": "benefits" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "8 benefits in every chew" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Everything a good dog needs, in the one thing they actually want" },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "One chew covers the eight areas that matter most for a long, tail-wagging life." },
+    { "type": "text", "id": "cta_label", "label": "Button label", "default": "Choose your bundle" },
+    { "type": "url", "id": "cta_link", "label": "Button link" }
+  ],
+  "blocks": [
+    {
+      "type": "benefit",
+      "name": "Benefit",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "bone", "label": "Bone (joints)" },
+            { "value": "heart", "label": "Heart" },
+            { "value": "sparkles", "label": "Sparkles (skin & coat)" },
+            { "value": "stomach", "label": "Stomach (digestion)" },
+            { "value": "shield-check", "label": "Shield (immunity)" },
+            { "value": "droplet", "label": "Droplet (liver)" },
+            { "value": "sun", "label": "Sun (antioxidants)" },
+            { "value": "bolt", "label": "Bolt (energy)" },
+            { "value": "leaf", "label": "Leaf" },
+            { "value": "paw", "label": "Paw" }
+          ],
+          "default": "bone"
+        },
+        { "type": "text", "id": "title", "label": "Title", "default": "Joints & mobility" },
+        { "type": "textarea", "id": "text", "label": "Text", "default": "Support for hips, knees and everyday bounce — from zoomies to the stairs." }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Benefits grid" }]
+}
+{% endschema %}

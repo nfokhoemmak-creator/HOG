@@ -8,30 +8,47 @@
         "announcement-1": {
           "type": "announcement",
           "settings": {
-            "text": "DELIVERY ALL OVER LEBANON"
+            "text": "60-day Happy Dog Guarantee — if they don't love it, we refund you",
+            "icon": "shield-check"
           }
         },
         "announcement-2": {
           "type": "announcement",
           "settings": {
-            "text": "EVERYBODY CAN'T HAVE LIMITED ITEMS"
+            "text": "Made in an NSF GMP-certified, FDA-registered facility",
+            "icon": "award"
+          }
+        },
+        "announcement-3": {
+          "type": "announcement",
+          "settings": {
+            "text": "Bundle & save up to 20% — most dog parents pick 2 bags",
+            "icon": "tag",
+            "link": "/#bundles"
           }
         }
       },
-      "block_order": ["announcement-1", "announcement-2"],
+      "block_order": ["announcement-1", "announcement-2", "announcement-3"],
       "settings": {
-        "color_scheme": "accent",
+        "color_scheme": "green",
         "rotate": true,
         "rotate_speed": 5
       }
     },
     "header": {
       "type": "header",
+      "blocks": {
+        "nav-1": { "type": "link", "settings": { "label": "Benefits", "url": "#benefits" } },
+        "nav-2": { "type": "link", "settings": { "label": "Bundles", "url": "#bundles" } },
+        "nav-3": { "type": "link", "settings": { "label": "Reviews", "url": "#reviews" } },
+        "nav-4": { "type": "link", "settings": { "label": "FAQ", "url": "#faq" } },
+        "nav-5": { "type": "link", "settings": { "label": "Our story", "url": "/pages/about" } }
+      },
+      "block_order": ["nav-1", "nav-2", "nav-3", "nav-4", "nav-5"],
       "settings": {
-        "menu": "main-menu",
-        "sticky": true,
-        "show_search": true,
-        "show_account": true
+        "cta_label": "Shop now",
+        "show_search": false,
+        "show_account": false
       }
     }
   },

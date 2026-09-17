@@ -1,0 +1,141 @@
+{%- liquid
+  assign product = section.settings.product | default: settings.featured_product
+  assign image = product.featured_image
+-%}
+
+<section class="section section--orange-soft" id="{{ section.settings.anchor | default: 'bundles' }}">
+  <div class="container">
+    <div class="section-head reveal">
+      {%- if section.settings.eyebrow != blank -%}<p class="eyebrow eyebrow--center">{{ section.settings.eyebrow | escape }}</p>{%- endif -%}
+      <h2>{{ section.settings.heading | escape }}</h2>
+      {%- if section.settings.text != blank -%}<p class="lead">{{ section.settings.text | escape }}</p>{%- endif -%}
+    </div>
+
+    {%- if product != blank -%}
+      <div class="bundles">
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign variant = product.variants[forloop.index0]
+            if variant == blank
+              continue
+            endif
+            assign bags = variant.title | split: ' ' | first | plus: 0
+            if bags < 1
+              assign bags = 1
+            endif
+            assign saving = 0
+            assign pct = 0
+            if variant.compare_at_price > variant.price
+              assign saving = variant.compare_at_price | minus: variant.price
+              assign pct = saving | times: 100.0 | divided_by: variant.compare_at_price | round
+            endif
+            assign per_bag = variant.price | times: 1.0 | divided_by: bags | round
+            assign perks = block.settings.perks | newline_to_br | split: '<br />'
+          -%}
+          <div
+            class="bundle{% if block.settings.featured %} bundle--featured{% endif %} reveal"
+            style="--i: {{ forloop.index0 }};"
+            {{ block.shopify_attributes }}
+          >
+            {%- if block.settings.badge != blank -%}
+              <span class="badge {% if block.settings.featured %}badge--orange{% else %}badge--green{% endif %} bundle__ribbon">{{ block.settings.badge | escape }}</span>
+            {%- endif -%}
+
+            <div class="bundle__head">
+              <div>
+                <h3 class="bundle__name">{{ block.settings.name | default: variant.title | escape }}</h3>
+                <span class="bundle__sub">{{ variant.title }}{% if block.settings.subtitle != blank %} · {{ block.settings.subtitle | escape }}{% endif %}</span>
+              </div>
+              {%- if pct > 0 -%}
+                <span class="badge badge--sale">{{ 'products.product.save_percent' | t: percent: pct }}</span>
+              {%- endif -%}
+            </div>
+
+            <div class="bundle__stack" aria-hidden="true">
+              {%- if image != blank -%}
+                {%- for i in (1..bags) limit: 3 -%}
+                  <img src="{{ image | image_url: width: 300 }}" alt="" width="130" height="130" loading="lazy">
+                {%- endfor -%}
+              {%- endif -%}
+            </div>
+
+            <div class="bundle__price price{% if pct > 0 %} price--on-sale{% endif %}">
+              <span class="price__current">{{ variant.price | money }}</span>
+              {%- if pct > 0 -%}<s class="price__compare">{{ variant.compare_at_price | money }}</s>{%- endif -%}
+            </div>
+            <p class="bundle__per">
+              {%- if bags > 1 -%}
+                {{ 'products.product.per_bag' | t: price: per_bag | money }}{% if saving > 0 %} · {{ 'products.product.save_amount' | t: amount: saving | money }}{% endif %}
+              {%- else -%}
+                {{ 'products.product.chews_per_bag' | t: count: section.settings.chews_per_bag }}
+              {%- endif -%}
+            </p>
+
+            <ul class="check-list bundle__perks">
+              {%- for perk in perks -%}
+                {%- assign clean = perk | strip -%}
+                {%- if clean != blank -%}<li>{{ clean }}</li>{%- endif -%}
+              {%- endfor -%}
+            </ul>
+
+            <div class="bundle__cta">
+              {%- if variant.available -%}
+                <form method="post" action="{{ routes.cart_add_url }}" data-quick-add-form>
+                  <input type="hidden" name="form_type" value="product">
+                  <input type="hidden" name="utf8" value="✓">
+                  <input type="hidden" name="id" value="{{ variant.id }}">
+                  <input type="hidden" name="quantity" value="1">
+                  <button type="submit" class="btn btn--full{% if block.settings.featured %} btn--lg btn--pulse{% else %} btn--green{% endif %}">
+                    <span data-button-text>{{ block.settings.button_label | default: 'products.product.add_to_cart' | t | escape }}</span>
+                  </button>
+                </form>
+              {%- else -%}
+                <button type="button" class="btn btn--full" disabled>{{ 'products.product.sold_out' | t }}</button>
+              {%- endif -%}
+              <p class="bundle__note">{% render 'icon', name: 'shield-check' %}{{ settings.guarantee_days }}-{{ 'general.day' | t }} {{ settings.guarantee_title | escape }}</p>
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+
+      <div class="bundles__foot reveal">
+        <span>{% render 'icon', name: 'truck' %}{{ settings.shipping_short | escape }}</span>
+        <span>{% render 'icon', name: 'lock' %}{{ 'sections.cart.secure' | t }}</span>
+        <span>{% render 'icon', name: 'refresh' %}{{ settings.guarantee_short | escape }}</span>
+      </div>
+    {%- else -%}
+      <p class="text-center muted">{{ 'sections.bundles.no_product' | t }}</p>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Bundles",
+  "tag": "div",
+  "max_blocks": 3,
+  "settings": [
+    { "type": "text", "id": "anchor", "label": "Anchor id", "default": "bundles" },
+    { "type": "product", "id": "product", "label": "Product", "info": "Defaults to the product chosen in Theme settings → Brand. Each card below maps to a variant in order (1st card = 1st variant)." },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Pick your bundle" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "More bags, more savings, more tail wags" },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "120 soft chews per bag. Every bundle ships fast and is covered by the Happy Dog Guarantee." },
+    { "type": "range", "id": "chews_per_bag", "min": 30, "max": 300, "step": 10, "label": "Chews per bag", "default": 120 }
+  ],
+  "blocks": [
+    {
+      "type": "bundle",
+      "name": "Bundle card",
+      "settings": [
+        { "type": "text", "id": "name", "label": "Name", "default": "Starter" },
+        { "type": "text", "id": "subtitle", "label": "Subtitle", "default": "Try it out" },
+        { "type": "text", "id": "badge", "label": "Badge" },
+        { "type": "checkbox", "id": "featured", "label": "Highlight this card", "default": false },
+        { "type": "textarea", "id": "perks", "label": "Perks (one per line)", "default": "120 soft chews\n60-day Happy Dog Guarantee\nTracked shipping" },
+        { "type": "text", "id": "button_label", "label": "Button label", "default": "Add to cart" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Bundles" }]
+}
+{% endschema %}

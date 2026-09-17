@@ -1,0 +1,77 @@
+<section class="section section--alt" id="{{ section.settings.anchor | default: 'compare' }}">
+  <div class="container container--narrow">
+    <div class="section-head reveal">
+      {%- if section.settings.eyebrow != blank -%}<p class="eyebrow eyebrow--center">{{ section.settings.eyebrow | escape }}</p>{%- endif -%}
+      <h2>{{ section.settings.heading | escape }}</h2>
+      {%- if section.settings.text != blank -%}<p class="lead">{{ section.settings.text | escape }}</p>{%- endif -%}
+    </div>
+
+    <div class="reveal">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th scope="col"></th>
+            <th scope="col" class="is-us">{{ section.settings.us_label | escape }}</th>
+            <th scope="col">{{ section.settings.alt1_label | escape }}</th>
+            <th scope="col">{{ section.settings.alt2_label | escape }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {%- for block in section.blocks -%}
+            <tr {{ block.shopify_attributes }}>
+              <th scope="row">{{ block.settings.feature | escape }}</th>
+              <td class="is-us">
+                {%- if block.settings.us == 'yes' -%}<span class="yes">{% render 'icon', name: 'check' %}<span class="visually-hidden">{{ 'general.yes' | t }}</span></span>
+                {%- elsif block.settings.us == 'no' -%}<span class="no">{% render 'icon', name: 'x' %}<span class="visually-hidden">{{ 'general.no' | t }}</span></span>
+                {%- else -%}{{ block.settings.us_text | escape }}{%- endif -%}
+              </td>
+              <td>
+                {%- if block.settings.alt1 == 'yes' -%}<span class="yes">{% render 'icon', name: 'check' %}<span class="visually-hidden">{{ 'general.yes' | t }}</span></span>
+                {%- elsif block.settings.alt1 == 'no' -%}<span class="no">{% render 'icon', name: 'x' %}<span class="visually-hidden">{{ 'general.no' | t }}</span></span>
+                {%- else -%}{{ block.settings.alt1_text | escape }}{%- endif -%}
+              </td>
+              <td>
+                {%- if block.settings.alt2 == 'yes' -%}<span class="yes">{% render 'icon', name: 'check' %}<span class="visually-hidden">{{ 'general.yes' | t }}</span></span>
+                {%- elsif block.settings.alt2 == 'no' -%}<span class="no">{% render 'icon', name: 'x' %}<span class="visually-hidden">{{ 'general.no' | t }}</span></span>
+                {%- else -%}{{ block.settings.alt2_text | escape }}{%- endif -%}
+              </td>
+            </tr>
+          {%- endfor -%}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Comparison table",
+  "tag": "div",
+  "max_blocks": 8,
+  "settings": [
+    { "type": "text", "id": "anchor", "label": "Anchor id", "default": "compare" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Why switch" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "One chew vs. the cabinet full of bottles" },
+    { "type": "textarea", "id": "text", "label": "Text" },
+    { "type": "text", "id": "us_label", "label": "Our column", "default": "Goodest Chews" },
+    { "type": "text", "id": "alt1_label", "label": "Column 2", "default": "Pills & tablets" },
+    { "type": "text", "id": "alt2_label", "label": "Column 3", "default": "Separate supplements" }
+  ],
+  "blocks": [
+    {
+      "type": "row",
+      "name": "Row",
+      "settings": [
+        { "type": "text", "id": "feature", "label": "Feature", "default": "Dogs actually want to eat it" },
+        { "type": "select", "id": "us", "label": "Goodest Chews", "options": [ { "value": "yes", "label": "✓" }, { "value": "no", "label": "✗" }, { "value": "text", "label": "Text" } ], "default": "yes" },
+        { "type": "text", "id": "us_text", "label": "Goodest Chews text" },
+        { "type": "select", "id": "alt1", "label": "Column 2", "options": [ { "value": "yes", "label": "✓" }, { "value": "no", "label": "✗" }, { "value": "text", "label": "Text" } ], "default": "no" },
+        { "type": "text", "id": "alt1_text", "label": "Column 2 text" },
+        { "type": "select", "id": "alt2", "label": "Column 3", "options": [ { "value": "yes", "label": "✓" }, { "value": "no", "label": "✗" }, { "value": "text", "label": "Text" } ], "default": "no" },
+        { "type": "text", "id": "alt2_text", "label": "Column 3 text" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Comparison table" }]
+}
+{% endschema %}

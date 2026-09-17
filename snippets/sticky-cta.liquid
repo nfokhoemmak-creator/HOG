@@ -1,0 +1,27 @@
+{%- comment -%}
+  Sticky "choose your bundle" bar for the homepage. Appears once the hero
+  buy button scrolls out of view, hides while the bundles or footer are on
+  screen. Rendered from layout/theme.liquid on the index template only.
+{%- endcomment -%}
+
+{%- liquid
+  assign product = settings.featured_product
+  assign from_price = product.price_min | money
+-%}
+
+{%- if product != blank -%}
+  <sticky-bar class="sticky-bar" data-trigger="#hero-cta" data-hide="#bundles, .footer" aria-hidden="true">
+    <div class="container sticky-bar__inner">
+      <div class="sticky-bar__thumb">
+        {%- if product.featured_image -%}
+          <img src="{{ product.featured_image | image_url: width: 120 }}" alt="" width="48" height="48" loading="lazy">
+        {%- endif -%}
+      </div>
+      <div class="sticky-bar__text">
+        <strong>{{ product.title | escape }}</strong>
+        <span>{{ 'products.product.from_price' | t: price: from_price }} · {{ 'general.guarantee_days' | t: days: settings.guarantee_days }}</span>
+      </div>
+      <a class="btn" href="#bundles">{{ 'sections.bundles.sticky_cta' | t }}</a>
+    </div>
+  </sticky-bar>
+{%- endif -%}

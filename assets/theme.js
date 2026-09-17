@@ -1,7 +1,7 @@
 /* ==========================================================================
-   House of Garments — theme.js
-   Global behaviour: mobile nav, announcement rotation, reveal-on-scroll,
-   quantity inputs, and the drop countdown.
+   Goodest Chews — theme.js
+   Global behaviour: mobile nav, announcement rotation, header shadow,
+   reveal-on-scroll, count-ups, sticky bars, product gallery, quantity inputs.
 
    No dependencies. Everything degrades: if this file fails to load, the
    storefront still renders, navigates and checks out.
@@ -11,6 +11,8 @@
   'use strict';
 
   const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const ANIMATE = Boolean(window.theme && window.theme.animations) && !REDUCED_MOTION;
+  const moneyFormat = (window.theme && window.theme.moneyFormat) || '${{amount}}';
 
   /* ---------------------------------------------------------------- utils */
 
@@ -67,13 +69,24 @@
     }, 60);
   }
 
-  window.HOG = Object.assign(window.HOG || {}, { trapFocus, lockScroll, announce });
+  function formatMoney(cents) {
+    const value = (Math.round(cents) / 100).toFixed(2);
+    const withCommas = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    const noDecimals = withCommas.replace(/\.00$/, '');
+    return moneyFormat
+      .replace(/\{\{\s*amount_no_decimals\s*\}\}/, noDecimals)
+      .replace(/\{\{\s*amount_with_comma_separator\s*\}\}/, withCommas.replace('.', ','))
+      .replace(/\{\{\s*amount\s*\}\}/, withCommas);
+  }
+
+  window.GC = Object.assign(window.GC || {}, { trapFocus, lockScroll, announce, formatMoney });
 
   /* --------------------------------------------------------- <menu-drawer> */
 
   class MenuDrawer extends HTMLElement {
     connectedCallback() {
       this.drawer = this.querySelector('.menu-drawer');
+      this.panel = this.querySelector('.menu-drawer__panel');
       this.toggle = this.querySelector('[data-menu-open]');
       this.closeBtn = this.querySelector('[data-menu-close]');
       this.releaseFocus = null;
@@ -86,13 +99,18 @@
       this.drawer.addEventListener('click', (event) => {
         if (event.target === this.drawer) this.close();
       });
+
+      // Anchor links inside the drawer should close it before scrolling.
+      this.drawer.querySelectorAll('a[href*="#"]').forEach((link) => {
+        link.addEventListener('click', () => this.close());
+      });
     }
 
     open() {
       this.drawer.classList.add('is-open');
       this.toggle.setAttribute('aria-expanded', 'true');
       lockScroll(true);
-      this.releaseFocus = trapFocus(this.drawer, () => this.close());
+      this.releaseFocus = trapFocus(this.panel || this.drawer, () => this.close());
     }
 
     close() {
@@ -113,7 +131,7 @@
   class AnnouncementRotator extends HTMLElement {
     connectedCallback() {
       this.items = Array.from(this.querySelectorAll('.announcement-bar__item'));
-      if (this.items.length < 2 || REDUCED_MOTION) return;
+      if (this.items.length < 2 || REDUCED_MOTION || this.hasAttribute('data-static')) return;
 
       const seconds = parseInt(this.dataset.speed, 10) || 5;
       this.index = 0;
@@ -137,63 +155,6 @@
     customElements.define('announcement-rotator', AnnouncementRotator);
   }
 
-  /* ------------------------------------------------------ <countdown-timer> */
-
-  class CountdownTimer extends HTMLElement {
-    connectedCallback() {
-      const target = this.dataset.date;
-      if (!target) return;
-
-      this.target = new Date(target).getTime();
-      if (Number.isNaN(this.target)) return;
-
-      this.outputs = {
-        days: this.querySelector('[data-days]'),
-        hours: this.querySelector('[data-hours]'),
-        minutes: this.querySelector('[data-minutes]'),
-        seconds: this.querySelector('[data-seconds]')
-      };
-
-      this.tick();
-      this.timer = window.setInterval(() => this.tick(), 1000);
-    }
-
-    disconnectedCallback() {
-      window.clearInterval(this.timer);
-    }
-
-    tick() {
-      const remaining = this.target - Date.now();
-
-      if (remaining <= 0) {
-        window.clearInterval(this.timer);
-        this.dispatchEvent(new CustomEvent('countdown:complete', { bubbles: true }));
-        this.classList.add('is-live');
-        const live = this.querySelector('[data-live-message]');
-        if (live) live.hidden = false;
-        const grid = this.querySelector('.countdown');
-        if (grid) grid.hidden = true;
-        return;
-      }
-
-      const seconds = Math.floor(remaining / 1000);
-      const pad = (value) => String(value).padStart(2, '0');
-
-      this.set('days', Math.floor(seconds / 86400));
-      this.set('hours', pad(Math.floor(seconds / 3600) % 24));
-      this.set('minutes', pad(Math.floor(seconds / 60) % 60));
-      this.set('seconds', pad(seconds % 60));
-    }
-
-    set(key, value) {
-      if (this.outputs[key]) this.outputs[key].textContent = value;
-    }
-  }
-
-  if (!customElements.get('countdown-timer')) {
-    customElements.define('countdown-timer', CountdownTimer);
-  }
-
   /* ------------------------------------------------------ <quantity-input> */
 
   class QuantityInput extends HTMLElement {
@@ -205,7 +166,7 @@
         button.addEventListener('click', (event) => {
           event.preventDefault();
           const step = button.dataset.action === 'increase' ? 1 : -1;
-          const min = parseInt(this.input.min, 10) || 1;
+          const min = parseInt(this.input.min, 10) || 0;
           const max = parseInt(this.input.max, 10) || Infinity;
           const next = Math.min(max, Math.max(min, (parseInt(this.input.value, 10) || min) + step));
           this.input.value = next;
@@ -219,11 +180,157 @@
     customElements.define('quantity-input', QuantityInput);
   }
 
+  /* ---------------------------------------------------------- <sticky-bar> */
+
+  /**
+   * Shows itself once the element in data-trigger has scrolled out of the top
+   * of the viewport, and hides again whenever any element in data-hide is in
+   * view (the bundles section, the footer). Used by the product page's sticky
+   * add-to-cart and the homepage's sticky "choose your bundle" bar.
+   */
+  class StickyBar extends HTMLElement {
+    connectedCallback() {
+      if (!('IntersectionObserver' in window)) return;
+
+      const trigger = this.dataset.trigger ? document.querySelector(this.dataset.trigger) : null;
+      const hiders = this.dataset.hide
+        ? Array.from(document.querySelectorAll(this.dataset.hide))
+        : [];
+
+      this.pastTrigger = false;
+      this.blocked = false;
+
+      if (trigger) {
+        this.triggerObserver = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              this.pastTrigger = !entry.isIntersecting && entry.boundingClientRect.top < 0;
+              this.sync();
+            });
+          },
+          { threshold: 0 }
+        );
+        this.triggerObserver.observe(trigger);
+      } else {
+        this.pastTrigger = true;
+      }
+
+      if (hiders.length) {
+        this.visibleHiders = new Set();
+        this.hideObserver = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) this.visibleHiders.add(entry.target);
+              else this.visibleHiders.delete(entry.target);
+            });
+            this.blocked = this.visibleHiders.size > 0;
+            this.sync();
+          },
+          { threshold: 0.15 }
+        );
+        hiders.forEach((node) => this.hideObserver.observe(node));
+      }
+
+      this.sync();
+    }
+
+    disconnectedCallback() {
+      if (this.triggerObserver) this.triggerObserver.disconnect();
+      if (this.hideObserver) this.hideObserver.disconnect();
+    }
+
+    sync() {
+      const show = this.pastTrigger && !this.blocked;
+      this.classList.toggle('is-visible', show);
+      this.setAttribute('aria-hidden', String(!show));
+    }
+  }
+
+  if (!customElements.get('sticky-bar')) {
+    customElements.define('sticky-bar', StickyBar);
+  }
+
+  /* ----------------------------------------------------- <product-gallery> */
+
+  class ProductGallery extends HTMLElement {
+    connectedCallback() {
+      this.stage = this.querySelector('[data-stage]');
+      this.items = Array.from(this.querySelectorAll('[data-media-id]'));
+      this.thumbs = Array.from(this.querySelectorAll('[data-thumb]'));
+      if (!this.items.length) return;
+
+      this.thumbs.forEach((thumb) => {
+        thumb.addEventListener('click', () => this.show(thumb.dataset.thumb));
+      });
+
+      // Swipe on touch devices.
+      let startX = null;
+      this.addEventListener('touchstart', (event) => {
+        startX = event.touches[0].clientX;
+      }, { passive: true });
+      this.addEventListener('touchend', (event) => {
+        if (startX === null) return;
+        const delta = event.changedTouches[0].clientX - startX;
+        startX = null;
+        if (Math.abs(delta) < 40) return;
+        this.step(delta < 0 ? 1 : -1);
+      }, { passive: true });
+
+      this.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowRight') this.step(1);
+        if (event.key === 'ArrowLeft') this.step(-1);
+      });
+
+      const initial = this.items.find((item) => item.classList.contains('is-active')) || this.items[0];
+      this.show(initial.dataset.mediaId);
+    }
+
+    index() {
+      return this.items.findIndex((item) => item.classList.contains('is-active'));
+    }
+
+    step(direction) {
+      const next = (this.index() + direction + this.items.length) % this.items.length;
+      this.show(this.items[next].dataset.mediaId);
+    }
+
+    show(id) {
+      this.items.forEach((item) => {
+        const active = item.dataset.mediaId === String(id);
+        item.classList.toggle('is-active', active);
+        const video = item.querySelector('video');
+        if (video && !active) video.pause();
+      });
+      this.thumbs.forEach((thumb) => {
+        const active = thumb.dataset.thumb === String(id);
+        thumb.setAttribute('aria-current', String(active));
+        if (active && thumb.scrollIntoView) {
+          thumb.scrollIntoView({ block: 'nearest', inline: 'center', behavior: REDUCED_MOTION ? 'auto' : 'smooth' });
+        }
+      });
+    }
+  }
+
+  if (!customElements.get('product-gallery')) {
+    customElements.define('product-gallery', ProductGallery);
+  }
+
+  /* ---------------------------------------------------------- header shadow */
+
+  function initHeader() {
+    const header = document.querySelector('.header');
+    if (!header) return;
+    const update = () => header.classList.toggle('is-scrolled', window.scrollY > 8);
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+  }
+
   /* ------------------------------------------------------ reveal on scroll */
 
   function initReveal() {
-    if (REDUCED_MOTION || !('IntersectionObserver' in window)) {
-      document.querySelectorAll('.reveal').forEach((el) => el.classList.add('is-visible'));
+    const nodes = document.querySelectorAll('.reveal:not(.is-visible)');
+    if (!ANIMATE || !('IntersectionObserver' in window)) {
+      nodes.forEach((el) => el.classList.add('is-visible'));
       return;
     }
 
@@ -235,30 +342,52 @@
           observer.unobserve(entry.target);
         });
       },
-      { rootMargin: '0px 0px -10% 0px', threshold: 0.05 }
+      { rootMargin: '0px 0px -8% 0px', threshold: 0.05 }
     );
 
-    document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+    nodes.forEach((el) => observer.observe(el));
   }
 
-  /* ------------------------------------------------------- product gallery */
+  /* ------------------------------------------------------------ count-ups */
 
-  function initGalleries() {
-    document.querySelectorAll('[data-gallery]').forEach((gallery) => {
-      const thumbs = gallery.querySelectorAll('[data-thumb]');
-      const mediaItems = gallery.querySelectorAll('[data-media-id]');
+  function initCountUps() {
+    const nodes = document.querySelectorAll('[data-count-up]:not([data-counted])');
+    if (!nodes.length) return;
 
-      thumbs.forEach((thumb) => {
-        thumb.addEventListener('click', () => {
-          const id = thumb.dataset.thumb;
-          thumbs.forEach((node) => node.setAttribute('aria-current', String(node === thumb)));
-          mediaItems.forEach((media) => {
-            if (media.dataset.mediaId !== id) return;
-            media.scrollIntoView({ behavior: REDUCED_MOTION ? 'auto' : 'smooth', block: 'center' });
-          });
-        });
+    const run = (node) => {
+      node.setAttribute('data-counted', 'true');
+      const target = parseFloat(node.dataset.countUp);
+      const decimals = (String(node.dataset.countUp).split('.')[1] || '').length;
+      const suffix = node.dataset.suffix || '';
+      if (Number.isNaN(target) || !ANIMATE) {
+        node.textContent = node.dataset.countUp + suffix;
+        return;
+      }
+      const duration = 1400;
+      const start = performance.now();
+      const tick = (now) => {
+        const progress = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        node.textContent = (target * eased).toFixed(decimals) + suffix;
+        if (progress < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    };
+
+    if (!('IntersectionObserver' in window)) {
+      nodes.forEach(run);
+      return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        run(entry.target);
+        observer.unobserve(entry.target);
       });
-    });
+    }, { threshold: 0.4 });
+
+    nodes.forEach((node) => observer.observe(node));
   }
 
   /* ------------------------------------------ close details on outside click */
@@ -280,13 +409,32 @@
     });
   }
 
+  /* ------------------------------------------------- one-open FAQ accordion */
+
+  function initFaqGroups() {
+    document.querySelectorAll('[data-accordion-group]').forEach((group) => {
+      if (group.dataset.bound) return;
+      group.dataset.bound = 'true';
+      group.addEventListener('toggle', (event) => {
+        const opened = event.target;
+        if (!opened.open || opened.tagName !== 'DETAILS') return;
+        group.querySelectorAll('details[open]').forEach((other) => {
+          if (other !== opened) other.removeAttribute('open');
+        });
+      }, true);
+    });
+  }
+
   /* ------------------------------------------------------------------ boot */
 
   function boot() {
+    initHeader();
     initReveal();
-    initGalleries();
-    initDetailsDismiss();
+    initCountUps();
+    initFaqGroups();
   }
+
+  initDetailsDismiss();
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', boot);

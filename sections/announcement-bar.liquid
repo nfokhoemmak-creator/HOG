@@ -1,10 +1,10 @@
 {%- liquid
   assign scheme_class = ''
   case section.settings.color_scheme
-    when 'accent'
-      assign scheme_class = 'announcement-bar--accent'
-    when 'inverse'
-      assign scheme_class = 'announcement-bar--inverse'
+    when 'orange'
+      assign scheme_class = 'announcement-bar--orange'
+    when 'cream'
+      assign scheme_class = 'announcement-bar--cream'
   endcase
 -%}
 
@@ -16,17 +16,20 @@
     role="region"
     aria-label="{{ 'sections.announcements.announcement' | t }}"
   >
-    <div class="announcement-bar__list">
+    <div class="container announcement-bar__inner">
       {%- for block in section.blocks -%}
         <div
           class="announcement-bar__item"
           {% if forloop.index > 1 and section.settings.rotate %}hidden{% endif %}
           {{ block.shopify_attributes }}
         >
+          {%- if block.settings.icon != 'none' -%}
+            {% render 'icon', name: block.settings.icon %}
+          {%- endif -%}
           {%- if block.settings.link != blank -%}
-            <a href="{{ block.settings.link }}">{{ block.settings.text }}</a>
+            <a href="{{ block.settings.link }}">{{ block.settings.text | escape }}</a>
           {%- else -%}
-            {{ block.settings.text }}
+            <span>{{ block.settings.text | escape }}</span>
           {%- endif -%}
         </div>
       {%- endfor -%}
@@ -36,7 +39,7 @@
 
 {% schema %}
 {
-  "name": "t:sections.announcement_bar.name",
+  "name": "Announcement bar",
   "tag": "aside",
   "class": "announcement-bar-section",
   "max_blocks": 5,
@@ -44,47 +47,39 @@
     {
       "type": "select",
       "id": "color_scheme",
-      "label": "t:sections.announcement_bar.settings.color_scheme.label",
+      "label": "Colour",
       "options": [
-        { "value": "accent", "label": "t:sections.announcement_bar.settings.color_scheme.options__1" },
-        { "value": "inverse", "label": "t:sections.announcement_bar.settings.color_scheme.options__2" },
-        { "value": "default", "label": "t:sections.announcement_bar.settings.color_scheme.options__3" }
+        { "value": "green", "label": "Green" },
+        { "value": "orange", "label": "Orange" },
+        { "value": "cream", "label": "Cream" }
       ],
-      "default": "accent"
+      "default": "green"
     },
-    {
-      "type": "checkbox",
-      "id": "rotate",
-      "label": "t:sections.announcement_bar.settings.rotate.label",
-      "default": true
-    },
-    {
-      "type": "range",
-      "id": "rotate_speed",
-      "min": 3,
-      "max": 12,
-      "step": 1,
-      "unit": "s",
-      "label": "t:sections.announcement_bar.settings.rotate_speed.label",
-      "default": 5
-    }
+    { "type": "checkbox", "id": "rotate", "label": "Rotate messages", "default": true },
+    { "type": "range", "id": "rotate_speed", "min": 3, "max": 12, "step": 1, "unit": "s", "label": "Seconds per message", "default": 5 }
   ],
   "blocks": [
     {
       "type": "announcement",
-      "name": "t:sections.announcement_bar.blocks.announcement.name",
+      "name": "Message",
       "settings": [
+        { "type": "text", "id": "text", "label": "Text", "default": "60-day Happy Dog Guarantee — if they don't love it, we refund you" },
         {
-          "type": "text",
-          "id": "text",
-          "label": "t:sections.announcement_bar.blocks.announcement.settings.text.label",
-          "default": "DELIVERY ALL OVER LEBANON"
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "paw", "label": "Paw" },
+            { "value": "shield-check", "label": "Shield" },
+            { "value": "truck", "label": "Truck" },
+            { "value": "star", "label": "Star" },
+            { "value": "tag", "label": "Tag" },
+            { "value": "award", "label": "Award" }
+          ],
+          "default": "paw"
         },
-        {
-          "type": "url",
-          "id": "link",
-          "label": "t:sections.announcement_bar.blocks.announcement.settings.link.label"
-        }
+        { "type": "url", "id": "link", "label": "Link (optional)" }
       ]
     }
   ]

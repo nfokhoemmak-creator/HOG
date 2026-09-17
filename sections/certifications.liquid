@@ -1,0 +1,83 @@
+<section class="section section--alt" id="{{ section.settings.anchor | default: 'certifications' }}">
+  <div class="container">
+    <div class="section-head reveal">
+      {%- if section.settings.eyebrow != blank -%}<p class="eyebrow eyebrow--center">{{ section.settings.eyebrow | escape }}</p>{%- endif -%}
+      <h2>{{ section.settings.heading | escape }}</h2>
+      {%- if section.settings.text != blank -%}<p class="lead">{{ section.settings.text | escape }}</p>{%- endif -%}
+    </div>
+
+    <div class="certs">
+      {%- for block in section.blocks -%}
+        <div class="cert reveal" style="--i: {{ forloop.index0 }};" {{ block.shopify_attributes }}>
+          <div class="cert__seal">
+            {%- if block.settings.logo != blank -%}
+              <img src="{{ block.settings.logo | image_url: width: 140 }}" alt="{{ block.settings.name | escape }}" width="68" height="68" loading="lazy">
+            {%- else -%}
+              {% render 'icon', name: block.settings.icon %}
+            {%- endif -%}
+          </div>
+          <h3>{{ block.settings.name | escape }}</h3>
+          {%- if block.settings.issuer != blank -%}<span class="cert__issuer">{{ block.settings.issuer | escape }}</span>{%- endif -%}
+          <p>{{ block.settings.text | escape }}</p>
+          {%- if block.settings.number != blank -%}
+            <p class="cert__number">{{ 'sections.certifications.number' | t }} <strong>{{ block.settings.number | escape }}</strong></p>
+          {%- endif -%}
+          {%- if block.settings.certificate != blank -%}
+            <a class="link-arrow cert__link" href="{{ block.settings.certificate | image_url: width: 1600 }}" target="_blank" rel="noopener" aria-describedby="a11y-new-window-message">{{ 'sections.certifications.view' | t }}{% render 'icon', name: 'arrow-right' %}</a>
+          {%- elsif block.settings.link != blank -%}
+            <a class="link-arrow cert__link" href="{{ block.settings.link }}" target="_blank" rel="noopener" aria-describedby="a11y-new-window-message">{{ 'sections.certifications.verify' | t }}{% render 'icon', name: 'arrow-right' %}</a>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- if section.settings.footnote != blank -%}
+      <p class="text-center muted small reveal" style="margin-top: var(--space-6); max-width: 820px; margin-inline: auto;">{{ section.settings.footnote | escape }}</p>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Certifications",
+  "tag": "div",
+  "max_blocks": 6,
+  "settings": [
+    { "type": "text", "id": "anchor", "label": "Anchor id", "default": "certifications" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Made properly" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Certified, audited, and registered — because it's going in your dog" },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "Goodest Chews are produced in a facility that carries four independent quality certifications. Every certificate number is listed so you can check it yourself." },
+    { "type": "textarea", "id": "footnote", "label": "Footnote", "default": "Certifications are held by the manufacturing facility that produces Goodest Chews. FDA facility registration confirms the facility is registered with the U.S. Food and Drug Administration; it is not an FDA approval of the product." }
+  ],
+  "blocks": [
+    {
+      "type": "cert",
+      "name": "Certification",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "award", "label": "Award" },
+            { "value": "badge-check", "label": "Verified badge" },
+            { "value": "shield-check", "label": "Shield" },
+            { "value": "factory", "label": "Factory" },
+            { "value": "flag", "label": "Flag" },
+            { "value": "leaf", "label": "Leaf" }
+          ],
+          "default": "award"
+        },
+        { "type": "image_picker", "id": "logo", "label": "Logo (optional)", "info": "Replaces the icon. Square works best." },
+        { "type": "text", "id": "name", "label": "Name", "default": "ISO 9001:2015" },
+        { "type": "text", "id": "issuer", "label": "Issued by", "default": "China Quality Certification Centre (CQC)" },
+        { "type": "textarea", "id": "text", "label": "What it means", "default": "International standard for quality management systems." },
+        { "type": "text", "id": "number", "label": "Certificate number" },
+        { "type": "image_picker", "id": "certificate", "label": "Certificate scan (optional)", "info": "Upload the certificate image to add a 'View certificate' link." },
+        { "type": "url", "id": "link", "label": "Verification link (optional)" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Certifications" }]
+}
+{% endschema %}

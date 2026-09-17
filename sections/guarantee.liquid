@@ -1,0 +1,36 @@
+<section class="section section--green guarantee" id="{{ section.settings.anchor | default: 'guarantee' }}">
+  <div class="container guarantee__inner">
+    <div class="guarantee__seal reveal reveal--scale">
+      <div>
+        <strong>{{ settings.guarantee_days }}</strong>
+        <small>{{ 'general.day' | t }} {{ 'general.guarantee' | t }}</small>
+      </div>
+    </div>
+
+    <div class="guarantee__copy reveal">
+      {%- if section.settings.eyebrow != blank -%}<p class="eyebrow">{{ section.settings.eyebrow | escape }}</p>{%- endif -%}
+      <h2>{{ section.settings.heading | escape | replace: '[days]', settings.guarantee_days }}</h2>
+      <p class="lead">{{ section.settings.text | escape | replace: '[days]', settings.guarantee_days }}</p>
+    </div>
+
+    <div class="reveal" style="--i: 2;">
+      <a class="btn btn--lg" href="{{ section.settings.cta_link | default: '#bundles' }}">{{ section.settings.cta_label | escape }}</a>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Guarantee",
+  "tag": "div",
+  "settings": [
+    { "type": "text", "id": "anchor", "label": "Anchor id", "default": "guarantee" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "The Happy Dog Guarantee" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "If your dog doesn't love them, you don't pay.", "info": "Use [days] to insert the guarantee length from Theme settings." },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "Try Goodest Chews for [days] days. If your dog turns their nose up, email us and we refund you in full. No returns, no forms, no awkward questions. We'd rather lose a sale than have a dog miss out." },
+    { "type": "text", "id": "cta_label", "label": "Button label", "default": "Try them risk-free" },
+    { "type": "url", "id": "cta_link", "label": "Button link" }
+  ],
+  "presets": [{ "name": "Guarantee" }]
+}
+{% endschema %}

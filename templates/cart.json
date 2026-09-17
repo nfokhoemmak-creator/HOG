@@ -1,11 +1,6 @@
 {
   "sections": {
-    "main": {
-      "type": "main-cart",
-      "settings": {
-        "show_cross_sell": true
-      }
-    }
+    "main": { "type": "main-cart", "settings": {} }
   },
   "order": ["main"]
 }

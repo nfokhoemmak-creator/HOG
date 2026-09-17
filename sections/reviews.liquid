@@ -1,0 +1,124 @@
+{%- assign avg = settings.rating_value -%}
+
+<section class="section" id="{{ section.settings.anchor | default: 'reviews' }}">
+  <div class="container">
+    <div class="section-head reveal">
+      {%- if section.settings.eyebrow != blank -%}<p class="eyebrow eyebrow--center">{{ section.settings.eyebrow | escape }}</p>{%- endif -%}
+      <h2>{{ section.settings.heading | escape }}</h2>
+      {%- if section.settings.text != blank -%}<p class="lead">{{ section.settings.text | escape }}</p>{%- endif -%}
+    </div>
+
+    {%- if section.settings.show_summary -%}
+      <div class="reviews__summary reveal">
+        <div class="reviews__score">
+          <strong>{{ avg }}</strong>
+          {% render 'stars', rating: avg, class: 'stars--lg' %}
+          <span>{{ section.settings.count_label | escape }}</span>
+        </div>
+
+        <div class="rating-bars" aria-label="{{ 'products.reviews.breakdown' | t }}">
+          {%- assign bars = '5,4,3,2,1' | split: ',' -%}
+          {%- for star in bars -%}
+            {%- assign key = 'bar_' | append: star -%}
+            {%- assign pct = section.settings[key] -%}
+            <div class="rating-bar">
+              <span>{{ star }} ★</span>
+              <span class="rating-bar__track"><span class="rating-bar__fill" style="--w: {{ pct }}%;"></span></span>
+              <span>{{ pct }}%</span>
+            </div>
+          {%- endfor -%}
+        </div>
+
+        <div class="text-center">
+          <a class="btn btn--green" href="{{ section.settings.cta_link | default: '#bundles' }}">{{ section.settings.cta_label | escape }}</a>
+          {%- if section.settings.write_email != blank -%}
+            <p class="small muted" style="margin-top: 10px;">
+              <a class="underline" href="mailto:{{ section.settings.write_email }}?subject={{ 'products.reviews.write_subject' | t | url_encode }}">{{ 'products.reviews.write' | t }}</a>
+            </p>
+          {%- endif -%}
+        </div>
+      </div>
+    {%- endif -%}
+
+    <div class="reviews__grid">
+      {%- for block in section.blocks -%}
+        <article class="review reveal" style="--i: {{ forloop.index0 | modulo: 3 }};" {{ block.shopify_attributes }}>
+          <div class="review__top">
+            {% render 'stars', rating: block.settings.rating, class: 'stars--sm' %}
+            {%- if block.settings.verified -%}
+              <span class="review__verified">{% render 'icon', name: 'badge-check' %}{{ 'products.reviews.verified' | t }}</span>
+            {%- endif -%}
+          </div>
+
+          {%- if block.settings.title != blank -%}<h3 class="review__title">{{ block.settings.title | escape }}</h3>{%- endif -%}
+          <p class="review__body">{{ block.settings.body | escape }}</p>
+
+          {%- if block.settings.image != blank -%}
+            <div class="review__photo">
+              <img src="{{ block.settings.image | image_url: width: 700 }}" alt="{{ block.settings.image.alt | escape }}" width="{{ block.settings.image.width }}" height="{{ block.settings.image.height }}" loading="lazy">
+            </div>
+          {%- endif -%}
+
+          <div class="review__author">
+            <div class="review__avatar" aria-hidden="true">
+              {%- if block.settings.avatar != blank -%}
+                <img src="{{ block.settings.avatar | image_url: width: 120 }}" alt="" width="42" height="42" loading="lazy">
+              {%- else -%}
+                {{ block.settings.name | slice: 0 | upcase }}
+              {%- endif -%}
+            </div>
+            <div>
+              <strong>{{ block.settings.name | escape }}</strong>
+              <span>
+                {%- if block.settings.dog != blank -%}{{ 'products.reviews.dog_parent' | t: dog: block.settings.dog | escape }}{%- endif -%}
+                {%- if block.settings.location != blank %} · {{ block.settings.location | escape }}{%- endif -%}
+              </span>
+            </div>
+          </div>
+        </article>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Reviews",
+  "tag": "div",
+  "max_blocks": 12,
+  "settings": [
+    { "type": "text", "id": "anchor", "label": "Anchor id", "default": "reviews" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Reviews" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Rated by the toughest critics: the dogs" },
+    { "type": "textarea", "id": "text", "label": "Text" },
+    { "type": "checkbox", "id": "show_summary", "label": "Show rating summary", "default": true },
+    { "type": "text", "id": "count_label", "label": "Count label", "default": "Based on 127 reviews" },
+    { "type": "range", "id": "bar_5", "min": 0, "max": 100, "step": 1, "unit": "%", "label": "5-star share", "default": 88 },
+    { "type": "range", "id": "bar_4", "min": 0, "max": 100, "step": 1, "unit": "%", "label": "4-star share", "default": 9 },
+    { "type": "range", "id": "bar_3", "min": 0, "max": 100, "step": 1, "unit": "%", "label": "3-star share", "default": 2 },
+    { "type": "range", "id": "bar_2", "min": 0, "max": 100, "step": 1, "unit": "%", "label": "2-star share", "default": 1 },
+    { "type": "range", "id": "bar_1", "min": 0, "max": 100, "step": 1, "unit": "%", "label": "1-star share", "default": 0 },
+    { "type": "text", "id": "cta_label", "label": "Button label", "default": "Try them risk-free" },
+    { "type": "url", "id": "cta_link", "label": "Button link" },
+    { "type": "text", "id": "write_email", "label": "Email for new reviews", "default": "goodestchews@outlook.com" }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review",
+      "settings": [
+        { "type": "range", "id": "rating", "min": 1, "max": 5, "step": 1, "label": "Stars", "default": 5 },
+        { "type": "text", "id": "title", "label": "Title", "default": "He thinks it's a treat" },
+        { "type": "textarea", "id": "body", "label": "Review", "default": "Write the customer's words here." },
+        { "type": "text", "id": "name", "label": "Customer name", "default": "Sarah M." },
+        { "type": "text", "id": "dog", "label": "Dog's name & breed", "default": "Biscuit, 7yo Beagle" },
+        { "type": "text", "id": "location", "label": "Location" },
+        { "type": "checkbox", "id": "verified", "label": "Verified buyer", "default": true },
+        { "type": "image_picker", "id": "image", "label": "Photo (optional)" },
+        { "type": "image_picker", "id": "avatar", "label": "Avatar (optional)" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Reviews" }]
+}
+{% endschema %}

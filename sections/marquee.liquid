@@ -1,0 +1,33 @@
+{%- if section.blocks.size > 0 -%}
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee__track">
+      {%- for i in (1..3) -%}
+        <span>
+          {%- for block in section.blocks -%}
+            {% render 'icon', name: 'paw' %}{{ block.settings.text | escape }}
+          {%- endfor -%}
+        </span>
+      {%- endfor -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Scrolling strip",
+  "tag": "section",
+  "class": "marquee-section",
+  "max_blocks": 8,
+  "settings": [],
+  "blocks": [
+    {
+      "type": "text",
+      "name": "Text",
+      "settings": [
+        { "type": "text", "id": "text", "label": "Text", "default": "8 benefits in 1 chew" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Scrolling strip" }]
+}
+{% endschema %}

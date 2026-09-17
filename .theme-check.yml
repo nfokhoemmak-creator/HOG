@@ -1,0 +1,4 @@
+# Google Fonts (Fredoka + Nunito) are loaded from fonts.googleapis.com on purpose:
+# neither font is in Shopify's font library. The favicon fallback is an inline data URI.
+RemoteAsset:
+  enabled: false

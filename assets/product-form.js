@@ -1,10 +1,11 @@
 /* ==========================================================================
-   House of Garments — product-form.js
-   Variant selection and add-to-cart on the product page.
+   Goodest Chews — product-form.js
+   Bundle selection and add-to-cart on the product page.
 
-   Variant data is embedded as JSON by sections/main-product.liquid. Selecting
-   options finds the matching variant, updates the hidden id input, price,
-   availability and the URL, then scrolls the matching media into view.
+   Variant data is embedded as JSON by sections/main-product.liquid. Picking a
+   bundle finds the matching variant, updates the hidden id input, the price,
+   the compare-at price, the savings badge, the per-bag price, availability,
+   the URL and the sticky bar.
 
    Without JS the form still posts to /cart/add with the first available
    variant preselected, so the page remains functional.
@@ -14,12 +15,14 @@
   'use strict';
 
   const strings = (window.theme && window.theme.strings) || {};
-  const moneyFormat = (window.theme && window.theme.moneyFormat) || '${{amount}}';
 
-  function formatMoney(cents) {
-    const value = (cents / 100).toFixed(2);
-    const withCommas = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    return moneyFormat.replace(/\{\{\s*(\w+)\s*\}\}/, withCommas);
+  function money(cents) {
+    if (window.GC && window.GC.formatMoney) return window.GC.formatMoney(cents);
+    return '$' + (cents / 100).toFixed(2);
+  }
+
+  function fill(template, key, value) {
+    return (template || '').replace('{{ ' + key + ' }}', value).replace('{{' + key + '}}', value);
   }
 
   class ProductForm extends HTMLElement {
@@ -27,13 +30,18 @@
       this.form = this.querySelector('form');
       this.idInput = this.querySelector('[name="id"]');
       this.submitButton = this.querySelector('[type="submit"]');
+      this.section = this.closest('.shopify-section') || document;
+
       this.priceTarget = document.getElementById(this.dataset.priceTarget);
       this.inventoryTarget = document.getElementById(this.dataset.inventoryTarget);
-      this.gallery = document.querySelector('[data-gallery]');
-      this.sectionId = this.dataset.sectionId;
+      this.perBagTarget = document.getElementById(this.dataset.perBagTarget);
+      this.savingsTarget = document.getElementById(this.dataset.savingsTarget);
+      this.stickyPrice = document.querySelectorAll('[data-sticky-price]');
+      this.stickyButton = document.querySelectorAll('[data-sticky-submit]');
+      this.gallery = document.querySelector('product-gallery');
 
       this.variants = this.readVariants();
-      this.optionInputs = Array.from(this.querySelectorAll('[data-option-index]'));
+      this.optionInputs = Array.from(this.section.querySelectorAll('[data-option-index]'));
 
       this.optionInputs.forEach((input) => {
         input.addEventListener('change', () => this.onOptionChange());
@@ -66,17 +74,19 @@
       return options;
     }
 
+    selectedInput() {
+      return this.optionInputs.find((input) => input.type !== 'radio' || input.checked) || null;
+    }
+
     matchVariant(options) {
       return this.variants.find((variant) =>
-        variant.options.every((value, index) => value === options[index])
+        variant.options.every((value, index) => options[index] === undefined || value === options[index])
       );
     }
 
     onOptionChange(config) {
       const options = this.selectedOptions();
       const variant = this.matchVariant(options);
-
-      this.markUnavailableOptions(options);
 
       if (!variant) {
         this.setButton(strings.unavailable || 'Unavailable', true);
@@ -94,44 +104,46 @@
       }
     }
 
-    /**
-     * Grey out any option value that produces no purchasable variant given the
-     * other currently-selected options. Sizes are the option that matters here:
-     * limited runs sell out one size at a time.
-     */
-    markUnavailableOptions(selected) {
-      this.optionInputs.forEach((input) => {
-        const index = parseInt(input.dataset.optionIndex, 10);
-        const candidate = selected.slice();
-        candidate[index] = input.value;
-
-        const match = this.variants.find((variant) =>
-          variant.options.every((value, position) => {
-            if (position === index) return value === input.value;
-            return candidate[position] === undefined || value === candidate[position];
-          })
-        );
-
-        const label = input.nextElementSibling;
-        if (!label) return;
-        const unavailable = !match || !match.available;
-        label.classList.toggle('variant-option__value--unavailable', unavailable);
-      });
-    }
-
     updatePrice(variant) {
-      if (!this.priceTarget) return;
-      const current = this.priceTarget.querySelector('[data-price-current]');
-      const compare = this.priceTarget.querySelector('[data-price-compare]');
+      const input = this.selectedInput();
+      const bags = input ? parseInt(input.dataset.bags, 10) || 1 : 1;
+      const onSale = variant.compare_at_price && variant.compare_at_price > variant.price;
 
-      if (current) current.textContent = formatMoney(variant.price);
-
-      if (compare) {
-        const onSale = variant.compare_at_price && variant.compare_at_price > variant.price;
-        compare.textContent = onSale ? formatMoney(variant.compare_at_price) : '';
-        compare.hidden = !onSale;
+      if (this.priceTarget) {
+        const current = this.priceTarget.querySelector('[data-price-current]');
+        const compare = this.priceTarget.querySelector('[data-price-compare]');
+        if (current) current.textContent = money(variant.price);
+        if (compare) {
+          compare.textContent = onSale ? money(variant.compare_at_price) : '';
+          compare.hidden = !onSale;
+        }
         this.priceTarget.classList.toggle('price--on-sale', Boolean(onSale));
       }
+
+      if (this.savingsTarget) {
+        if (onSale) {
+          const amount = variant.compare_at_price - variant.price;
+          const percent = Math.round((amount / variant.compare_at_price) * 100);
+          this.savingsTarget.textContent = fill(strings.save || 'Save {{ amount }}', 'amount', money(amount)) +
+            ' (' + fill(strings.savePercent || '{{ percent }}%', 'percent', percent) + ')';
+          this.savingsTarget.hidden = false;
+        } else {
+          this.savingsTarget.hidden = true;
+        }
+      }
+
+      if (this.perBagTarget) {
+        if (bags > 1) {
+          this.perBagTarget.textContent = fill(strings.perBag || '{{ price }} per bag', 'price', money(variant.price / bags));
+          this.perBagTarget.hidden = false;
+        } else {
+          this.perBagTarget.hidden = true;
+        }
+      }
+
+      this.stickyPrice.forEach((node) => {
+        node.textContent = money(variant.price);
+      });
     }
 
     updateInventory(variant) {
@@ -139,15 +151,10 @@
 
       const quantity = variant.inventory_quantity;
       const managed = variant.inventory_management === 'shopify';
-      const low = managed && variant.available && quantity > 0 && quantity <= 5;
-
-      this.inventoryTarget.classList.toggle('product__inventory--low', low);
+      const low = managed && variant.available && quantity > 0 && quantity <= 10;
 
       if (low) {
-        this.inventoryTarget.textContent = (strings.lowStock || 'Only {{ count }} left').replace(
-          '{{ count }}',
-          quantity
-        );
+        this.inventoryTarget.textContent = fill(strings.lowStock || 'Only {{ count }} left', 'count', quantity);
         this.inventoryTarget.hidden = false;
       } else {
         this.inventoryTarget.hidden = true;
@@ -156,19 +163,20 @@
 
     updateAvailability(variant) {
       if (variant.available) {
-        const label = this.dataset.preorder === 'true' ? strings.preorder : strings.addToCart;
-        this.setButton(label || 'Add to cart', false);
+        this.setButton(strings.addToCart || 'Add to cart', false);
       } else {
         this.setButton(strings.soldOut || 'Sold out', true);
       }
     }
 
     setButton(label, disabled) {
-      if (!this.submitButton) return;
-      const text = this.submitButton.querySelector('[data-button-text]') || this.submitButton;
-      text.textContent = label;
-      this.submitButton.disabled = disabled;
-      this.submitButton.setAttribute('aria-disabled', String(disabled));
+      const buttons = [this.submitButton, ...this.stickyButton].filter(Boolean);
+      buttons.forEach((button) => {
+        const text = button.querySelector('[data-button-text]') || button;
+        text.textContent = label;
+        button.disabled = disabled;
+        button.setAttribute('aria-disabled', String(disabled));
+      });
     }
 
     updateURL(variant) {
@@ -180,19 +188,11 @@
 
     showMedia(variant) {
       if (!this.gallery || !variant.featured_media) return;
-      const media = this.gallery.querySelector(`[data-media-id="${variant.featured_media.id}"]`);
-      if (!media) return;
-
-      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      media.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'center' });
-
-      this.gallery.querySelectorAll('[data-thumb]').forEach((thumb) => {
-        thumb.setAttribute('aria-current', String(thumb.dataset.thumb === String(variant.featured_media.id)));
-      });
+      if (typeof this.gallery.show === 'function') this.gallery.show(variant.featured_media.id);
     }
 
     async onSubmit(event) {
-      if (!window.HOG || typeof window.HOG.addToCart !== 'function') return; // let it post natively
+      if (!window.GC || typeof window.GC.addToCart !== 'function') return; // let it post natively
       event.preventDefault();
 
       const original = this.submitButton
@@ -202,8 +202,8 @@
       this.setButton(strings.adding || 'Adding…', true);
 
       try {
-        await window.HOG.addToCart(new FormData(this.form), this.submitButton);
-        this.setButton(strings.added || 'Added', false);
+        await window.GC.addToCart(new FormData(this.form), this.submitButton);
+        this.setButton(strings.added || 'Added ✓', false);
         window.setTimeout(() => this.setButton(original, false), 1800);
       } catch (error) {
         this.setButton(error.message || strings.cartError, false);

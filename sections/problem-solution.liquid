@@ -1,0 +1,60 @@
+{%- liquid
+  assign bad_items = section.settings.bad_items | newline_to_br | split: '<br />'
+  assign good_items = section.settings.good_items | newline_to_br | split: '<br />'
+-%}
+
+<section class="section section--alt" id="{{ section.settings.anchor | default: 'why' }}">
+  <div class="container">
+    <div class="section-head reveal">
+      {%- if section.settings.eyebrow != blank -%}<p class="eyebrow eyebrow--center">{{ section.settings.eyebrow | escape }}</p>{%- endif -%}
+      <h2>{{ section.settings.heading | escape }}</h2>
+      {%- if section.settings.text != blank -%}<p class="lead">{{ section.settings.text | escape }}</p>{%- endif -%}
+    </div>
+
+    <div class="compare-cards">
+      <div class="compare-card reveal reveal--left">
+        <span class="compare-card__label">{{ section.settings.bad_label | escape }}</span>
+        <h3>{{ section.settings.bad_heading | escape }}</h3>
+        <ul class="check-list check-list--x">
+          {%- for item in bad_items -%}
+            {%- assign clean = item | strip -%}
+            {%- if clean != blank -%}<li>{{ clean }}</li>{%- endif -%}
+          {%- endfor -%}
+        </ul>
+      </div>
+
+      <div class="compare-card compare-card--good reveal reveal--right">
+        <span class="compare-card__label">{{ section.settings.good_label | escape }}</span>
+        <h3>{{ section.settings.good_heading | escape }}</h3>
+        <ul class="check-list">
+          {%- for item in good_items -%}
+            {%- assign clean = item | strip -%}
+            {%- if clean != blank -%}<li>{{ clean }}</li>{%- endif -%}
+          {%- endfor -%}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Problem → solution",
+  "tag": "div",
+  "settings": [
+    { "type": "text", "id": "anchor", "label": "Anchor id", "default": "why" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Sound familiar?" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "The cheese trick stops working. The chew never does." },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "Most dog supplements are made for the label, not for the dog. Goodest Chews were built the other way round." },
+    { "type": "header", "content": "The old way" },
+    { "type": "text", "id": "bad_label", "label": "Label", "default": "The old way" },
+    { "type": "text", "id": "bad_heading", "label": "Heading", "default": "Pills, powders and a very suspicious dog" },
+    { "type": "textarea", "id": "bad_items", "label": "Points (one per line)", "default": "Crushing tablets into food they then refuse to eat\nFour different bottles for joints, coat, gut and immunity\nHard, chalky tablets seniors and small breeds struggle with\nNo idea where it was made, or by whom\nMoney down the drain when the dog says no" },
+    { "type": "header", "content": "The Goodest way" },
+    { "type": "text", "id": "good_label", "label": "Label", "default": "The Goodest way" },
+    { "type": "text", "id": "good_heading", "label": "Heading", "default": "One soft chew. Eight benefits. Zero drama." },
+    { "type": "textarea", "id": "good_items", "label": "Points (one per line)", "default": "Tastes like a treat — dogs ask for it\n8 benefits in one chew, one bag, one price\nSoft texture that's easy on every jaw\nMade in an ISO 9001, HACCP & NSF GMP-certified facility\n60-day Happy Dog Guarantee if they don't love it" }
+  ],
+  "presets": [{ "name": "Problem → solution" }]
+}
+{% endschema %}

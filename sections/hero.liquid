@@ -1,181 +1,129 @@
 {%- liquid
-  assign alignment = section.settings.text_alignment | default: 'left'
+  assign product = settings.featured_product
+  assign heading = section.settings.heading | escape | replace: '[', '<em>' | replace: ']', '</em>'
+  assign image = section.settings.image
+  if image == blank and product != blank
+    assign image = product.featured_image
+  endif
+  assign cta_link = section.settings.cta_link
+  if cta_link == blank
+    assign cta_link = '#bundles'
+  endif
 -%}
 
-<section class="hero hero--{{ section.settings.height }} hero--{{ alignment }}">
-  <div class="hero__media">
-    {%- if section.settings.video_url != blank -%}
-      <video autoplay muted loop playsinline poster="{{ section.settings.image | image_url: width: 1600 }}">
-        <source src="{{ section.settings.video_url }}" type="video/mp4">
-      </video>
-    {%- elsif section.settings.image != blank -%}
-      <img
-        src="{{ section.settings.image | image_url: width: 2400 }}"
-        srcset="
-          {{ section.settings.image | image_url: width: 800 }} 800w,
-          {{ section.settings.image | image_url: width: 1400 }} 1400w,
-          {{ section.settings.image | image_url: width: 2000 }} 2000w,
-          {{ section.settings.image | image_url: width: 2400 }} 2400w
-        "
-        sizes="100vw"
-        alt="{{ section.settings.image.alt | escape }}"
-        width="{{ section.settings.image.width }}"
-        height="{{ section.settings.image.height }}"
-        fetchpriority="high"
-      >
-    {%- else -%}
-      {{ 'lifestyle-1' | placeholder_svg_tag: 'hero__placeholder' }}
-    {%- endif -%}
-  </div>
+<section class="hero" id="top">
+  <div class="container hero__grid">
+    <div class="hero__copy">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="eyebrow reveal">{{ section.settings.eyebrow | escape }}</p>
+      {%- endif -%}
 
-  <div class="hero__overlay" style="opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};"></div>
+      <h2 class="h1 hero__title reveal" style="--i: 1;">{{ heading }}</h2>
 
-  <div class="container hero__content">
-    {%- if section.settings.heading != blank -%}
-      <h2 class="hero__heading">{{ section.settings.heading }}</h2>
-    {%- endif -%}
+      {%- if section.settings.lead != blank -%}
+        <p class="lead hero__lead reveal" style="--i: 2;">{{ section.settings.lead | escape }}</p>
+      {%- endif -%}
 
-    {%- if section.settings.subheading != blank -%}
-      <p class="hero__subheading">{{ section.settings.subheading }}</p>
-    {%- endif -%}
+      {%- if section.settings.bullet_1 != blank or section.settings.bullet_2 != blank or section.settings.bullet_3 != blank -%}
+        <ul class="check-list hero__benefits reveal" style="--i: 3;">
+          {%- if section.settings.bullet_1 != blank -%}<li>{{ section.settings.bullet_1 }}</li>{%- endif -%}
+          {%- if section.settings.bullet_2 != blank -%}<li>{{ section.settings.bullet_2 }}</li>{%- endif -%}
+          {%- if section.settings.bullet_3 != blank -%}<li>{{ section.settings.bullet_3 }}</li>{%- endif -%}
+        </ul>
+      {%- endif -%}
 
-    {%- if section.settings.show_countdown and section.settings.countdown_date != blank -%}
-      <countdown-timer data-date="{{ section.settings.countdown_date }}">
-        {%- if section.settings.countdown_heading != blank -%}
-          <p class="eyebrow">{{ section.settings.countdown_heading }}</p>
+      <div class="hero__actions reveal" style="--i: 4;">
+        <a class="btn btn--lg btn--pulse" id="hero-cta" href="{{ cta_link }}">
+          {{ section.settings.cta_label | escape }}
+          {% render 'icon', name: 'arrow-right' %}
+        </a>
+        {%- if section.settings.secondary_label != blank -%}
+          <a class="link-arrow" href="{{ section.settings.secondary_link | default: '#how-it-works' }}">
+            {{ section.settings.secondary_label | escape }}
+            {% render 'icon', name: 'chevron-down' %}
+          </a>
         {%- endif -%}
+      </div>
 
-        <div class="countdown">
-          <div class="countdown__unit">
-            <span class="countdown__value" data-days>--</span>
-            <span class="countdown__label">{{ 'products.product.drop_countdown.days' | t }}</span>
-          </div>
-          <div class="countdown__unit">
-            <span class="countdown__value" data-hours>--</span>
-            <span class="countdown__label">{{ 'products.product.drop_countdown.hours' | t }}</span>
-          </div>
-          <div class="countdown__unit">
-            <span class="countdown__value" data-minutes>--</span>
-            <span class="countdown__label">{{ 'products.product.drop_countdown.minutes' | t }}</span>
-          </div>
-          <div class="countdown__unit">
-            <span class="countdown__value" data-seconds>--</span>
-            <span class="countdown__label">{{ 'products.product.drop_countdown.seconds' | t }}</span>
-          </div>
+      {%- if section.settings.show_rating -%}
+        <div class="hero__rating reveal" style="--i: 5;">
+          {% render 'stars', rating: settings.rating_value %}
+          <span class="rating-line">{{ settings.rating_value }}/5 <span class="muted">{{ settings.rating_label | escape }}</span></span>
         </div>
+      {%- endif -%}
 
-        <p class="eyebrow accent" data-live-message hidden>
-          {{ 'products.product.drop_countdown.live' | t }}
-        </p>
-      </countdown-timer>
-    {%- endif -%}
+      <div class="hero__proof reveal" style="--i: 6;">
+        {%- if section.settings.proof_1 != blank -%}<span>{% render 'icon', name: 'badge-check' %}{{ section.settings.proof_1 | escape }}</span>{%- endif -%}
+        {%- if section.settings.proof_2 != blank -%}<span>{% render 'icon', name: 'shield-check' %}{{ section.settings.proof_2 | escape }}</span>{%- endif -%}
+        {%- if section.settings.proof_3 != blank -%}<span>{% render 'icon', name: 'truck' %}{{ section.settings.proof_3 | escape }}</span>{%- endif -%}
+      </div>
+    </div>
 
-    {%- if section.settings.button_label != blank -%}
-      <a class="btn btn--accent" href="{{ section.settings.button_link | default: routes.all_products_collection_url }}">
-        {{ section.settings.button_label }}
-      </a>
-    {%- endif -%}
+    <div class="hero__visual reveal reveal--scale" style="--i: 2;">
+      <div class="hero__blob" aria-hidden="true"></div>
+
+      {%- if section.settings.show_guarantee_badge -%}
+        <div class="hero__guarantee" aria-hidden="true">
+          <div><strong>{{ settings.guarantee_days }}</strong>{{ 'general.day' | t }}<br>{{ 'general.guarantee' | t }}</div>
+        </div>
+      {%- endif -%}
+
+      <div class="hero__image">
+        {%- if image != blank -%}
+          <img
+            src="{{ image | image_url: width: 1000 }}"
+            srcset="{{ image | image_url: width: 500 }} 500w, {{ image | image_url: width: 800 }} 800w, {{ image | image_url: width: 1000 }} 1000w, {{ image | image_url: width: 1400 }} 1400w"
+            sizes="(min-width: 990px) 45vw, 90vw"
+            alt="{{ image.alt | default: product.title | escape }}"
+            width="{{ image.width }}"
+            height="{{ image.height }}"
+            loading="eager"
+            fetchpriority="high"
+          >
+        {%- else -%}
+          {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+        {%- endif -%}
+      </div>
+
+      {%- if section.settings.chip_1 != blank -%}<span class="hero__chip hero__chip--1">{% render 'icon', name: 'bone' %}{{ section.settings.chip_1 | escape }}</span>{%- endif -%}
+      {%- if section.settings.chip_2 != blank -%}<span class="hero__chip hero__chip--2">{% render 'icon', name: 'sparkles' %}{{ section.settings.chip_2 | escape }}</span>{%- endif -%}
+      {%- if section.settings.chip_3 != blank -%}<span class="hero__chip hero__chip--3">{% render 'icon', name: 'stomach' %}{{ section.settings.chip_3 | escape }}</span>{%- endif -%}
+      {%- if section.settings.chip_4 != blank -%}<span class="hero__chip hero__chip--4">{% render 'icon', name: 'heart' %}{{ section.settings.chip_4 | escape }}</span>{%- endif -%}
+    </div>
   </div>
 </section>
 
 {% schema %}
 {
-  "name": "t:sections.hero.name",
-  "tag": "section",
+  "name": "Hero",
+  "tag": "div",
   "class": "hero-section",
   "settings": [
-    {
-      "type": "image_picker",
-      "id": "image",
-      "label": "t:sections.hero.settings.image.label"
-    },
-    {
-      "type": "url",
-      "id": "video_url",
-      "label": "t:sections.hero.settings.video_url.label"
-    },
-    {
-      "type": "select",
-      "id": "height",
-      "label": "t:sections.hero.settings.height.label",
-      "options": [
-        { "value": "small", "label": "t:sections.hero.settings.height.options__1" },
-        { "value": "medium", "label": "t:sections.hero.settings.height.options__2" },
-        { "value": "full", "label": "t:sections.hero.settings.height.options__3" }
-      ],
-      "default": "full"
-    },
-    {
-      "type": "range",
-      "id": "overlay_opacity",
-      "min": 0,
-      "max": 90,
-      "step": 5,
-      "unit": "%",
-      "label": "t:sections.hero.settings.overlay_opacity.label",
-      "default": 45
-    },
-    {
-      "type": "text",
-      "id": "heading",
-      "label": "t:sections.hero.settings.heading.label",
-      "default": "NEW DROP"
-    },
-    {
-      "type": "text",
-      "id": "subheading",
-      "label": "t:sections.hero.settings.subheading.label",
-      "default": "Limited pieces. Once they're gone, they're gone."
-    },
-    {
-      "type": "select",
-      "id": "text_alignment",
-      "label": "t:sections.hero.settings.text_alignment.label",
-      "options": [
-        { "value": "left", "label": "t:sections.hero.settings.text_alignment.options__1" },
-        { "value": "center", "label": "t:sections.hero.settings.text_alignment.options__2" },
-        { "value": "right", "label": "t:sections.hero.settings.text_alignment.options__3" }
-      ],
-      "default": "left"
-    },
-    {
-      "type": "text",
-      "id": "button_label",
-      "label": "t:sections.hero.settings.button_label.label",
-      "default": "Shop the drop"
-    },
-    {
-      "type": "url",
-      "id": "button_link",
-      "label": "t:sections.hero.settings.button_link.label"
-    },
-    {
-      "type": "header",
-      "content": "Countdown"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_countdown",
-      "label": "t:sections.hero.settings.show_countdown.label",
-      "default": false
-    },
-    {
-      "type": "text",
-      "id": "countdown_date",
-      "label": "t:sections.hero.settings.countdown_date.label",
-      "info": "t:sections.hero.settings.countdown_date.info"
-    },
-    {
-      "type": "text",
-      "id": "countdown_heading",
-      "label": "t:sections.hero.settings.countdown_heading.label",
-      "default": "Drops in"
-    }
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "8-in-1 multivitamin soft chews for dogs" },
+    { "type": "text", "id": "heading", "label": "Headline", "default": "8 health benefits. One chew your dog will [beg for].", "info": "Wrap words in [square brackets] to highlight them in orange." },
+    { "type": "textarea", "id": "lead", "label": "Subheadline", "default": "Joints, heart, skin & coat, digestion, immunity, liver, antioxidants and energy — covered in one treat-shaped chew. No more pills hidden in cheese." },
+    { "type": "header", "content": "Benefit bullets" },
+    { "type": "text", "id": "bullet_1", "label": "Bullet 1", "default": "Replaces 4+ separate supplements with one daily chew" },
+    { "type": "text", "id": "bullet_2", "label": "Bullet 2", "default": "Soft & chewy — easy for puppies, seniors and small breeds" },
+    { "type": "text", "id": "bullet_3", "label": "Bullet 3", "default": "Made in an NSF GMP-certified, FDA-registered facility" },
+    { "type": "header", "content": "Buttons" },
+    { "type": "text", "id": "cta_label", "label": "Main button", "default": "Get Goodest Chews" },
+    { "type": "url", "id": "cta_link", "label": "Main button link", "info": "Defaults to the bundles section." },
+    { "type": "text", "id": "secondary_label", "label": "Secondary link", "default": "See how it works" },
+    { "type": "url", "id": "secondary_link", "label": "Secondary link URL" },
+    { "type": "header", "content": "Social proof" },
+    { "type": "checkbox", "id": "show_rating", "label": "Show star rating", "default": true },
+    { "type": "text", "id": "proof_1", "label": "Proof point 1", "default": "ISO 9001 & HACCP certified" },
+    { "type": "text", "id": "proof_2", "label": "Proof point 2", "default": "60-day money-back guarantee" },
+    { "type": "text", "id": "proof_3", "label": "Proof point 3", "default": "Ships in 1–2 business days" },
+    { "type": "header", "content": "Visual" },
+    { "type": "image_picker", "id": "image", "label": "Image", "info": "Defaults to the product's featured image. A PNG with a transparent background looks best." },
+    { "type": "checkbox", "id": "show_guarantee_badge", "label": "Show spinning guarantee badge", "default": true },
+    { "type": "text", "id": "chip_1", "label": "Floating chip 1", "default": "Joints & mobility" },
+    { "type": "text", "id": "chip_2", "label": "Floating chip 2", "default": "Shiny coat" },
+    { "type": "text", "id": "chip_3", "label": "Floating chip 3", "default": "Happy tummy" },
+    { "type": "text", "id": "chip_4", "label": "Floating chip 4", "default": "Healthy heart" }
   ],
-  "presets": [
-    {
-      "name": "t:sections.hero.name"
-    }
-  ]
+  "presets": [{ "name": "Hero" }]
 }
 {% endschema %}

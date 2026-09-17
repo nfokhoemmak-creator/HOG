@@ -1,28 +1,39 @@
 <footer class="footer">
   <div class="container">
     <div class="footer__grid">
+      <div class="footer__brand">
+        <a href="{{ routes.root_url }}" aria-label="{{ shop.name | escape }}">{% render 'logo', size: 26, inverse: true %}</a>
+        {%- if section.settings.brand_text != blank -%}
+          <p>{{ section.settings.brand_text }}</p>
+        {%- endif -%}
+        {%- if section.settings.show_social -%}
+          {% render 'social-links' %}
+        {%- endif -%}
+      </div>
+
       {%- for block in section.blocks -%}
         <div {{ block.shopify_attributes }}>
           {%- case block.type -%}
             {%- when 'menu' -%}
               {%- if block.settings.heading != blank -%}
-                <h2 class="footer__heading">{{ block.settings.heading }}</h2>
+                <h2 class="footer__heading">{{ block.settings.heading | escape }}</h2>
               {%- endif -%}
               <ul class="footer__menu">
                 {%- for link in linklists[block.settings.menu].links -%}
-                  <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+                  <li><a href="{{ link.url }}">{{ link.title | escape }}</a></li>
                 {%- endfor -%}
+                {%- if block.settings.show_policies -%}
+                  {%- for policy in shop.policies -%}
+                    {%- if policy.body != blank -%}
+                      <li><a href="{{ policy.url }}">{{ policy.title | escape }}</a></li>
+                    {%- endif -%}
+                  {%- endfor -%}
+                {%- endif -%}
               </ul>
-
-            {%- when 'text' -%}
-              {%- if block.settings.heading != blank -%}
-                <h2 class="footer__heading">{{ block.settings.heading }}</h2>
-              {%- endif -%}
-              <div class="footer__menu">{{ block.settings.text }}</div>
 
             {%- when 'contact' -%}
               {%- if block.settings.heading != blank -%}
-                <h2 class="footer__heading">{{ block.settings.heading }}</h2>
+                <h2 class="footer__heading">{{ block.settings.heading | escape }}</h2>
               {%- endif -%}
               <ul class="footer__menu">
                 {%- if block.settings.email != blank -%}
@@ -31,8 +42,8 @@
                 {%- if block.settings.phone != blank -%}
                   <li><a href="tel:{{ block.settings.phone | remove: ' ' }}">{{ block.settings.phone }}</a></li>
                 {%- endif -%}
-                {%- if block.settings.address != blank -%}
-                  <li>{{ block.settings.address }}</li>
+                {%- if block.settings.text != blank -%}
+                  <li>{{ block.settings.text }}</li>
                 {%- endif -%}
               </ul>
           {%- endcase -%}
@@ -41,16 +52,14 @@
 
       {%- if section.settings.show_newsletter -%}
         <div>
-          {%- assign newsletter_fallback = 'general.newsletter_form.heading' | t -%}
-          <h2 class="footer__heading">
-            {{ section.settings.newsletter_heading | default: newsletter_fallback }}
-          </h2>
+          <h2 class="footer__heading">{{ section.settings.newsletter_heading | escape }}</h2>
+          {%- if section.settings.newsletter_text != blank -%}
+            <p class="small">{{ section.settings.newsletter_text | escape }}</p>
+          {%- endif -%}
 
           {%- form 'customer', class: 'newsletter-form' -%}
             <input type="hidden" name="contact[tags]" value="newsletter">
-            <label class="visually-hidden" for="FooterNewsletter">
-              {{ 'general.newsletter_form.email_placeholder' | t }}
-            </label>
+            <label class="visually-hidden" for="FooterNewsletter">{{ 'general.newsletter_form.email_placeholder' | t }}</label>
             <input
               id="FooterNewsletter"
               class="field__input"
@@ -63,17 +72,11 @@
             <button type="submit" class="btn">{{ 'general.newsletter_form.submit' | t }}</button>
 
             {%- if form.errors -%}
-              <p class="form__error">{{ form.errors.translated_fields.email }} {{ form.errors.messages.email }}</p>
+              <p class="form__error" style="width:100%">{{ form.errors.translated_fields.email }} {{ form.errors.messages.email }}</p>
             {%- elsif form.posted_successfully? -%}
-              <p class="form__success">{{ 'general.newsletter_form.confirmation' | t }}</p>
+              <p class="form__success" style="width:100%">{{ 'general.newsletter_form.confirmation' | t }}</p>
             {%- endif -%}
           {%- endform -%}
-
-          {%- if section.settings.show_social -%}
-            <div style="margin-top: var(--space-4);">
-              {% render 'social-links' %}
-            </div>
-          {%- endif -%}
         </div>
       {%- endif -%}
     </div>
@@ -92,103 +95,45 @@
         </ul>
       {%- endif -%}
     </div>
+
+    {%- if settings.show_disclaimer and settings.disclaimer_text != blank -%}
+      <p class="footer__disclaimer">{{ settings.disclaimer_text | escape }}</p>
+    {%- endif -%}
   </div>
 </footer>
 
 {% schema %}
 {
-  "name": "t:sections.footer.name",
+  "name": "Footer",
   "tag": "div",
   "class": "footer-section",
-  "max_blocks": 4,
+  "max_blocks": 3,
   "settings": [
-    {
-      "type": "checkbox",
-      "id": "show_newsletter",
-      "label": "t:sections.footer.settings.show_newsletter.label",
-      "default": true
-    },
-    {
-      "type": "text",
-      "id": "newsletter_heading",
-      "label": "t:sections.footer.settings.newsletter_heading.label",
-      "default": "Get the drop first"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_social",
-      "label": "t:sections.footer.settings.show_social.label",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "show_payment_icons",
-      "label": "t:sections.footer.settings.show_payment_icons.label",
-      "default": true
-    }
+    { "type": "textarea", "id": "brand_text", "label": "About line", "default": "8 daily health benefits in one soft chew your dog will beg for. Made in a certified facility, backed by a 60-day guarantee." },
+    { "type": "checkbox", "id": "show_social", "label": "Show social icons", "default": true },
+    { "type": "checkbox", "id": "show_newsletter", "label": "Show newsletter signup", "default": true },
+    { "type": "text", "id": "newsletter_heading", "label": "Newsletter heading", "default": "Treats for your inbox" },
+    { "type": "text", "id": "newsletter_text", "label": "Newsletter text", "default": "Dog health tips, early access to bundles and the occasional very good boy." },
+    { "type": "checkbox", "id": "show_payment_icons", "label": "Show payment icons", "default": true }
   ],
   "blocks": [
     {
       "type": "menu",
-      "name": "t:sections.footer.blocks.menu.name",
+      "name": "Menu",
       "settings": [
-        {
-          "type": "text",
-          "id": "heading",
-          "label": "t:sections.footer.blocks.menu.settings.heading.label",
-          "default": "Shop"
-        },
-        {
-          "type": "link_list",
-          "id": "menu",
-          "label": "t:sections.footer.blocks.menu.settings.menu.label",
-          "default": "footer"
-        }
-      ]
-    },
-    {
-      "type": "text",
-      "name": "t:sections.footer.blocks.text.name",
-      "settings": [
-        {
-          "type": "text",
-          "id": "heading",
-          "label": "t:sections.footer.blocks.text.settings.heading.label",
-          "default": "House of Garments"
-        },
-        {
-          "type": "richtext",
-          "id": "text",
-          "label": "t:sections.footer.blocks.text.settings.text.label",
-          "default": "<p>Limited-run streetwear out of Lebanon.</p>"
-        }
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Help" },
+        { "type": "link_list", "id": "menu", "label": "Menu", "default": "footer" },
+        { "type": "checkbox", "id": "show_policies", "label": "Append store policies (privacy, refund, terms)", "default": true }
       ]
     },
     {
       "type": "contact",
       "name": "Contact",
       "settings": [
-        {
-          "type": "text",
-          "id": "heading",
-          "label": "Heading",
-          "default": "Contact"
-        },
-        {
-          "type": "text",
-          "id": "email",
-          "label": "Email"
-        },
-        {
-          "type": "text",
-          "id": "phone",
-          "label": "Phone"
-        },
-        {
-          "type": "text",
-          "id": "address",
-          "label": "Address"
-        }
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Talk to us" },
+        { "type": "text", "id": "email", "label": "Email" },
+        { "type": "text", "id": "phone", "label": "Phone / WhatsApp" },
+        { "type": "richtext", "id": "text", "label": "Text" }
       ]
     }
   ]

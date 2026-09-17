@@ -14,7 +14,7 @@
 -%}
 
 {%- if has_social -%}
-  <ul class="social-list">
+  <ul class="social-links">
     {%- if settings.social_instagram_link != blank -%}
       <li>
         <a href="{{ settings.social_instagram_link }}" target="_blank" rel="noopener" aria-describedby="a11y-new-window-message">
@@ -23,7 +23,6 @@
         </a>
       </li>
     {%- endif -%}
-
     {%- if settings.social_tiktok_link != blank -%}
       <li>
         <a href="{{ settings.social_tiktok_link }}" target="_blank" rel="noopener" aria-describedby="a11y-new-window-message">
@@ -32,7 +31,6 @@
         </a>
       </li>
     {%- endif -%}
-
     {%- if settings.social_whatsapp_link != blank -%}
       <li>
         <a href="{{ settings.social_whatsapp_link }}" target="_blank" rel="noopener" aria-describedby="a11y-new-window-message">
@@ -41,7 +39,6 @@
         </a>
       </li>
     {%- endif -%}
-
     {%- if settings.social_facebook_link != blank -%}
       <li>
         <a href="{{ settings.social_facebook_link }}" target="_blank" rel="noopener" aria-describedby="a11y-new-window-message">

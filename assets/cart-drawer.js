@@ -1,5 +1,5 @@
 /* ==========================================================================
-   House of Garments — cart-drawer.js
+   Goodest Chews — cart-drawer.js
    Talks to the Shopify Ajax Cart API and keeps the drawer in sync.
 
    The drawer is progressive enhancement over /cart. Every trigger that opens
@@ -53,21 +53,20 @@
 
       this.bindLineItems();
 
-      document.addEventListener('cart:updated', (event) => {
-        this.render(event.detail && event.detail.sections);
-      });
+      if (!this.listening) {
+        this.listening = true;
 
-      document.addEventListener('cart:open', (event) => {
-        this.open(event.detail && event.detail.opener);
-      });
+        document.addEventListener('cart:updated', () => this.refresh());
+        document.addEventListener('cart:open', (event) => this.open(event.detail && event.detail.opener));
 
-      // Any link to the cart opens the drawer instead, when the drawer is on.
-      document.addEventListener('click', (event) => {
-        const trigger = event.target.closest('[data-cart-trigger]');
-        if (!trigger) return;
-        event.preventDefault();
-        this.open(trigger);
-      });
+        // Any link to the cart opens the drawer instead, when the drawer is on.
+        document.addEventListener('click', (event) => {
+          const trigger = event.target.closest('[data-cart-trigger]');
+          if (!trigger) return;
+          event.preventDefault();
+          this.open(trigger);
+        });
+      }
     }
 
     bindLineItems() {
@@ -83,22 +82,40 @@
           this.change(input.dataset.lineQuantity, parseInt(input.value, 10));
         });
       });
+
+      // "Upgrade to 2 bags and save" — swap the line for the bigger bundle.
+      this.querySelectorAll('[data-upsell-swap]').forEach((button) => {
+        button.addEventListener('click', async (event) => {
+          event.preventDefault();
+          this.setBusy(true);
+          try {
+            await postJSON(routes.cartChange || '/cart/change.js', { id: button.dataset.upsellSwap, quantity: 0 });
+            await postJSON(routes.cartAdd || '/cart/add.js', { id: button.dataset.upsellVariant, quantity: 1 });
+            await this.refresh();
+            if (window.GC) window.GC.announce(strings.itemAdded);
+          } catch (error) {
+            this.showError(error.message);
+          } finally {
+            this.setBusy(false);
+          }
+        });
+      });
     }
 
     open(opener) {
       this.opener = opener || null;
       this.classList.add('is-open');
       this.setAttribute('aria-hidden', 'false');
-      if (window.HOG) {
-        window.HOG.lockScroll(true);
-        this.releaseFocus = window.HOG.trapFocus(this.panel, () => this.close());
+      if (window.GC) {
+        window.GC.lockScroll(true);
+        this.releaseFocus = window.GC.trapFocus(this.panel, () => this.close());
       }
     }
 
     close() {
       this.classList.remove('is-open');
       this.setAttribute('aria-hidden', 'true');
-      if (window.HOG) window.HOG.lockScroll(false);
+      if (window.GC) window.GC.lockScroll(false);
       if (this.releaseFocus) this.releaseFocus();
       if (this.opener && document.body.contains(this.opener)) this.opener.focus();
     }
@@ -127,10 +144,6 @@
       if (wasOpen) this.classList.add('is-open');
 
       updateCartCount();
-    }
-
-    render() {
-      this.refresh();
     }
 
     setBusy(busy) {
@@ -177,9 +190,7 @@
 
     const data = await postJSON(routes.cartAdd || '/cart/add.js', body);
 
-    document.dispatchEvent(new CustomEvent('cart:updated', { detail: { item: data } }));
-
-    if (window.HOG) window.HOG.announce(strings.itemAdded);
+    if (window.GC) window.GC.announce(strings.itemAdded);
 
     const drawer = document.querySelector('cart-drawer');
     if (drawer && window.theme && window.theme.cartType === 'drawer') {
@@ -192,7 +203,7 @@
     return data;
   }
 
-  window.HOG = Object.assign(window.HOG || {}, { addToCart, updateCartCount });
+  window.GC = Object.assign(window.GC || {}, { addToCart, updateCartCount });
 
   /* ------------------------------------------------------------ quick add */
 
@@ -202,25 +213,24 @@
 
     event.preventDefault();
     const button = form.querySelector('button[type="submit"]');
-    const original = button ? button.textContent : '';
+    const label = button ? button.querySelector('[data-button-text]') || button : null;
+    const original = label ? label.textContent : '';
 
     if (button) {
       button.disabled = true;
-      button.textContent = strings.adding || 'Adding…';
+      if (label) label.textContent = strings.adding || 'Adding…';
     }
 
     try {
       await addToCart(new FormData(form), button);
+      if (label) label.textContent = strings.added || 'Added ✓';
     } catch (error) {
-      if (button) button.textContent = error.message;
-      window.setTimeout(() => {
-        if (button) button.textContent = original;
-      }, 2500);
-      return;
+      if (label) label.textContent = error.message;
     } finally {
       if (button) button.disabled = false;
+      window.setTimeout(() => {
+        if (label) label.textContent = original;
+      }, 2000);
     }
-
-    if (button) button.textContent = original;
   });
 })();

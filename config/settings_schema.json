@@ -1,364 +1,175 @@
 [
   {
     "name": "theme_info",
-    "theme_name": "House of Garments",
+    "theme_name": "Goodest Chews",
     "theme_version": "1.0.0",
-    "theme_author": "House of Garments",
-    "theme_documentation_url": "https://houseofgarments.co",
-    "theme_support_url": "https://houseofgarments.co/pages/contact"
+    "theme_author": "Goodest Chews",
+    "theme_documentation_url": "https://goodestchews.com",
+    "theme_support_url": "https://goodestchews.com/pages/contact"
   },
   {
-    "name": "t:settings_schema.brand.name",
+    "name": "Brand",
     "settings": [
       {
         "type": "image_picker",
         "id": "logo",
-        "label": "t:settings_schema.brand.settings.logo.label"
+        "label": "Logo",
+        "info": "Upload the Goodest Chews logo (PNG with transparent background). Until one is uploaded the theme draws the wordmark in brand colours."
       },
       {
         "type": "range",
         "id": "logo_width",
-        "min": 60,
-        "max": 320,
+        "min": 100,
+        "max": 360,
         "step": 10,
         "unit": "px",
-        "label": "t:settings_schema.brand.settings.logo_width.label",
-        "default": 140
+        "label": "Logo width (desktop)",
+        "default": 190
       },
       {
         "type": "image_picker",
         "id": "favicon",
-        "label": "t:settings_schema.brand.settings.favicon.label",
-        "info": "t:settings_schema.brand.settings.favicon.info"
+        "label": "Favicon",
+        "info": "Square PNG, at least 180×180px."
       },
       {
         "type": "text",
         "id": "brand_tagline",
-        "label": "t:settings_schema.brand.settings.brand_tagline.label",
-        "default": "EVERYBODY CAN'T HAVE LIMITED ITEMS"
+        "label": "Tagline",
+        "default": "For the goodest dogs."
       },
       {
         "type": "image_picker",
         "id": "share_image",
-        "label": "t:settings_schema.brand.settings.share_image.label",
-        "info": "t:settings_schema.brand.settings.share_image.info"
+        "label": "Social sharing image",
+        "info": "1200×630px. Used when the homepage is shared on social media."
+      },
+      {
+        "type": "product",
+        "id": "featured_product",
+        "label": "The product",
+        "info": "Your one product. Every buy button, bundle card and sticky bar in the theme points at it."
       }
     ]
   },
   {
-    "name": "t:settings_schema.colors.name",
+    "name": "Colours",
     "settings": [
-      {
-        "type": "header",
-        "content": "t:settings_schema.colors.headers.surfaces"
-      },
-      {
-        "type": "color",
-        "id": "color_background",
-        "label": "t:settings_schema.colors.settings.color_background.label",
-        "default": "#0a0a0a"
-      },
-      {
-        "type": "color",
-        "id": "color_background_alt",
-        "label": "t:settings_schema.colors.settings.color_background_alt.label",
-        "default": "#151515"
-      },
-      {
-        "type": "color",
-        "id": "color_border",
-        "label": "t:settings_schema.colors.settings.color_border.label",
-        "default": "#2a2a2a"
-      },
-      {
-        "type": "header",
-        "content": "t:settings_schema.colors.headers.text"
-      },
-      {
-        "type": "color",
-        "id": "color_text",
-        "label": "t:settings_schema.colors.settings.color_text.label",
-        "default": "#f5f5f5"
-      },
-      {
-        "type": "color",
-        "id": "color_text_muted",
-        "label": "t:settings_schema.colors.settings.color_text_muted.label",
-        "default": "#8a8a8a"
-      },
-      {
-        "type": "header",
-        "content": "t:settings_schema.colors.headers.accent"
-      },
-      {
-        "type": "color",
-        "id": "color_accent",
-        "label": "t:settings_schema.colors.settings.color_accent.label",
-        "default": "#d6ff3f",
-        "info": "t:settings_schema.colors.settings.color_accent.info"
-      },
-      {
-        "type": "color",
-        "id": "color_accent_contrast",
-        "label": "t:settings_schema.colors.settings.color_accent_contrast.label",
-        "default": "#0a0a0a"
-      },
-      {
-        "type": "color",
-        "id": "color_sale",
-        "label": "t:settings_schema.colors.settings.color_sale.label",
-        "default": "#ff4d4d"
-      },
-      {
-        "type": "header",
-        "content": "t:settings_schema.colors.headers.buttons"
-      },
-      {
-        "type": "color",
-        "id": "color_button_background",
-        "label": "t:settings_schema.colors.settings.color_button_background.label",
-        "default": "#f5f5f5"
-      },
-      {
-        "type": "color",
-        "id": "color_button_text",
-        "label": "t:settings_schema.colors.settings.color_button_text.label",
-        "default": "#0a0a0a"
-      }
+      { "type": "header", "content": "Surfaces" },
+      { "type": "color", "id": "color_background", "label": "Background (cream)", "default": "#FFFBF4" },
+      { "type": "color", "id": "color_background_alt", "label": "Alternate background", "default": "#F6EEDF" },
+      { "type": "color", "id": "color_border", "label": "Borders", "default": "#EADFCB" },
+      { "type": "header", "content": "Text" },
+      { "type": "color", "id": "color_text", "label": "Text", "default": "#1F2D26" },
+      { "type": "color", "id": "color_text_muted", "label": "Muted text", "default": "#5D6B64" },
+      { "type": "header", "content": "Brand colours" },
+      { "type": "color", "id": "color_primary", "label": "Green", "default": "#0F5132" },
+      { "type": "color", "id": "color_primary_dark", "label": "Green (dark)", "default": "#0A3B24" },
+      { "type": "color", "id": "color_accent", "label": "Orange", "default": "#F07F1F" },
+      { "type": "color", "id": "color_accent_dark", "label": "Orange (dark)", "default": "#D66A0C" },
+      { "type": "color", "id": "color_star", "label": "Review stars", "default": "#F5B301" },
+      { "type": "color", "id": "color_sale", "label": "Savings / sale", "default": "#D93A3A" }
     ]
   },
   {
-    "name": "t:settings_schema.typography.name",
+    "name": "Typography",
     "settings": [
       {
-        "type": "header",
-        "content": "t:settings_schema.typography.headers.headings"
-      },
-      {
-        "type": "font_picker",
+        "type": "select",
         "id": "type_heading_font",
-        "label": "t:settings_schema.typography.settings.type_heading_font.label",
-        "default": "archivo_n6"
+        "label": "Heading font",
+        "options": [
+          { "value": "fredoka", "label": "Fredoka (rounded, matches the logo)" },
+          { "value": "baloo", "label": "Baloo 2 (rounded, softer)" },
+          { "value": "nunito", "label": "Nunito (clean)" }
+        ],
+        "default": "fredoka"
       },
       {
         "type": "range",
         "id": "type_heading_scale",
         "min": 90,
-        "max": 140,
+        "max": 130,
         "step": 5,
         "unit": "%",
-        "label": "t:settings_schema.typography.settings.type_heading_scale.label",
-        "default": 105
-      },
-      {
-        "type": "range",
-        "id": "type_heading_tracking",
-        "min": -1,
-        "max": 8,
-        "step": 1,
-        "unit": "px",
-        "label": "t:settings_schema.typography.settings.type_heading_tracking.label",
-        "default": 1
-      },
-      {
-        "type": "checkbox",
-        "id": "type_heading_uppercase",
-        "label": "t:settings_schema.typography.settings.type_heading_uppercase.label",
-        "default": true
-      },
-      {
-        "type": "header",
-        "content": "t:settings_schema.typography.headers.body"
-      },
-      {
-        "type": "font_picker",
-        "id": "type_body_font",
-        "label": "t:settings_schema.typography.settings.type_body_font.label",
-        "default": "assistant_n4"
+        "label": "Heading size",
+        "default": 100
       },
       {
         "type": "range",
         "id": "type_body_scale",
         "min": 90,
-        "max": 130,
+        "max": 120,
         "step": 5,
         "unit": "%",
-        "label": "t:settings_schema.typography.settings.type_body_scale.label",
+        "label": "Body text size",
         "default": 100
       }
     ]
   },
   {
-    "name": "t:settings_schema.layout.name",
+    "name": "Layout & motion",
     "settings": [
-      {
-        "type": "range",
-        "id": "layout_max_width",
-        "min": 1000,
-        "max": 1800,
-        "step": 20,
-        "unit": "px",
-        "label": "t:settings_schema.layout.settings.layout_max_width.label",
-        "default": 1440
-      },
-      {
-        "type": "range",
-        "id": "layout_gutter",
-        "min": 12,
-        "max": 64,
-        "step": 2,
-        "unit": "px",
-        "label": "t:settings_schema.layout.settings.layout_gutter.label",
-        "default": 24
-      },
-      {
-        "type": "range",
-        "id": "layout_corner_radius",
-        "min": 0,
-        "max": 24,
-        "step": 1,
-        "unit": "px",
-        "label": "t:settings_schema.layout.settings.layout_corner_radius.label",
-        "default": 0,
-        "info": "t:settings_schema.layout.settings.layout_corner_radius.info"
-      },
-      {
-        "type": "range",
-        "id": "grid_gap",
-        "min": 2,
-        "max": 40,
-        "step": 2,
-        "unit": "px",
-        "label": "t:settings_schema.layout.settings.grid_gap.label",
-        "default": 8
-      },
-      {
-        "type": "checkbox",
-        "id": "animations_enabled",
-        "label": "t:settings_schema.layout.settings.animations_enabled.label",
-        "default": true,
-        "info": "t:settings_schema.layout.settings.animations_enabled.info"
-      }
+      { "type": "range", "id": "layout_max_width", "min": 1000, "max": 1600, "step": 20, "unit": "px", "label": "Page width", "default": 1280 },
+      { "type": "range", "id": "layout_gutter", "min": 12, "max": 48, "step": 2, "unit": "px", "label": "Side gutter", "default": 20 },
+      { "type": "range", "id": "layout_corner_radius", "min": 0, "max": 32, "step": 2, "unit": "px", "label": "Corner radius", "default": 20 },
+      { "type": "checkbox", "id": "animations_enabled", "label": "Enable animations", "default": true, "info": "Reveal-on-scroll, floating chips and hover motion. Always off for visitors who prefer reduced motion." }
     ]
   },
   {
-    "name": "t:settings_schema.product_cards.name",
+    "name": "Trust & guarantee",
     "settings": [
-      {
-        "type": "select",
-        "id": "card_image_ratio",
-        "label": "t:settings_schema.product_cards.settings.card_image_ratio.label",
-        "options": [
-          { "value": "square", "label": "t:settings_schema.product_cards.settings.card_image_ratio.options__1" },
-          { "value": "portrait", "label": "t:settings_schema.product_cards.settings.card_image_ratio.options__2" },
-          { "value": "natural", "label": "t:settings_schema.product_cards.settings.card_image_ratio.options__3" }
-        ],
-        "default": "portrait"
-      },
-      {
-        "type": "checkbox",
-        "id": "card_hover_second_image",
-        "label": "t:settings_schema.product_cards.settings.card_hover_second_image.label",
-        "default": true
-      },
-      {
-        "type": "checkbox",
-        "id": "card_show_vendor",
-        "label": "t:settings_schema.product_cards.settings.card_show_vendor.label",
-        "default": false
-      },
-      {
-        "type": "checkbox",
-        "id": "card_show_badges",
-        "label": "t:settings_schema.product_cards.settings.card_show_badges.label",
-        "default": true,
-        "info": "t:settings_schema.product_cards.settings.card_show_badges.info"
-      },
-      {
-        "type": "checkbox",
-        "id": "card_sold_out_short",
-        "label": "t:settings_schema.product_cards.settings.card_sold_out_short.label",
-        "default": true,
-        "info": "t:settings_schema.product_cards.settings.card_sold_out_short.info"
-      },
-      {
-        "type": "checkbox",
-        "id": "card_quick_add",
-        "label": "t:settings_schema.product_cards.settings.card_quick_add.label",
-        "default": true
-      },
-      {
-        "type": "checkbox",
-        "id": "currency_code_enabled",
-        "label": "t:settings_schema.product_cards.settings.currency_code_enabled.label",
-        "default": true,
-        "info": "t:settings_schema.product_cards.settings.currency_code_enabled.info"
-      }
+      { "type": "range", "id": "guarantee_days", "min": 14, "max": 120, "step": 1, "unit": "d", "label": "Guarantee length (days)", "default": 60 },
+      { "type": "text", "id": "guarantee_title", "label": "Guarantee name", "default": "Happy Dog Guarantee" },
+      { "type": "text", "id": "guarantee_short", "label": "Guarantee one-liner", "default": "If your dog doesn't love them, we refund you. No bag returns, no questions." },
+      { "type": "text", "id": "shipping_short", "label": "Shipping one-liner", "default": "Ships within 1–2 business days · tracked delivery" },
+      { "type": "text", "id": "rating_value", "label": "Average rating (shown next to stars)", "default": "4.9", "info": "Keep this in line with the reviews you actually have." },
+      { "type": "text", "id": "rating_label", "label": "Rating label", "default": "from happy dog parents" }
     ]
   },
   {
-    "name": "t:settings_schema.cart.name",
+    "name": "Cart",
     "settings": [
       {
         "type": "select",
         "id": "cart_type",
-        "label": "t:settings_schema.cart.settings.cart_type.label",
+        "label": "Cart type",
         "options": [
-          { "value": "drawer", "label": "t:settings_schema.cart.settings.cart_type.options__1" },
-          { "value": "page", "label": "t:settings_schema.cart.settings.cart_type.options__2" }
+          { "value": "drawer", "label": "Drawer" },
+          { "value": "page", "label": "Page" }
         ],
         "default": "drawer"
       },
+      { "type": "checkbox", "id": "cart_show_note", "label": "Show order note", "default": false },
+      { "type": "checkbox", "id": "cart_show_upsell", "label": "Show 'bundle & save' nudge", "default": true },
+      { "type": "richtext", "id": "cart_notice", "label": "Cart notice", "default": "<p>Backed by our 60-day Happy Dog Guarantee.</p>" }
+    ]
+  },
+  {
+    "name": "Social",
+    "settings": [
+      { "type": "text", "id": "social_instagram_link", "label": "Instagram URL" },
+      { "type": "text", "id": "social_tiktok_link", "label": "TikTok URL" },
+      { "type": "text", "id": "social_facebook_link", "label": "Facebook URL" },
+      { "type": "text", "id": "social_whatsapp_link", "label": "WhatsApp link", "info": "Format: https://wa.me/9715XXXXXXX" }
+    ]
+  },
+  {
+    "name": "Compliance",
+    "settings": [
+      { "type": "checkbox", "id": "show_disclaimer", "label": "Show supplement disclaimer in footer", "default": true },
       {
-        "type": "checkbox",
-        "id": "cart_show_note",
-        "label": "t:settings_schema.cart.settings.cart_show_note.label",
-        "default": true
-      },
-      {
-        "type": "richtext",
-        "id": "cart_notice",
-        "label": "t:settings_schema.cart.settings.cart_notice.label",
-        "default": "<p>Delivery all over Lebanon. Orders ship within 2–4 business days.</p>"
+        "type": "textarea",
+        "id": "disclaimer_text",
+        "label": "Disclaimer",
+        "default": "These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure, or prevent any disease. Goodest Chews is a supplement for dogs and is not a substitute for veterinary care. Consult your vet before use if your dog is pregnant, nursing, on medication, or has a medical condition."
       }
     ]
   },
   {
-    "name": "t:settings_schema.social.name",
+    "name": "Search",
     "settings": [
-      {
-        "type": "text",
-        "id": "social_instagram_link",
-        "label": "t:settings_schema.social.settings.social_instagram_link.label",
-        "default": "https://www.instagram.com/houseofgarments.co/"
-      },
-      {
-        "type": "text",
-        "id": "social_tiktok_link",
-        "label": "t:settings_schema.social.settings.social_tiktok_link.label"
-      },
-      {
-        "type": "text",
-        "id": "social_whatsapp_link",
-        "label": "t:settings_schema.social.settings.social_whatsapp_link.label",
-        "info": "t:settings_schema.social.settings.social_whatsapp_link.info"
-      },
-      {
-        "type": "text",
-        "id": "social_facebook_link",
-        "label": "t:settings_schema.social.settings.social_facebook_link.label"
-      }
-    ]
-  },
-  {
-    "name": "t:settings_schema.search.name",
-    "settings": [
-      {
-        "type": "checkbox",
-        "id": "predictive_search_enabled",
-        "label": "t:settings_schema.search.settings.predictive_search_enabled.label",
-        "default": true
-      }
+      { "type": "checkbox", "id": "predictive_search_enabled", "label": "Enable predictive search", "default": true }
     ]
   }
 ]

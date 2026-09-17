@@ -1,0 +1,38 @@
+{%- comment -%}
+  Renders the brand logo. Uses the uploaded image from theme settings when
+  present, otherwise draws the wordmark (GOODEST in green with the smiling
+  O's, CHEWS in orange) in CSS/SVG so the header never looks empty.
+
+  Accepts:
+  - size: {Number} wordmark font size in px (default 30)
+  - inverse: {Boolean} cream wordmark for dark backgrounds
+
+  Usage:
+  {% render 'logo', size: 34 %}
+{%- endcomment -%}
+
+{%- if settings.logo != blank -%}
+  <img
+    src="{{ settings.logo | image_url: width: 800 }}"
+    srcset="{{ settings.logo | image_url: width: 400 }} 400w, {{ settings.logo | image_url: width: 800 }} 800w"
+    sizes="{{ settings.logo_width }}px"
+    alt="{{ shop.name | escape }}"
+    width="{{ settings.logo.width }}"
+    height="{{ settings.logo.height }}"
+    style="--logo-width: {{ settings.logo_width }}px;"
+    loading="eager"
+    fetchpriority="high"
+  >
+{%- else -%}
+  <span
+    class="wordmark{% if inverse %} wordmark--inverse{% endif %}"
+    style="--wordmark-size: {{ size | default: 30 }}px;"
+    role="img"
+    aria-label="{{ shop.name | escape }}"
+  >
+    <span class="wordmark__top" aria-hidden="true">
+      G<svg class="wordmark__face" viewBox="0 0 132 62" aria-hidden="true" focusable="false"><circle cx="31" cy="31" r="21" fill="none" stroke="currentColor" stroke-width="17"/><circle cx="101" cy="31" r="21" fill="none" stroke="currentColor" stroke-width="17"/><path d="M50 36c3 11 29 11 32 0" fill="none" stroke="#FFFBF4" stroke-width="12" stroke-linecap="round"/><path d="M50 36c3 11 29 11 32 0" fill="none" stroke="#F07F1F" stroke-width="7" stroke-linecap="round"/></svg>DEST<span class="wordmark__tm">TM</span>
+    </span>
+    <span class="wordmark__bottom" aria-hidden="true">CHEWS</span>
+  </span>
+{%- endif -%}

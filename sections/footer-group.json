@@ -5,34 +5,31 @@
     "footer": {
       "type": "footer",
       "blocks": {
-        "text-1": {
-          "type": "text",
-          "settings": {
-            "heading": "House of Garments",
-            "text": "<p>Limited-run streetwear out of Lebanon. Delivery all over Lebanon.</p>"
-          }
-        },
         "menu-1": {
           "type": "menu",
           "settings": {
-            "heading": "Shop",
-            "menu": "main-menu"
+            "heading": "Help",
+            "menu": "footer",
+            "show_policies": true
           }
         },
-        "menu-2": {
-          "type": "menu",
+        "contact-1": {
+          "type": "contact",
           "settings": {
-            "heading": "Info",
-            "menu": "footer"
+            "heading": "Talk to us",
+            "email": "goodestchews@outlook.com",
+            "text": "<p>We answer every email within one business day.</p>"
           }
         }
       },
-      "block_order": ["text-1", "menu-1", "menu-2"],
+      "block_order": ["menu-1", "contact-1"],
       "settings": {
+        "brand_text": "8 daily health benefits in one soft chew your dog will beg for. Made in a certified facility, backed by a 60-day guarantee.",
+        "show_social": true,
         "show_newsletter": true,
-        "newsletter_heading": "Get the drop first",
-        "show_payment_icons": true,
-        "show_social": true
+        "newsletter_heading": "Treats for your inbox",
+        "newsletter_text": "Dog health tips, early access to bundles and the occasional very good boy.",
+        "show_payment_icons": true
       }
     }
   },

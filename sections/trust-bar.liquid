@@ -1,0 +1,68 @@
+{%- if section.blocks.size > 0 -%}
+  <div class="trust-bar{% if section.settings.marquee %} trust-bar--marquee{% endif %}">
+    <div class="container">
+      <ul class="trust-bar__list">
+        {%- for block in section.blocks -%}
+          <li class="trust-bar__item" {{ block.shopify_attributes }}>
+            {% render 'icon', name: block.settings.icon %}
+            <span>
+              {{ block.settings.text | escape }}
+              {%- if block.settings.subtext != blank -%}<small>{{ block.settings.subtext | escape }}</small>{%- endif -%}
+            </span>
+          </li>
+        {%- endfor -%}
+        {%- if section.settings.marquee -%}
+          {%- for block in section.blocks -%}
+            <li class="trust-bar__item" aria-hidden="true">
+              {% render 'icon', name: block.settings.icon %}
+              <span>
+                {{ block.settings.text | escape }}
+                {%- if block.settings.subtext != blank -%}<small>{{ block.settings.subtext | escape }}</small>{%- endif -%}
+              </span>
+            </li>
+          {%- endfor -%}
+        {%- endif -%}
+      </ul>
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Trust bar",
+  "tag": "section",
+  "class": "trust-bar-section",
+  "max_blocks": 6,
+  "settings": [
+    { "type": "checkbox", "id": "marquee", "label": "Scroll continuously on mobile", "default": true }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Trust item",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "award", "label": "Award" },
+            { "value": "badge-check", "label": "Verified badge" },
+            { "value": "shield-check", "label": "Shield" },
+            { "value": "factory", "label": "Factory" },
+            { "value": "flag", "label": "Flag" },
+            { "value": "truck", "label": "Truck" },
+            { "value": "paw", "label": "Paw" },
+            { "value": "leaf", "label": "Leaf" },
+            { "value": "refresh", "label": "Refund" }
+          ],
+          "default": "award"
+        },
+        { "type": "text", "id": "text", "label": "Text", "default": "NSF GMP certified" },
+        { "type": "text", "id": "subtext", "label": "Small text", "default": "Animal supplement manufacturing" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Trust bar" }]
+}
+{% endschema %}

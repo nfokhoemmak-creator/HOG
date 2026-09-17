@@ -1,46 +1,33 @@
-{%- paginate blog.articles by 12 -%}
+{%- paginate blog.articles by 9 -%}
   <div class="container">
-    <h1 class="h1" style="padding-top: var(--space-7);">{{ blog.title | escape }}</h1>
-
-    {%- if blog.articles_count > 0 -%}
-      <div class="article-list">
+    <div class="page-head"><h1>{{ blog.title | escape }}</h1></div>
+    {%- if blog.articles.size == 0 -%}
+      <p class="text-center muted">{{ 'sections.blog.no_articles' | t }}</p>
+    {%- else -%}
+      <div class="grid grid--3" style="padding-bottom: var(--space-8);">
         {%- for article in blog.articles -%}
-          <article class="article-card">
-            <a href="{{ article.url }}" class="article-card__image">
-              {%- if article.image -%}
-                <img
-                  src="{{ article.image | image_url: width: 1000 }}"
-                  alt="{{ article.image.alt | escape }}"
-                  width="{{ article.image.width }}"
-                  height="{{ article.image.height }}"
-                  loading="lazy"
-                >
-              {%- endif -%}
-            </a>
-
-            <p class="article-card__meta">{{ article.published_at | date: '%b %d, %Y' }}</p>
-            <h2 class="h4" style="margin-bottom: var(--space-2);">
-              <a href="{{ article.url }}">{{ article.title | escape }}</a>
-            </h2>
+          <article class="article-card reveal">
+            {%- if article.image -%}
+              <a class="article-card__media" href="{{ article.url }}">
+                <img src="{{ article.image | image_url: width: 800 }}" alt="{{ article.image.alt | escape }}" width="{{ article.image.width }}" height="{{ article.image.height }}" loading="lazy">
+              </a>
+            {%- endif -%}
+            <span class="article__meta">{{ article.published_at | date: '%b %d, %Y' }}</span>
+            <h2><a href="{{ article.url }}">{{ article.title | escape }}</a></h2>
             <p class="muted">{{ article.excerpt_or_content | strip_html | truncatewords: 28 }}</p>
+            <a class="link-arrow" href="{{ article.url }}">{{ 'sections.blog.read_more' | t }}{% render 'icon', name: 'arrow-right' %}</a>
           </article>
         {%- endfor -%}
       </div>
-
-      {% render 'pagination', paginate: paginate %}
-    {%- else -%}
-      <div class="empty-state">
-        <p class="h3">{{ 'sections.blog.no_articles' | t }}</p>
-      </div>
     {%- endif -%}
+    {% render 'pagination', paginate: paginate %}
   </div>
 {%- endpaginate -%}
 
 {% schema %}
 {
-  "name": "Blog posts",
+  "name": "Blog",
   "tag": "section",
-  "class": "main-blog-section",
   "settings": []
 }
 {% endschema %}
