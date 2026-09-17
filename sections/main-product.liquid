@@ -9,13 +9,13 @@
   assign pct = 0
   if on_sale
     assign saving = current_variant.compare_at_price | minus: current_variant.price
-    assign pct = saving | times: 100.0 | divided_by: current_variant.compare_at_price | round
+    assign pct = saving | times: 1000 | divided_by: current_variant.compare_at_price | plus: 5 | divided_by: 10
   endif
   assign current_bags = current_variant.title | split: ' ' | first | plus: 0
   if current_bags < 1
     assign current_bags = 1
   endif
-  assign per_bag = current_variant.price | times: 1.0 | divided_by: current_bags | round
+  assign per_bag = current_variant.price | times: 10 | divided_by: current_bags | plus: 5 | divided_by: 10
   assign per_bag_money = per_bag | money
   assign saving_money = saving | money
 -%}
@@ -118,6 +118,7 @@
               <div {{ block.shopify_attributes }}>
                 {%- for option in product.options_with_values -%}
                   {%- assign option_key = 'option' | append: option.position -%}
+                  {%- assign option_index = forloop.index0 -%}
                   <fieldset class="bundle-picker" style="border:0;margin:0;padding:0;">
                     <legend class="bundle-picker__label" style="width:100%;">
                       <span>{{ block.settings.label | default: option.name | escape }}</span>
@@ -134,7 +135,7 @@
                         assign v_pct = 0
                         if v.compare_at_price > v.price
                           assign v_saving = v.compare_at_price | minus: v.price
-                          assign v_pct = v_saving | times: 100.0 | divided_by: v.compare_at_price | round
+                          assign v_pct = v_saving | times: 1000 | divided_by: v.compare_at_price | plus: 5 | divided_by: 10
                         endif
                         assign idx = forloop.index
                         assign sub_key = 'sub_' | append: idx
@@ -147,7 +148,7 @@
                           id="{{ input_id }}"
                           name="{{ option.name | handle }}-{{ section.id }}"
                           value="{{ value | escape }}"
-                          data-option-index="{{ forloop.parentloop.index0 }}"
+                          data-option-index="{{ option_index }}"
                           data-bags="{{ bags }}"
                           {% if option.selected_value == value %}checked{% endif %}
                         >

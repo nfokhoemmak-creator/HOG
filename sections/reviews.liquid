@@ -13,7 +13,7 @@
         <div class="reviews__score">
           <strong>{{ avg }}</strong>
           {% render 'stars', rating: avg, class: 'stars--lg' %}
-          <span>{{ section.settings.count_label | escape }}</span>
+          <span class="reviews__count">{{ section.settings.count_label | escape }}</span>
         </div>
 
         <div class="rating-bars" aria-label="{{ 'products.reviews.breakdown' | t }}">
@@ -40,9 +40,9 @@
       </div>
     {%- endif -%}
 
-    <div class="reviews__grid">
+    <div class="reviews__grid reveal">
       {%- for block in section.blocks -%}
-        <article class="review reveal" style="--i: {{ forloop.index0 | modulo: 3 }};" {{ block.shopify_attributes }}>
+        <article class="review" {{ block.shopify_attributes }}>
           <div class="review__top">
             {% render 'stars', rating: block.settings.rating, class: 'stars--sm' %}
             {%- if block.settings.verified -%}

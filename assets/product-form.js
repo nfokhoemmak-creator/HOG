@@ -68,6 +68,7 @@
       const options = [];
       this.optionInputs.forEach((input) => {
         const index = parseInt(input.dataset.optionIndex, 10);
+        if (Number.isNaN(index)) return;
         if (input.type === 'radio' && !input.checked) return;
         options[index] = input.value;
       });
@@ -78,9 +79,16 @@
       return this.optionInputs.find((input) => input.type !== 'radio' || input.checked) || null;
     }
 
+    variantOptions(variant) {
+      if (Array.isArray(variant.options) && variant.options.length) return variant.options;
+      return [variant.option1, variant.option2, variant.option3].filter((value) => value != null);
+    }
+
     matchVariant(options) {
+      const wanted = options.filter((value) => value !== undefined);
+      if (!wanted.length) return this.variants.find((variant) => variant.available) || this.variants[0];
       return this.variants.find((variant) =>
-        variant.options.every((value, index) => options[index] === undefined || value === options[index])
+        this.variantOptions(variant).every((value, index) => options[index] === undefined || value === options[index])
       );
     }
 

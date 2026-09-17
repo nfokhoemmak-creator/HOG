@@ -27,9 +27,9 @@
             assign pct = 0
             if variant.compare_at_price > variant.price
               assign saving = variant.compare_at_price | minus: variant.price
-              assign pct = saving | times: 100.0 | divided_by: variant.compare_at_price | round
+              assign pct = saving | times: 1000 | divided_by: variant.compare_at_price | plus: 5 | divided_by: 10
             endif
-            assign per_bag = variant.price | times: 1.0 | divided_by: bags | round
+            assign per_bag = variant.price | times: 10 | divided_by: bags | plus: 5 | divided_by: 10
             assign per_bag_money = per_bag | money
             assign saving_money = saving | money
             assign perks = block.settings.perks | newline_to_br | split: '<br />'
@@ -66,12 +66,10 @@
               <span class="price__current">{{ variant.price | money }}</span>
               {%- if pct > 0 -%}<s class="price__compare">{{ variant.compare_at_price | money }}</s>{%- endif -%}
             </div>
+            {%- assign total_chews = section.settings.chews_per_bag | times: bags -%}
             <p class="bundle__per">
-              {%- if bags > 1 -%}
-                {{ 'products.product.per_bag' | t: price: per_bag_money }}{% if saving > 0 %} · {{ 'products.product.save_amount' | t: amount: saving_money }}{% endif %}
-              {%- else -%}
-                {{ 'products.product.chews_per_bag' | t: count: section.settings.chews_per_bag }}
-              {%- endif -%}
+              {{ 'products.product.per_bag' | t: price: per_bag_money }}
+              {%- if saving > 0 %} · {{ 'products.product.save_amount' | t: amount: saving_money }}{% else %} · {{ 'products.product.chews_per_bag' | t: count: total_chews }}{% endif -%}
             </p>
 
             <ul class="check-list bundle__perks">
