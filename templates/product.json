@@ -33,7 +33,7 @@
             "sub_1": "Try it out",
             "sub_2": "Save 10% · most popular",
             "badge_2": "Most popular",
-            "sub_3": "Save 20% · best value",
+            "sub_3": "Save 15% · best value",
             "badge_3": "Best value"
           }
         },
@@ -387,7 +387,7 @@
           "type": "question",
           "settings": {
             "question": "How do the bundles work?",
-            "answer": "<p>Every bundle is the same 120-chew jar — you just save more when you buy more. Two jars saves 10%, three jars saves 20%, and every bundle ships together with tracking.</p>"
+            "answer": "<p>Every bundle is the same 120-chew jar — you just save more when you buy more. Two jars saves 10%, three jars saves 15%, and every bundle ships together with tracking.</p>"
           }
         }
       },

@@ -338,10 +338,10 @@
           "type": "bundle",
           "settings": {
             "name": "Best Value",
-            "subtitle": "Save 20%",
+            "subtitle": "Save 15%",
             "badge": "Best value",
             "featured": false,
-            "perks": "360 soft chews\nSave 20% — lowest price per jar\n[days]-day Happy Dog Guarantee\nTracked shipping",
+            "perks": "360 soft chews\nSave 15% — lowest price per jar\n[days]-day Happy Dog Guarantee\nTracked shipping",
             "button_label": "Get 3 jars"
           }
         }
@@ -692,7 +692,7 @@
           "type": "question",
           "settings": {
             "question": "How do the bundles work?",
-            "answer": "<p>Every bundle is the same 120-chew jar — you just save more when you buy more. Two jars saves 10%, three jars saves 20%, and every bundle ships together with tracking.</p>"
+            "answer": "<p>Every bundle is the same 120-chew jar — you just save more when you buy more. Two jars saves 10%, three jars saves 15%, and every bundle ships together with tracking.</p>"
           }
         },
         "q9": {
