@@ -571,44 +571,28 @@
           "type": "cert",
           "settings": {
             "icon": "award",
-            "name": "ISO 9001:2015",
-            "issuer": "China Quality Certification Centre (CQC)",
-            "text": "The international standard for quality management systems. Covers the production of solid, semi-solid and liquid pet feed additives at the facility.",
-            "number": "00124Q34337R0M/4100",
-            "link": "http://www.cqc.com.cn"
+            "name": "ISO 9001:2015"
           }
         },
         "haccp": {
           "type": "cert",
           "settings": {
             "icon": "shield-check",
-            "name": "HACCP System",
-            "issuer": "China Quality Certification Centre (CQC)",
-            "text": "Hazard Analysis & Critical Control Points: a food-safety system that identifies and controls risks at every step of production.",
-            "number": "001HACCP2400412",
-            "link": "http://www.cqc.com.cn"
+            "name": "HACCP System"
           }
         },
         "nsf": {
           "type": "cert",
           "settings": {
             "icon": "badge-check",
-            "name": "NSF Animal Supplements GMP",
-            "issuer": "NSF Shanghai Co., Ltd.",
-            "text": "Good Manufacturing Practices for animal supplements, audited against U.S. FDA 21 CFR Part 111 & 507. Includes an initial factory inspection and ongoing surveillance.",
-            "number": "NSF25NWDS012002",
-            "link": "https://www.nsf.org/certificates"
+            "name": "NSF Animal Supplements GMP"
           }
         },
         "fda": {
           "type": "cert",
           "settings": {
             "icon": "flag",
-            "name": "FDA Food Facility Registration",
-            "issuer": "U.S. Food and Drug Administration",
-            "text": "The manufacturing facility is registered with the U.S. FDA under the Public Health Security and Bioterrorism Preparedness and Response Act (fiscal year 2025–2026). Registration is not an approval of the product.",
-            "number": "11941654272",
-            "number_label": "Registration no."
+            "name": "FDA Food Facility Registration"
           }
         }
       },
@@ -622,8 +606,8 @@
         "anchor": "certifications",
         "eyebrow": "Made properly",
         "heading": "Certified, audited and registered — because it's going in your dog",
-        "text": "Goodest Chews are produced in a facility that holds three independent quality certifications plus U.S. FDA facility registration. Every number is listed so you can check it yourself.",
-        "footnote": "Certifications and the FDA registration are held by the manufacturing facility that produces Goodest Chews: Hs·viko Bioengineering (Luohe) Co., Ltd., Luohe, Henan, China. FDA facility registration confirms the facility is registered with the U.S. Food and Drug Administration; it is not an FDA approval of the product."
+        "text": "Produced in a facility that holds independent quality, food-safety and GMP certifications, plus U.S. FDA facility registration.",
+        "footnote": "Certifications and the FDA registration are held by the manufacturing facility that produces Goodest Chews. FDA facility registration confirms the facility is registered with the U.S. Food and Drug Administration; it is not an FDA approval of the product."
       }
     },
     "guarantee": {
@@ -678,7 +662,7 @@
           "type": "question",
           "settings": {
             "question": "Where are Goodest Chews made?",
-            "answer": "<p>In Luohe, Henan, China, at the Hs·viko Bioengineering facility, which holds ISO 9001:2015, HACCP and NSF Animal Supplements GMP certification and is registered with the U.S. FDA. All four numbers are listed in the certifications section so you can check them yourself.</p>"
+            "answer": "<p>In Luohe, Henan, China, at the Hs·viko Bioengineering facility, which holds ISO 9001:2015, HACCP and NSF Animal Supplements GMP certification and is registered with the U.S. FDA.</p>"
           }
         },
         "q7": {

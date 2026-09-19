@@ -18,7 +18,7 @@
           </div>
           <h3>{{ block.settings.name | escape }}</h3>
           {%- if block.settings.issuer != blank -%}<span class="cert__issuer">{{ block.settings.issuer | escape }}</span>{%- endif -%}
-          <p>{{ block.settings.text | escape }}</p>
+          {%- if block.settings.text != blank -%}<p>{{ block.settings.text | escape }}</p>{%- endif -%}
           {%- if block.settings.number != blank -%}
             <p class="cert__number">{{ block.settings.number_label | default: 'Certificate no.' | escape }} <strong>{{ block.settings.number | escape }}</strong></p>
           {%- endif -%}
@@ -46,7 +46,7 @@
     { "type": "text", "id": "anchor", "label": "Anchor id", "default": "certifications" },
     { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Made properly" },
     { "type": "text", "id": "heading", "label": "Heading", "default": "Certified, audited and registered — because it's going in your dog" },
-    { "type": "textarea", "id": "text", "label": "Text", "default": "Goodest Chews are produced in a facility that carries four independent quality certifications. Every certificate number is listed so you can check it yourself." },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "Produced in a facility that holds independent quality, food-safety and GMP certifications, plus U.S. FDA facility registration." },
     { "type": "textarea", "id": "footnote", "label": "Footnote", "default": "Certifications are held by the manufacturing facility that produces Goodest Chews. FDA facility registration confirms the facility is registered with the U.S. Food and Drug Administration; it is not an FDA approval of the product." }
   ],
   "blocks": [
@@ -70,8 +70,8 @@
         },
         { "type": "image_picker", "id": "logo", "label": "Logo (optional)", "info": "Replaces the icon. Square works best." },
         { "type": "text", "id": "name", "label": "Name", "default": "ISO 9001:2015" },
-        { "type": "text", "id": "issuer", "label": "Issued by", "default": "China Quality Certification Centre (CQC)" },
-        { "type": "textarea", "id": "text", "label": "What it means", "default": "International standard for quality management systems." },
+        { "type": "text", "id": "issuer", "label": "Issued by", "info": "Optional. Leave empty to show the certification name on its own." },
+        { "type": "textarea", "id": "text", "label": "What it means", "info": "Optional. Hidden while empty." },
         { "type": "text", "id": "number_label", "label": "Number label", "default": "Certificate no." },
         { "type": "text", "id": "number", "label": "Certificate number" },
         { "type": "image_picker", "id": "certificate", "label": "Certificate scan (optional)", "info": "Upload the certificate image to add a 'View certificate' link." },
