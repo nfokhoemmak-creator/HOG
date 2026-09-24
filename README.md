@@ -74,25 +74,31 @@ Everything is driven by CSS custom properties emitted from theme settings in
 `layout/theme.liquid`. Nothing is hard-coded twice.
 
 ```
---color-bg            #0b0b0d   near-black canvas
---color-bg-alt        #141418   alternate band
---color-surface       #1d1d23   raised: cards, drawers, the felt
---color-border        #2a2a32   hairlines
---color-border-strong #63636f   inputs and controls (3:1 against the canvas)
---color-fg            #f7f7f5   off-white text
---color-muted         #9a9aa6   secondary text, meta
---color-btn-bg        #ff4d1c   THE action colour — buttons and nothing else
---color-btn-fg        #0b0b0d   text on a button
---color-accent        #ff4d1c   badges and highlights; tracks the button
---color-success       #2fd98a   in stock, order placed, code unlocked
---color-sale          #ff2d55   sale prices, low stock, countdowns
---color-gold          #e8c15a   blackjack chips and winnings
---color-felt          #0e5c3a   blackjack table
---font-heading        condensed uppercase display face
---font-body           system/neutral sans
---space-1 … --space-8   4px-based spacing scale
+--color-bg            #f5f4f1   warm off-white page ground
+--color-bg-alt        #ecebe6   alternate bands
+--color-surface       #ffffff   raised: cards, drawers, dialogs, inputs
+--color-border        #dcdad3   hairlines
+--color-border-strong #8a8880   inputs and controls (3.2:1 on the ground)
+--color-fg            #141414   text
+--color-muted         #66655f   secondary text (AA on every surface)
+--color-btn-bg        #141414   THE action colour — buttons and nothing else
+--color-btn-fg        #f5f4f1   text on a button
+--color-accent        #141414   badges use a tint of it; solid black stays on buttons
+--color-success       #1e7a4c   in stock, unlocked, confirmed
+--color-sale          #c8102e   sale prices, low stock, urgency
+--color-gold          #e8c15a   blackjack chips and winnings (on the felt)
+--color-felt          #0f5132   blackjack table
+--rgb-*               triplets for rgb(var(--rgb-x) / .12) tints
+--font-heading        Archivo, uppercase, tracked (display face is a setting, off by default)
+--font-body           Assistant
+--space-1 … --space-9   4px-based spacing scale
 --container           1440px max width
 ```
+
+The look follows anceplainford.com's "daily essentials" register — light,
+quiet, product-led — while keeping House of Garments' own identity (limited
+drops, the blackjack table, "EVERYBODY CAN'T HAVE LIMITED ITEMS").
+
 
 ### The one rule that matters
 
@@ -103,8 +109,9 @@ underline in `--color-fg`, and why countdowns and low-stock warnings use
 `--color-sale`. Accelerated checkout buttons are deliberately quiet: the
 add-to-cart button is the primary path.
 
-Every pair in the palette was checked against WCAG: body text 18.3:1, muted
-text 7.1:1, button text on ember 5.9:1, `--color-border-strong` 3.3:1 for
+Every pair in the palette was checked against WCAG: body text 16.8:1, muted
+text 5.3:1 (4.9:1 on the alternate band), button text 16.8:1, sale text 5.4:1,
+success 4.8:1, gold on the felt 5.4:1, `--color-border-strong` 3.2:1 for
 non-text controls. If you change a colour in the editor, re-check the pair —
 the theme does not police it for you.
 
@@ -145,7 +152,11 @@ without the drawer.
 | `main-product` | product | Gallery, variant picker, form, accordions |
 | `main-collection` | collection | Filters, sort, grid, pagination |
 | `main-cart` | cart | Full cart page fallback for the drawer |
-| `blackjack` | index, pages | Beat-the-dealer discount game. See below. |
+| `blackjack` | page.blackjack | The table on its own page. See below. |
+| `blackjack-popup` | footer group | The same table in a site-wide dialog with auto-open and a floating button. |
+| `viral-program` | page.secret | The "Secret": a viral-video reimbursement program as editable tiers and steps. |
+| `marquee` | index, pages | Hairline ticker; the `accent` style is an inverted band. |
+| `bundle-builder` | index | Pick 2+ pieces, discount applied at checkout (bundle.js). |
 | `trust-bar` | index | Delivery / payment / returns strip |
 | `testimonials` | index | Customer quotes with star ratings |
 | `faq` | index, pages | Accordion + `FAQPage` structured data |
@@ -153,36 +164,38 @@ without the drawer.
 
 ## Blackjack
 
-`sections/blackjack.liquid` + `assets/blackjack.js`. One hand against the
-dealer; beat the house and a discount code is revealed.
+`snippets/blackjack-game.liquid` (the table), `sections/blackjack.liquid` (its
+page), `sections/blackjack-popup.liquid` (the site-wide dialog) and
+`assets/blackjack.js` (the engine).
 
-Rules: six-deck shoe reshuffled at the cut card, dealer draws to 16 and stands
-on 17 (soft-17 behaviour is a setting), hit / stand / double on the opening two
-cards, natural blackjack pays the top reward tier, a push costs nothing and
-returns the hand. Roughly **41% of hands end in a code** — simulated over 80,000
-rounds, which matches the real distribution (about 4.7% naturals, 9% pushes).
-Turning on *Dealer hits soft 17* only moves that to about 40.8%; if you need a
-lower win rate, change the reward, not the rules.
+Rules: a fresh 52-card deck each hand, dealer draws to 16 and stands on all 17s,
+hit or stand (no double), a natural pays the top tier, a push burns no hand,
+and ties pay the player unless the merchant turns that off. Up to three hands
+a day per device; a win streak (three in a row by default) unlocks a higher
+tier; using every hand without a win pays a consolation code so nobody leaves
+the table with nothing. The reward reveal links to `/discount/<code>?redirect=`
+so the code is applied for the customer.
 
-### The codes are not secret
+Codes (each must exist in **Discounts**): `BLACKJACK10` win, `BLACKJACK21`
+natural, `BLACKJACK15` streak, `BLACKJACK5` consolation. All four exist on the
+store and are active — but with no usage limit and not once-per-customer. The
+codes are visible in the page source, so set *one use per customer* on each.
 
-Reward codes are section settings, so they ship in the page HTML. Anyone can
-read them without playing a hand. That is fine for a promo mechanic as long as
-the discount itself is capped:
+The table is a dark island on the light page: leather rail, felt with the
+tier and rule markings rendered from the section's settings, physical cards
+with mirrored indices and a 3D flip on the hole card, chip stacks for hands
+left, a streak pill, and the reward as a ticket. The engine is unchanged from
+the previous live theme except that `stand()` delays each drawn card's
+animation.
 
-1. Create the discount in **Discounts**, not just in the theme.
-2. Set **Maximum discount uses** → *Limit to one use per customer*, and cap the
-   total uses if the offer is meant to be scarce.
-3. Set an end date that matches the drop.
+## The Secret page
 
-The *Plays allowed* setting (one per day / one ever / unlimited) is held in the
-visitor's browser, so clearing site data resets it. It shapes the experience;
-it does not protect the margin. The usage limit on the discount does.
-
-### Turning it off
-
-Clear the discount code in the section settings and the whole section stops
-rendering, or remove it from `templates/index.json`.
+`sections/viral-program.liquid` + `templates/page.secret.json`. Create a page
+in Admin with the template *page.secret* and add it to the menu. Post a video
+wearing the brand; at the first tier's view count a percentage of the order is
+reimbursed, at the second, more — thresholds, percentages, the cap, the rules
+and the contact handle are all settings and blocks, so the page never promises
+anything the merchant did not type.
 
 ## Conversion features
 
@@ -241,6 +254,14 @@ Product metafields read by the theme (all optional, namespace `custom`):
 | `custom.drop_date` | date and time | Hero + product countdown |
 
 ## Deploying
+
+The current build is on the store as the unpublished theme **"HOG v6 — light
+essentials + blackjack"**, every file checksum-verified against commit
+`26393b6`. Preview it from Admin → Online Store → Themes, then **Publish** from
+there — publishing is a manual step by design. Note that Shopify's Liquid
+parser rejects a literal `'{{ count }}'` inside an output tag even though
+Theme Check allows it; `layout/theme.liquid` builds that placeholder from
+pieces for exactly this reason.
 
 1. `npm run check` — must be clean.
 2. `npm run push` — uploads to an unpublished theme; the CLI gives you a preview link.
