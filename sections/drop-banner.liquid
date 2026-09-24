@@ -17,11 +17,11 @@
     {%- endif -%}
 
     {%- if section.settings.heading != blank -%}
-      <h2 class="h0">{{ section.settings.heading }}</h2>
+      <h2 class="drop-banner__heading">{{ section.settings.heading }}</h2>
     {%- endif -%}
 
     {%- if section.settings.text != blank -%}
-      <div class="hero__subheading">{{ section.settings.text }}</div>
+      <div class="drop-banner__text">{{ section.settings.text }}</div>
     {%- endif -%}
 
     {%- if section.settings.button_label != blank -%}
@@ -30,17 +30,25 @@
       </a>
     {%- endif -%}
   </div>
-</div>
 
-{%- if section.settings.marquee != blank -%}
-  <div class="marquee" aria-hidden="true">
-    <div class="marquee__track">
-      {%- for i in (1..8) -%}
-        <span class="marquee__item">{{ section.settings.marquee }}</span>
-      {%- endfor -%}
+  {%- comment -%}
+    Decorative ticker along the band's bottom edge. Two identical runs so the
+    -50% loop in section 10 is seamless; the whole strip is hidden from
+    assistive tech because the heading already says it.
+  {%- endcomment -%}
+  {%- if section.settings.marquee != blank -%}
+    <div class="marquee marquee--mini drop-banner__marquee" aria-hidden="true">
+      <div class="marquee__track">
+        {%- for i in (1..8) -%}
+          <span class="marquee__item">{{ section.settings.marquee }}</span>
+        {%- endfor -%}
+        {%- for i in (1..8) -%}
+          <span class="marquee__item">{{ section.settings.marquee }}</span>
+        {%- endfor -%}
+      </div>
     </div>
-  </div>
-{%- endif -%}
+  {%- endif -%}
+</div>
 
 {% schema %}
 {
@@ -52,25 +60,25 @@
       "type": "text",
       "id": "eyebrow",
       "label": "t:sections.drop_banner.settings.eyebrow.label",
-      "default": "Drop 03"
+      "default": "Limited run"
     },
     {
       "type": "text",
       "id": "heading",
       "label": "t:sections.drop_banner.settings.heading.label",
-      "default": "SOLD OUT SOON"
+      "default": "NO RESTOCKS"
     },
     {
       "type": "richtext",
       "id": "text",
       "label": "t:sections.drop_banner.settings.text.label",
-      "default": "<p>Every piece is a limited run. Nothing gets restocked.</p>"
+      "default": "<p>Every piece is made in a small batch. When a size sells out, that's it.</p>"
     },
     {
       "type": "text",
       "id": "button_label",
       "label": "t:sections.drop_banner.settings.button_label.label",
-      "default": "Shop now"
+      "default": "Shop the catalog"
     },
     {
       "type": "url",
@@ -86,6 +94,7 @@
       "type": "text",
       "id": "marquee",
       "label": "t:sections.drop_banner.settings.marquee.label",
+      "info": "t:sections.drop_banner.settings.marquee.info",
       "default": "EVERYBODY CAN'T HAVE LIMITED ITEMS ·"
     }
   ],

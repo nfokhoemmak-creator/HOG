@@ -29,7 +29,7 @@
         <div class="product-grid" style="--cols-desktop: 4; --cols-mobile: 2;">
           {%- for item in search.results -%}
             {%- if item.object_type == 'product' -%}
-              {% render 'product-card', card_product: item, lazy_load: forloop.index > 4 %}
+              {% render 'product-card', card_product: item, lazy_load: forloop.index %}
             {%- else -%}
               <div class="card">
                 <a class="card__title" href="{{ item.url }}">{{ item.title | escape }}</a>
@@ -60,3 +60,14 @@
   "settings": []
 }
 {% endschema %}
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{% render 'product-card', card_product: item, lazy_load: forloop.index >
+    4 %}"
+  to: "{% render 'product-card', card_product: item, lazy_load: forloop.index %}"
+  position: 1266..1339
+{% endcomment %}

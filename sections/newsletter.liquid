@@ -1,39 +1,43 @@
 {%- assign newsletter_fallback = 'general.newsletter_form.heading' | t -%}
 
-<div class="section" style="background: var(--color-bg-alt);">
-  <div class="container container--narrow center">
-    <h2 class="h2" style="margin-bottom: var(--space-3);">
-      {{ section.settings.heading | default: newsletter_fallback }}
-    </h2>
-
-    {%- if section.settings.text != blank -%}
-      <div class="muted" style="margin-bottom: var(--space-4);">{{ section.settings.text }}</div>
-    {%- endif -%}
-
-    {%- form 'customer', class: 'newsletter-form', style: 'justify-content: center;' -%}
-      <input type="hidden" name="contact[tags]" value="newsletter">
-      <label class="visually-hidden" for="Newsletter-{{ section.id }}">
-        {{ 'general.newsletter_form.email_placeholder' | t }}
-      </label>
-      <input
-        id="Newsletter-{{ section.id }}"
-        class="field__input"
-        type="email"
-        name="contact[email]"
-        placeholder="{{ 'general.newsletter_form.email_placeholder' | t }}"
-        autocomplete="email"
-        required
-      >
-      <button type="submit" class="btn btn--accent">{{ 'general.newsletter_form.submit' | t }}</button>
-
-      {%- if form.errors -%}
-        <p class="form__error" style="width: 100%;">
-          {{ form.errors.translated_fields.email }} {{ form.errors.messages.email }}
-        </p>
-      {%- elsif form.posted_successfully? -%}
-        <p class="form__success" style="width: 100%;">{{ 'general.newsletter_form.confirmation' | t }}</p>
+<div class="newsletter section">
+  <div class="container">
+    <div class="newsletter__inner{% if settings.animations_enabled %} reveal{% endif %}">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="eyebrow">{{ section.settings.eyebrow }}</p>
       {%- endif -%}
-    {%- endform -%}
+
+      <h2 class="h2">{{ section.settings.heading | default: newsletter_fallback }}</h2>
+
+      {%- if section.settings.text != blank -%}
+        <div class="newsletter__text">{{ section.settings.text }}</div>
+      {%- endif -%}
+
+      {%- form 'customer', class: 'newsletter-form' -%}
+        <input type="hidden" name="contact[tags]" value="newsletter">
+        <label class="visually-hidden" for="Newsletter-{{ section.id }}">
+          {{ 'general.newsletter_form.email_placeholder' | t }}
+        </label>
+        <input
+          id="Newsletter-{{ section.id }}"
+          class="field__input"
+          type="email"
+          name="contact[email]"
+          placeholder="{{ 'general.newsletter_form.email_placeholder' | t }}"
+          autocomplete="email"
+          required
+        >
+        <button type="submit" class="btn">{{ 'general.newsletter_form.submit' | t }}</button>
+
+        {%- if form.errors -%}
+          <p class="form__error">
+            {{ form.errors.translated_fields.email }} {{ form.errors.messages.email }}
+          </p>
+        {%- elsif form.posted_successfully? -%}
+          <p class="form__success">{{ 'general.newsletter_form.confirmation' | t }}</p>
+        {%- endif -%}
+      {%- endform -%}
+    </div>
   </div>
 </div>
 
@@ -43,6 +47,12 @@
   "tag": "section",
   "class": "newsletter-section",
   "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Newsletter"
+    },
     {
       "type": "text",
       "id": "heading",

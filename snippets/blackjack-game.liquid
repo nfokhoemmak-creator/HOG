@@ -1,0 +1,110 @@
+{%- comment -%}
+  The blackjack table shell. Rendered twice — by sections/blackjack.liquid on
+  the game page and by sections/blackjack-popup.liquid inside the site-wide
+  dialog — so the markup and the data attributes blackjack.js binds to live in
+  one place.
+
+  The table is a dark island on the light page: a leather rail around a felt
+  playing surface, with the payout tiers printed on the felt the way a casino
+  prints "BLACKJACK PAYS 3 TO 2". Those markings, the chip stack and the
+  streak pill are filled in by blackjack.js from the config blob, so the page
+  and the popup can never disagree with what the engine actually pays.
+
+  Accepts:
+  - config: {String} the JSON config blob, already built by the caller
+  - shop_label: {String} label for the "apply code and shop" link
+  - eyebrow, heading, text: {String} optional intro copy; omit for the popup,
+    which carries its own header
+  - heading_tag: {String} 'h1' on the game page, where nothing else owns the
+    page title; defaults to 'h2'
+
+  Usage:
+  {% render 'blackjack-game', config: bj_config, shop_label: label %}
+{%- endcomment -%}
+
+{%- liquid
+  assign heading_tag = heading_tag | default: 'h2'
+-%}
+
+<blackjack-game class="bj">
+  <script type="application/json" data-bj-config>{{ config }}</script>
+
+  {%- if eyebrow != blank or heading != blank or text != blank -%}
+    <header class="bj__intro">
+      {%- if eyebrow != blank -%}
+        <p class="eyebrow">{{ eyebrow }}</p>
+      {%- endif -%}
+
+      {%- if heading != blank -%}
+        <{{ heading_tag }} class="h1 display bj__heading">{{ heading }}</{{ heading_tag }}>
+      {%- endif -%}
+
+      {%- if text != blank -%}
+        <div class="bj__text muted">{{ text }}</div>
+      {%- endif -%}
+    </header>
+  {%- endif -%}
+
+  <div class="bj__rail">
+    <div class="bj__felt">
+      <div class="bj__table" aria-live="off">
+        <div class="bj__hand bj__hand--dealer">
+          <p class="bj__hand-label">DEALER <span data-bj-dealer-score class="bj__score"></span></p>
+          <div class="bj__cards" data-bj-dealer-cards></div>
+        </div>
+
+        {%- comment -%}
+          Table markings. Empty until blackjack.js reads the config; the
+          min-height in CSS holds the space so the table never jumps.
+        {%- endcomment -%}
+        <div class="bj__markings">
+          <p class="bj__marking bj__marking--tiers" data-bj-tiers></p>
+          <p class="bj__marking bj__marking--rules" data-bj-rules></p>
+        </div>
+
+        <div class="bj__hand bj__hand--player">
+          <p class="bj__hand-label">YOU <span data-bj-player-score class="bj__score"></span></p>
+          <div class="bj__cards" data-bj-player-cards></div>
+        </div>
+      </div>
+
+      <p class="bj__status" data-bj-status role="status" aria-live="polite"></p>
+
+      {%- comment -%}
+        The reward ticket sits above the controls: once a hand pays out the
+        shop link is the next thing to do, and dealing again is secondary.
+      {%- endcomment -%}
+      <div class="bj__result" data-bj-result hidden>
+        <p class="bj__result-title" data-bj-result-title></p>
+        <p class="bj__result-label">YOUR CODE</p>
+        <div class="bj__code">
+          <code data-bj-code></code>
+          <button type="button" class="bj__copy" data-bj-copy>COPY</button>
+        </div>
+        <a class="btn bj__shop" data-bj-shop href="#">{{ shop_label }}</a>
+      </div>
+
+      {%- comment -%}
+        Controls live on the felt, so they follow the table's own palette
+        (gold and cream) rather than the store's single black CTA — that one
+        is reserved for the shop link in the reward ticket above.
+      {%- endcomment -%}
+      <div class="bj__actions">
+        <button type="button" class="bj__btn bj__btn--deal" data-bj-deal>DEAL</button>
+        <button type="button" class="bj__btn bj__btn--line" data-bj-hit hidden>HIT</button>
+        <button type="button" class="bj__btn bj__btn--line" data-bj-stand hidden>STAND</button>
+      </div>
+
+      <div class="bj__ledger">
+        <p class="bj__hands">
+          <span class="bj__ledger-label">HANDS</span>
+          <span class="bj__chips" data-bj-chips aria-hidden="true"></span>
+        </p>
+        <p class="bj__meta" data-bj-meta></p>
+        <p class="bj__streak" data-bj-streak hidden></p>
+      </div>
+    </div>
+  </div>
+
+  <noscript><p class="muted">Enable JavaScript to play.</p></noscript>
+</blackjack-game>

@@ -205,8 +205,11 @@
         button.addEventListener('click', (event) => {
           event.preventDefault();
           const step = button.dataset.action === 'increase' ? 1 : -1;
-          const min = parseInt(this.input.min, 10) || 1;
-          const max = parseInt(this.input.max, 10) || Infinity;
+          // NaN-safe: `|| 1` would clamp a legitimate min="0" (cart lines) to 1.
+          const parsedMin = parseInt(this.input.min, 10);
+          const parsedMax = parseInt(this.input.max, 10);
+          const min = Number.isNaN(parsedMin) ? 1 : parsedMin;
+          const max = Number.isNaN(parsedMax) ? Infinity : parsedMax;
           const next = Math.min(max, Math.max(min, (parseInt(this.input.value, 10) || min) + step));
           this.input.value = next;
           this.input.dispatchEvent(new Event('change', { bubbles: true }));
@@ -280,12 +283,190 @@
     });
   }
 
+  /* -------------------------------------------------------------- size guide */
+
+  let sizeGuideBound = false;
+
+  function initSizeGuide() {
+    // Bound once: boot() runs again on every theme-editor section reload.
+    if (sizeGuideBound) return;
+    sizeGuideBound = true;
+
+    document.addEventListener('click', (event) => {
+      const opener = event.target.closest('[data-size-guide-open]');
+      if (opener) {
+        const dialog = document.getElementById(opener.getAttribute('aria-controls'));
+        // No <dialog> support: a trigger that links to the page navigates instead.
+        if (dialog && typeof dialog.showModal === 'function') {
+          event.preventDefault();
+          dialog.showModal();
+        }
+        return;
+      }
+
+      const closer = event.target.closest('[data-size-guide-close]');
+      if (closer) {
+        const dialog = closer.closest('dialog');
+        if (dialog) dialog.close();
+        return;
+      }
+
+      // Clicking the backdrop targets the dialog element itself.
+      const dialog = event.target.closest('dialog[data-size-guide]');
+      if (dialog && event.target === dialog) dialog.close();
+    });
+  }
+
+  /* --------------------------------------------------------- blackjack popup */
+
+  let blackjackBound = false;
+
+  function isBlackjackLink(node) {
+    if (!node || !node.getAttribute) return false;
+    const href = node.getAttribute('href');
+    if (!href) return false;
+    // Match the page path only, so an anchor or query string still counts.
+    return /\/pages\/blackjack(\/|\?|#|$)/.test(href);
+  }
+
+  function initBlackjackPopup() {
+    if (blackjackBound) return;
+    blackjackBound = true;
+
+    document.addEventListener('click', (event) => {
+      const closer = event.target.closest('[data-blackjack-close]');
+      if (closer) {
+        const dialog = closer.closest('dialog');
+        if (dialog) dialog.close();
+        return;
+      }
+
+      const backdrop = event.target.closest('dialog[data-blackjack-modal]');
+      if (backdrop && event.target === backdrop) {
+        backdrop.close();
+        return;
+      }
+
+      // Any link to the game page opens the popup instead; without the popup
+      // (or without <dialog> support) the click falls through to the page.
+      const opener = event.target.closest('[data-blackjack-open], a[href]');
+      if (!opener) return;
+      if (!opener.hasAttribute('data-blackjack-open') && !isBlackjackLink(opener)) return;
+
+      const modal = document.querySelector('dialog[data-blackjack-modal]');
+      if (!modal || typeof modal.showModal !== 'function') return;
+
+      event.preventDefault();
+      modal.showModal();
+    });
+  }
+
+  /* ---------------------------------------------- blackjack auto-open */
+
+  let blackjackAutoBound = false;
+
+  function blackjackSeenKey(frequency) {
+    if (frequency !== 'day') return 'hog_bj_auto_session';
+    const now = new Date();
+    const pad = (n) => String(n).padStart(2, '0');
+    return 'hog_bj_auto_' + now.getFullYear() + pad(now.getMonth() + 1) + pad(now.getDate());
+  }
+
+  function blackjackAlreadySeen(frequency) {
+    const key = blackjackSeenKey(frequency);
+    try {
+      const store = frequency === 'day' ? window.localStorage : window.sessionStorage;
+      return store.getItem(key) === '1';
+    } catch (error) {
+      // Private mode: treat as seen so the popup never nags in a loop.
+      return true;
+    }
+  }
+
+  function markBlackjackSeen(frequency) {
+    try {
+      const store = frequency === 'day' ? window.localStorage : window.sessionStorage;
+      store.setItem(blackjackSeenKey(frequency), '1');
+    } catch (error) {
+      /* nothing to do — the in-page guard still holds for this pageview */
+    }
+  }
+
+  /**
+   * Has the visitor already used today's hands? Offering a game they cannot
+   * play is worse than not asking, so read the counter blackjack.js keeps.
+   */
+  function blackjackOutOfPlays(playsPerDay) {
+    try {
+      const raw = window.localStorage.getItem('hog_blackjack');
+      if (!raw) return false;
+      const state = JSON.parse(raw);
+      const now = new Date();
+      const pad = (n) => String(n).padStart(2, '0');
+      const today = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate());
+      if (state.d !== today) return false;
+      return (state.plays || 0) >= playsPerDay;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function initBlackjackAutoOpen() {
+    if (blackjackAutoBound) return;
+
+    const modal = document.querySelector('dialog[data-blackjack-modal][data-auto-open]');
+    if (!modal || typeof modal.showModal !== 'function') return;
+
+    const frequency = modal.dataset.autoFrequency === 'day' ? 'day' : 'session';
+    const threshold = parseInt(modal.dataset.autoScroll, 10) || 50;
+    const delay = (parseInt(modal.dataset.autoDelay, 10) || 0) * 1000;
+    const playsPerDay = parseInt(modal.dataset.playsPerDay, 10) || 3;
+
+    if (blackjackAlreadySeen(frequency) || blackjackOutOfPlays(playsPerDay)) return;
+
+    blackjackAutoBound = true;
+    const startedAt = Date.now();
+    let fired = false;
+
+    // Closing it counts as an answer: never re-open in this window.
+    modal.addEventListener('close', () => markBlackjackSeen(frequency));
+
+    function maybeOpen() {
+      if (fired) return;
+      if (Date.now() - startedAt < delay) return;
+
+      // Never interrupt a dialog or the cart drawer already on screen.
+      if (document.querySelector('dialog[open]')) return;
+      const drawer = document.querySelector('cart-drawer.is-open, .menu-drawer.is-open');
+      if (drawer) return;
+
+      const doc = document.documentElement;
+      const scrollable = doc.scrollHeight - window.innerHeight;
+      const percent = scrollable > 0 ? (window.scrollY / scrollable) * 100 : 0;
+      if (percent < threshold) return;
+
+      fired = true;
+      window.removeEventListener('scroll', onScroll);
+      markBlackjackSeen(frequency);
+      modal.showModal();
+    }
+
+    function onScroll() {
+      window.requestAnimationFrame(maybeOpen);
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+
   /* ------------------------------------------------------------------ boot */
 
   function boot() {
     initReveal();
     initGalleries();
     initDetailsDismiss();
+    initSizeGuide();
+    initBlackjackPopup();
+    initBlackjackAutoOpen();
   }
 
   if (document.readyState === 'loading') {

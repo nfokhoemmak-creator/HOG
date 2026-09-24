@@ -1,0 +1,187 @@
+{%- comment -%}
+  The "Secret" page: post a video wearing the brand, get part or all of the
+  order back once it passes a view count. Every number here is a setting or a
+  block, so the offer on the page is exactly what the merchant configured —
+  the section never invents a claim.
+
+  Tiers are blocks (views threshold + reward percent). Steps are blocks too,
+  and they are a real sequence, so they are numbered.
+{%- endcomment -%}
+
+{%- liquid
+  assign contact = section.settings.contact_handle | strip
+  if contact == blank and settings.social_instagram_link != blank
+    assign contact = settings.social_instagram_link | split: 'instagram.com/' | last | remove: '/' | prepend: '@'
+  endif
+  assign cta_link = section.settings.button_link | default: settings.social_instagram_link
+  assign tiers = section.blocks | where: 'type', 'tier'
+  assign steps = section.blocks | where: 'type', 'step'
+-%}
+
+<div class="viral">
+  <header class="viral__hero">
+    <div class="container">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h1 class="viral__heading display">{{ section.settings.heading | escape }}</h1>
+      {%- endif -%}
+      {%- if section.settings.intro != blank -%}
+        <div class="viral__intro rte">{{ section.settings.intro }}</div>
+      {%- endif -%}
+    </div>
+  </header>
+
+  {%- if tiers.size > 0 -%}
+    <div class="container section">
+      <div class="viral__tiers">
+        {%- for block in tiers -%}
+          {%- liquid
+            assign views = block.settings.views | default: 0
+            if views >= 1000000
+              assign views_label = views | divided_by: 1000000.0 | round: 1 | append: 'M'
+            elsif views >= 1000
+              assign views_label = views | divided_by: 1000 | append: 'k'
+            else
+              assign views_label = views
+            endif
+          -%}
+          <div class="tier" {{ block.shopify_attributes }}>
+            <p class="tier__views">{{ 'sections.viral_program.views' | t: count: views_label }}</p>
+            <p class="tier__percent">{{ block.settings.reward_percent }}<small>%</small></p>
+            <p class="tier__label">{{ 'sections.viral_program.back' | t }}</p>
+            {%- if block.settings.note != blank -%}
+              <p class="tier__note">{{ block.settings.note | escape }}</p>
+            {%- endif -%}
+          </div>
+        {%- endfor -%}
+      </div>
+
+      {%- if section.settings.cap_amount > 0 -%}
+        <p class="viral__cap">
+          {{ 'sections.viral_program.cap' | t: amount: section.settings.cap_amount, currency: section.settings.currency_label }}
+        </p>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  {%- if steps.size > 0 -%}
+    <div class="container section section--tight">
+      <div class="section__head">
+        <h2 class="h3">{{ 'sections.viral_program.how' | t }}</h2>
+      </div>
+      <ol class="steps">
+        {%- for block in steps -%}
+          <li class="step" {{ block.shopify_attributes }}>
+            <h3>{{ block.settings.title | escape }}</h3>
+            <p>{{ block.settings.text | escape }}</p>
+          </li>
+        {%- endfor -%}
+      </ol>
+    </div>
+  {%- endif -%}
+
+  <div class="container section section--tight">
+    {%- if section.settings.rules != blank -%}
+      <div class="faq">
+        <details class="accordion">
+          <summary>
+            {{ 'sections.viral_program.rules' | t }}
+            {% render 'icon', name: 'plus' %}
+          </summary>
+          <div class="accordion__content rte">{{ section.settings.rules }}</div>
+        </details>
+      </div>
+    {%- endif -%}
+
+    <div class="viral__cta" style="margin-top: var(--space-6);">
+      <p class="h4">{{ 'sections.viral_program.claim' | t }}</p>
+      {%- if cta_link != blank -%}
+        <a class="btn btn--large btn--lift" href="{{ cta_link }}" target="_blank" rel="noopener" aria-describedby="a11y-new-window-message">
+          {{ section.settings.button_label | default: 'Send us your video' | escape }}
+        </a>
+      {%- endif -%}
+      {%- if contact != blank -%}
+        <p class="viral__contact">{{ contact | escape }}</p>
+      {%- endif -%}
+      {%- if section.settings.contact_email != blank -%}
+        <p class="viral__contact">{{ section.settings.contact_email | escape }}</p>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.viral_program.name",
+  "tag": "section",
+  "class": "viral-program-section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "t:sections.viral_program.settings.eyebrow.label", "default": "The secret" },
+    { "type": "text", "id": "heading", "label": "t:sections.viral_program.settings.heading.label", "default": "Get your order back" },
+    {
+      "type": "richtext",
+      "id": "intro",
+      "label": "t:sections.viral_program.settings.intro.label",
+      "default": "<p>Post a video wearing House of Garments on TikTok or Instagram. When it takes off, we pay you back.</p>"
+    },
+    { "type": "header", "content": "t:sections.viral_program.headers.limits" },
+    {
+      "type": "number",
+      "id": "cap_amount",
+      "label": "t:sections.viral_program.settings.cap_amount.label",
+      "info": "t:sections.viral_program.settings.cap_amount.info",
+      "default": 300
+    },
+    { "type": "text", "id": "currency_label", "label": "t:sections.viral_program.settings.currency_label.label", "default": "$" },
+    {
+      "type": "richtext",
+      "id": "rules",
+      "label": "t:sections.viral_program.settings.rules.label",
+      "default": "<p>Original content only, filmed by you, wearing a piece from your order. Tag the brand. Views are counted 30 days after posting. One claim per order. Send a screenshot of the view count with your order number. Paid as a refund to the original payment method.</p>"
+    },
+    { "type": "header", "content": "t:sections.viral_program.headers.contact" },
+    {
+      "type": "text",
+      "id": "contact_handle",
+      "label": "t:sections.viral_program.settings.contact_handle.label",
+      "info": "t:sections.viral_program.settings.contact_handle.info"
+    },
+    { "type": "text", "id": "contact_email", "label": "t:sections.viral_program.settings.contact_email.label" },
+    { "type": "text", "id": "button_label", "label": "t:sections.viral_program.settings.button_label.label", "default": "Send us your video" },
+    { "type": "url", "id": "button_link", "label": "t:sections.viral_program.settings.button_link.label", "info": "t:sections.viral_program.settings.button_link.info" }
+  ],
+  "blocks": [
+    {
+      "type": "tier",
+      "name": "t:sections.viral_program.blocks.tier.name",
+      "settings": [
+        { "type": "number", "id": "views", "label": "t:sections.viral_program.blocks.tier.settings.views.label", "default": 250000 },
+        { "type": "range", "id": "reward_percent", "min": 10, "max": 100, "step": 5, "unit": "%", "label": "t:sections.viral_program.blocks.tier.settings.reward_percent.label", "default": 50 },
+        { "type": "text", "id": "note", "label": "t:sections.viral_program.blocks.tier.settings.note.label" }
+      ]
+    },
+    {
+      "type": "step",
+      "name": "t:sections.viral_program.blocks.step.name",
+      "settings": [
+        { "type": "text", "id": "title", "label": "t:sections.viral_program.blocks.step.settings.title.label", "default": "Order" },
+        { "type": "text", "id": "text", "label": "t:sections.viral_program.blocks.step.settings.text.label", "default": "Any piece, any size." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.viral_program.presets.name",
+      "blocks": [
+        { "type": "tier", "settings": { "views": 250000, "reward_percent": 50, "note": "Half your order back" } },
+        { "type": "tier", "settings": { "views": 500000, "reward_percent": 100, "note": "The whole order back" } },
+        { "type": "step", "settings": { "title": "Order", "text": "Any piece, any size. Keep your order number." } },
+        { "type": "step", "settings": { "title": "Post", "text": "Film yourself wearing it. Tag us on TikTok or Instagram." } },
+        { "type": "step", "settings": { "title": "Claim", "text": "Hit the views, send us the screenshot, get paid back." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

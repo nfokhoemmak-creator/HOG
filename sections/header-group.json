@@ -5,22 +5,35 @@
     "announcement-bar": {
       "type": "announcement-bar",
       "blocks": {
+        "announcement-3": {
+          "type": "announcement",
+          "settings": {
+            "text": "PLAY BLACKJACK ✦ WIN UP TO 21% OFF",
+            "link": "/pages/blackjack"
+          }
+        },
         "announcement-1": {
           "type": "announcement",
           "settings": {
-            "text": "DELIVERY ALL OVER LEBANON"
+            "text": "FREE SHIPPING OVER $75",
+            "link": ""
           }
         },
         "announcement-2": {
           "type": "announcement",
           "settings": {
-            "text": "EVERYBODY CAN'T HAVE LIMITED ITEMS"
+            "text": "BUNDLE ANY 2+ PIECES — 15% OFF AUTO-APPLIED",
+            "link": ""
           }
         }
       },
-      "block_order": ["announcement-1", "announcement-2"],
+      "block_order": [
+        "announcement-3",
+        "announcement-1",
+        "announcement-2"
+      ],
       "settings": {
-        "color_scheme": "accent",
+        "color_scheme": "default",
         "rotate": true,
         "rotate_speed": 5
       }
@@ -30,10 +43,15 @@
       "settings": {
         "menu": "main-menu",
         "sticky": true,
+        "show_blackjack": true,
+        "blackjack_label": "PLAY",
         "show_search": true,
         "show_account": true
       }
     }
   },
-  "order": ["announcement-bar", "header"]
+  "order": [
+    "announcement-bar",
+    "header"
+  ]
 }

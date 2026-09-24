@@ -6,6 +6,10 @@
    options finds the matching variant, updates the hidden id input, price,
    availability and the URL, then scrolls the matching media into view.
 
+   The sticky mobile buy bar ([data-buy-bar]) is a second submit button for
+   the same form. This script mirrors price, label and disabled state into it
+   and reveals it only while the real button is off screen.
+
    Without JS the form still posts to /cart/add with the first available
    variant preselected, so the page remains functional.
    ========================================================================== */
@@ -26,6 +30,8 @@
     connectedCallback() {
       this.form = this.querySelector('form');
       this.idInput = this.querySelector('[name="id"]');
+      // First submit in document order is the real button; the buy-bar
+      // button comes later in the markup and is looked up by its own hook.
       this.submitButton = this.querySelector('[type="submit"]');
       this.priceTarget = document.getElementById(this.dataset.priceTarget);
       this.inventoryTarget = document.getElementById(this.dataset.inventoryTarget);
@@ -34,12 +40,11 @@
 
       this.variants = this.readVariants();
 
-      // The variant picker is its own section block, so the option inputs are
-      // siblings of this element rather than children. Look them up from the
-      // product wrapper — querying `this` finds nothing and every variant
-      // fails to match, which disables add-to-cart entirely.
-      this.scope = this.closest('.product') || this.closest('.product__info') || document;
-      this.optionInputs = Array.from(this.scope.querySelectorAll('[data-option-index]'));
+      // The variant picker block renders as a sibling of <product-form>, so
+      // the lookup has to widen to the shared info column or the radios are
+      // never found (and the buy button would be wrongly disabled on load).
+      const scope = this.closest('.product__info') || this.closest('.product') || this;
+      this.optionInputs = Array.from(scope.querySelectorAll('[data-option-index]'));
 
       this.buyBar = this.querySelector('[data-buy-bar]');
       this.buyBarButton = this.querySelector('[data-buy-bar-button]');
@@ -84,6 +89,11 @@
     }
 
     onOptionChange(config) {
+      // No picker on the page (default-variant product): keep the
+      // server-rendered button and stock line instead of matching against
+      // nothing.
+      if (this.optionInputs.length === 0) return;
+
       const options = this.selectedOptions();
       const variant = this.matchVariant(options);
 
@@ -131,18 +141,22 @@
     }
 
     updatePrice(variant) {
+      if (this.buyBarPrice) this.buyBarPrice.textContent = formatMoney(variant.price);
+
       if (!this.priceTarget) return;
       const current = this.priceTarget.querySelector('[data-price-current]');
       const compare = this.priceTarget.querySelector('[data-price-compare]');
 
       if (current) current.textContent = formatMoney(variant.price);
-      if (this.buyBarPrice) this.buyBarPrice.textContent = formatMoney(variant.price);
 
       if (compare) {
         const onSale = variant.compare_at_price && variant.compare_at_price > variant.price;
         compare.textContent = onSale ? formatMoney(variant.compare_at_price) : '';
         compare.hidden = !onSale;
-        this.priceTarget.classList.toggle('price--on-sale', Boolean(onSale));
+        // The price wrapper carries the sale modifier, not the block that
+        // holds it; toggle it on the element that owns the colour rule.
+        const wrapper = current ? current.closest('.price') : null;
+        (wrapper || this.priceTarget).classList.toggle('price--on-sale', Boolean(onSale));
       }
     }
 
@@ -152,9 +166,12 @@
       const quantity = variant.inventory_quantity;
       const managed = variant.inventory_management === 'shopify';
       const low = managed && variant.available && quantity > 0 && quantity <= 5;
+      // Pre-orders carry their own note under the buttons; "in stock" would
+      // contradict it.
+      const inStock = !low && variant.available && this.dataset.preorder !== 'true';
 
       this.inventoryTarget.classList.toggle('product__inventory--low', low);
-      this.inventoryTarget.classList.toggle('product__inventory--in', !low && variant.available);
+      this.inventoryTarget.classList.toggle('product__inventory--in', inStock);
 
       if (low) {
         this.inventoryTarget.textContent = (strings.lowStock || 'Only {{ count }} left').replace(
@@ -162,7 +179,7 @@
           quantity
         );
         this.inventoryTarget.hidden = false;
-      } else if (variant.available) {
+      } else if (inStock) {
         // Confirming stock is worth a line of its own: the commonest silent
         // objection on a limited-run store is "is my size even still here".
         this.inventoryTarget.textContent = strings.inStock || 'In stock';
@@ -249,10 +266,14 @@
         ? (this.submitButton.querySelector('[data-button-text]') || this.submitButton).textContent
         : '';
 
+      // event.submitter is the buy-bar button when the bar was tapped, so the
+      // drawer returns focus to the control the visitor actually used.
+      const opener = (event.submitter && event.submitter.closest('button')) || this.submitButton;
+
       this.setButton(strings.adding || 'Adding…', true);
 
       try {
-        await window.HOG.addToCart(new FormData(this.form), this.submitButton);
+        await window.HOG.addToCart(new FormData(this.form), opener);
         this.setButton(strings.added || 'Added', false);
         window.setTimeout(() => this.setButton(original, false), 1800);
       } catch (error) {

@@ -1,5 +1,6 @@
 {%- liquid
   assign menu = linklists[section.settings.menu]
+  assign blackjack_url = routes.root_url | append: 'pages/blackjack'
 -%}
 
 <header class="header{% if section.settings.sticky %} header--sticky{% endif %}">
@@ -38,6 +39,40 @@
             </div>
           {%- endfor -%}
         </nav>
+
+        {%- comment -%}
+          The drawer covers the floating play button, so the game gets its
+          own row here: the same link as the header pill, upgraded to the
+          popup by theme.js. Search and account follow as quiet text links.
+        {%- endcomment -%}
+        <div class="menu-drawer__foot">
+          {%- if section.settings.show_blackjack -%}
+            <a
+              class="btn btn--outline btn--full"
+              href="{{ blackjack_url }}"
+              data-blackjack-open
+              aria-controls="BlackjackModal"
+            >
+              <span aria-hidden="true">&#9824;</span>
+              {{ section.settings.blackjack_drawer_label | default: 'Play blackjack' }}
+            </a>
+          {%- endif -%}
+
+          <div class="menu-drawer__links">
+            {%- if section.settings.show_search -%}
+              <a href="{{ routes.search_url }}">{{ 'general.search.search' | t }}</a>
+            {%- endif -%}
+            {%- if section.settings.show_account and shop.customer_accounts_enabled -%}
+              <a href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}">
+                {{ 'general.account' | t }}
+              </a>
+            {%- endif -%}
+          </div>
+
+          {%- if settings.brand_tagline != blank -%}
+            <p class="menu-drawer__tagline">{{ settings.brand_tagline }}</p>
+          {%- endif -%}
+        </div>
       </div>
     </menu-drawer>
 
@@ -48,12 +83,16 @@
     {%- endif -%}
       <a href="{{ routes.root_url }}">
         {%- if settings.logo != blank -%}
+          {%- comment -%}
+            The width setting is a cap, not a size: the mark is height-bound
+            to the bar in CSS so a tall logo can never grow the header.
+          {%- endcomment -%}
           <img
             src="{{ settings.logo | image_url: width: 600 }}"
             alt="{{ shop.name | escape }}"
             width="{{ settings.logo.width }}"
             height="{{ settings.logo.height }}"
-            style="width: {{ settings.logo_width }}px;"
+            style="--logo-width: {{ settings.logo_width }}px;"
           >
         {%- else -%}
           {{ shop.name }}
@@ -72,6 +111,23 @@
     </nav>
 
     <div class="header__actions">
+      {%- comment -%}
+        A real link to the game page: theme.js upgrades it into the popup
+        trigger, so it works either way. Outlined, never filled — the black
+        fill belongs to the primary button alone.
+      {%- endcomment -%}
+      {%- if section.settings.show_blackjack -%}
+        <a
+          class="header__blackjack"
+          href="{{ blackjack_url }}"
+          data-blackjack-open
+          aria-controls="BlackjackModal"
+        >
+          <span aria-hidden="true">&#9824;</span>
+          <span class="header__blackjack-label">{{ section.settings.blackjack_label | default: 'Play' }}</span>
+        </a>
+      {%- endif -%}
+
       {%- if section.settings.show_search -%}
         <a class="header__icon" href="{{ routes.search_url }}" aria-label="{{ 'general.search.search' | t }}">
           {% render 'icon', name: 'search' %}
@@ -137,6 +193,25 @@
       "id": "sticky",
       "label": "t:sections.header.settings.sticky.label",
       "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_blackjack",
+      "label": "Show the blackjack button",
+      "default": true,
+      "info": "Opens the blackjack popup from the header on every page."
+    },
+    {
+      "type": "text",
+      "id": "blackjack_label",
+      "label": "Blackjack button label",
+      "default": "PLAY"
+    },
+    {
+      "type": "text",
+      "id": "blackjack_drawer_label",
+      "label": "Blackjack link label in the mobile menu",
+      "default": "Play blackjack"
     },
     {
       "type": "checkbox",

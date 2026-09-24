@@ -3,34 +3,76 @@
     "hero": {
       "type": "hero",
       "settings": {
+        "image": "shopify://shop_images/WhatsApp_Image_2026-03-16_at_7.33.13_PM.jpg",
+        "video_url": "",
         "height": "full",
-        "overlay_opacity": 45,
+        "overlay_opacity": 35,
         "heading": "NEW DROP",
-        "subheading": "Limited pieces, made in Lebanon. Once they're gone, they're gone.",
+        "subheading": "Daily essentials, made in Lebanon in limited runs. Once a size is gone, it's gone.",
         "text_alignment": "left",
         "button_label": "Shop the drop",
+        "button_link": "",
         "show_countdown": false,
+        "countdown_date": "",
         "countdown_heading": "Drops in"
+      }
+    },
+    "ticker-1": {
+      "type": "marquee",
+      "settings": {
+        "text": "EVERYBODY CAN'T HAVE LIMITED ITEMS",
+        "link": "",
+        "style": "default",
+        "size": "regular",
+        "speed": 24,
+        "sep": "✦"
       }
     },
     "featured": {
       "type": "featured-collection",
       "settings": {
-        "title": "New drop",
+        "title": "The latest drop",
+        "collection": "frontpage",
         "products_to_show": 8,
         "columns_desktop": 4,
         "columns_mobile": "2",
         "show_view_all": true
       }
     },
-    "drop-banner": {
-      "type": "drop-banner",
+    "bundle": {
+      "type": "bundle-builder",
+      "blocks": {
+        "item-1": {
+          "type": "product",
+          "settings": {
+            "product": "hg-regular-t-shirt"
+          }
+        },
+        "item-2": {
+          "type": "product",
+          "settings": {
+            "product": "black-pants"
+          }
+        },
+        "item-3": {
+          "type": "product",
+          "settings": {
+            "product": "black-jacket"
+          }
+        }
+      },
+      "block_order": [
+        "item-1",
+        "item-2",
+        "item-3"
+      ],
       "settings": {
-        "eyebrow": "Limited run",
-        "heading": "NO RESTOCKS",
-        "text": "<p>Every piece is made in a small batch. When a size sells out, that's it.</p>",
-        "button_label": "Shop the catalog",
-        "marquee": "EVERYBODY CAN'T HAVE LIMITED ITEMS ·"
+        "eyebrow": "BUNDLE & SAVE",
+        "heading": "BUILD A FIT",
+        "text": "<p>Stack pieces. Any 2+ pieces are 15% off, applied automatically at checkout.</p>",
+        "savings_percent": 15,
+        "min_items": 2,
+        "button_label": "ADD FIT TO CART"
       }
     },
     "categories": {
@@ -38,15 +80,21 @@
       "blocks": {
         "col-1": {
           "type": "featured_collection",
-          "settings": {}
+          "settings": {
+            "collection": "t-shirts"
+          }
         },
         "col-2": {
           "type": "featured_collection",
-          "settings": {}
+          "settings": {
+            "collection": "pants-1"
+          }
         },
         "col-3": {
           "type": "featured_collection",
-          "settings": {}
+          "settings": {
+            "collection": "denim"
+          }
         }
       },
       "block_order": [
@@ -59,14 +107,37 @@
         "columns_desktop": 3
       }
     },
+    "drop-banner": {
+      "type": "drop-banner",
+      "settings": {
+        "eyebrow": "Limited run",
+        "heading": "NO RESTOCKS",
+        "text": "<p>Every piece is made in a small batch. When a size sells out, that's it.</p>",
+        "button_label": "Shop the catalog",
+        "button_link": "",
+        "marquee": "EVERYBODY CAN'T HAVE LIMITED ITEMS ·"
+      }
+    },
     "image-with-text": {
       "type": "image-with-text",
       "settings": {
+        "image": "shopify://shop_images/BBF7FE66-5AD9-4671-8ECB-9D6893DB5EA3.png",
         "layout": "left",
         "heading": "Made in limited runs",
         "text": "<p>Heavyweight fabric, boxy fits, and nothing that gets remade. House of Garments releases in drops — follow along on Instagram so you don't miss one.</p>",
         "button_label": "Follow @houseofgarments.co",
         "button_link": "https://www.instagram.com/houseofgarments.co/"
+      }
+    },
+    "ticker-2": {
+      "type": "marquee",
+      "settings": {
+        "text": "PLAY BLACKJACK ✦ WIN UP TO 21% OFF",
+        "link": "/pages/blackjack",
+        "style": "accent",
+        "size": "regular",
+        "speed": 24,
+        "sep": "♠"
       }
     },
     "newsletter": {
@@ -99,7 +170,7 @@
           "type": "item",
           "settings": {
             "icon": "refresh",
-            "title": "14-day exchanges",
+            "title": "7-day exchanges",
             "text": "Unworn, tags on"
           }
         }
@@ -110,23 +181,6 @@
         "t3"
       ],
       "settings": {}
-    },
-    "blackjack": {
-      "type": "blackjack",
-      "settings": {
-        "eyebrow": "House rules",
-        "heading": "Beat the dealer, beat the price",
-        "subheading": "<p>One hand a day. Beat the house and the code is yours to spend on the drop.</p>",
-        "button_label": "Deal me in",
-        "reward_win_label": "10% off your order",
-        "reward_win_code": "HOG10",
-        "reward_blackjack_label": "Blackjack — 20% off your order",
-        "reward_blackjack_code": "HOG20",
-        "play_limit": "daily",
-        "allow_double": true,
-        "dealer_hits_soft_17": false,
-        "felt_color": "#0e5c3a"
-      }
     },
     "testimonials": {
       "type": "testimonials",
@@ -186,14 +240,21 @@
           "type": "question",
           "settings": {
             "question": "Can I exchange a piece?",
-            "answer": "<p>Yes, within 14 days, unworn and with the tags still on. Message us on Instagram to start one.</p>"
+            "answer": "<p>Yes, within 7 days, unworn and with the tags still on. Message us on Instagram to start one.</p>"
           }
         },
         "f4": {
           "type": "question",
           "settings": {
             "question": "How does the blackjack game work?",
-            "answer": "<p>One hand a day. Beat the dealer and you unlock a discount code you can use at checkout straight away.</p>"
+            "answer": "<p>Up to three hands a day. Beat the dealer and you unlock a discount code you can apply at checkout straight away.</p>"
+          }
+        },
+        "f5": {
+          "type": "question",
+          "settings": {
+            "question": "What is the Secret?",
+            "answer": "<p>Post a video wearing House of Garments. Hit 250k views and half your order comes back; 500k and all of it does. Details on the Secret page.</p>"
           }
         }
       },
@@ -201,7 +262,8 @@
         "f1",
         "f2",
         "f3",
-        "f4"
+        "f4",
+        "f5"
       ],
       "settings": {
         "heading": "Questions"
@@ -211,11 +273,13 @@
   "order": [
     "hero",
     "trust",
+    "ticker-1",
     "featured",
-    "drop-banner",
+    "bundle",
     "categories",
-    "blackjack",
+    "ticker-2",
     "testimonials",
+    "drop-banner",
     "image-with-text",
     "faq",
     "newsletter"

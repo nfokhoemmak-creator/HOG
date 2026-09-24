@@ -14,7 +14,6 @@
    8.  Footer
    9.  Hero
    10. Drop banner + marquee
-   10b. Image with text
    11. Product cards + grids
    12. Product page
    13. Collection + facets
@@ -22,9 +21,14 @@
    15. Search, 404, page, blog
    16. Customer account
    17. Password page
-   18. Motion
-   19. Blackjack
-   20. Conversion furniture
+   18. Free-shipping bar
+   19. Upsells + complete the look
+   20. Bundle builder
+   21. Blackjack
+   22. Size guide
+   23. Discount code form
+   24. Blackjack popup
+   25. Motion
    ========================================================================== */
 
 /* 1. Reset ---------------------------------------------------------------- */
@@ -124,7 +128,8 @@ p:last-child {
   --header-height: 6.4rem;
   --duration: 200ms;
   --ease: cubic-bezier(0.2, 0.6, 0.3, 1);
-  --focus-ring: 2px solid var(--color-accent);
+  --focus-ring: 2px solid var(--color-fg);
+  --shadow-card: 0 1px 2px rgb(var(--rgb-fg) / 0.06), 0 8px 24px -12px rgb(var(--rgb-fg) / 0.18);
 }
 
 .h0 { font-size: clamp(4rem, 12vw, 11rem); letter-spacing: -0.01em; }
@@ -133,6 +138,20 @@ p:last-child {
 .h3 { font-size: calc(clamp(2rem, 3vw, 2.6rem) * var(--font-heading-scale)); }
 .h4 { font-size: calc(1.8rem * var(--font-heading-scale)); }
 .h5 { font-size: calc(1.5rem * var(--font-heading-scale)); }
+
+/* Display face (Anton via --font-display-family, falls back to heading font).
+   Anton ships a single 400 weight; relax the tracking accordingly. */
+.h0,
+.h1,
+.hero__heading,
+.marquee__item,
+.drop-banner__heading,
+.password__heading,
+.display {
+  font-family: var(--font-display-family, var(--font-heading-family));
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
 
 .eyebrow {
   font-family: var(--font-heading-family);
@@ -179,6 +198,8 @@ p:last-child {
 
 .muted { color: var(--color-muted); }
 .accent { color: var(--color-accent); }
+.success { color: var(--color-success); }
+.sale { color: var(--color-sale); }
 .center { text-align: center; }
 .uppercase { text-transform: uppercase; }
 .underline { text-decoration: underline; text-underline-offset: 0.25em; }
@@ -191,34 +212,46 @@ p:last-child {
   background: var(--color-border);
 }
 
+/* Film-grain overlay (settings.show_grain adds body.grain). Static noise tile
+   from an inline SVG feTurbulence filter — no network request, no animation. */
+body.grain::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
 /* 4. Buttons + forms ------------------------------------------------------ */
 
 /* One colour means "click me".
-   .btn is the primary action and carries --color-btn-bg, which the theme
-   settings point at the accent. Anything that is not an action uses
-   .btn--outline or .btn--ghost so the accent never competes with itself.
-   A page with two ember buttons has no primary action. */
+   .btn is the primary action and carries --color-btn-bg (black on this
+   palette). Anything that is not an action uses .btn--outline, .btn--quiet
+   or .btn--ghost so the primary never competes with itself. */
 
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
-  min-height: 4.8rem;
+  min-height: 5.2rem;
   padding: 0 var(--space-6);
   border: 1px solid var(--color-btn-bg);
-  border-radius: var(--radius);
+  border-radius: var(--radius-btn, 0);
   background: var(--color-btn-bg);
   color: var(--color-btn-fg);
   font-family: var(--font-heading-family);
   font-size: 1.3rem;
   font-weight: var(--font-heading-weight);
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   text-align: center;
   transition: background var(--duration) var(--ease), border-color var(--duration) var(--ease),
     color var(--duration) var(--ease), transform var(--duration) var(--ease),
-    box-shadow var(--duration) var(--ease);
+    box-shadow var(--duration) var(--ease), opacity var(--duration) var(--ease);
 }
 
 .btn:hover {
@@ -227,43 +260,23 @@ p:last-child {
   color: var(--color-btn-fg);
 }
 
-/* A 1px lift plus a tinted shadow reads as "pressable" without moving the
-   layout. Both are suppressed under prefers-reduced-motion in section 18. */
 .btn:active { transform: translateY(1px); }
 
 .btn--lift:hover {
   transform: translateY(-2px);
-  box-shadow: 0 1rem 2.4rem -0.8rem rgb(var(--rgb-accent) / 0.55);
+  box-shadow: 0 1rem 2.4rem -1rem rgb(var(--rgb-fg) / 0.45);
 }
 
 .btn--outline {
   background: transparent;
   color: var(--color-fg);
-  border-color: var(--color-border-strong);
+  border-color: var(--color-fg);
 }
 
 .btn--outline:hover {
-  background: transparent;
+  background: var(--color-fg);
   border-color: var(--color-fg);
-  color: var(--color-fg);
-}
-
-.btn--ghost {
-  background: transparent;
-  border-color: transparent;
-  color: var(--color-muted);
-  padding-inline: 0;
-}
-
-.btn--ghost:hover { background: transparent; border-color: transparent; color: var(--color-fg); }
-
-/* Kept for templates that ask for the accent explicitly. Identical to .btn
-   now that the primary button *is* the accent — left in so section settings
-   and any merchant markup referencing it keep working. */
-.btn--accent {
-  background: var(--color-accent);
-  border-color: var(--color-accent);
-  color: var(--color-accent-contrast);
+  color: var(--color-bg);
 }
 
 .btn--quiet {
@@ -274,33 +287,53 @@ p:last-child {
 
 .btn--quiet:hover { background: var(--color-bg-alt); border-color: var(--color-fg); color: var(--color-fg); }
 
+.btn--ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--color-muted);
+  padding-inline: 0;
+}
+
+.btn--ghost:hover { background: transparent; border-color: transparent; color: var(--color-fg); }
+
+/* Kept for markup that asks for the accent by name. Identical to .btn now
+   that the primary button *is* the accent. */
+.btn--accent {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-accent-contrast);
+}
+
+.btn--accent:hover {
+  background: var(--color-btn-bg-hover);
+  border-color: var(--color-btn-bg-hover);
+  color: var(--color-accent-contrast);
+}
+
 .btn--full { width: 100%; }
 .btn--small { min-height: 3.6rem; padding: 0 var(--space-4); font-size: 1.1rem; }
-.btn--large { min-height: 5.6rem; font-size: 1.5rem; }
+.btn--large { min-height: 5.8rem; font-size: 1.4rem; }
 
 .btn[disabled],
 .btn[aria-disabled='true'] {
-  opacity: 0.45;
+  opacity: 0.4;
   cursor: not-allowed;
   pointer-events: none;
 }
 
-/* Shopify's dynamic checkout buttons render inside our form. Give them the
-   same footprint as the add-to-cart button but never the accent — accelerated
-   checkout is the secondary path. */
-.shopify-payment-button {
-  margin-top: var(--space-2);
-}
+/* Shopify's dynamic checkout button: same footprint as add-to-cart, never
+   the primary colour — accelerated checkout is the secondary path. */
+.shopify-payment-button { margin-top: var(--space-2); }
 
 .shopify-payment-button__button--unbranded {
-  min-height: 4.8rem;
-  border-radius: var(--radius);
+  min-height: 5.2rem;
+  border-radius: var(--radius-btn, 0);
   background: var(--color-surface);
   border: 1px solid var(--color-border-strong);
   color: var(--color-fg);
   font-family: var(--font-heading-family);
   font-size: 1.3rem;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
@@ -327,11 +360,11 @@ p:last-child {
 .select,
 textarea {
   width: 100%;
-  min-height: 4.8rem;
+  min-height: 5.2rem;
   padding: var(--space-3) var(--space-4);
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius);
-  background: var(--color-bg-alt);
+  background: var(--color-surface);
   color: var(--color-fg);
   font: inherit;
   font-size: 1.5rem;
@@ -345,15 +378,13 @@ textarea {
 .field__input:focus,
 .select:focus,
 textarea:focus {
-  border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px rgb(var(--rgb-accent) / 0.25);
+  border-color: var(--color-fg);
+  box-shadow: 0 0 0 3px rgb(var(--rgb-fg) / 0.12);
   outline: none;
 }
 
 .field__input::placeholder,
-textarea::placeholder {
-  color: var(--color-muted);
-}
+textarea::placeholder { color: var(--color-muted); }
 
 .form__error {
   margin-top: var(--space-2);
@@ -373,9 +404,7 @@ textarea::placeholder {
   flex-wrap: wrap;
 }
 
-.newsletter-form .field__input {
-  flex: 1 1 22rem;
-}
+.newsletter-form .field__input { flex: 1 1 22rem; }
 
 /* 5. Layout primitives ---------------------------------------------------- */
 
@@ -410,20 +439,18 @@ textarea::placeholder {
 
 /* 6. Announcement bar ----------------------------------------------------- */
 
+/* A thin band above the header. The default sits on the alternate ground;
+   'accent' and 'inverse' both invert to the text colour — on this palette the
+   accent *is* the text colour, so the two schemes are one black band. */
 .announcement-bar {
   position: relative;
   overflow: hidden;
-  border-bottom: 1px solid var(--color-border);
-  background: var(--color-bg);
+  background: var(--color-bg-alt);
   color: var(--color-fg);
+  border-bottom: 1px solid var(--color-border);
 }
 
-.announcement-bar--accent {
-  background: var(--color-accent);
-  color: var(--color-accent-contrast);
-  border-bottom-color: transparent;
-}
-
+.announcement-bar--accent,
 .announcement-bar--inverse {
   background: var(--color-fg);
   color: var(--color-bg);
@@ -432,7 +459,6 @@ textarea::placeholder {
 
 .announcement-bar__list {
   position: relative;
-  min-height: 3.6rem;
 }
 
 .announcement-bar__item {
@@ -440,33 +466,74 @@ textarea::placeholder {
   align-items: center;
   justify-content: center;
   min-height: 3.6rem;
-  padding: var(--space-2) var(--gutter);
+  padding-inline: var(--gutter);
   font-family: var(--font-heading-family);
   font-size: 1.1rem;
-  letter-spacing: 0.2em;
+  line-height: 1.3;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   text-align: center;
 }
 
-.announcement-bar__item[hidden] { display: none; }
+/* A linked announcement is the whole band height, and only reveals its
+   underline on hover so the bar stays quiet. */
+.announcement-bar__item a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 3.6rem;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: transparent;
+  text-underline-offset: 0.4em;
+  transition: text-decoration-color var(--duration) var(--ease);
+}
 
+.announcement-bar__item a:hover,
+.announcement-bar__item a:focus-visible {
+  text-decoration-color: currentColor;
+}
+
+/* Touch: the band grows to a 44px target where fingers do the tapping. */
+@media screen and (max-width: 749px) {
+  .announcement-bar__item,
+  .announcement-bar__item a {
+    min-height: 4.4rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .announcement-bar__item a { transition: none; }
+}
 /* 7. Header + nav --------------------------------------------------------- */
 
 .header {
   position: relative;
-  z-index: 20;
-  background: var(--color-bg);
+  /* Above the floating blackjack button (50): the menu drawer lives inside
+     the header's stacking context and has to cover it. Below the cart
+     drawer (70). */
+  z-index: 60;
+  background: var(--color-surface);
+  color: var(--color-fg);
   border-bottom: 1px solid var(--color-border);
 }
 
-.header--sticky {
+/* Shopify renders every section inside a wrapper div of the section's own
+   height, so a sticky .header would only stick within that wrapper. The
+   wrapper carries the schema class, so the wrapper is what sticks; the bare
+   rule covers markup rendered without a wrapper (previews). */
+.header--sticky,
+.header-section:has(> .header--sticky) {
   position: sticky;
   top: 0;
+  z-index: 60;
 }
 
+/* Three columns with equal outer tracks so the middle one is centred on the
+   viewport: logo | nav | actions on desktop, menu | logo | actions on mobile
+   (the nav and the menu toggle swap visibility at 990px, see section 25). */
 .header__inner {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: var(--space-4);
   min-height: var(--header-height);
@@ -475,42 +542,75 @@ textarea::placeholder {
 .header__logo {
   display: inline-flex;
   align-items: center;
+  justify-self: start;
+  margin: 0;
   font-family: var(--font-heading-family);
-  font-size: 1.8rem;
-  letter-spacing: 0.14em;
+  font-size: 1.5rem;
+  font-weight: var(--font-heading-weight);
+  letter-spacing: 0.18em;
+  line-height: 1;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
-.header__logo img { width: 100%; }
+.header__logo a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 4.4rem;
+  min-height: 4.4rem;
+}
+
+/* Height-bound so any logo ratio fits the bar; the merchant's width setting
+   caps a wide mark instead of dictating the height. */
+.header__logo img {
+  width: auto;
+  height: 4rem;
+  max-width: var(--logo-width, 14rem);
+  object-fit: contain;
+  object-position: left center;
+}
 
 .header__nav {
   display: none;
+  flex-wrap: wrap;
   justify-content: center;
-  gap: var(--space-5);
+  gap: 0 var(--space-5);
 }
 
 .header__nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 4.4rem;
   font-family: var(--font-heading-family);
   font-size: 1.2rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  padding-block: var(--space-2);
-  border-bottom: 1px solid transparent;
-  transition: border-color var(--duration) var(--ease);
+  color: var(--color-muted);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: transparent;
+  text-underline-offset: 6px;
+  transition: color var(--duration) var(--ease), text-decoration-color var(--duration) var(--ease);
 }
 
 .header__nav a:hover,
+.header__nav a:focus-visible,
 .header__nav a[aria-current='page'] {
-  border-bottom-color: var(--color-fg);
+  color: var(--color-fg);
+  text-decoration-color: currentColor;
 }
 
 .header__actions {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: var(--space-3);
+  justify-self: end;
+  gap: var(--space-1);
 }
 
+/* Shared by the drawer close buttons too (cart drawer, blackjack popup), so
+   it stays a neutral 44px icon button: text colour, opacity on hover. */
 .header__icon {
   position: relative;
   display: inline-flex;
@@ -518,36 +618,99 @@ textarea::placeholder {
   justify-content: center;
   width: 4.4rem;
   height: 4.4rem;
+  color: inherit;
+  transition: opacity var(--duration) var(--ease);
 }
 
-.header__icon svg { width: 2rem; height: 2rem; }
+.header__icon:hover { opacity: 0.55; }
+
+.header__icon svg {
+  width: 2rem;
+  height: 2rem;
+}
+
+/* Blackjack trigger — permanent, above the fold on every page. An outlined
+   pill, never a fill: the black fill is reserved for the primary button. The
+   label drops under 750px and the spade alone holds a 44px spot. */
+.header__blackjack {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 3.6rem;
+  margin-right: var(--space-2);
+  padding-inline: var(--space-4);
+  border: 1px solid var(--color-fg);
+  border-radius: 999px;
+  color: var(--color-fg);
+  font-family: var(--font-heading-family);
+  font-size: 1.1rem;
+  line-height: 1;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: background var(--duration) var(--ease), color var(--duration) var(--ease);
+}
+
+.header__blackjack:hover,
+.header__blackjack:focus-visible {
+  background: var(--color-fg);
+  color: var(--color-bg);
+}
+
+.header__blackjack-label { display: none; }
+
+@media screen and (max-width: 749px) {
+  .header__blackjack {
+    width: 4.4rem;
+    height: 4.4rem;
+    margin-right: 0;
+    padding: 0;
+    justify-content: center;
+    font-size: 1.4rem;
+  }
+}
+
+@media screen and (min-width: 750px) {
+  .header__blackjack-label { display: inline; }
+}
 
 .cart-count {
   position: absolute;
-  top: 0.6rem;
-  right: 0.4rem;
-  min-width: 1.8rem;
-  height: 1.8rem;
-  padding-inline: 0.4rem;
+  top: 0.5rem;
+  right: 0.3rem;
+  min-width: 1.7rem;
+  height: 1.7rem;
+  padding-inline: 0.3rem;
   border-radius: 999px;
-  background: var(--color-accent);
-  color: var(--color-accent-contrast);
-  font-size: 1.1rem;
-  line-height: 1.8rem;
+  background: var(--color-fg);
+  color: var(--color-bg);
+  font-family: var(--font-heading-family);
+  font-size: 1rem;
+  font-weight: var(--font-heading-weight);
+  line-height: 1.7rem;
+  letter-spacing: 0;
   text-align: center;
 }
 
-.cart-count[hidden] { display: none; }
+/* Mobile drawer ----------------------------------------------------------- */
 
-.menu-toggle { display: inline-flex; }
+.menu-toggle {
+  display: inline-flex;
+  justify-self: start;
+  /* The 44px hit area starts at the gutter edge; the glyph stays optically
+     aligned with the logo column below it. */
+  margin-left: calc(var(--space-3) * -1);
+}
 
 .menu-drawer {
   position: fixed;
   inset: 0;
   z-index: 60;
   display: grid;
-  grid-template-rows: auto 1fr;
-  background: var(--color-bg);
+  grid-template-rows: auto 1fr auto;
+  overflow-y: auto;
+  background: var(--color-surface);
+  color: var(--color-fg);
   transform: translateX(-100%);
   visibility: hidden;
   transition: transform var(--duration) var(--ease), visibility var(--duration);
@@ -569,92 +732,239 @@ textarea::placeholder {
 }
 
 .menu-drawer__list {
-  padding: var(--space-5) var(--gutter);
   display: grid;
-  gap: var(--space-4);
+  align-content: start;
+  padding: var(--space-4) var(--gutter);
+}
+
+.menu-drawer__list > div {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.menu-drawer__list > div:last-child {
+  border-bottom: 0;
 }
 
 .menu-drawer__list a {
+  display: flex;
+  align-items: center;
+  min-height: 6rem;
   font-family: var(--font-heading-family);
-  font-size: 2.4rem;
-  letter-spacing: 0.06em;
+  font-size: 2.6rem;
+  letter-spacing: 0.04em;
+  line-height: 1;
   text-transform: uppercase;
+}
+
+.menu-drawer__list a[aria-current='page'] {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
 }
 
 .menu-drawer__sublist {
   display: grid;
-  gap: var(--space-3);
-  padding-left: var(--space-4);
-  margin-top: var(--space-3);
+  padding-bottom: var(--space-3);
 }
 
-.menu-drawer__sublist a { font-size: 1.6rem; color: var(--color-muted); }
+.menu-drawer__sublist a {
+  min-height: 4.4rem;
+  font-size: 1.3rem;
+  letter-spacing: 0.14em;
+  color: var(--color-muted);
+}
 
+.menu-drawer__foot {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-5) var(--gutter) var(--space-6);
+  border-top: 1px solid var(--color-border);
+}
+
+.menu-drawer__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+}
+
+.menu-drawer__links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 4.4rem;
+  font-family: var(--font-heading-family);
+  font-size: 1.2rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.menu-drawer__links a:hover { color: var(--color-fg); }
+
+.menu-drawer__tagline {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 1.1rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+@media screen and (max-width: 989px) {
+  .header__logo { justify-self: center; }
+  .header__logo img { object-position: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header__nav a,
+  .header__icon,
+  .header__blackjack,
+  .menu-drawer {
+    transition: none;
+  }
+}
 /* 8. Footer --------------------------------------------------------------- */
 
 .footer {
   margin-top: var(--space-8);
   border-top: 1px solid var(--color-border);
-  background: var(--color-bg-alt);
+  background: var(--color-bg);
+  color: var(--color-fg);
 }
 
 .footer__grid {
   display: grid;
-  gap: var(--space-6);
+  gap: var(--space-6) var(--space-5);
   padding-block: var(--space-7);
 }
 
 .footer__heading {
   margin-bottom: var(--space-3);
   font-family: var(--font-heading-family);
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
+.footer__blurb {
+  max-width: 32ch;
+  font-size: 1.4rem;
+  line-height: 1.6;
+  color: var(--color-muted);
+}
+
+.footer__blurb p { margin: 0; }
+
+.footer__social {
+  margin-top: var(--space-4);
+}
+
 .footer__menu {
   display: grid;
-  gap: var(--space-2);
   font-size: 1.4rem;
   color: var(--color-muted);
 }
 
-.footer__menu a:hover { color: var(--color-fg); }
+/* Each link is the whole 44px row, not just its word: a tap target first,
+   a line of text second. */
+.footer__menu a {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 4.4rem;
+  transition: color var(--duration) var(--ease);
+}
+
+.footer__menu a:hover,
+.footer__menu a:focus-visible {
+  color: var(--color-fg);
+}
+
+.footer__menu li {
+  min-height: 4.4rem;
+  display: flex;
+  align-items: center;
+}
+
+/* Newsletter column: one inline row — field on the raised surface, then the
+   footer's single black button. Messages drop to a full-width second line. */
+.footer .newsletter-form {
+  gap: var(--space-2);
+}
+
+.footer .newsletter-form .field__input {
+  flex: 1 1 12rem;
+  min-width: 0;
+  min-height: 4.8rem;
+  padding-inline: var(--space-3);
+  font-size: 1.4rem;
+}
+
+.footer .newsletter-form .btn {
+  flex: 0 0 auto;
+  min-height: 4.8rem;
+  padding-inline: var(--space-4);
+  font-size: 1.1rem;
+}
+
+.footer .newsletter-form .form__error,
+.footer .newsletter-form .form__success {
+  flex-basis: 100%;
+  margin-top: 0;
+}
+
+.footer__note {
+  margin-top: var(--space-3);
+  font-size: 1.2rem;
+  color: var(--color-muted);
+}
 
 .footer__bottom {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-4);
+  gap: var(--space-3) var(--space-5);
   padding-block: var(--space-4);
   border-top: 1px solid var(--color-border);
-  font-size: 1.2rem;
+  font-family: var(--font-heading-family);
+  font-size: 1.1rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   color: var(--color-muted);
 }
 
+.footer__bottom p { margin: 0; }
+
 .social-list {
   display: flex;
-  gap: var(--space-3);
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  /* First icon sits flush with the column's left edge. */
+  margin-left: calc(var(--space-3) * -1);
 }
 
 .social-list a {
   display: inline-flex;
-  width: 4rem;
-  height: 4rem;
+  width: 4.4rem;
+  height: 4.4rem;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
+  color: var(--color-muted);
+  transition: color var(--duration) var(--ease);
 }
 
-.social-list svg { width: 1.8rem; height: 1.8rem; }
-
-.social-list a:hover {
-  border-color: var(--color-fg);
+.social-list a:hover,
+.social-list a:focus-visible {
   color: var(--color-fg);
 }
 
+.social-list svg {
+  width: 1.8rem;
+  height: 1.8rem;
+}
+
+/* Payment marks are brand-coloured SVGs; desaturated so they read as
+   small print rather than a row of logos. */
 .payment-list {
   display: flex;
   flex-wrap: wrap;
@@ -662,8 +972,57 @@ textarea::placeholder {
   align-items: center;
 }
 
-.payment-list svg { width: 3.8rem; height: 2.4rem; }
+.payment-list svg {
+  width: 3.4rem;
+  height: 2.2rem;
+  filter: grayscale(1);
+  opacity: 0.55;
+}
 
+/* Newsletter section (standalone, index) ---------------------------------- */
+
+.newsletter {
+  background: var(--color-bg-alt);
+}
+
+.newsletter__inner {
+  display: grid;
+  gap: var(--space-4);
+  justify-items: center;
+  max-width: 60rem;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.newsletter__text {
+  max-width: 44ch;
+  color: var(--color-muted);
+}
+
+.newsletter .newsletter-form {
+  width: 100%;
+  max-width: 48rem;
+  margin-top: var(--space-2);
+  justify-content: center;
+}
+
+.newsletter .newsletter-form .field__input {
+  flex: 1 1 20rem;
+  min-width: 0;
+}
+
+.newsletter .newsletter-form .form__error,
+.newsletter .newsletter-form .form__success {
+  flex-basis: 100%;
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer__menu a,
+  .social-list a {
+    transition: none;
+  }
+}
 /* 9. Hero ----------------------------------------------------------------- */
 
 .hero {
@@ -707,8 +1066,8 @@ textarea::placeholder {
 .hero--right .hero__content { justify-items: end; text-align: right; margin-left: auto; }
 
 .hero__heading {
-  font-size: clamp(4rem, 11vw, 10rem);
-  line-height: 0.92;
+  font-size: clamp(4.8rem, 13vw, 15rem);
+  line-height: 0.88;
 }
 
 .hero__subheading {
@@ -740,7 +1099,7 @@ textarea::placeholder {
   font-size: 3.2rem;
   line-height: 1;
   font-variant-numeric: tabular-nums;
-  color: var(--color-sale);
+  color: var(--color-accent);
 }
 
 .countdown__label {
@@ -750,6 +1109,43 @@ textarea::placeholder {
   color: var(--color-muted);
 }
 
+/* Light theme: text sits on the image, so it takes the surface colour and the
+   scrim comes from the foreground, not black. The hero is a self-contained
+   image island; its one button is white so it reads against the scrim. */
+.hero {
+  background: var(--color-bg-alt);
+  color: var(--color-surface);
+}
+
+.hero__overlay {
+  background: linear-gradient(to top, rgb(var(--rgb-fg) / 0.7), rgb(var(--rgb-fg) / 0.15) 55%, transparent);
+}
+
+.hero .eyebrow { color: rgb(255 255 255 / 0.78); color: color-mix(in srgb, var(--color-surface) 78%, transparent); }
+.hero__subheading { color: var(--color-surface); opacity: 0.9; max-width: 44ch; }
+
+.hero__heading {
+  font-size: clamp(4rem, 9vw, 9.6rem);
+  line-height: 0.95;
+  text-wrap: balance;
+}
+
+.hero .btn {
+  background: var(--color-surface);
+  border-color: var(--color-surface);
+  color: var(--color-fg);
+}
+
+.hero .btn:hover {
+  background: var(--color-bg);
+  border-color: var(--color-bg);
+  color: var(--color-fg);
+}
+
+.countdown__unit { background: rgb(var(--rgb-fg) / 0.45); }
+.countdown__value { color: var(--color-surface); }
+.countdown__label { color: rgb(255 255 255 / 0.7); color: color-mix(in srgb, var(--color-surface) 70%, transparent); }
+
 /* 10. Drop banner + marquee ----------------------------------------------- */
 
 .drop-banner {
@@ -757,15 +1153,17 @@ textarea::placeholder {
   overflow: hidden;
   padding-block: var(--space-8);
   background: var(--color-bg-alt);
+  color: var(--color-fg);
 }
 
+/* Optional imagery sits well back so the heading stays the loud element. */
 .drop-banner__bg {
   position: absolute;
   inset: 0;
-  object-fit: cover;
   width: 100%;
   height: 100%;
-  opacity: 0.35;
+  object-fit: cover;
+  opacity: 0.18;
 }
 
 .drop-banner__content {
@@ -773,29 +1171,136 @@ textarea::placeholder {
   display: grid;
   gap: var(--space-4);
   justify-items: center;
+  max-width: 80rem;
+  margin-inline: auto;
   text-align: center;
 }
 
+/* Family + weight come from the display rule in section 2. */
+.drop-banner__heading {
+  font-size: clamp(4.4rem, 11vw, 10.4rem);
+  line-height: 0.95;
+  letter-spacing: 0.01em;
+}
+
+.drop-banner__text {
+  max-width: 44ch;
+  font-size: 1.6rem;
+  color: var(--color-muted);
+}
+
+.drop-banner__content .btn {
+  margin-top: var(--space-2);
+}
+
+/* The inline ticker hugs the band's bottom edge: the negative margin eats
+   the band's own bottom padding so the hairline lands on the section edge. */
+.drop-banner__marquee {
+  position: relative;
+  margin-top: var(--space-8);
+  margin-bottom: calc(var(--space-8) * -1);
+  background: transparent;
+}
+
+/* Marquee ------------------------------------------------------------------ */
+
 .marquee {
   overflow: hidden;
-  border-block: 1px solid var(--color-border);
   padding-block: var(--space-3);
+  border-block: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-fg);
   white-space: nowrap;
 }
 
 .marquee__track {
   display: inline-flex;
-  gap: var(--space-6);
-  animation: marquee 24s linear infinite;
+  /* No flex gap: each child carries its own trailing margin so half the track
+     width lands exactly on the start of the duplicate run — a gap would leave
+     the -50% loop half a gap short and the ticker would stutter each cycle. */
+  animation: marquee var(--marquee-duration, 24s) linear infinite;
   will-change: transform;
 }
 
+.marquee__track > * {
+  margin-right: var(--space-6);
+}
+
+/* A linked ticker pauses under the pointer so it can be read and clicked. */
+.marquee__link:hover .marquee__track,
+.marquee__link:focus-visible .marquee__track {
+  animation-play-state: paused;
+}
+
+/* Family + weight come from the display rule in section 2; the tracking
+   below overrides its 0.01em because a ticker line reads as a label. */
 .marquee__item {
-  font-family: var(--font-heading-family);
-  font-size: 2rem;
-  letter-spacing: 0.14em;
+  font-size: 1.3rem;
+  line-height: 1;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
+  color: var(--color-fg);
+}
+
+.marquee__sep {
+  align-self: center;
+  font-size: 1rem;
+  line-height: 1;
   color: var(--color-muted);
+}
+
+.marquee__link {
+  display: block;
+}
+
+.marquee__link:hover .marquee__item {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.3em;
+}
+
+/* Size variants. .marquee--regular inherits the base look above. */
+.marquee--large {
+  padding-block: var(--space-4);
+}
+
+.marquee--large .marquee__item {
+  font-size: clamp(2.4rem, 5vw, 4.8rem);
+  letter-spacing: 0.02em;
+}
+
+.marquee--large .marquee__sep {
+  font-size: clamp(1.4rem, 3vw, 2.8rem);
+}
+
+.marquee--mini {
+  padding-block: var(--space-2);
+}
+
+.marquee--mini .marquee__item {
+  font-size: 1.1rem;
+  letter-spacing: 0.2em;
+  color: var(--color-muted);
+}
+
+/* Style variants. 'accent' and 'inverse' are the same inverted band on this
+   palette (the accent is the text colour); .marquee--default inherits. */
+.marquee--accent,
+.marquee--inverse {
+  background: var(--color-fg);
+  color: var(--color-bg);
+  border-color: var(--color-fg);
+}
+
+.marquee--accent .marquee__item,
+.marquee--inverse .marquee__item {
+  color: inherit;
+}
+
+.marquee--accent .marquee__sep,
+.marquee--inverse .marquee__sep {
+  color: inherit;
+  opacity: 0.6;
 }
 
 @keyframes marquee {
@@ -803,21 +1308,20 @@ textarea::placeholder {
   to { transform: translateX(-50%); }
 }
 
-/* Editorial split block.
-   The section sets `display: grid` inline but never any columns, so without
-   this rule it stacks at every width. `direction: rtl` on the wrapper is how
-   the section flips image and text; the children reset to ltr. */
-
-.image-with-text {
-  grid-template-columns: 1fr;
-}
-
-@media screen and (min-width: 990px) {
-  .image-with-text {
-    grid-template-columns: 1fr 1fr;
+@media screen and (max-width: 749px) {
+  .drop-banner { padding-block: var(--space-7); }
+  .drop-banner__marquee {
+    margin-top: var(--space-7);
+    margin-bottom: calc(var(--space-7) * -1);
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .marquee__track {
+    animation: none;
+    transform: none;
+  }
+}
 /* 11. Product cards + grids ----------------------------------------------- */
 
 .product-grid {
@@ -880,19 +1384,8 @@ textarea::placeholder {
   border-radius: var(--radius);
 }
 
-.badge--accent {
-  background: rgb(var(--rgb-accent) / 0.16);
-  color: var(--color-accent);
-  border: 1px solid rgb(var(--rgb-accent) / 0.45);
-}
-
+.badge--accent { background: var(--color-accent); color: var(--color-accent-contrast); }
 .badge--sale { background: var(--color-sale); color: #fff; }
-
-.badge--success {
-  background: rgb(var(--rgb-success) / 0.16);
-  color: var(--color-success);
-  border: 1px solid rgb(var(--rgb-success) / 0.45);
-}
 .badge--sold { background: transparent; color: var(--color-fg); border: 1px solid var(--color-fg); }
 
 .card__info {
@@ -951,6 +1444,52 @@ textarea::placeholder {
   font-size: 1.1rem;
   color: var(--color-muted);
 }
+
+/* Light theme: white cards with a hairline, lifted on hover. Badges are tints
+   so the black primary button stays the only black fill. */
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  transition: box-shadow var(--duration) var(--ease), transform var(--duration) var(--ease);
+}
+
+.card:hover { box-shadow: var(--shadow-card); }
+
+.card__media { background: var(--color-bg-alt); }
+
+.card__info { padding: var(--space-3) var(--space-3) var(--space-4); }
+
+.card__title {
+  font-family: var(--font-heading-family);
+  font-size: 1.2rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1.35;
+}
+
+.card__vendor { font-size: 1.1rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-muted); }
+
+.badge {
+  background: var(--color-surface);
+  color: var(--color-fg);
+  border: 1px solid var(--color-border);
+}
+
+.badge--accent {
+  background: rgb(var(--rgb-fg) / 0.08);
+  color: var(--color-fg);
+  border-color: rgb(var(--rgb-fg) / 0.25);
+}
+
+.badge--sale { background: var(--color-sale); color: var(--color-surface); border-color: var(--color-sale); }
+.badge--sold { background: var(--color-surface); color: var(--color-muted); border-color: var(--color-border-strong); }
+
+.price--on-sale .price__current { color: var(--color-sale); }
+.price__compare { color: var(--color-muted); }
+
+/* Quick add: reveal on hover where hover exists; always shown on touch. */
+.card__quick-add { background: rgb(255 255 255 / 0.92); background: color-mix(in srgb, var(--color-surface) 92%, transparent); }
+@media (hover: none) { .card__quick-add { opacity: 1; transform: none; } }
 
 /* 12. Product page -------------------------------------------------------- */
 
@@ -1104,8 +1643,7 @@ textarea::placeholder {
   color: var(--color-muted);
 }
 
-.product__inventory--low { color: var(--color-sale); }
-.product__inventory--in { color: var(--color-success); }
+.product__inventory--low { color: var(--color-accent); }
 
 .product__description {
   font-size: 1.5rem;
@@ -1146,6 +1684,156 @@ textarea::placeholder {
   padding-bottom: var(--space-4);
   font-size: 1.4rem;
   color: var(--color-muted);
+}
+
+/* Buy area: volt Add to cart leads, Buy now sits under it as the quieter
+   second action. Shopify renders the dynamic button's markup itself, so the
+   theme has to reach into its classes to keep it on-brand. */
+
+.product__buy {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.product__buy .shopify-payment-button {
+  display: block;
+}
+
+.shopify-payment-button__button {
+  min-height: 5.2rem;
+  border-radius: var(--radius-btn, 999px) !important;
+  background: transparent;
+  border: 1px solid var(--color-fg);
+  color: var(--color-fg);
+  font-family: var(--font-heading-family);
+  font-size: 1.4rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition: background var(--duration) var(--ease), color var(--duration) var(--ease),
+    transform var(--duration) var(--ease);
+}
+
+.shopify-payment-button__button--unbranded {
+  background: transparent !important;
+  color: var(--color-fg) !important;
+}
+
+.shopify-payment-button__button:hover:not([disabled]),
+.shopify-payment-button__button--unbranded:hover:not([disabled]) {
+  background: var(--color-fg) !important;
+  color: var(--color-bg) !important;
+  transform: translateY(-1px);
+}
+
+.shopify-payment-button__button:active:not([disabled]) {
+  transform: translateY(1px);
+}
+
+.shopify-payment-button__more-options {
+  margin-top: var(--space-2);
+  font-family: var(--font-heading-family);
+  font-size: 1.1rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+}
+
+.shopify-payment-button__more-options:hover {
+  color: var(--color-fg);
+}
+
+/* Reassurance line under the buttons. */
+.product__assurance {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2) var(--space-4);
+  font-size: 1.15rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.product__assurance li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.product__assurance li::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--color-accent);
+}
+
+/* Light theme: swatches are outlined squares; the chosen one inverts. */
+.product__media-list > div { background: var(--color-bg-alt); }
+
+.product__thumb { border: 1px solid var(--color-border); background: var(--color-bg-alt); }
+.product__thumb[aria-current='true'] { border-color: var(--color-fg); }
+
+.product__title { font-size: clamp(2.4rem, 3.6vw, 3.6rem); text-wrap: balance; }
+
+.variant-option__label { color: var(--color-muted); }
+
+.variant-option__value {
+  min-width: 4.8rem;
+  min-height: 4.4rem;
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+  color: var(--color-fg);
+}
+
+.variant-option__value:hover { border-color: var(--color-fg); }
+
+.variant-option__input:checked + .variant-option__value {
+  background: var(--color-fg);
+  border-color: var(--color-fg);
+  color: var(--color-bg);
+}
+
+.variant-option__input:focus-visible + .variant-option__value { outline: var(--focus-ring); outline-offset: 2px; }
+
+.variant-option__value--unavailable {
+  color: var(--color-muted);
+  background: var(--color-bg-alt);
+  border-color: var(--color-border);
+  text-decoration: line-through;
+}
+
+.quantity-input { border: 1px solid var(--color-border-strong); background: var(--color-surface); }
+
+.product__inventory--low { color: var(--color-sale); }
+.product__inventory--in { color: var(--color-success); }
+
+.accordion { border-top: 1px solid var(--color-border); }
+.accordion:last-of-type { border-bottom: 1px solid var(--color-border); }
+.accordion summary { font-size: 1.2rem; letter-spacing: 0.14em; }
+
+/* The size picker is a <fieldset>; the UA border and padding do not belong. */
+.variant-picker fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.variant-picker legend {
+  display: block;
+  width: 100%;
+  padding: 0;
+}
+
+.size-guide__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
 }
 
 /* 13. Collection + facets ------------------------------------------------- */
@@ -1251,6 +1939,15 @@ textarea::placeholder {
   text-align: center;
 }
 
+/* Light theme: hairline facets, inverted current page. */
+.collection-banner { border-bottom: 1px solid var(--color-border); }
+.facets { border-block: 1px solid var(--color-border); }
+.facets summary { border: 1px solid var(--color-border-strong); background: var(--color-surface); }
+.facets__panel { background: var(--color-surface); border: 1px solid var(--color-border); box-shadow: var(--shadow-card); }
+.pagination span, .pagination a { border: 1px solid var(--color-border); background: var(--color-surface); }
+.pagination [aria-current='page'] { background: var(--color-fg); color: var(--color-bg); border-color: var(--color-fg); }
+.empty-state { border: 1px solid var(--color-border); background: var(--color-surface); }
+
 /* 14. Cart drawer + cart page --------------------------------------------- */
 
 .cart-drawer {
@@ -1280,6 +1977,8 @@ textarea::placeholder {
   position: absolute;
   top: 0;
   right: 0;
+  /* Column flex, not a fixed-row grid: the ship-bar renders conditionally
+     between head and body, so the row count varies. */
   display: flex;
   flex-direction: column;
   width: min(44rem, 100%);
@@ -1294,7 +1993,6 @@ textarea::placeholder {
 
 .cart-drawer__head,
 .cart-drawer__foot {
-  flex: 0 0 auto;
   padding: var(--space-4) var(--space-5);
   border-bottom: 1px solid var(--color-border);
   display: flex;
@@ -1420,6 +2118,16 @@ textarea::placeholder {
 .cart-table td:last-child,
 .cart-table th:last-child { text-align: right; }
 
+/* Light theme: white panel over a foreground-tinted overlay. */
+.cart-drawer__overlay { background: rgb(var(--rgb-fg) / 0.42); }
+.cart-drawer__panel { background: var(--color-surface); border-left: 1px solid var(--color-border); }
+.cart-item { border-bottom: 1px solid var(--color-border); }
+.cart-item__image img { background: var(--color-bg-alt); border: 1px solid var(--color-border); }
+.cart-item__title { font-family: var(--font-heading-family); font-size: 1.2rem; letter-spacing: 0.1em; text-transform: uppercase; }
+.cart-table th { border-bottom: 1px solid var(--color-fg); }
+.cart-table td { border-bottom: 1px solid var(--color-border); }
+.cart-page__grid > div:last-child { background: var(--color-surface); border: 1px solid var(--color-border); }
+
 /* 15. Search, 404, page, blog --------------------------------------------- */
 
 .search-form {
@@ -1527,335 +2235,1260 @@ textarea::placeholder {
 
 .password__heading { font-size: clamp(3.2rem, 9vw, 6.4rem); }
 
-/* 19. Blackjack ----------------------------------------------------------- */
+/* 18. Free-shipping bar --------------------------------------------------- */
 
-.blackjack {
+.ship-bar {
   display: grid;
-  gap: var(--space-6);
-  justify-items: center;
-  text-align: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
 }
 
-.blackjack__head { max-width: 60rem; }
-.blackjack__sub { margin-top: var(--space-3); }
-
-.blackjack__felt {
-  --felt: var(--color-felt);
-  display: grid;
-  gap: var(--space-5);
-  width: 100%;
-  max-width: 72rem;
-  padding: var(--space-6) var(--space-5) var(--space-5);
-  border: 1px solid var(--color-border-strong);
-  border-radius: calc(var(--radius) + 8px);
-  /* Radial lift reads as a lit table rather than a flat green rectangle. */
-  background:
-    radial-gradient(120% 90% at 50% 0%, rgb(var(--rgb-fg) / 0.1), transparent 60%),
-    var(--felt);
-  box-shadow: inset 0 0 8rem rgb(var(--rgb-bg) / 0.55);
-}
-
-.blackjack__stake {
+.ship-bar__label {
   font-family: var(--font-heading-family);
-  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-size: 1.1rem;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  letter-spacing: var(--font-heading-tracking);
 }
 
-.blackjack__rules {
-  margin-top: var(--space-2);
-  font-size: 1.3rem;
-  color: rgb(var(--rgb-fg) / 0.65);
+.ship-bar__track {
+  height: 0.4rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--color-bg-alt);
 }
 
-.blackjack__table {
-  display: grid;
-  gap: var(--space-5);
+.ship-bar__fill {
+  height: 100%;
+  background: var(--color-accent);
+  transition: width 400ms var(--ease);
 }
 
-.blackjack__hand { display: grid; gap: var(--space-3); }
-
-.blackjack__hand-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: center;
-  gap: var(--space-3);
+.ship-bar--done .ship-bar__label {
+  color: var(--color-accent);
 }
 
-.blackjack__seat {
+/* Light theme: the fill is the foreground until the threshold, then success. */
+.ship-bar { background: var(--color-bg-alt); border-bottom: 1px solid var(--color-border); }
+.ship-bar__label { font-size: 1.2rem; letter-spacing: 0.12em; }
+.ship-bar__track { background: var(--color-border); }
+.ship-bar__fill { background: var(--color-fg); }
+.ship-bar--done .ship-bar__fill { background: var(--color-success); }
+.ship-bar--done .ship-bar__label { color: var(--color-success); }
+
+/* 19. Upsells + complete the look ----------------------------------------- */
+
+cart-upsells,
+complete-look,
+.upsells-mount {
+  display: block;
+}
+
+.upsells {
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.upsells__heading {
+  margin-bottom: var(--space-3);
   font-family: var(--font-heading-family);
   font-size: 1.2rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgb(var(--rgb-fg) / 0.7);
+  color: var(--color-muted);
 }
 
-.blackjack__score {
-  font-family: var(--font-heading-family);
-  font-size: 1.8rem;
-  font-variant-numeric: tabular-nums;
-  color: var(--color-gold);
-}
-
-.blackjack__cards {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  min-height: 9.6rem;
-}
-
-.bj-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.2rem;
-  width: 6.4rem;
-  height: 9.6rem;
-  border-radius: 6px;
-  background: #f7f7f5;
-  color: #14141a;
-  font-family: var(--font-heading-family);
-  box-shadow: 0 0.6rem 1.6rem rgb(0 0 0 / 0.35);
-  animation: bj-deal 260ms var(--ease) both;
-}
-
-.bj-card--red { color: #c8102e; }
-
-.bj-card--back {
-  background:
-    repeating-linear-gradient(45deg, rgb(255 255 255 / 0.08) 0 4px, transparent 4px 8px),
-    var(--color-sale);
-  border: 2px solid rgb(255 255 255 / 0.25);
-}
-
-.bj-card__rank { font-size: 2.2rem; line-height: 1; }
-.bj-card__suit { font-size: 1.8rem; line-height: 1; }
-
-@keyframes bj-deal {
-  from { opacity: 0; transform: translateY(-1.2rem) rotate(-4deg); }
-  to { opacity: 1; transform: none; }
-}
-
-.blackjack__status {
-  min-height: 2.4rem;
-  margin: 0;
-  font-family: var(--font-heading-family);
-  font-size: clamp(1.6rem, 2.6vw, 2.2rem);
-  text-transform: uppercase;
-  letter-spacing: var(--font-heading-tracking);
-}
-
-.blackjack__status[data-tone='won'] { color: var(--color-gold); }
-.blackjack__status[data-tone='lost'] { color: rgb(var(--rgb-fg) / 0.7); }
-.blackjack__status[data-tone='push'] { color: rgb(var(--rgb-fg) / 0.85); }
-
-.blackjack__controls {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: var(--space-3);
-}
-
-.blackjack__controls .btn[hidden] { display: none; }
-
-.blackjack__reward {
+.upsells__list {
   display: grid;
   gap: var(--space-3);
-  justify-items: center;
-  padding: var(--space-5);
-  border: 1px solid rgb(var(--rgb-gold) / 0.5);
-  border-radius: var(--radius);
-  background: rgb(var(--rgb-bg) / 0.55);
 }
 
-.blackjack__reward-label {
-  margin: 0;
-  font-family: var(--font-heading-family);
-  font-size: clamp(1.8rem, 3vw, 2.4rem);
-  text-transform: uppercase;
-  color: var(--color-gold);
-}
-
-.blackjack__code {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.blackjack__code code {
-  padding: var(--space-2) var(--space-4);
-  border: 1px dashed var(--color-gold);
-  border-radius: var(--radius);
-  font-family: var(--font-heading-family);
-  font-size: 2rem;
-  letter-spacing: 0.2em;
-  color: var(--color-fg);
-}
-
-/* 20. Conversion furniture ------------------------------------------------ */
-
-/* Sticky buy bar. Appears on small screens once the real add-to-cart button
-   has scrolled out of view — see product-form.js. */
-.buy-bar {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 40;
-  display: flex;
-  align-items: center;
+.upsell-card {
+  display: grid;
+  grid-template-columns: 6rem 1fr auto;
   gap: var(--space-3);
-  padding: var(--space-3) var(--gutter);
-  padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
-  border-top: 1px solid var(--color-border);
-  background: rgb(var(--rgb-bg) / 0.94);
-  backdrop-filter: blur(12px);
-  transform: translateY(110%);
-  transition: transform var(--duration) var(--ease);
+  align-items: center;
 }
 
-.buy-bar.is-visible { transform: translateY(0); }
-
-.buy-bar__meta {
-  flex: 1 1 auto;
-  min-width: 0;
-  display: grid;
-  gap: 0.2rem;
-  text-align: left;
-}
-
-.buy-bar__title {
-  font-size: 1.3rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.buy-bar__price { font-size: 1.5rem; color: var(--color-fg); }
-.buy-bar .btn { flex: 0 0 auto; }
-
-@media screen and (min-width: 990px) {
-  .buy-bar { display: none; }
-}
-
-/* Free-shipping progress. The single highest-leverage thing in a cart
-   drawer: it names the gap and gives the number a bar to fill. */
-.ship-meter {
-  display: grid;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--color-border);
-  background: var(--color-bg-alt);
-}
-
-.ship-meter__label { font-size: 1.3rem; }
-.ship-meter__label strong { color: var(--color-accent); }
-.ship-meter--met .ship-meter__label strong { color: var(--color-success); }
-
-.ship-meter__track {
-  height: 0.6rem;
-  border-radius: 999px;
-  background: var(--color-border);
-  overflow: hidden;
-}
-
-.ship-meter__fill {
-  /* It is a <span>; without this it stays display:inline, where width and
-     height do not apply and the bar never fills. */
+.upsell-card__image {
   display: block;
-  height: 100%;
-  width: 0;
-  border-radius: 999px;
-  background: var(--color-accent);
-  transition: width 400ms var(--ease), background var(--duration) var(--ease);
 }
 
-.ship-meter--met .ship-meter__fill { background: var(--color-success); }
+.upsell-card__image img {
+  width: 6rem;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border-radius: var(--radius);
+}
 
-/* Trust row — the objection-handling strip under a buy button. */
-.trust-row {
+.upsell-card__info {
   display: grid;
-  gap: var(--space-3);
-  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-  margin-top: var(--space-5);
-  padding-top: var(--space-5);
-  border-top: 1px solid var(--color-border);
+  gap: var(--space-1);
+  justify-items: start;
 }
 
-.trust-item {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-2);
-  font-size: 1.3rem;
-  line-height: 1.4;
+.upsell-card__title {
+  font-family: var(--font-heading-family);
+  font-size: 1.2rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-.trust-item svg {
-  flex: 0 0 auto;
-  width: 1.8rem;
-  height: 1.8rem;
-  color: var(--color-success);
+.upsell-card__price {
+  font-size: 1.2rem;
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
 }
 
-.trust-item strong { display: block; }
-.trust-item span { color: var(--color-muted); }
-
-.trust-bar {
-  border-block: 1px solid var(--color-border);
+.upsell-card__select {
+  width: auto;
+  min-height: 3.2rem;
+  padding: 0 var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
   background: var(--color-bg-alt);
+  color: var(--color-fg);
+  font: inherit;
+  font-size: 1.2rem;
 }
 
-.trust-bar .trust-row {
-  margin: 0;
-  padding-block: var(--space-5);
-  border-top: 0;
+.upsell-card__select:focus {
+  border-color: var(--color-accent);
+  outline: none;
 }
 
-/* Testimonials */
-.quote-grid {
+.upsell-card__btn {
+  white-space: nowrap;
+}
+
+/* Tile variant (PDP "complete the fit" row). */
+.upsell-card--tile {
+  grid-template-columns: none;
+  grid-template-rows: auto auto auto;
+  align-items: start;
+  gap: var(--space-2);
+}
+
+.upsell-card--tile .upsell-card__image img {
+  width: 100%;
+}
+
+.upsell-card--tile .upsell-card__btn {
+  justify-self: start;
+}
+
+.complete-look__list {
   display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(16rem, 1fr);
   gap: var(--grid-gap);
-  grid-template-columns: repeat(auto-fit, minmax(26rem, 1fr));
+  overflow-x: auto;
+  padding-bottom: var(--space-2);
 }
 
-.quote {
+/* Light theme: upsell tiles are white cards. */
+.upsells { border-top: 1px solid var(--color-border); }
+.upsells__heading { font-size: 1.1rem; letter-spacing: 0.16em; color: var(--color-muted); }
+.upsell-card { background: var(--color-surface); border: 1px solid var(--color-border); }
+.upsell-card__image { background: var(--color-bg-alt); }
+.upsell-card__title { font-family: var(--font-heading-family); font-size: 1.1rem; letter-spacing: 0.1em; text-transform: uppercase; }
+.upsell-card__select { border: 1px solid var(--color-border-strong); background: var(--color-surface); }
+
+/* 20. Bundle builder ------------------------------------------------------ */
+
+.bundle {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.bundle__intro {
   display: grid;
   gap: var(--space-3);
-  align-content: start;
+  max-width: 64rem;
+}
+
+.bundle__grid {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.bundle__items {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.bundle-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 9rem 1fr;
+  gap: var(--space-4);
+  align-items: center;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.bundle-item--soldout {
+  opacity: 0.45;
+}
+
+.bundle-item__toggle {
+  position: relative;
+  display: inline-flex;
+  cursor: pointer;
+}
+
+.bundle-item__toggle input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.bundle-item__box {
+  display: grid;
+  place-items: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  transition: background var(--duration) var(--ease), border-color var(--duration) var(--ease);
+}
+
+.bundle-item__box::after {
+  content: "";
+  width: 0.6rem;
+  height: 1.1rem;
+  border: solid var(--color-accent-contrast);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg) translate(-10%, -10%);
+  opacity: 0;
+}
+
+.bundle-item__toggle input:checked + .bundle-item__box {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.bundle-item__toggle input:checked + .bundle-item__box::after {
+  opacity: 1;
+}
+
+.bundle-item__toggle input:focus-visible + .bundle-item__box {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.bundle-item__media {
+  display: block;
+}
+
+.bundle-item__media img {
+  width: 9rem;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border-radius: var(--radius);
+}
+
+.bundle-item__info {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: start;
+}
+
+.bundle-item__title {
+  font-family: var(--font-heading-family);
+  font-size: 1.3rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.bundle-item__price {
+  font-size: 1.3rem;
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.bundle-item__select {
+  width: auto;
+  min-height: 3.6rem;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-bg-alt);
+  color: var(--color-fg);
+  font: inherit;
+  font-size: 1.3rem;
+}
+
+.bundle-item__select:focus {
+  border-color: var(--color-accent);
+  outline: none;
+}
+
+/* Connector between stacked cards; sits in the middle of the grid gap. */
+.bundle-item__plus {
+  position: absolute;
+  left: 50%;
+  bottom: calc(-1 * var(--space-5));
+  transform: translateX(-50%);
+  font-size: 2.4rem;
+  line-height: 1;
+  color: var(--color-accent);
+}
+
+.bundle-item:last-child .bundle-item__plus {
+  display: none;
+}
+
+.bundle__summary {
+  display: grid;
+  gap: var(--space-3);
   padding: var(--space-5);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   background: var(--color-bg-alt);
 }
 
-.quote__stars {
-  display: flex;
-  gap: 0.2rem;
-  color: var(--color-gold);
+.bundle__summary-heading {
+  font-family: var(--font-heading-family);
+  font-size: 1.2rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
 }
 
-.quote__stars svg { width: 1.6rem; height: 1.6rem; }
-
-.quote__text { font-size: 1.6rem; line-height: 1.55; }
-
-.quote__author {
+.bundle__count {
+  font-family: var(--font-heading-family);
   font-size: 1.2rem;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--color-muted);
 }
 
-/* FAQ */
-.faq {
-  max-width: 76rem;
-  margin-inline: auto;
+.bundle__prices {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
 }
 
-/* 18. Motion -------------------------------------------------------------- */
+.bundle__compare {
+  font-size: 1.4rem;
+  color: var(--color-muted);
+  text-decoration: line-through;
+}
+
+.bundle__total {
+  font-family: var(--font-display-family, var(--font-heading-family));
+  font-weight: 400;
+  font-size: 3.2rem;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+.bundle__savings {
+  color: var(--color-accent);
+  font-size: 1.3rem;
+}
+
+.bundle__hint {
+  color: var(--color-muted);
+  font-size: 1.3rem;
+}
+
+/* Light theme: items and the summary are white cards; the savings read green. */
+.bundle-item__box { background: var(--color-surface); border: 1px solid var(--color-border); }
+.bundle-item__media { background: var(--color-bg-alt); }
+.bundle-item__title { font-family: var(--font-heading-family); font-size: 1.1rem; letter-spacing: 0.1em; text-transform: uppercase; }
+.bundle-item__select { border: 1px solid var(--color-border-strong); background: var(--color-surface); }
+.bundle-item__plus { color: var(--color-muted); }
+.bundle__summary { background: var(--color-surface); border: 1px solid var(--color-border); }
+.bundle__savings { color: var(--color-success); }
+.bundle__hint { color: var(--color-muted); }
+
+/* 21. Blackjack ----------------------------------------------------------- */
+
+/* A dark island on the light page: leather rail, felt inside, gold and cream
+   markings. Only two inks go on the felt — gold (5.4:1) and the page cream
+   (8.5:1) — so nothing on the table falls under AA. The top light is capped
+   at 6% cream, which is where gold on the lit felt still clears 4.5:1. */
+
+.bj {
+  display: grid;
+  gap: var(--space-6);
+  justify-items: center;
+  text-align: center;
+}
+
+.bj__intro {
+  display: grid;
+  gap: var(--space-3);
+  max-width: 64rem;
+}
+
+.bj__text { font-size: 1.5rem; line-height: 1.6; }
+
+/* --- The table -------------------------------------------------------- */
+
+.bj__rail {
+  --bj-radius: 2.8rem;
+  width: 100%;
+  max-width: 76rem;
+  padding: 1.2rem;
+  border-radius: var(--bj-radius);
+  /* Warm near-black leather: the text colour with a breath of gold over it. */
+  background:
+    linear-gradient(180deg, rgb(var(--rgb-gold) / 0.14), rgb(var(--rgb-gold) / 0.04) 45%, rgb(var(--rgb-gold) / 0.08)),
+    rgb(var(--rgb-fg) / 0.92);
+  box-shadow:
+    inset 0 1px 0 rgb(var(--rgb-gold) / 0.28),
+    0 32px 60px -36px rgb(var(--rgb-fg) / 0.7);
+}
+
+.bj__felt {
+  display: grid;
+  gap: var(--space-5);
+  justify-items: center;
+  padding: var(--space-6) var(--space-5) var(--space-5);
+  border-radius: calc(var(--bj-radius) - 1.2rem);
+  color: var(--color-bg);
+  background:
+    radial-gradient(120% 70% at 50% 0%, rgb(var(--rgb-bg) / 0.06), transparent 60%),
+    repeating-linear-gradient(0deg, rgb(var(--rgb-fg) / 0.035) 0 1px, transparent 1px 3px),
+    var(--color-felt);
+  /* A gold hairline at the edge, then a vignette so the middle reads lit. */
+  box-shadow:
+    inset 0 0 0 1px rgb(var(--rgb-gold) / 0.38),
+    inset 0 0 9rem rgb(var(--rgb-fg) / 0.42);
+}
+
+/* The store's focus ring is black; on the felt that vanishes. */
+.bj__felt :focus-visible {
+  outline: 2px solid var(--color-bg);
+  outline-offset: 3px;
+}
+
+.bj__table {
+  display: grid;
+  gap: var(--space-4);
+  width: 100%;
+}
+
+.bj__hand {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: center;
+}
+
+.bj__hand-label {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  font-family: var(--font-heading-family);
+  font-size: 1.1rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+}
+
+.bj__score {
+  min-width: 1.5em;
+  font-size: 1.6rem;
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-bg);
+}
+
+.bj__cards {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  min-height: calc(var(--bj-card-w, 7.2rem) * 1.4);
+  perspective: 90rem;
+}
+
+/* --- Markings ----------------------------------------------------------- */
+
+.bj__markings {
+  display: grid;
+  gap: var(--space-2);
+  width: 100%;
+  padding-block: var(--space-3);
+  border-block: 1px solid rgb(var(--rgb-gold) / 0.35);
+}
+
+.bj__marking {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.2em 0.9em;
+  min-height: 1.4em;
+  font-family: var(--font-heading-family);
+  font-size: 1.1rem;
+  line-height: 1.4;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+}
+
+.bj__marking--tiers { font-size: 1.2rem; }
+
+.bj__mark-sep { opacity: 0.7; }
+
+/* --- Cards ------------------------------------------------------------ */
+
+/* Card faces are physical objects — fixed inks, not theme tokens. */
+.bj-card {
+  --bj-card-w: 7.2rem;
+  position: relative;
+  width: var(--bj-card-w);
+  height: calc(var(--bj-card-w) * 1.4);
+  animation: bj-deal 420ms var(--ease) both;
+  animation-delay: var(--bj-deal-delay, 0ms);
+}
+
+/* Cards come from the shoe on the dealer's side, above the table. */
+@keyframes bj-deal {
+  from {
+    opacity: 0;
+    transform: translateY(-3.6rem) rotate(-5deg);
+  }
+}
+
+.bj-card__inner {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transition: transform 560ms var(--ease);
+}
+
+.bj-card--down .bj-card__inner { transform: rotateY(180deg); }
+
+.bj-card__face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 0.6rem;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  box-shadow:
+    inset 0 0 0 1px rgb(0 0 0 / 0.08),
+    0 1px 1px rgb(0 0 0 / 0.35),
+    0 10px 18px -8px rgb(0 0 0 / 0.65);
+}
+
+.bj-card__face--front {
+  background: radial-gradient(120% 120% at 30% 20%, #fffdf6, #f3efe3);
+  color: #141414;
+  font-family: var(--font-heading-family);
+  font-weight: var(--font-heading-weight);
+}
+
+.bj-card--red .bj-card__face--front { color: #b3122a; }
+
+.bj-card__face--back {
+  transform: rotateY(180deg);
+  background:
+    repeating-linear-gradient(45deg, rgb(255 255 255 / 0.13) 0 2px, transparent 2px 7px),
+    repeating-linear-gradient(-45deg, rgb(255 255 255 / 0.13) 0 2px, transparent 2px 7px),
+    #7a1c24;
+  box-shadow:
+    inset 0 0 0 0.4rem #f3efe3,
+    inset 0 0 0 0.5rem #7a1c24,
+    0 1px 1px rgb(0 0 0 / 0.35),
+    0 10px 18px -8px rgb(0 0 0 / 0.65);
+}
+
+.bj-card__corner {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.6rem;
+  display: grid;
+  justify-items: center;
+  line-height: 1;
+}
+
+.bj-card__corner--bottom {
+  top: auto;
+  left: auto;
+  right: 0.6rem;
+  bottom: 0.5rem;
+  transform: rotate(180deg);
+}
+
+.bj-card__rank { font-size: 1.5rem; }
+
+.bj-card__suit {
+  margin-top: 0.15rem;
+  font-size: 1.1rem;
+}
+
+.bj-card__pip {
+  display: grid;
+  justify-items: center;
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.bj-card__pip--ace { font-size: 3.6rem; }
+
+.bj-card__pip--court { gap: 0.2rem; }
+
+.bj-card__court { font-size: 2.8rem; }
+
+.bj-card__court-suit { font-size: 1.4rem; }
+
+/* --- Status + controls ----------------------------------------------- */
+
+.bj__status {
+  min-height: 1.6em;
+  font-family: var(--font-heading-family);
+  font-size: 1.4rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-bg);
+}
+
+.bj__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.bj__actions .bj__btn[hidden] { display: none; }
+
+/* On the felt the table sets the palette: gold to deal, cream outlines to
+   play. The store's black button stays for the shop link in the ticket. */
+.bj__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 4.8rem;
+  min-width: 13rem;
+  padding: 0 var(--space-6);
+  border: 1px solid var(--color-gold);
+  border-radius: var(--radius-btn, 0);
+  background: var(--color-gold);
+  color: var(--color-fg);
+  font-family: var(--font-heading-family);
+  font-size: 1.3rem;
+  font-weight: var(--font-heading-weight);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background var(--duration) var(--ease),
+    border-color var(--duration) var(--ease),
+    color var(--duration) var(--ease),
+    transform var(--duration) var(--ease);
+}
+
+.bj__btn:hover {
+  background: var(--color-bg);
+  border-color: var(--color-bg);
+}
+
+.bj__btn:active { transform: translateY(1px); }
+
+.bj__btn--line {
+  background: transparent;
+  border-color: var(--color-bg);
+  color: var(--color-bg);
+}
+
+.bj__btn--line:hover {
+  background: var(--color-bg);
+  color: var(--color-felt);
+}
+
+.bj__btn[disabled],
+.bj__btn[aria-disabled='true'] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* --- Reward ticket ----------------------------------------------------- */
+
+.bj__result {
+  position: relative;
+  display: grid;
+  gap: var(--space-3);
+  justify-items: center;
+  width: 100%;
+  max-width: 46rem;
+  padding: var(--space-5) var(--space-6);
+  border: 2px solid var(--color-gold);
+  background: var(--color-surface);
+  color: var(--color-fg);
+  overflow: hidden;
+  /* Punched edges: two circles masked out of the ticket, border included. */
+  mask:
+    radial-gradient(circle at 0 50%, transparent 1.1rem, currentColor 1.2rem),
+    radial-gradient(circle at 100% 50%, transparent 1.1rem, currentColor 1.2rem);
+  mask-composite: intersect;
+  -webkit-mask:
+    radial-gradient(circle at 0 50%, transparent 1.1rem, currentColor 1.2rem),
+    radial-gradient(circle at 100% 50%, transparent 1.1rem, currentColor 1.2rem);
+  -webkit-mask-composite: source-in;
+  animation: bj-ticket 480ms var(--ease) both;
+}
+
+.bj__result[hidden] { display: none; }
+
+@keyframes bj-ticket {
+  from {
+    opacity: 0;
+    transform: translateY(1.2rem) scale(0.97);
+  }
+}
+
+/* One gold sweep across the ticket when it lands: winning should feel it. */
+.bj__result::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 38%, rgb(var(--rgb-gold) / 0.55) 50%, transparent 62%);
+  transform: translateX(-120%);
+  animation: bj-shimmer 1100ms var(--ease) 320ms both;
+}
+
+@keyframes bj-shimmer {
+  to { transform: translateX(120%); }
+}
+
+.bj__result-title {
+  font-family: var(--font-display-family, var(--font-heading-family));
+  font-weight: 400;
+  font-size: clamp(2.2rem, 4vw, 3rem);
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.bj__result-label {
+  width: 100%;
+  padding-top: var(--space-3);
+  border-top: 1px dashed var(--color-border-strong);
+  font-family: var(--font-heading-family);
+  font-size: 1.1rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.bj__code {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.bj__code code {
+  padding-left: 0.24em; /* offsets the trailing tracking so the code sits centred */
+  font-family: var(--font-heading-family);
+  font-weight: var(--font-heading-weight);
+  font-size: clamp(2rem, 6vw, 3rem);
+  letter-spacing: 0.24em;
+  line-height: 1.2;
+  color: var(--color-fg);
+}
+
+.bj__copy {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 4.4rem;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-btn, 0);
+  background: var(--color-surface);
+  color: var(--color-fg);
+  font-family: var(--font-heading-family);
+  font-size: 1.1rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background var(--duration) var(--ease), border-color var(--duration) var(--ease);
+}
+
+.bj__copy:hover {
+  background: var(--color-bg-alt);
+  border-color: var(--color-fg);
+}
+
+.bj__shop {
+  width: 100%;
+  max-width: 32rem;
+  margin-top: var(--space-2);
+}
+
+/* --- Ledger: chips, hands left, streak ------------------------------- */
+
+.bj__ledger {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3) var(--space-5);
+  width: 100%;
+  padding-top: var(--space-4);
+  border-top: 1px solid rgb(var(--rgb-gold) / 0.28);
+}
+
+.bj__hands {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.bj__ledger-label,
+.bj__meta,
+.bj__streak {
+  font-family: var(--font-heading-family);
+  font-size: 1.1rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.bj__ledger-label { color: var(--color-gold); }
+
+.bj__meta { color: var(--color-bg); }
+
+.bj__chips {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* A gold chip: notched edge, thin ring, solid centre. Spent hands leave a
+   hollow outline behind so the stack still reads as "3 a day". */
+.bj-chip {
+  width: 2.6rem;
+  height: 2.6rem;
+  margin-left: -0.8rem;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, transparent 0 40%, rgb(var(--rgb-fg) / 0.35) 41% 45%, transparent 46%),
+    radial-gradient(circle, var(--color-gold) 0 62%, transparent 63%),
+    repeating-conic-gradient(var(--color-gold) 0 24deg, rgb(var(--rgb-fg) / 0.55) 24deg 45deg);
+  box-shadow:
+    inset 0 0 0 1px rgb(var(--rgb-fg) / 0.25),
+    0 1px 0 rgb(var(--rgb-fg) / 0.5),
+    0 3px 6px -2px rgb(var(--rgb-fg) / 0.6);
+  transition: opacity var(--duration) var(--ease), transform var(--duration) var(--ease);
+}
+
+.bj-chip:first-child { margin-left: 0; }
+
+.bj-chip--spent {
+  background: none;
+  box-shadow: inset 0 0 0 1px rgb(var(--rgb-gold) / 0.55);
+  opacity: 0.6;
+}
+
+.bj__streak {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--color-gold);
+  border-radius: 999px;
+  color: var(--color-gold);
+}
+
+.bj__streak[hidden] { display: none; }
+
+.bj__streak--hot {
+  background: var(--color-gold);
+  color: var(--color-fg);
+}
+
+/* --- Mobile ------------------------------------------------------------- */
+
+@media screen and (max-width: 749px) {
+  .bj { gap: var(--space-5); }
+
+  .bj__rail {
+    --bj-radius: 2rem;
+    padding: 0.8rem;
+  }
+
+  .bj__felt {
+    gap: var(--space-4);
+    padding: var(--space-5) var(--space-3) var(--space-4);
+  }
+
+  .bj__cards { min-height: calc(6rem * 1.4); }
+
+  .bj-card { --bj-card-w: 6rem; }
+
+  .bj-card__rank { font-size: 1.3rem; }
+  .bj-card__suit { font-size: 1rem; }
+  .bj-card__pip { font-size: 2.6rem; }
+  .bj-card__pip--ace { font-size: 3rem; }
+  .bj-card__court { font-size: 2.4rem; }
+
+  /* One phrase per line; the dot separators would dangle at line ends. */
+  .bj__marking {
+    flex-direction: column;
+    gap: 0.35em;
+    letter-spacing: 0.16em;
+  }
+
+  .bj__mark-sep { display: none; }
+
+  .bj__btn {
+    flex: 1 1 12rem;
+    min-width: 0;
+    padding-inline: var(--space-4);
+  }
+
+  .bj__result { padding: var(--space-4) var(--space-5); }
+
+  .bj__ledger { gap: var(--space-3) var(--space-4); }
+}
+
+/* --- Reduced motion ------------------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  .bj-card { animation: none; }
+  .bj-card__inner { transition: none; }
+  .bj__result { animation: none; }
+  .bj__result::after { display: none; }
+  .bj__btn,
+  .bj__copy,
+  .bj-chip { transition: none; }
+}
+/* 22. Size guide ---------------------------------------------------------- */
+
+.size-guide__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-heading-family);
+  font-size: 1.1rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+  padding: 0;
+  transition: color var(--duration) var(--ease);
+}
+
+.size-guide__trigger:hover {
+  color: var(--color-accent);
+}
+
+.size-guide__trigger svg {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+
+.size-guide__row {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.size-guide {
+  width: min(72rem, calc(100vw - var(--gutter) * 2));
+  max-height: min(80vh, 72rem);
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  color: var(--color-fg);
+  overflow: hidden;
+}
+
+.size-guide::backdrop {
+  background: rgb(0 0 0 / 0.7);
+}
+
+.size-guide__panel {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  max-height: inherit;
+}
+
+.size-guide__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.size-guide__body {
+  padding: var(--space-5);
+  overflow-y: auto;
+  font-size: 1.4rem;
+}
+
+/* Covers the chart image and any image inside the size-guide page content.
+   Charts are usually dark line art, often on a transparent background, so a
+   light plate keeps them readable on the near-black panel. */
+.size-guide__body img {
+  width: 100%;
+  border-radius: var(--radius);
+  background: var(--color-fg);
+}
+
+.size-guide__image {
+  margin-bottom: var(--space-5);
+}
+
+.size-guide__body h2,
+.size-guide__body h3 {
+  margin-bottom: var(--space-3);
+  font-size: 1.4rem;
+  letter-spacing: 0.12em;
+}
+
+.size-guide__body h2:not(:first-child),
+.size-guide__body h3:not(:first-child) {
+  margin-top: var(--space-5);
+}
+
+.size-guide__body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: var(--space-4);
+  font-variant-numeric: tabular-nums;
+}
+
+.size-guide__body th,
+.size-guide__body td {
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+}
+
+.size-guide__body th {
+  font-family: var(--font-heading-family);
+  font-size: 1.1rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.size-guide__body ul {
+  list-style: disc;
+  padding-left: 1.5em;
+  margin-bottom: 1em;
+}
+
+.size-guide__link {
+  padding: 0 var(--space-5) var(--space-5);
+}
+
+/* Light theme dialog. */
+.size-guide { background: var(--color-surface); color: var(--color-fg); border: 1px solid var(--color-border); }
+.size-guide::backdrop { background: rgb(0 0 0 / 0.4); }
+.size-guide__head { border-bottom: 1px solid var(--color-border); }
+.size-guide__trigger { color: var(--color-muted); }
+.size-guide__trigger:hover { color: var(--color-fg); }
+
+/* 23. Discount code form -------------------------------------------------- */
+
+/* A plain GET form to /cart?discount=CODE — Shopify applies the code to the
+   session, so this works with no JavaScript at all. */
+.discount-form {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.discount-form .field__input {
+  flex: 1 1 auto;
+  min-height: 4.4rem;
+  font-size: 1.3rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.discount-form .btn {
+  min-height: 4.4rem;
+  padding-inline: var(--space-5);
+  font-size: 1.2rem;
+}
+
+.discount-toggle {
+  border: 0;
+}
+
+.discount-toggle summary {
+  padding-block: var(--space-2);
+  font-size: 1.2rem;
+  letter-spacing: 0.12em;
+}
+
+.discount-toggle .accordion__content {
+  padding-bottom: var(--space-3);
+}
+
+/* Light theme: quiet apply button next to the field. */
+.discount-toggle summary { font-size: 1.2rem; letter-spacing: 0.14em; }
+.discount-form .btn { background: var(--color-surface); color: var(--color-fg); border-color: var(--color-border-strong); }
+.discount-form .btn:hover { background: var(--color-bg-alt); border-color: var(--color-fg); }
+
+/* 24. Blackjack popup ----------------------------------------------------- */
+
+/* A white surface dialog with the felt table inside it. The dialog keeps the
+   store's square corners and hairlines; only the table has its own shape. */
+
+.bj-modal {
+  width: min(80rem, calc(100vw - var(--gutter) * 2));
+  max-height: min(92vh, 96rem);
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-fg);
+  overflow: hidden;
+  box-shadow: 0 24px 60px -24px rgb(var(--rgb-fg) / 0.45);
+}
+
+.bj-modal[open] { animation: bj-modal-in 260ms var(--ease) both; }
+
+@keyframes bj-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(1.2rem);
+  }
+}
+
+.bj-modal::backdrop {
+  background: rgb(var(--rgb-fg) / 0.55);
+}
+
+.bj-modal__panel {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  max-height: inherit;
+}
+
+.bj-modal__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-4) var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+}
+
+.bj-modal__title {
+  font-family: var(--font-heading-family);
+  font-size: 1.3rem;
+  font-weight: var(--font-heading-weight);
+  letter-spacing: 0.18em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  padding-top: 1.2rem;
+}
+
+.bj-modal__text {
+  margin-top: var(--space-1);
+  font-size: 1.4rem;
+  line-height: 1.5;
+}
+
+.bj-modal__close {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.4rem;
+  height: 4.4rem;
+  margin: -0.4rem -0.4rem 0 0;
+  color: var(--color-fg);
+  transition: opacity var(--duration) var(--ease);
+}
+
+.bj-modal__close:hover { opacity: 0.6; }
+
+.bj-modal__close svg {
+  width: 2rem;
+  height: 2rem;
+}
+
+.bj-modal__body {
+  overflow-y: auto;
+  padding: var(--space-4);
+}
+
+/* Inside the popup the table is already framed by the dialog itself. */
+.bj-modal .bj { gap: 0; }
+
+.bj-modal .bj__rail {
+  --bj-radius: 2rem;
+  padding: 0.8rem;
+  box-shadow: inset 0 1px 0 rgb(var(--rgb-gold) / 0.28);
+}
+
+.bj-modal .bj__felt {
+  gap: var(--space-4);
+  padding: var(--space-5) var(--space-4) var(--space-4);
+}
+
+.bj-modal .bj__cards { min-height: calc(6.4rem * 1.4); }
+
+.bj-modal .bj-card { --bj-card-w: 6.4rem; }
+
+/* Floating trigger: the store's black pill, small, pinned to a bottom corner. */
+.bj-fab {
+  position: fixed;
+  bottom: var(--space-4);
+  z-index: 50;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 4.4rem;
+  padding: 0 var(--space-4);
+  border-radius: 999px;
+  background: var(--color-btn-bg);
+  color: var(--color-btn-fg);
+  font-family: var(--font-heading-family);
+  font-size: 1.1rem;
+  font-weight: var(--font-heading-weight);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-decoration: none;
+  box-shadow: 0 10px 24px -10px rgb(var(--rgb-fg) / 0.6);
+  transition: background var(--duration) var(--ease), transform var(--duration) var(--ease);
+}
+
+.bj-fab--left { left: var(--space-4); }
+.bj-fab--right { right: var(--space-4); }
+
+.bj-fab:hover {
+  background: var(--color-btn-bg-hover);
+  color: var(--color-btn-fg);
+  transform: translateY(-2px);
+}
+
+@media screen and (max-width: 749px) {
+  .bj-modal {
+    width: calc(100vw - var(--gutter) * 2);
+    max-height: 94vh;
+  }
+
+  .bj-modal__body { padding: var(--space-3); }
+
+  .bj-modal .bj-card { --bj-card-w: 5.8rem; }
+  .bj-modal .bj__cards { min-height: calc(5.8rem * 1.4); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bj-modal[open] { animation: none; }
+  .bj-fab,
+  .bj-modal__close { transition: none; }
+}
+/* 25. Motion -------------------------------------------------------------- */
 
 .animate .reveal {
   opacity: 0;
@@ -1884,11 +3517,8 @@ body.is-locked {
 
   .animate .reveal { opacity: 1; transform: none; }
   .marquee__track { animation: none; }
-  .bj-card { animation: none; }
-  .btn--lift:hover { transform: none; box-shadow: none; }
-  .btn:active { transform: none; }
-  .ship-meter__fill { transition: none; }
-  .buy-bar { transition: none; }
+  .bj-card--flip { animation: none; }
+  .ship-bar__fill { transition: none; }
 }
 
 /* --- Breakpoints --------------------------------------------------------- */
@@ -1928,5 +3558,323 @@ body.is-locked {
 
   .article-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
+  .bundle__grid {
+    grid-template-columns: 1fr 34rem;
+    gap: var(--space-7);
+    align-items: start;
+  }
+
+  .bundle__summary {
+    position: sticky;
+    top: calc(var(--header-height) + var(--space-5));
+  }
+
   .section { padding-block: var(--space-8); }
 }
+/* 27. Image with text ----------------------------------------------------- */
+
+/* The section sets `display: grid` inline but never any columns, so without
+   this rule it stacks at every width. `direction: rtl` on the wrapper is how
+   the section flips image and text; the children reset to ltr. */
+.image-with-text {
+  grid-template-columns: 1fr;
+}
+
+.image-with-text img {
+  background: var(--color-bg-alt);
+  border: 1px solid var(--color-border);
+}
+
+.image-with-text .h2 {
+  max-width: 18ch;
+  text-wrap: balance;
+}
+
+@media screen and (min-width: 990px) {
+  .image-with-text {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-8);
+  }
+}
+
+/* 28. Sticky buy bar + trust row ------------------------------------------ */
+
+/* Appears on small screens once the real add-to-cart button has scrolled out
+   of view — product-form.js toggles .is-visible. A second submit for the same
+   form, so it inherits the variant chosen above. */
+.buy-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--gutter);
+  padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--color-border);
+  background: rgb(255 255 255 / 0.94);
+  background: color-mix(in srgb, var(--color-surface) 94%, transparent);
+  backdrop-filter: blur(12px);
+  transform: translateY(110%);
+  transition: transform var(--duration) var(--ease);
+}
+
+.buy-bar.is-visible { transform: translateY(0); }
+
+.buy-bar__meta {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: grid;
+  gap: 0.2rem;
+  text-align: left;
+}
+
+.buy-bar__title {
+  font-family: var(--font-heading-family);
+  font-size: 1.1rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.buy-bar__price { font-size: 1.5rem; color: var(--color-fg); }
+.buy-bar .btn { flex: 0 0 auto; }
+
+@media screen and (min-width: 990px) {
+  .buy-bar { display: none; }
+}
+
+/* Trust row — the objection-handling strip under a buy button, and the
+   site-wide band under the hero. */
+.trust-row {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  margin-top: var(--space-5);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-border);
+}
+
+.trust-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  font-size: 1.3rem;
+  line-height: 1.45;
+}
+
+.trust-item svg {
+  flex: 0 0 auto;
+  width: 2rem;
+  height: 2rem;
+  color: var(--color-success);
+}
+
+.trust-item p { margin: 0; }
+
+.trust-item strong {
+  display: block;
+  font-family: var(--font-heading-family);
+  font-size: 1.1rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.trust-item span { color: var(--color-muted); }
+
+.trust-bar {
+  border-block: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.trust-bar .trust-row {
+  margin: 0;
+  padding-block: var(--space-5);
+  border-top: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .buy-bar { transition: none; }
+}
+
+/* 29. Testimonials, FAQ, the Secret page ---------------------------------- */
+
+.quote-grid {
+  display: grid;
+  gap: var(--grid-gap);
+  grid-template-columns: repeat(auto-fit, minmax(26rem, 1fr));
+}
+
+.quote {
+  display: grid;
+  gap: var(--space-3);
+  align-content: start;
+  margin: 0;
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.quote__stars {
+  display: flex;
+  gap: 0.2rem;
+  color: var(--color-gold);
+}
+
+.quote__stars svg { width: 1.6rem; height: 1.6rem; }
+
+.quote__text {
+  font-size: 1.6rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.quote__author {
+  font-family: var(--font-heading-family);
+  font-style: normal;
+  font-size: 1.1rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.faq {
+  max-width: 76rem;
+  margin-inline: auto;
+}
+
+/* The Secret page: the viral-video reward program. */
+.viral__hero {
+  padding-block: var(--space-8);
+  background: var(--color-bg-alt);
+  text-align: center;
+}
+
+.viral__heading {
+  max-width: 14ch;
+  margin-inline: auto;
+  font-size: clamp(3.6rem, 9vw, 8.8rem);
+  line-height: 0.95;
+  text-wrap: balance;
+}
+
+.viral__intro {
+  max-width: 56rem;
+  margin: var(--space-5) auto 0;
+  font-size: 1.7rem;
+  color: var(--color-muted);
+}
+
+.viral__tiers {
+  display: grid;
+  gap: var(--grid-gap);
+  grid-template-columns: repeat(auto-fit, minmax(24rem, 1fr));
+}
+
+.tier {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-6) var(--space-5);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  text-align: center;
+}
+
+.tier__views {
+  font-family: var(--font-heading-family);
+  font-size: 1.2rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.tier__percent {
+  font-family: var(--font-display-family, var(--font-heading-family));
+  font-size: clamp(5.6rem, 12vw, 9.6rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.tier__percent small {
+  font-size: 0.4em;
+  vertical-align: top;
+  margin-left: 0.1em;
+}
+
+.tier__label {
+  font-family: var(--font-heading-family);
+  font-size: 1.3rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.tier__note {
+  font-size: 1.3rem;
+  color: var(--color-muted);
+}
+
+.viral__cap {
+  margin-top: var(--space-4);
+  text-align: center;
+  font-size: 1.3rem;
+  color: var(--color-muted);
+}
+
+/* The steps are a real sequence, so the numbers carry information. */
+.steps {
+  display: grid;
+  gap: var(--grid-gap);
+  grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
+  counter-reset: step;
+}
+
+.step {
+  position: relative;
+  padding: var(--space-5) var(--space-5) var(--space-5) 6.4rem;
+  border-top: 1px solid var(--color-fg);
+  counter-increment: step;
+}
+
+.step::before {
+  content: counter(step, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: var(--space-5);
+  font-family: var(--font-heading-family);
+  font-size: 2.4rem;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
+.step h3 {
+  font-size: 1.4rem;
+  letter-spacing: 0.12em;
+  margin-bottom: var(--space-2);
+}
+
+.step p {
+  font-size: 1.4rem;
+  color: var(--color-muted);
+}
+
+.viral__cta {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: center;
+  text-align: center;
+  padding: var(--space-7) var(--space-5);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.viral__contact {
+  font-size: 1.3rem;
+  color: var(--color-muted);
+  user-select: all;
+}
+

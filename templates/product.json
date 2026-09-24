@@ -27,7 +27,22 @@
           "type": "buy_buttons",
           "settings": {
             "show_dynamic_checkout": true,
-            "show_sticky_bar": true
+            "show_sticky_bar": true,
+            "assurance": ""
+          }
+        },
+        "trust": {
+          "type": "trust",
+          "settings": {
+            "icon_1": "truck",
+            "title_1": "Delivery all over Lebanon",
+            "text_1": "2–4 business days",
+            "icon_2": "shield",
+            "title_2": "Secure checkout",
+            "text_2": "Card and cash on delivery",
+            "icon_3": "refresh",
+            "title_3": "7-day exchanges",
+            "text_3": "Unworn, tags on"
           }
         },
         "description": {
@@ -38,6 +53,7 @@
           "type": "accordion",
           "settings": {
             "heading": "Materials",
+            "content": "",
             "metafield": "custom.fabric"
           }
         },
@@ -45,40 +61,21 @@
           "type": "accordion",
           "settings": {
             "heading": "Fit",
+            "content": "",
             "metafield": "custom.fit"
-          }
-        },
-        "size_guide": {
-          "type": "accordion",
-          "settings": {
-            "heading": "Size guide",
-            "metafield": "custom.size_guide"
           }
         },
         "shipping": {
           "type": "accordion",
           "settings": {
             "heading": "Shipping & returns",
-            "content": "<p>Delivery all over Lebanon, 2–4 business days. Exchanges accepted within 14 days on unworn pieces with tags attached.</p>"
+            "content": "<p>Delivery all over Lebanon, 2–4 business days. Exchanges accepted within 7 days on unworn pieces with tags attached.</p>",
+            "metafield": ""
           }
         },
         "share": {
           "type": "share",
           "settings": {}
-        },
-        "trust": {
-          "type": "trust",
-          "settings": {
-            "icon_1": "truck",
-            "title_1": "Delivery all over Lebanon",
-            "text_1": "2–4 business days",
-            "icon_2": "shield",
-            "title_2": "Secure checkout",
-            "text_2": "Card or cash on delivery",
-            "icon_3": "refresh",
-            "title_3": "14-day exchanges",
-            "text_3": "Unworn, tags on"
-          }
         }
       },
       "block_order": [
@@ -92,19 +89,31 @@
         "description",
         "fabric",
         "fit",
-        "size_guide",
         "shipping",
         "share"
       ],
       "settings": {
-        "media_layout": "stacked",
-        "enable_sticky_info": true
+        "media_layout": "thumbnails",
+        "enable_sticky_info": true,
+        "show_size_guide": true,
+        "size_guide_label": "Size guide",
+        "size_guide_page": "size-guide",
+        "size_guide_content": "<p>Measurements are taken flat and are approximate. Not sure on sizing? Message us on Instagram and we will size you.</p>"
+      }
+    },
+    "complete-look": {
+      "type": "complete-the-look",
+      "settings": {
+        "heading": "COMPLETE THE FIT",
+        "intent": "complementary",
+        "limit": 4
       }
     },
     "related": {
       "type": "featured-collection",
       "settings": {
         "title": "You might also like",
+        "collection": "t-shirts",
         "products_to_show": 4,
         "columns_desktop": 4,
         "columns_mobile": "2",
@@ -114,6 +123,7 @@
   },
   "order": [
     "main",
+    "complete-look",
     "related"
   ]
 }

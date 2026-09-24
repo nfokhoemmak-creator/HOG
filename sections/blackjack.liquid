@@ -1,275 +1,205 @@
 {%- comment -%}
-  Beat the dealer, unlock a discount code.
-
-  The reward codes are section settings and therefore visible in the page
-  source. Treat them as a promo mechanic, not a secret: create the discount in
-  Shopify Admin with a usage limit ("one use per customer", or a capped total)
-  so a shared code cannot be drained. See "Blackjack" in README.md.
+  Blackjack — beat the dealer, win a discount code. This section renders the
+  game on its own page; sections/blackjack-popup.liquid renders the same table
+  in a site-wide dialog. Both share snippets/blackjack-game.liquid, and
+  blackjack.js deals, scores and pays out. Codes are display + deep-link only:
+  each one must exist as a real discount code in Shopify admin. The daily hand
+  limit and the win streak live in localStorage on the player's device.
 {%- endcomment -%}
 
 {%- liquid
-  assign win_code = section.settings.reward_win_code | strip
-  assign bj_code = section.settings.reward_blackjack_code | strip
-  assign shop_url = section.settings.reward_url | default: routes.all_products_collection_url
+  assign shop_url = section.settings.shop_link | default: routes.all_products_collection_url
+  assign shop_label = section.settings.shop_label | default: 'APPLY CODE & SHOP'
+
+  # On its own page the table is the page, so its heading is the h1. Dropped
+  # into any other template it sits under that page's title and stays an h2.
+  assign heading_tag = 'h2'
+  if template.suffix == 'blackjack'
+    assign heading_tag = 'h1'
+  endif
 -%}
 
-{%- comment -%}
-  Loaded here rather than in theme.liquid so the game's JS only ships on pages
-  that actually have a table. Deferred: the custom element upgrades whenever it
-  arrives, and the section's markup is inert until then.
-{%- endcomment -%}
-<script src="{{ 'blackjack.js' | asset_url }}" defer="defer"></script>
+{%- capture bj_config -%}
+{
+  "playsPerDay": {{ section.settings.plays_per_day | default: 3 }},
+  "tiesPayPlayer": {% if section.settings.ties_pay_player == false %}false{% else %}true{% endif %},
+  "tiers": {
+    "win": {
+      "code": {{ section.settings.win_code | default: 'BLACKJACK10' | json | replace: '</', '<\/' }},
+      "percent": {{ section.settings.win_percent | default: 10 }}
+    },
+    "blackjack": {
+      "code": {{ section.settings.bj_code | default: 'BLACKJACK21' | json | replace: '</', '<\/' }},
+      "percent": {{ section.settings.bj_percent | default: 21 }}
+    },
+    "streak": {
+      "code": {{ section.settings.streak_code | default: 'BLACKJACK15' | json | replace: '</', '<\/' }},
+      "percent": {{ section.settings.streak_percent | default: 15 }},
+      "length": {{ section.settings.streak_length | default: 3 }}
+    },
+    "consolation": {
+      "code": {{ section.settings.consolation_code | default: '' | json | replace: '</', '<\/' }},
+      "percent": {{ section.settings.consolation_percent | default: 5 }}
+    }
+  },
+  "shopUrl": {{ shop_url | json | replace: '</', '<\/' }},
+  "shopLabel": {{ shop_label | json | replace: '</', '<\/' }}
+}
+{%- endcapture -%}
 
-{%- if win_code == blank -%}
-  {%- comment -%} Nothing to win: render the shell only in the editor. {%- endcomment -%}
-  {%- if request.design_mode -%}
-    <div class="container section">
-      <p class="muted">{{ 'sections.blackjack.needs_code' | t }}</p>
-    </div>
-  {%- endif -%}
-{%- else -%}
-
-<div class="container section">
-  <blackjack-table
-    class="blackjack{% if settings.animations_enabled %} reveal{% endif %}"
-    style="--felt: {{ section.settings.felt_color | default: settings.color_felt }};"
-  >
-    <script type="application/json" data-blackjack-config>
-      {
-        "playLimit": {{ section.settings.play_limit | json }},
-        "allowDouble": {{ section.settings.allow_double | json }},
-        "dealerHitsSoft17": {{ section.settings.dealer_hits_soft_17 | json }},
-        "rewards": {
-          "win": {
-            "label": {{ section.settings.reward_win_label | json }},
-            "code": {{ win_code | json }},
-            "url": {{ shop_url | json }}
-          },
-          "blackjack": {
-            "label": {{ section.settings.reward_blackjack_label | default: section.settings.reward_win_label | json }},
-            "code": {{ bj_code | default: win_code | json }},
-            "url": {{ shop_url | json }}
-          }
-        },
-        "strings": {
-          "yourMove": {{ 'sections.blackjack.status.your_move' | t | json }},
-          "win": {{ 'sections.blackjack.status.win' | t | json }},
-          "blackjack": {{ 'sections.blackjack.status.blackjack' | t | json }},
-          "lose": {{ 'sections.blackjack.status.lose' | t | json }},
-          "bust": {{ 'sections.blackjack.status.bust' | t | json }},
-          "push": {{ 'sections.blackjack.status.push' | t | json }},
-          "comeBack": {{ 'sections.blackjack.status.come_back' | t | json }},
-          "alreadyWon": {{ 'sections.blackjack.status.already_won' | t | json }},
-          "copied": {{ 'sections.blackjack.copied' | t | json }},
-          "faceDown": {{ 'sections.blackjack.face_down' | t | json }}
-        }
-      }
-    </script>
-
-    <div class="blackjack__head">
-      {%- if section.settings.eyebrow != blank -%}
-        <p class="eyebrow">{{ section.settings.eyebrow | escape }}</p>
-      {%- endif -%}
-
-      {%- if section.settings.heading != blank -%}
-        <h2 class="h2">{{ section.settings.heading | escape }}</h2>
-      {%- endif -%}
-
-      {%- if section.settings.subheading != blank -%}
-        <div class="blackjack__sub muted rte">{{ section.settings.subheading }}</div>
-      {%- endif -%}
-    </div>
-
-    <div class="blackjack__felt">
-      {%- comment -%} Pre-game panel. Hidden once a hand is dealt. {%- endcomment -%}
-      <div class="blackjack__intro" data-intro>
-        <p class="blackjack__stake">
-          {{ 'sections.blackjack.stake_html' | t: reward: section.settings.reward_win_label }}
-        </p>
-        <p class="blackjack__rules muted">
-          {%- if section.settings.dealer_hits_soft_17 -%}
-            {{ 'sections.blackjack.rules_soft17' | t }}
-          {%- else -%}
-            {{ 'sections.blackjack.rules' | t }}
-          {%- endif -%}
-        </p>
-      </div>
-
-      {%- comment -%} Table. Revealed on the first deal. {%- endcomment -%}
-      <div class="blackjack__table" data-table hidden>
-        <div class="blackjack__hand">
-          <div class="blackjack__hand-head">
-            <span class="blackjack__seat">{{ 'sections.blackjack.dealer' | t }}</span>
-            <span class="blackjack__score" data-dealer-score></span>
-          </div>
-          <div class="blackjack__cards" data-dealer-cards></div>
-        </div>
-
-        <div class="blackjack__hand">
-          <div class="blackjack__hand-head">
-            <span class="blackjack__seat">{{ 'sections.blackjack.you' | t }}</span>
-            <span class="blackjack__score" data-player-score></span>
-          </div>
-          <div class="blackjack__cards" data-player-cards></div>
-        </div>
-      </div>
-
-      <p class="blackjack__status" data-status role="status" aria-live="polite"></p>
-
-      {%- comment -%} Reward. Revealed on a win, and restored on reload. {%- endcomment -%}
-      <div class="blackjack__reward" data-reward hidden>
-        <p class="blackjack__reward-label" data-reward-label></p>
-        <div class="blackjack__code">
-          <code data-reward-code></code>
-          <button type="button" class="btn btn--small btn--quiet" data-reward-copy>
-            {{ 'sections.blackjack.copy' | t }}
-          </button>
-        </div>
-        <a class="btn btn--large btn--lift" href="{{ shop_url }}" data-reward-shop>
-          {{ 'sections.blackjack.shop_now' | t }}
-        </a>
-      </div>
-
-      <div class="blackjack__controls" data-controls>
-        <button type="button" class="btn btn--large btn--lift" data-action="deal">
-          {{ section.settings.button_label | default: 'Deal me in' | escape }}
-        </button>
-        <button type="button" class="btn btn--quiet" data-action="hit" hidden>
-          {{ 'sections.blackjack.hit' | t }}
-        </button>
-        <button type="button" class="btn btn--quiet" data-action="stand" hidden>
-          {{ 'sections.blackjack.stand' | t }}
-        </button>
-        <button type="button" class="btn btn--outline" data-action="double" hidden>
-          {{ 'sections.blackjack.double' | t }}
-        </button>
-        <button type="button" class="btn btn--large btn--lift" data-action="again" hidden>
-          {{ 'sections.blackjack.again' | t }}
-        </button>
-      </div>
-    </div>
-
-    <noscript>
-      <p class="muted">{{ 'sections.blackjack.no_js' | t }}</p>
-    </noscript>
-  </blackjack-table>
+<div class="section">
+  <div class="container">
+    {% render 'blackjack-game',
+      config: bj_config,
+      shop_label: shop_label,
+      eyebrow: section.settings.eyebrow,
+      heading: section.settings.heading,
+      text: section.settings.text,
+      heading_tag: heading_tag
+    %}
+  </div>
 </div>
 
-{%- endif -%}
+<script src="{{ 'blackjack.js' | asset_url }}" defer="defer"></script>
 
 {% schema %}
 {
-  "name": "t:sections.blackjack.name",
+  "name": "Blackjack",
   "tag": "section",
   "class": "blackjack-section",
   "settings": [
     {
       "type": "text",
       "id": "eyebrow",
-      "label": "t:sections.blackjack.settings.eyebrow.label",
-      "default": "House rules"
+      "label": "Eyebrow",
+      "default": "HOUSE RULES"
     },
     {
       "type": "text",
       "id": "heading",
-      "label": "t:sections.blackjack.settings.heading.label",
-      "default": "Beat the dealer, beat the price"
+      "label": "Heading",
+      "default": "BLACKJACK"
     },
     {
       "type": "richtext",
-      "id": "subheading",
-      "label": "t:sections.blackjack.settings.subheading.label",
-      "default": "<p>One hand. Beat the house and the code is yours.</p>"
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Beat the dealer, win a discount code. Hit blackjack for the max. Up to 3 hands a day \u2014 no real money, just the house being generous.</p>"
+    },
+    {
+      "type": "range",
+      "id": "plays_per_day",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "label": "Hands per day",
+      "default": 3
     },
     {
       "type": "text",
-      "id": "button_label",
-      "label": "t:sections.blackjack.settings.button_label.label",
-      "default": "Deal me in"
+      "id": "win_code",
+      "label": "Win code",
+      "info": "Must exist as a discount code in Shopify admin.",
+      "default": "BLACKJACK10"
     },
     {
-      "type": "header",
-      "content": "t:sections.blackjack.headers.reward"
-    },
-    {
-      "type": "paragraph",
-      "content": "t:sections.blackjack.paragraphs.security"
-    },
-    {
-      "type": "text",
-      "id": "reward_win_label",
-      "label": "t:sections.blackjack.settings.reward_win_label.label",
-      "default": "10% off your order"
-    },
-    {
-      "type": "text",
-      "id": "reward_win_code",
-      "label": "t:sections.blackjack.settings.reward_win_code.label",
-      "info": "t:sections.blackjack.settings.reward_win_code.info",
-      "default": "HOG10"
+      "type": "range",
+      "id": "win_percent",
+      "min": 5,
+      "max": 30,
+      "step": 1,
+      "unit": "%",
+      "label": "Win percent",
+      "info": "Display only \u2014 must match the win code's actual value.",
+      "default": 10
     },
     {
       "type": "text",
-      "id": "reward_blackjack_label",
-      "label": "t:sections.blackjack.settings.reward_blackjack_label.label",
-      "default": "Blackjack — 20% off your order"
+      "id": "bj_code",
+      "label": "Blackjack code",
+      "info": "Must exist as a discount code in Shopify admin.",
+      "default": "BLACKJACK21"
+    },
+    {
+      "type": "range",
+      "id": "bj_percent",
+      "min": 5,
+      "max": 40,
+      "step": 1,
+      "unit": "%",
+      "label": "Blackjack percent",
+      "info": "Display only \u2014 must match the blackjack code's actual value.",
+      "default": 21
     },
     {
       "type": "text",
-      "id": "reward_blackjack_code",
-      "label": "t:sections.blackjack.settings.reward_blackjack_code.label",
-      "info": "t:sections.blackjack.settings.reward_blackjack_code.info",
-      "default": "HOG20"
+      "id": "streak_code",
+      "label": "Streak code",
+      "info": "Must exist as a discount code in Shopify admin.",
+      "default": "BLACKJACK15"
+    },
+    {
+      "type": "range",
+      "id": "streak_percent",
+      "min": 5,
+      "max": 30,
+      "step": 1,
+      "unit": "%",
+      "label": "Streak percent",
+      "info": "Display only \u2014 must match the streak code's actual value.",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "streak_length",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "label": "Streak length",
+      "info": "Wins in a row needed to unlock the streak code.",
+      "default": 3
     },
     {
       "type": "url",
-      "id": "reward_url",
-      "label": "t:sections.blackjack.settings.reward_url.label",
-      "info": "t:sections.blackjack.settings.reward_url.info"
+      "id": "shop_link",
+      "label": "Shop link",
+      "info": "Where the apply button sends winners. Defaults to the all-products collection."
     },
     {
-      "type": "header",
-      "content": "t:sections.blackjack.headers.rules"
-    },
-    {
-      "type": "select",
-      "id": "play_limit",
-      "label": "t:sections.blackjack.settings.play_limit.label",
-      "info": "t:sections.blackjack.settings.play_limit.info",
-      "options": [
-        { "value": "daily", "label": "t:sections.blackjack.settings.play_limit.options__1" },
-        { "value": "once", "label": "t:sections.blackjack.settings.play_limit.options__2" },
-        { "value": "none", "label": "t:sections.blackjack.settings.play_limit.options__3" }
-      ],
-      "default": "daily"
+      "type": "text",
+      "id": "shop_label",
+      "label": "Shop button label",
+      "default": "APPLY CODE & SHOP"
     },
     {
       "type": "checkbox",
-      "id": "allow_double",
-      "label": "t:sections.blackjack.settings.allow_double.label",
-      "info": "t:sections.blackjack.settings.allow_double.info",
-      "default": true
+      "id": "ties_pay_player",
+      "label": "Ties pay the player",
+      "default": true,
+      "info": "House rule in the customer's favour: a tie wins instead of washing out. Turning this off makes the house win more often than the player."
     },
     {
-      "type": "checkbox",
-      "id": "dealer_hits_soft_17",
-      "label": "t:sections.blackjack.settings.dealer_hits_soft_17.label",
-      "info": "t:sections.blackjack.settings.dealer_hits_soft_17.info",
-      "default": false
+      "type": "text",
+      "id": "consolation_code",
+      "label": "Consolation code",
+      "default": "BLACKJACK5",
+      "info": "Given when someone uses all their hands without a win, so nobody leaves empty-handed. Leave empty to give nothing."
     },
     {
-      "type": "header",
-      "content": "t:sections.blackjack.headers.appearance"
-    },
-    {
-      "type": "color",
-      "id": "felt_color",
-      "label": "t:sections.blackjack.settings.felt_color.label",
-      "default": "#0e5c3a"
+      "type": "range",
+      "id": "consolation_percent",
+      "min": 5,
+      "max": 20,
+      "step": 1,
+      "unit": "%",
+      "label": "Consolation discount",
+      "default": 5
     }
   ],
   "presets": [
-    { "name": "t:sections.blackjack.presets.name" }
+    {
+      "name": "Blackjack"
+    }
   ]
 }
 {% endschema %}

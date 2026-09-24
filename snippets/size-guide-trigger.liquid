@@ -1,0 +1,37 @@
+{%- comment -%}
+  Renders the size-guide trigger.
+
+  When a page is picked in the section settings the trigger is a real link to
+  that page, so it still works if the dialog script never loads; theme.js
+  intercepts the click and opens the modal instead.
+
+  Accepts:
+  - label: {String} button text (required)
+  - dialog_id: {String} id of the <dialog> to open (required)
+  - guide_url: {String} page URL, blank when the content comes from a setting
+
+  Usage:
+  {% render 'size-guide-trigger', label: label, dialog_id: id, guide_url: url %}
+{%- endcomment -%}
+
+{%- if guide_url != blank -%}
+  <a
+    class="size-guide__trigger"
+    href="{{ guide_url }}"
+    data-size-guide-open
+    aria-controls="{{ dialog_id }}"
+  >
+    {% render 'icon', name: 'ruler' %}
+    <span>{{ label }}</span>
+  </a>
+{%- else -%}
+  <button
+    type="button"
+    class="size-guide__trigger"
+    data-size-guide-open
+    aria-controls="{{ dialog_id }}"
+  >
+    {% render 'icon', name: 'ruler' %}
+    <span>{{ label }}</span>
+  </button>
+{%- endif -%}

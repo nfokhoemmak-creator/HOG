@@ -12,15 +12,88 @@
   endif
 
   assign form_id = 'ProductForm-' | append: section.id
+
+  comment
+    Stock line, rendered server-side so it reads correctly before
+    product-form.js runs (and on single-variant products, where the script
+    never re-evaluates it). Low stock wins over "in stock"; pre-orders get
+    their own note under the buttons instead, so they render nothing here.
+  endcomment
+  assign inventory_state = ''
+  if current_variant.available and is_preorder == false
+    if current_variant.inventory_management == 'shopify' and current_variant.inventory_quantity > 0 and current_variant.inventory_quantity <= 5
+      assign inventory_state = 'low'
+    else
+      assign inventory_state = 'in'
+    endif
+  endif
+
+  comment
+    Chart image, most specific first: a per-product metafield beats the
+    shop-wide image, so a tee and a pair of sweatpants can differ.
+  endcomment
+  assign size_guide_image = ''
+  if section.settings.show_size_guide
+    assign product_guide_image = product.metafields.custom.size_guide_image.value
+    if product_guide_image != blank
+      assign size_guide_image = product_guide_image
+    elsif section.settings.size_guide_image != blank
+      assign size_guide_image = section.settings.size_guide_image
+    endif
+  endif
+
+  comment
+    Text content. A real chart image speaks for itself, so it replaces the
+    shop-wide page and the fallback copy rather than stacking on top of them —
+    upload a chart and the generic tables stop showing on their own. Text set
+    on the product itself is deliberate, so that still rides along.
+  endcomment
+  assign size_guide_content = ''
+  if section.settings.show_size_guide
+    assign product_guide = product.metafields.custom.size_guide
+    if product_guide != blank
+      assign size_guide_content = product_guide
+    elsif size_guide_image == blank
+      if section.settings.size_guide_page != blank
+        assign size_guide_content = section.settings.size_guide_page.content
+        assign size_guide_url = section.settings.size_guide_page.url
+      elsif section.settings.size_guide_content != blank
+        assign size_guide_content = section.settings.size_guide_content
+      endif
+    endif
+  endif
+
+  assign has_size_guide = false
+  if size_guide_content != blank or size_guide_image != blank
+    assign has_size_guide = true
+  endif
+
+  assign size_guide_id = 'SizeGuide-' | append: section.id
+  assign size_guide_label = section.settings.size_guide_label | default: 'Size guide'
+
+  comment
+    Does any option read as a size? If so the trigger sits in that option's
+    label row; otherwise it goes under the picker.
+  endcomment
+  assign has_size_option = false
+  for option in product.options_with_values
+    assign option_name_check = option.name | downcase
+    if option_name_check contains 'size'
+      assign has_size_option = true
+    endif
+  endfor
 -%}
 
 <div class="container">
   <div class="product">
     {%- comment -%} ------------------------------------------------ gallery {%- endcomment -%}
-    <div class="product__media" data-gallery>
+    <div
+      class="product__media{% if product.media.size > 1 and section.settings.media_layout == 'thumbnails' %} product__media--thumbs{% endif %}"
+      data-gallery
+    >
       <div class="product__media-list">
         {%- for media in product.media -%}
-          <div data-media-id="{{ media.id }}">
+          <div class="product__media-item" data-media-id="{{ media.id }}">
             {%- case media.media_type -%}
               {%- when 'image' -%}
                 <img
@@ -53,7 +126,7 @@
             {%- endcase -%}
           </div>
         {%- else -%}
-          {{ 'product-1' | placeholder_svg_tag: '' }}
+          {{ 'product-1' | placeholder_svg_tag: 'product__placeholder' }}
         {%- endfor -%}
       </div>
 
@@ -111,15 +184,33 @@
                 id_prefix: 'ProductPrice'
               %}
             </div>
-            <p class="product__inventory" id="ProductInventory-{{ section.id }}" hidden></p>
+            <p
+              class="product__inventory{% if inventory_state == 'low' %} product__inventory--low{% elsif inventory_state == 'in' %} product__inventory--in{% endif %}"
+              id="ProductInventory-{{ section.id }}"
+              {% if inventory_state == blank %}hidden{% endif %}
+            >
+              {%- if inventory_state == 'low' -%}
+                {{ 'products.product.low_stock' | t: count: current_variant.inventory_quantity }}
+              {%- elsif inventory_state == 'in' -%}
+                {{ 'products.product.in_stock' | t }}
+              {%- endif -%}
+            </p>
 
           {%- when 'variant_picker' -%}
             {%- unless product.has_only_default_variant -%}
               <div class="variant-picker" {{ block.shopify_attributes }}>
                 {%- for option in product.options_with_values -%}
-                  <fieldset style="border: 0; margin: 0; padding: 0;">
-                    <legend class="variant-option__label" style="width: 100%;">
+                  {%- assign option_name_down = option.name | downcase -%}
+                  <fieldset class="variant-option">
+                    <legend class="variant-option__label">
                       <span>{{ option.name }}</span>
+                      {%- if has_size_guide and option_name_down contains 'size' -%}
+                        {% render 'size-guide-trigger',
+                          label: size_guide_label,
+                          dialog_id: size_guide_id,
+                          guide_url: size_guide_url
+                        %}
+                      {%- endif -%}
                     </legend>
 
                     <div class="variant-option__values">
@@ -139,11 +230,27 @@
                     </div>
                   </fieldset>
                 {%- endfor -%}
+
               </div>
             {%- endunless -%}
 
+            {%- comment -%}
+              No size option to hang the trigger off — either the product has
+              one variant or its options are colour-only. Sits outside the
+              picker so single-variant products still get the guide.
+            {%- endcomment -%}
+            {%- if has_size_guide and has_size_option == false -%}
+              <div class="size-guide__row">
+                {% render 'size-guide-trigger',
+                  label: size_guide_label,
+                  dialog_id: size_guide_id,
+                  guide_url: size_guide_url
+                %}
+              </div>
+            {%- endif -%}
+
           {%- when 'quantity_selector' -%}
-            <div {{ block.shopify_attributes }}>
+            <div class="product__quantity" {{ block.shopify_attributes }}>
               <span class="variant-option__label">{{ 'sections.cart.quantity' | t }}</span>
               <quantity-input class="quantity-input">
                 <button type="button" data-action="decrease" aria-label="{{ 'products.product.quantity.decrease' | t: product: product.title }}">&minus;</button>
@@ -174,71 +281,84 @@
               {%- form 'product', product, id: form_id, novalidate: 'novalidate' -%}
                 <input type="hidden" name="id" value="{{ current_variant.id }}">
 
-                <button
-                  type="submit"
-                  name="add"
-                  class="btn btn--accent btn--full"
-                  {% unless current_variant.available %}disabled aria-disabled="true"{% endunless %}
-                >
-                  <span data-button-text>
-                    {%- if current_variant.available -%}
-                      {%- if is_preorder -%}
-                        {{ 'products.product.preorder' | t }}
+                <div class="product__buy">
+                  <button
+                    type="submit"
+                    name="add"
+                    class="btn btn--accent btn--full btn--large"
+                    {% unless current_variant.available %}disabled aria-disabled="true"{% endunless %}
+                  >
+                    <span data-button-text>
+                      {%- if current_variant.available -%}
+                        {%- if is_preorder -%}
+                          {{ 'products.product.preorder' | t }}
+                        {%- else -%}
+                          {{ 'products.product.add_to_cart' | t }}
+                        {%- endif -%}
                       {%- else -%}
-                        {{ 'products.product.add_to_cart' | t }}
+                        {{ 'products.product.sold_out' | t }}
                       {%- endif -%}
-                    {%- else -%}
-                      {{ 'products.product.sold_out' | t }}
-                    {%- endif -%}
-                  </span>
-                </button>
+                    </span>
+                  </button>
 
-                {%- if block.settings.show_dynamic_checkout -%}
-                  {{ form | payment_button }}
-                {%- endif -%}
+                  {%- if block.settings.show_dynamic_checkout and current_variant.available -%}
+                    {{ form | payment_button }}
+                  {%- endif -%}
+                </div>
               {%- endform -%}
 
+              {%- if block.settings.assurance != blank and current_variant.available -%}
+                <ul class="product__assurance">
+                  {%- assign assurance_items = block.settings.assurance | split: ',' -%}
+                  {%- for item in assurance_items -%}
+                    <li>{{ item | strip }}</li>
+                  {%- endfor -%}
+                </ul>
+              {%- endif -%}
+
               {%- if is_preorder -%}
-                <p class="product__inventory" style="margin-top: var(--space-2);">
+                <p class="product__inventory product__inventory--note">
                   {{ 'products.product.preorder_note' | t }}
                 </p>
               {%- endif -%}
-            </product-form>
 
-            {%- comment -%}
-              Sticky buy bar for small screens. It is a second submit button for
-              the same form (via form=), so it inherits validation and the
-              variant chosen above — there is no second source of truth.
-              product-form.js mirrors the price and disabled state into it and
-              reveals it once the real button scrolls away.
-            {%- endcomment -%}
-            {%- if block.settings.show_sticky_bar -%}
-              <div class="buy-bar" data-buy-bar hidden>
-                <div class="buy-bar__meta">
-                  <span class="buy-bar__title">{{ product.title | escape }}</span>
-                  <span class="buy-bar__price" data-buy-bar-price>
-                    {{ current_variant.price | money }}
-                  </span>
+              {%- comment -%}
+                Sticky buy bar for small screens. It is a second submit button
+                for the same form (via form=), so it inherits validation and
+                the variant chosen above — there is no second source of truth.
+                It lives inside <product-form> so the script can find it,
+                mirror price and disabled state into it, and reveal it once
+                the real button scrolls away. Starts hidden: without the
+                script there is nothing to reveal it, so it never overlaps.
+              {%- endcomment -%}
+              {%- if block.settings.show_sticky_bar -%}
+                <div class="buy-bar" data-buy-bar hidden>
+                  <div class="buy-bar__meta">
+                    <span class="buy-bar__title">{{ product.title | escape }}</span>
+                    <span class="buy-bar__price" data-buy-bar-price>
+                      {{ current_variant.price | money }}
+                    </span>
+                  </div>
+                  <button
+                    type="submit"
+                    name="add"
+                    form="{{ form_id }}"
+                    class="btn"
+                    data-buy-bar-button
+                    {% unless current_variant.available %}disabled aria-disabled="true"{% endunless %}
+                  >
+                    <span data-buy-bar-text>
+                      {%- if current_variant.available -%}
+                        {%- if is_preorder -%}{{ 'products.product.preorder' | t }}
+                        {%- else -%}{{ 'products.product.add_to_cart' | t }}{%- endif -%}
+                      {%- else -%}
+                        {{ 'products.product.sold_out' | t }}
+                      {%- endif -%}
+                    </span>
+                  </button>
                 </div>
-                <button
-                  type="submit"
-                  name="add"
-                  form="{{ form_id }}"
-                  class="btn btn--large"
-                  data-buy-bar-button
-                  {% unless current_variant.available %}disabled aria-disabled="true"{% endunless %}
-                >
-                  <span data-buy-bar-text>
-                    {%- if current_variant.available -%}
-                      {%- if is_preorder -%}{{ 'products.product.preorder' | t }}
-                      {%- else -%}{{ 'products.product.add_to_cart' | t }}{%- endif -%}
-                    {%- else -%}
-                      {{ 'products.product.sold_out' | t }}
-                    {%- endif -%}
-                  </span>
-                </button>
-              </div>
-            {%- endif -%}
+              {%- endif -%}
+            </product-form>
 
           {%- when 'description' -%}
             {%- if product.description != blank -%}
@@ -275,6 +395,11 @@
             <div class="muted" {{ block.shopify_attributes }}>{{ block.settings.text }}</div>
 
           {%- when 'trust' -%}
+            {%- comment -%}
+              Objection handling under the buy button: delivery, payment,
+              exchanges. Three fixed slots rather than child blocks so the
+              row cannot grow past what fits beside the gallery.
+            {%- endcomment -%}
             <div class="trust-row" {{ block.shopify_attributes }}>
               {%- for i in (1..3) -%}
                 {%- liquid
@@ -301,7 +426,7 @@
 
           {%- when 'share' -%}
             <a
-              class="underline eyebrow"
+              class="underline eyebrow product__share"
               href="https://wa.me/?text={{ shop.url | append: product.url | url_encode }}"
               target="_blank"
               rel="noopener"
@@ -315,6 +440,56 @@
     </div>
   </div>
 </div>
+
+{%- if has_size_guide -%}
+  {%- comment -%}
+    Native <dialog>: showModal() brings its own focus trap and Escape handling.
+    theme.js opens it; when the trigger is a link to the size-guide page it
+    stays a working link if the script never runs.
+  {%- endcomment -%}
+  <dialog class="size-guide" id="{{ size_guide_id }}" data-size-guide>
+    <div class="size-guide__panel">
+      <div class="size-guide__head">
+        <h2 class="h4">{{ size_guide_label }}</h2>
+        <button
+          type="button"
+          class="header__icon"
+          data-size-guide-close
+          aria-label="{{ 'general.close' | t }}"
+        >
+          {% render 'icon', name: 'close' %}
+        </button>
+      </div>
+
+      <div class="size-guide__body rte">
+        {%- if size_guide_image != blank -%}
+          <img
+            class="size-guide__image"
+            src="{{ size_guide_image | image_url: width: 1400 }}"
+            srcset="
+              {{ size_guide_image | image_url: width: 600 }} 600w,
+              {{ size_guide_image | image_url: width: 1000 }} 1000w,
+              {{ size_guide_image | image_url: width: 1400 }} 1400w
+            "
+            sizes="(min-width: 750px) 68rem, 92vw"
+            alt="{{ size_guide_image.alt | default: size_guide_label | escape }}"
+            width="{{ size_guide_image.width }}"
+            height="{{ size_guide_image.height }}"
+            loading="lazy"
+          >
+        {%- endif -%}
+
+        {{ size_guide_content }}
+      </div>
+
+      {%- if size_guide_url != blank -%}
+        <a class="size-guide__link underline eyebrow" href="{{ size_guide_url }}">
+          {{ 'products.product.size_guide_full' | t }}
+        </a>
+      {%- endif -%}
+    </div>
+  </dialog>
+{%- endif -%}
 
 <script type="application/ld+json">
   {
@@ -364,6 +539,41 @@
       "id": "enable_sticky_info",
       "label": "t:sections.main_product.settings.enable_sticky_info.label",
       "default": true
+    },
+    {
+      "type": "header",
+      "content": "Size guide"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_size_guide",
+      "label": "Show size guide button",
+      "default": true,
+      "info": "The button sits next to the size selector and opens a popup."
+    },
+    {
+      "type": "text",
+      "id": "size_guide_label",
+      "label": "Button label",
+      "default": "Size guide"
+    },
+    {
+      "type": "image_picker",
+      "id": "size_guide_image",
+      "label": "Default chart for ALL products",
+      "info": "Applies to every product at once. For one product only, leave this empty and set the Size chart image metafield on that product instead."
+    },
+    {
+      "type": "page",
+      "id": "size_guide_page",
+      "label": "Size guide page",
+      "info": "The page content fills the popup, below the image. Leave empty to use the text below instead."
+    },
+    {
+      "type": "richtext",
+      "id": "size_guide_content",
+      "label": "Size guide text",
+      "info": "Used only when no page is selected. A product metafield custom.size_guide overrides both."
     }
   ],
   "blocks": [
@@ -389,6 +599,13 @@
           "label": "t:sections.main_product.blocks.buy_buttons.settings.show_sticky_bar.label",
           "info": "t:sections.main_product.blocks.buy_buttons.settings.show_sticky_bar.info",
           "default": true
+        },
+        {
+          "type": "text",
+          "id": "assurance",
+          "label": "Reassurance line",
+          "info": "Short points separated by commas, shown under the buttons. Leave empty to hide (the Trust row block covers the same ground with icons).",
+          "default": "Secure checkout, Ships in 2-4 days, Easy exchanges"
         }
       ]
     },
@@ -502,7 +719,7 @@
           "type": "text",
           "id": "title_3",
           "label": "t:sections.main_product.blocks.trust.settings.title.label",
-          "default": "14-day exchanges"
+          "default": "7-day exchanges"
         },
         {
           "type": "text",

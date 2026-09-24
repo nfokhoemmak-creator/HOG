@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="theme-color" content="{{ settings.color_background }}">
+    <meta name="color-scheme" content="light">
     <link rel="canonical" href="{{ canonical_url }}">
 
     {%- if settings.favicon != blank -%}
@@ -13,6 +14,12 @@
     {%- endif -%}
 
     <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+
+    {%- if settings.use_display_font -%}
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&display=swap">
+    {%- endif -%}
 
     <title>
       {{ page_title }}
@@ -34,14 +41,27 @@
       assign body_font_bold = body_font | font_modify: 'weight', 'bold'
       assign body_font_italic = body_font | font_modify: 'style', 'italic'
       assign heading_font = settings.type_heading_font
+
+      case settings.layout_button_shape
+        when 'square'
+          assign radius_btn = '0px'
+        when 'rounded'
+          assign radius_btn = '8px'
+        else
+          assign radius_btn = '999px'
+      endcase
     -%}
 
-    {{ body_font | font_face: font_display: 'swap' }}
-    {{ body_font_bold | font_face: font_display: 'swap' }}
-    {{ body_font_italic | font_face: font_display: 'swap' }}
-    {{ heading_font | font_face: font_display: 'swap' }}
-
     <style>
+      {%- comment -%}
+        font_face emits bare @font-face rules, not a <style> tag — leaving them
+        loose in the head makes the browser render them as text above the page.
+      {%- endcomment -%}
+      {{ body_font | font_face: font_display: 'swap' }}
+      {{ body_font_bold | font_face: font_display: 'swap' }}
+      {{ body_font_italic | font_face: font_display: 'swap' }}
+      {{ heading_font | font_face: font_display: 'swap' }}
+
       :root {
         --font-body-family: {{ body_font.family }}, {{ body_font.fallback_families }};
         --font-body-style: {{ body_font.style }};
@@ -52,6 +72,8 @@
         --font-heading-style: {{ heading_font.style }};
         --font-heading-weight: {{ heading_font.weight }};
         --font-heading-tracking: {{ settings.type_heading_tracking }}px;
+
+        --font-display-family: {% if settings.use_display_font %}'Anton', {% endif %}{{ heading_font.family }}, {{ heading_font.fallback_families }};
 
         --font-body-scale: {{ settings.type_body_scale | divided_by: 100.0 }};
         --font-heading-scale: {{ settings.type_heading_scale | divided_by: 100.0 }};
@@ -67,7 +89,7 @@
         --color-fg: {{ settings.color_text }};
         --color-muted: {{ settings.color_text_muted }};
 
-        /* Action --------------------------------------------------------- */
+        /* Action: one colour means "click me", and it appears nowhere else. */
         --color-btn-bg: {{ settings.color_button_background }};
         --color-btn-fg: {{ settings.color_button_text }};
         --color-btn-bg-hover: {{ settings.color_accent_hover }};
@@ -80,17 +102,19 @@
         --color-gold: {{ settings.color_gold }};
         --color-felt: {{ settings.color_felt }};
 
-        /* Translucent derivatives. rgb() triplets let CSS mix its own alphas
-           without a second colour setting for every tint. */
-        --rgb-accent: {{ settings.color_accent | color_extract: 'red' }} {{ settings.color_accent | color_extract: 'green' }} {{ settings.color_accent | color_extract: 'blue' }};
+        /* rgb() triplets let CSS mix its own alphas without a setting per tint. */
         --rgb-fg: {{ settings.color_text | color_extract: 'red' }} {{ settings.color_text | color_extract: 'green' }} {{ settings.color_text | color_extract: 'blue' }};
         --rgb-bg: {{ settings.color_background | color_extract: 'red' }} {{ settings.color_background | color_extract: 'green' }} {{ settings.color_background | color_extract: 'blue' }};
+        --rgb-accent: {{ settings.color_accent | color_extract: 'red' }} {{ settings.color_accent | color_extract: 'green' }} {{ settings.color_accent | color_extract: 'blue' }};
         --rgb-success: {{ settings.color_success | color_extract: 'red' }} {{ settings.color_success | color_extract: 'green' }} {{ settings.color_success | color_extract: 'blue' }};
+        --rgb-sale: {{ settings.color_sale | color_extract: 'red' }} {{ settings.color_sale | color_extract: 'green' }} {{ settings.color_sale | color_extract: 'blue' }};
         --rgb-gold: {{ settings.color_gold | color_extract: 'red' }} {{ settings.color_gold | color_extract: 'green' }} {{ settings.color_gold | color_extract: 'blue' }};
+        --rgb-felt: {{ settings.color_felt | color_extract: 'red' }} {{ settings.color_felt | color_extract: 'green' }} {{ settings.color_felt | color_extract: 'blue' }};
 
         --container: {{ settings.layout_max_width }}px;
         --gutter: {{ settings.layout_gutter }}px;
         --radius: {{ settings.layout_corner_radius }}px;
+        --radius-btn: {{ radius_btn }};
 
         --grid-gap: {{ settings.grid_gap }}px;
       }
@@ -111,14 +135,24 @@
           lowStock: {{ 'products.product.low_stock' | t: count: '{{ count }}' | json }},
           inStock: {{ 'products.product.in_stock' | t | json }},
           cartError: {{ 'sections.cart.error' | t | json }},
-          itemAdded: {{ 'sections.cart.item_added' | t | json }}
+          itemAdded: {{ 'sections.cart.item_added' | t | json }},
+          upsellAdd: "ADD",
+          upsellAdding: "ADDING…",
+          upsellAdded: "ADDED",
+          upsellSoldOut: "SOLD OUT"
         },
         routes: {
           root: {{ routes.root_url | json }},
           cart: {{ routes.cart_url | json }},
           cartAdd: {{ routes.cart_add_url | json }},
           cartChange: {{ routes.cart_change_url | json }},
-          predictiveSearch: {{ routes.predictive_search_url | json }}
+          predictiveSearch: {{ routes.predictive_search_url | json }},
+          productRecommendations: {{ routes.product_recommendations_url | json }}
+        },
+        settings: {
+          freeShippingEnabled: {{ settings.free_shipping_enabled | json }},
+          freeShippingThreshold: {{ settings.free_shipping_threshold | default: 0 | times: 100 | json }},
+          cartUpsellsEnabled: {{ settings.cart_upsells_enabled | json }}
         },
         moneyFormat: {{ shop.money_format | json }},
         cartType: {{ settings.cart_type | json }}
@@ -130,7 +164,7 @@
     <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
   </head>
 
-  <body class="template-{{ template.name | handle }} {% if settings.animations_enabled %}animate{% endif %}">
+  <body class="template-{{ template.name | handle }} {% if settings.animations_enabled %}animate{% endif %}{% if settings.show_grain %} grain{% endif %}">
     <a class="skip-to-content visually-hidden" href="#MainContent">
       {{ 'accessibility.skip_to_text' | t }}
     </a>

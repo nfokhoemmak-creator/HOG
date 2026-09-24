@@ -24,7 +24,7 @@
     >
       {%- if target.products.size > 0 -%}
         {%- for product in target.products limit: limit -%}
-          {% render 'product-card', card_product: product, lazy_load: forloop.index > 4 %}
+          {% render 'product-card', card_product: product, lazy_load: forloop.index %}
         {%- endfor -%}
       {%- else -%}
         {%- for i in (1..limit) -%}
@@ -102,3 +102,14 @@
   ]
 }
 {% endschema %}
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{% render 'product-card', card_product: product, lazy_load: forloop.index
+    > 4 %}"
+  to: "{% render 'product-card', card_product: product, lazy_load: forloop.index %}"
+  position: 913..989
+{% endcomment %}

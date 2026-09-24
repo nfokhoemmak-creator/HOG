@@ -1,527 +1,698 @@
 /* ==========================================================================
    House of Garments — blackjack.js
-   <blackjack-table> — beat the dealer, unlock a discount code.
+   The house deals blackjack for discount codes: single 52-card deck per
+   hand, dealer stands on all 17s, naturals pay the big code, pushes burn
+   nothing. Wins reveal a real code with a copy button and a /discount
+   deep link.
 
-   Rules implemented: 6-deck shoe reshuffled at the cut card, blackjack pays
-   the top reward tier, player may hit / stand / double on the opening two
-   cards, dealer draws to 16 and stands on 17 (soft 17 behaviour is a section
-   setting). Push returns the play without spending it.
+   Loaded by sections/blackjack.liquid, which supplies the tiers, codes and
+   daily hand limit as a JSON blob. The daily count and win streak live in
+   localStorage (guarded — private mode just forgets between visits).
+   No dependencies; without JS the section shows its noscript note.
 
-   The reward codes are section settings, so they ship in the page source.
-   They are a promo mechanic, not a secret — set a usage limit on the discount
-   in Shopify Admin. See "Blackjack" in README.md.
-
-   No dependencies. If this file fails to load the section renders a static
-   headline and the rest of the page is unaffected.
+   Presentation lives in CSS: each card is a two-faced 3D object, so the
+   dealer's hole card turns over in place instead of being swapped out, new
+   cards slide in from the dealer's side with a small stagger, and the felt
+   markings, chip stack and streak pill are rendered from the same config
+   and state the engine plays by.
    ========================================================================== */
 
 (function () {
   'use strict';
 
-  const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const STORAGE_KEY = 'hog_blackjack';
 
-  const SUITS = [
-    { symbol: '♠', name: 'spades', red: false },
-    { symbol: '♥', name: 'hearts', red: true },
-    { symbol: '♦', name: 'diamonds', red: true },
-    { symbol: '♣', name: 'clubs', red: false }
-  ];
+  const SUITS = ['♠', '♥', '♦', '♣'];
+  const RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+  const SUIT_NAMES = { '♠': 'spades', '♥': 'hearts', '♦': 'diamonds', '♣': 'clubs' };
+  const RANK_NAMES = { A: 'Ace', J: 'Jack', Q: 'Queen', K: 'King' };
 
-  const RANKS = [
-    { label: 'A', value: 11 },
-    { label: '2', value: 2 },
-    { label: '3', value: 3 },
-    { label: '4', value: 4 },
-    { label: '5', value: 5 },
-    { label: '6', value: 6 },
-    { label: '7', value: 7 },
-    { label: '8', value: 8 },
-    { label: '9', value: 9 },
-    { label: '10', value: 10 },
-    { label: 'J', value: 10 },
-    { label: 'Q', value: 10 },
-    { label: 'K', value: 10 }
-  ];
+  /* ----------------------------------------------------------------- deck */
 
-  const DECKS = 6;
-  const STORAGE_KEY = 'hog:blackjack';
-
-  /* ------------------------------------------------------------ shoe/cards */
-
-  function buildShoe() {
-    const cards = [];
-    for (let d = 0; d < DECKS; d += 1) {
-      SUITS.forEach((suit) => {
-        RANKS.forEach((rank) => cards.push({ rank, suit }));
-      });
+  function randomInt(max) {
+    const cryptoObj = window.crypto || window.msCrypto;
+    if (cryptoObj && typeof cryptoObj.getRandomValues === 'function') {
+      // Rejection sampling keeps the modulo from biasing low cards.
+      const limit = Math.floor(4294967296 / max) * max;
+      const buffer = new Uint32Array(1);
+      let value;
+      do {
+        cryptoObj.getRandomValues(buffer);
+        value = buffer[0];
+      } while (value >= limit);
+      return value % max;
     }
-    return shuffle(cards);
+    return Math.floor(Math.random() * max);
   }
 
-  // Fisher-Yates, seeded from crypto where the browser offers it so the
-  // shuffle isn't predictable from Math.random's state.
-  function shuffle(cards) {
-    const random = randomSource(cards.length);
-    for (let i = cards.length - 1; i > 0; i -= 1) {
-      const j = Math.floor(random() * (i + 1));
-      const swap = cards[i];
-      cards[i] = cards[j];
-      cards[j] = swap;
+  function buildDeck() {
+    const deck = [];
+    SUITS.forEach((suit) => {
+      RANKS.forEach((rank) => deck.push({ rank, suit }));
+    });
+    return deck;
+  }
+
+  function shuffle(deck) {
+    // Fisher–Yates, back to front.
+    for (let i = deck.length - 1; i > 0; i -= 1) {
+      const j = randomInt(i + 1);
+      const swap = deck[i];
+      deck[i] = deck[j];
+      deck[j] = swap;
     }
-    return cards;
+    return deck;
   }
 
-  function randomSource(count) {
-    if (!window.crypto || !window.crypto.getRandomValues) return Math.random;
-    const pool = new Uint32Array(count);
-    window.crypto.getRandomValues(pool);
-    let cursor = 0;
-    return function next() {
-      if (cursor >= pool.length) return Math.random();
-      cursor += 1;
-      return pool[cursor - 1] / 4294967296;
-    };
-  }
+  /* -------------------------------------------------------------- scoring */
 
-  /* ------------------------------------------------------------ hand maths */
-
-  // Returns { total, soft }. Aces count 11 until that would bust, then 1.
-  function score(hand) {
+  function handValue(cards) {
     let total = 0;
     let aces = 0;
 
-    hand.forEach((card) => {
-      total += card.rank.value;
-      if (card.rank.label === 'A') aces += 1;
+    cards.forEach((card) => {
+      if (card.rank === 'A') {
+        total += 11;
+        aces += 1;
+      } else if (card.rank === 'J' || card.rank === 'Q' || card.rank === 'K') {
+        total += 10;
+      } else {
+        total += parseInt(card.rank, 10);
+      }
     });
 
-    let soft = aces > 0;
     while (total > 21 && aces > 0) {
       total -= 10;
       aces -= 1;
-      soft = aces > 0;
     }
 
-    return { total: total, soft: soft };
+    // Soft while at least one ace still counts as 11.
+    return { total: total, soft: aces > 0 };
   }
 
-  function isBlackjack(hand) {
-    return hand.length === 2 && score(hand).total === 21;
-  }
-
-  /* -------------------------------------------------------------- storage */
-
-  // Play limits are a courtesy, not enforcement — localStorage is trivially
-  // cleared. The real limit belongs on the discount code in Shopify Admin.
-  function readState() {
-    try {
-      return JSON.parse(window.localStorage.getItem(STORAGE_KEY)) || {};
-    } catch (error) {
-      return {};
+  function scoreLabel(cards) {
+    if (cards.length === 0) return '';
+    const value = handValue(cards);
+    if (value.soft && value.total !== 21) {
+      return (value.total - 10) + ' / ' + value.total;
     }
+    return String(value.total);
   }
 
-  function writeState(state) {
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch (error) {
-      /* Private mode, quota, or storage disabled — the game still plays. */
+  /* ----------------------------------------------------------------- misc */
+
+  function todayKey() {
+    const now = new Date();
+    const pad = (n) => String(n).padStart(2, '0');
+    return now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate());
+  }
+
+  function cardName(card) {
+    return (RANK_NAMES[card.rank] || card.rank) + ' of ' + SUIT_NAMES[card.suit];
+  }
+
+  function cardCorner(card, bottom) {
+    // Rank over suit, like a printed index; the bottom one is rotated in CSS.
+    const corner = document.createElement('span');
+    corner.className = bottom ? 'bj-card__corner bj-card__corner--bottom' : 'bj-card__corner';
+
+    const rank = document.createElement('span');
+    rank.className = 'bj-card__rank';
+    rank.textContent = card.rank;
+
+    const suit = document.createElement('span');
+    suit.className = 'bj-card__suit';
+    suit.textContent = card.suit;
+
+    corner.appendChild(rank);
+    corner.appendChild(suit);
+    return corner;
+  }
+
+  function cardFace(card) {
+    const front = document.createElement('span');
+    front.className = 'bj-card__face bj-card__face--front';
+
+    const pip = document.createElement('span');
+    pip.className = 'bj-card__pip';
+    if (card.rank === 'J' || card.rank === 'Q' || card.rank === 'K') {
+      // Court cards carry their letter in the middle, with the suit beneath.
+      pip.classList.add('bj-card__pip--court');
+      const letter = document.createElement('span');
+      letter.className = 'bj-card__court';
+      letter.textContent = card.rank;
+      const suit = document.createElement('span');
+      suit.className = 'bj-card__court-suit';
+      suit.textContent = card.suit;
+      pip.appendChild(letter);
+      pip.appendChild(suit);
+    } else {
+      pip.textContent = card.suit;
+      if (card.rank === 'A') pip.classList.add('bj-card__pip--ace');
     }
+
+    front.appendChild(cardCorner(card, false));
+    front.appendChild(pip);
+    front.appendChild(cardCorner(card, true));
+    return front;
   }
 
-  function periodKey(limit) {
-    if (limit === 'daily') return new Date().toISOString().slice(0, 10);
-    if (limit === 'once') return 'once';
-    return null;
+  function dressCard(el, card) {
+    // Puts the rank and suit on a card. Shared by the deal and the reveal, so
+    // the hole card can turn over in place instead of being swapped out.
+    el.setAttribute('aria-label', cardName(card));
+    if (card.suit === '♥' || card.suit === '♦') el.classList.add('bj-card--red');
+    const inner = el.querySelector('.bj-card__inner');
+    if (inner && !inner.querySelector('.bj-card__face--front')) inner.appendChild(cardFace(card));
+    return el;
   }
 
-  /* -------------------------------------------------------- <blackjack-table> */
+  function cardElement(card, down) {
+    const el = document.createElement('div');
+    el.className = 'bj-card bj-card--deal';
+    el.setAttribute('role', 'img');
 
-  class BlackjackTable extends HTMLElement {
+    // Two faces on a 3D inner so CSS can rotate the whole card.
+    const inner = document.createElement('span');
+    inner.className = 'bj-card__inner';
+    const back = document.createElement('span');
+    back.className = 'bj-card__face bj-card__face--back';
+    inner.appendChild(back);
+    el.appendChild(inner);
+
+    if (down) {
+      // Face-down: no rank or suit in the DOM until the reveal.
+      el.classList.add('bj-card--down');
+      el.setAttribute('aria-label', 'Face-down card');
+      return el;
+    }
+
+    return dressCard(el, card);
+  }
+
+  function stagger(el, index) {
+    // Cards leave the shoe one at a time; the CSS reads this delay.
+    el.style.setProperty('--bj-deal-delay', index * 120 + 'ms');
+    return el;
+  }
+
+  function renderMarking(target, parts) {
+    // One span per phrase with a visual separator, so the line wraps cleanly.
+    target.textContent = '';
+    parts.forEach((part, index) => {
+      if (index > 0) {
+        const sep = document.createElement('span');
+        sep.className = 'bj__mark-sep';
+        sep.setAttribute('aria-hidden', 'true');
+        sep.textContent = '·';
+        target.appendChild(sep);
+      }
+      const span = document.createElement('span');
+      span.className = 'bj__mark';
+      span.textContent = part;
+      target.appendChild(span);
+    });
+  }
+
+  function tierFrom(raw, fallbackCode, fallbackPercent) {
+    raw = raw && typeof raw === 'object' ? raw : {};
+    return {
+      code: typeof raw.code === 'string' && raw.code !== '' ? raw.code : fallbackCode,
+      percent: parseInt(raw.percent, 10) || fallbackPercent
+    };
+  }
+
+  /* ------------------------------------------------------ <blackjack-game> */
+
+  class BlackjackGame extends HTMLElement {
     connectedCallback() {
-      const config = this.querySelector('[data-blackjack-config]');
-      if (!config) return;
+      this.dealerCards = this.querySelector('[data-bj-dealer-cards]');
+      this.playerCards = this.querySelector('[data-bj-player-cards]');
+      this.dealerScore = this.querySelector('[data-bj-dealer-score]');
+      this.playerScore = this.querySelector('[data-bj-player-score]');
+      this.statusTarget = this.querySelector('[data-bj-status]');
+      this.dealBtn = this.querySelector('[data-bj-deal]');
+      this.hitBtn = this.querySelector('[data-bj-hit]');
+      this.standBtn = this.querySelector('[data-bj-stand]');
+      this.resultTarget = this.querySelector('[data-bj-result]');
+      this.resultTitle = this.querySelector('[data-bj-result-title]');
+      this.codeTarget = this.querySelector('[data-bj-code]');
+      this.copyBtn = this.querySelector('[data-bj-copy]');
+      this.shopLink = this.querySelector('[data-bj-shop]');
+      this.metaTarget = this.querySelector('[data-bj-meta]');
 
-      try {
-        this.config = JSON.parse(config.textContent);
-      } catch (error) {
-        return;
+      if (!this.dealerCards || !this.playerCards || !this.dealBtn) return;
+
+      this.config = this.readConfig();
+      this.state = this.readState();
+      this.inHand = false;
+      this.activeCode = '';
+      this.renderMarkings();
+
+      if (!this.bound) {
+        this.bound = true;
+        this.dealBtn.addEventListener('click', () => this.deal());
+        if (this.hitBtn) this.hitBtn.addEventListener('click', () => this.hit());
+        if (this.standBtn) this.standBtn.addEventListener('click', () => this.stand());
+        if (this.copyBtn) this.copyBtn.addEventListener('click', () => this.copyCode());
       }
 
-      this.el = {
-        dealerCards: this.querySelector('[data-dealer-cards]'),
-        dealerScore: this.querySelector('[data-dealer-score]'),
-        playerCards: this.querySelector('[data-player-cards]'),
-        playerScore: this.querySelector('[data-player-score]'),
-        status: this.querySelector('[data-status]'),
-        controls: this.querySelector('[data-controls]'),
-        reward: this.querySelector('[data-reward]'),
-        rewardLabel: this.querySelector('[data-reward-label]'),
-        rewardCode: this.querySelector('[data-reward-code]'),
-        rewardCopy: this.querySelector('[data-reward-copy]'),
-        rewardShop: this.querySelector('[data-reward-shop]'),
-        intro: this.querySelector('[data-intro]'),
-        table: this.querySelector('[data-table]'),
-        deal: this.querySelector('[data-action="deal"]'),
-        hit: this.querySelector('[data-action="hit"]'),
-        stand: this.querySelector('[data-action="stand"]'),
-        double: this.querySelector('[data-action="double"]'),
-        again: this.querySelector('[data-action="again"]')
+      // Catch the date rolling over while the tab sits open overnight.
+      this.onVisible = () => {
+        if (document.visibilityState === 'visible') this.syncDay();
       };
+      document.addEventListener('visibilitychange', this.onVisible);
 
-      this.shoe = buildShoe();
-      this.round = null;
-
-      this.bind();
-      this.restore();
+      if (this.playsLeft() > 0) {
+        this.setStatus("DEALER'S READY WHEN YOU ARE.");
+      } else {
+        this.setStatus("TABLE'S CLOSED FOR TODAY.");
+      }
+      this.updateMeta();
+      this.updateButtons();
     }
 
-    bind() {
-      if (this.el.deal) this.el.deal.addEventListener('click', () => this.deal());
-      if (this.el.again) this.el.again.addEventListener('click', () => this.deal());
-      if (this.el.hit) this.el.hit.addEventListener('click', () => this.hit());
-      if (this.el.stand) this.el.stand.addEventListener('click', () => this.stand());
-      if (this.el.double) this.el.double.addEventListener('click', () => this.double());
-      if (this.el.rewardCopy) this.el.rewardCopy.addEventListener('click', () => this.copyCode());
+    disconnectedCallback() {
+      document.removeEventListener('visibilitychange', this.onVisible);
+      window.clearTimeout(this.copyTimer);
     }
 
-    /* ------------------------------------------------------------- state */
+    /* -------------------------------------------------------------- config */
 
-    // A visitor who already won keeps their code across reloads; a visitor
-    // who used up their play sees why the table is closed.
-    restore() {
-      const key = periodKey(this.config.playLimit);
-      if (!key) return;
-
-      const saved = readState();
-      if (saved.period !== key) return;
-
-      if (saved.code) {
-        this.showReward(saved.tier, saved.code, true);
-        return;
+    readConfig() {
+      let parsed = {};
+      const el = this.querySelector('[data-bj-config]');
+      if (el) {
+        try {
+          parsed = JSON.parse(el.textContent) || {};
+        } catch (error) {
+          parsed = {};
+        }
       }
 
-      if (saved.spent) this.lockOut();
+      const tiers = parsed.tiers && typeof parsed.tiers === 'object' ? parsed.tiers : {};
+      const streak = tierFrom(tiers.streak, 'BLACKJACK15', 15);
+      streak.length = parseInt(tiers.streak && tiers.streak.length, 10) || 3;
+
+      // Consolation only counts when the merchant actually configured a code.
+      let consolation = null;
+      if (tiers.consolation && tiers.consolation.code) {
+        consolation = tierFrom(tiers.consolation, '', 0);
+        if (!consolation.code || consolation.percent < 1) consolation = null;
+      }
+
+      return {
+        playsPerDay: Math.max(1, parseInt(parsed.playsPerDay, 10) || 3),
+        // House rules favour the player: a tie pays out instead of washing.
+        tiesPayPlayer: parsed.tiesPayPlayer !== false,
+        tiers: {
+          win: tierFrom(tiers.win, 'BLACKJACK10', 10),
+          blackjack: tierFrom(tiers.blackjack, 'BLACKJACK21', 21),
+          streak: streak,
+          consolation: consolation
+        },
+        shopUrl: typeof parsed.shopUrl === 'string' && parsed.shopUrl !== '' ? parsed.shopUrl : '/collections/all',
+        shopLabel: typeof parsed.shopLabel === 'string' && parsed.shopLabel !== '' ? parsed.shopLabel : 'APPLY CODE & SHOP'
+      };
     }
 
-    remember(patch) {
-      const key = periodKey(this.config.playLimit);
-      if (!key) return;
-      writeState(Object.assign({ period: key }, patch));
+    /* --------------------------------------------------------------- state */
+
+    readState() {
+      const today = todayKey();
+      let stored = null;
+      try {
+        stored = JSON.parse(window.localStorage.getItem(STORAGE_KEY));
+      } catch (error) {
+        stored = null;
+      }
+
+      const state = { d: today, plays: 0, streak: 0, won: false };
+      if (stored && typeof stored === 'object') {
+        state.streak = Math.max(0, parseInt(stored.streak, 10) || 0);
+        if (stored.d === today) {
+          state.plays = Math.max(0, parseInt(stored.plays, 10) || 0);
+          state.won = stored.won === true;
+        }
+      }
+      return state;
     }
 
-    lockOut() {
-      this.setStatus(this.config.strings.comeBack, 'over');
-      this.toggle({ deal: false, hit: false, stand: false, double: false, again: false });
-      if (this.el.intro) this.el.intro.hidden = true;
+    writeState() {
+      try {
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
+      } catch (error) {
+        // Private mode — the hand still plays, the house just forgets.
+      }
     }
 
-    /* -------------------------------------------------------------- play */
-
-    draw() {
-      // Reshuffle at the cut card rather than dealing the shoe to the felt.
-      if (this.shoe.length < DECKS * 52 * 0.25) this.shoe = buildShoe();
-      return this.shoe.pop();
+    syncDay() {
+      if (this.state.d === todayKey()) return;
+      this.state.d = todayKey();
+      this.state.plays = 0;
+      this.state.won = false;
+      this.writeState();
+      if (!this.inHand) {
+        this.setStatus("DEALER'S READY WHEN YOU ARE.");
+        this.updateMeta();
+        this.updateButtons();
+      }
     }
+
+    playsLeft() {
+      return Math.max(0, this.config.playsPerDay - this.state.plays);
+    }
+
+    /* ---------------------------------------------------------------- play */
 
     deal() {
-      const saved = readState();
-      const key = periodKey(this.config.playLimit);
-      if (key && saved.period === key && (saved.spent || saved.code)) {
-        this.lockOut();
+      this.syncDay();
+      if (this.inHand || this.playsLeft() < 1) return;
+
+      this.inHand = true;
+      this.deck = shuffle(buildDeck());
+      this.player = [this.deck.pop(), this.deck.pop()];
+      this.dealer = [this.deck.pop(), this.deck.pop()];
+      this.holeHidden = true;
+
+      this.playerCards.textContent = '';
+      this.dealerCards.textContent = '';
+      this.hideResult();
+
+      // Delays follow real dealing order: you, dealer, you, dealer.
+      this.playerCards.appendChild(stagger(cardElement(this.player[0], false), 0));
+      this.playerCards.appendChild(stagger(cardElement(this.player[1], false), 2));
+      this.dealerCards.appendChild(stagger(cardElement(this.dealer[0], false), 1));
+      this.dealerCards.appendChild(stagger(cardElement(this.dealer[1], true), 3));
+
+      this.updateScores();
+      this.updateButtons();
+
+      if (handValue(this.player).total === 21) {
+        // Natural — resolve on the spot, checking the dealer for a push.
+        const dealerNatural = handValue(this.dealer).total === 21;
+        this.revealHole();
+        if (dealerNatural) {
+          if (this.config.tiesPayPlayer) {
+            this.finish('blackjack', 'TWO BLACKJACKS — TIE PAYS YOU.');
+          } else {
+            this.finish('push', 'TWO BLACKJACKS.');
+          }
+        } else {
+          this.finish('blackjack', null);
+        }
         return;
       }
 
-      this.round = {
-        player: [this.draw(), this.draw()],
-        dealer: [this.draw(), this.draw()],
-        doubled: false,
-        over: false
-      };
-
-      if (this.el.intro) this.el.intro.hidden = true;
-      if (this.el.table) this.el.table.hidden = false;
-      if (this.el.reward) this.el.reward.hidden = true;
-
-      this.render();
-
-      // A natural resolves immediately — no decision to make.
-      if (isBlackjack(this.round.player) || isBlackjack(this.round.dealer)) {
-        this.finish();
-        return;
-      }
-
-      this.setStatus(this.config.strings.yourMove, 'live');
-      this.toggle({ deal: false, hit: true, stand: true, double: this.config.allowDouble, again: false });
+      this.setStatus('HIT OR STAND?');
     }
 
     hit() {
-      if (!this.round || this.round.over) return;
+      if (!this.inHand || this.holeHidden !== true) return;
 
-      this.round.player.push(this.draw());
-      this.render();
+      const card = this.deck.pop();
+      this.player.push(card);
+      this.playerCards.appendChild(cardElement(card, false));
+      this.updateScores();
 
-      if (score(this.round.player).total > 21) {
-        this.finish();
-        return;
+      const value = handValue(this.player);
+      if (value.total > 21) {
+        // Bust — the dealer wins without drawing.
+        this.revealHole();
+        this.finish('lose', 'BUST.');
+      } else if (value.total === 21) {
+        this.stand();
       }
-
-      // Double is a first-decision-only option.
-      this.toggle({ deal: false, hit: true, stand: true, double: false, again: false });
-    }
-
-    double() {
-      if (!this.round || this.round.over || this.round.player.length !== 2) return;
-
-      this.round.doubled = true;
-      this.round.player.push(this.draw());
-      this.render();
-      this.stand();
     }
 
     stand() {
-      if (!this.round || this.round.over) return;
+      if (!this.inHand) return;
 
-      this.toggle({ deal: false, hit: false, stand: false, double: false, again: false });
+      this.revealHole();
 
-      if (score(this.round.player).total > 21) {
-        this.finish();
-        return;
+      // Dealer draws to 17 and stands on all 17s, soft included.
+      let dealerValue = handValue(this.dealer);
+      let drawn = 0;
+      while (dealerValue.total < 17) {
+        const card = this.deck.pop();
+        this.dealer.push(card);
+        // Each draw lands after the hole card has finished turning over.
+        drawn += 1;
+        this.dealerCards.appendChild(stagger(cardElement(card, false), drawn + 3));
+        dealerValue = handValue(this.dealer);
       }
+      this.updateScores();
 
-      this.dealerPlay();
+      const playerTotal = handValue(this.player).total;
+      if (dealerValue.total > 21) {
+        this.finish('win', 'DEALER BUSTS.');
+      } else if (dealerValue.total > playerTotal) {
+        this.finish('lose', null);
+      } else if (dealerValue.total < playerTotal) {
+        this.finish('win', null);
+      } else if (this.config.tiesPayPlayer) {
+        this.finish('win', 'TIE PAYS YOU.');
+      } else {
+        this.finish('push', null);
+      }
     }
 
-    // Dealer reveals, then draws one card at a time so the player can follow.
-    dealerPlay() {
-      const step = () => {
-        const hand = score(this.round.dealer);
-        const mustHit =
-          hand.total < 17 || (hand.total === 17 && hand.soft && this.config.dealerHitsSoft17);
+    finish(outcome, note) {
+      this.inHand = false;
+      const prefix = note ? note + ' ' : '';
 
-        if (!mustHit) {
-          this.finish();
-          return;
+      if (outcome === 'push') {
+        // A push burns no daily play and keeps the streak alive.
+        this.setStatus(prefix + 'PUSH. NO HAND BURNED — DEAL AGAIN.');
+      } else if (outcome === 'lose') {
+        this.state.plays += 1;
+        this.state.streak = 0;
+        this.writeState();
+        const left = this.playsLeft();
+
+        // Out of hands with nothing won: nobody leaves the table empty-handed.
+        if (left === 0 && this.state.won === false && this.config.tiers.consolation) {
+          this.setStatus(prefix + "HOUSE TAKES IT — BUT YOU'RE NOT LEAVING EMPTY-HANDED.");
+          this.showResult(this.config.tiers.consolation, false);
+        } else {
+          this.setStatus(
+            prefix + 'HOUSE WINS. ' + left + (left === 1 ? ' HAND' : ' HANDS') + ' LEFT TODAY.'
+          );
+        }
+      } else {
+        // 'win' or 'blackjack' — a winning final play still pays out.
+        this.state.plays += 1;
+        this.state.streak += 1;
+        this.state.won = true;
+        this.writeState();
+
+        const natural = outcome === 'blackjack';
+        let tier = natural ? this.config.tiers.blackjack : this.config.tiers.win;
+        let streakLine = '';
+
+        const streakTier = this.config.tiers.streak;
+        if (this.state.streak >= streakTier.length && streakTier.percent > tier.percent) {
+          tier = streakTier;
+          streakLine = this.state.streak + ' WINS IN A ROW. ';
         }
 
-        this.round.dealer.push(this.draw());
-        this.render(true);
-
-        if (REDUCED_MOTION) step();
-        else window.setTimeout(step, 550);
-      };
-
-      this.round.revealed = true;
-      this.render(true);
-
-      if (REDUCED_MOTION) step();
-      else window.setTimeout(step, 450);
-    }
-
-    /* ---------------------------------------------------------- outcomes */
-
-    outcome() {
-      const player = score(this.round.player).total;
-      const dealer = score(this.round.dealer).total;
-      const playerNatural = isBlackjack(this.round.player);
-      const dealerNatural = isBlackjack(this.round.dealer);
-
-      if (playerNatural && dealerNatural) return 'push';
-      if (playerNatural) return 'blackjack';
-      if (dealerNatural) return 'lose';
-      if (player > 21) return 'bust';
-      if (dealer > 21) return 'win';
-      if (player > dealer) return 'win';
-      if (player < dealer) return 'lose';
-      return 'push';
-    }
-
-    finish() {
-      this.round.over = true;
-      this.round.revealed = true;
-      this.render(true);
-
-      const result = this.outcome();
-      const won = result === 'win' || result === 'blackjack';
-      const tier = result === 'blackjack' && this.config.rewards.blackjack.code
-        ? 'blackjack'
-        : 'win';
-
-      if (won) {
-        const reward = this.config.rewards[tier];
-        this.setStatus(this.config.strings[result], 'won');
-        this.remember({ spent: true, code: reward.code, tier: tier });
-        this.showReward(tier, reward.code, false);
-        this.toggle({ deal: false, hit: false, stand: false, double: false, again: false });
-        return;
+        this.setStatus(prefix + streakLine + (natural ? 'BLACKJACK.' : 'YOU BEAT THE HOUSE.'));
+        this.showResult(tier, natural);
       }
 
-      this.setStatus(this.config.strings[result], result === 'push' ? 'push' : 'lost');
+      this.updateMeta();
+      this.updateButtons();
+    }
 
-      // A push costs nothing — the player gets the hand back.
-      if (result === 'push') {
-        this.toggle({ deal: false, hit: false, stand: false, double: false, again: true });
-        return;
+    /* ------------------------------------------------------------ rendering */
+
+    revealHole() {
+      if (this.holeHidden !== true) return;
+      this.holeHidden = false;
+      const downCard = this.dealerCards.querySelector('.bj-card--down');
+      if (downCard && downCard.querySelector('.bj-card__inner')) {
+        // Dress the blank front, then drop the face-down class so the CSS
+        // turns the card over. The forced layout read makes the browser
+        // register the face-down state first, so the turn still animates
+        // when a natural resolves the hand on the same tick as the deal.
+        dressCard(downCard, this.dealer[1]);
+        void downCard.offsetWidth;
+        downCard.classList.remove('bj-card--down');
+      } else if (downCard) {
+        downCard.replaceWith(cardElement(this.dealer[1], false));
       }
+      this.updateScores();
+    }
 
-      this.remember({ spent: true });
-      this.toggle({
-        deal: false,
-        hit: false,
-        stand: false,
-        double: false,
-        again: this.config.playLimit === 'none'
-      });
-
-      if (this.config.playLimit !== 'none' && this.config.strings.comeBack) {
-        this.appendStatus(this.config.strings.comeBack);
+    updateScores() {
+      if (this.playerScore) this.playerScore.textContent = scoreLabel(this.player || []);
+      if (this.dealerScore) {
+        const visible = this.holeHidden ? (this.dealer || []).slice(0, 1) : this.dealer || [];
+        this.dealerScore.textContent = scoreLabel(visible);
       }
     }
 
-    showReward(tier, code, restored) {
-      if (!this.el.reward || !code) return;
+    setStatus(message) {
+      if (this.statusTarget) this.statusTarget.textContent = message;
+    }
 
-      const reward = this.config.rewards[tier] || this.config.rewards.win;
+    updateMeta() {
+      if (!this.metaTarget) return;
+      const left = this.playsLeft();
+      this.metaTarget.textContent =
+        left > 0
+          ? left +
+            ' OF ' +
+            this.config.playsPerDay +
+            ' HANDS LEFT TODAY. ' +
+            (this.config.tiesPayPlayer ? 'TIES PAY YOU.' : 'PUSHES ARE FREE.')
+          : "YOU'RE DONE FOR TODAY — BACK TOMORROW.";
+      this.renderChips();
+    }
 
-      if (this.el.rewardLabel) this.el.rewardLabel.textContent = reward.label;
-      if (this.el.rewardCode) this.el.rewardCode.textContent = code;
-      if (this.el.rewardShop && reward.url) this.el.rewardShop.href = reward.url;
-
-      this.el.reward.hidden = false;
-      if (this.el.intro) this.el.intro.hidden = true;
-
-      if (restored) {
-        if (this.el.table) this.el.table.hidden = true;
-        this.setStatus(this.config.strings.alreadyWon, 'won');
+    renderMarkings() {
+      // Printed on the felt from the config, the way a real table prints
+      // "BLACKJACK PAYS 3 TO 2" — so the promise always matches the payout.
+      const tiers = this.config.tiers;
+      const tierLine = this.querySelector('[data-bj-tiers]');
+      if (tierLine) {
+        renderMarking(tierLine, [
+          'WIN PAYS ' + tiers.win.percent + '%',
+          'BLACKJACK PAYS ' + tiers.blackjack.percent + '%',
+          tiers.streak.length + ' WINS IN A ROW ' + tiers.streak.percent + '%'
+        ]);
       }
 
-      if (window.HOG && window.HOG.announce) {
-        window.HOG.announce(reward.label + ' ' + code);
+      const rulesLine = this.querySelector('[data-bj-rules]');
+      if (rulesLine) {
+        renderMarking(rulesLine, [
+          'DEALER STANDS ON 17',
+          this.config.tiesPayPlayer ? 'TIES PAY YOU' : 'PUSHES ARE FREE'
+        ]);
       }
     }
+
+    renderChips() {
+      // Hands left today as a chip stack: one chip per daily hand, spent
+      // ones hollow. The streak pill only shows once there is a streak.
+      const chips = this.querySelector('[data-bj-chips]');
+      if (chips) {
+        const left = this.playsLeft();
+        chips.textContent = '';
+        for (let i = 0; i < this.config.playsPerDay; i += 1) {
+          const chip = document.createElement('span');
+          chip.className = i < left ? 'bj-chip' : 'bj-chip bj-chip--spent';
+          chips.appendChild(chip);
+        }
+      }
+
+      const streak = this.querySelector('[data-bj-streak]');
+      if (streak) {
+        const wins = this.state.streak;
+        const needed = this.config.tiers.streak.length;
+        const hot = wins >= needed;
+        streak.hidden = wins < 1;
+        streak.classList.toggle('bj__streak--hot', hot);
+        streak.textContent = hot ? wins + ' WINS IN A ROW' : 'STREAK ' + wins + ' OF ' + needed;
+      }
+    }
+
+    updateButtons() {
+      const idle = !this.inHand;
+      this.dealBtn.hidden = !idle;
+      if (this.hitBtn) this.hitBtn.hidden = idle;
+      if (this.standBtn) this.standBtn.hidden = idle;
+
+      const locked = idle && this.playsLeft() < 1;
+      this.dealBtn.disabled = locked;
+      this.dealBtn.setAttribute('aria-disabled', String(locked));
+    }
+
+    showResult(tier, natural) {
+      if (!this.resultTarget) return;
+
+      this.activeCode = tier.code;
+
+      if (this.resultTitle) {
+        this.resultTitle.textContent = natural
+          ? 'BLACKJACK. ' + tier.percent + '% OFF'
+          : 'YOU WIN ' + tier.percent + '% OFF';
+      }
+
+      if (this.codeTarget) this.codeTarget.textContent = tier.code;
+
+      if (this.shopLink) {
+        this.shopLink.href =
+          '/discount/' + encodeURIComponent(tier.code) + '?redirect=' + encodeURIComponent(this.config.shopUrl);
+        this.shopLink.textContent = this.config.shopLabel;
+      }
+
+      if (this.copyBtn) {
+        this.copyBtn.textContent = 'COPY';
+        this.copyBtn.disabled = false;
+      }
+
+      this.resultTarget.hidden = false;
+    }
+
+    hideResult() {
+      if (!this.resultTarget) return;
+      this.resultTarget.hidden = true;
+      this.activeCode = '';
+    }
+
+    /* ----------------------------------------------------------------- copy */
 
     copyCode() {
-      const code = this.el.rewardCode ? this.el.rewardCode.textContent.trim() : '';
-      if (!code) return;
+      const code = this.activeCode;
+      if (!code || !this.copyBtn) return;
 
-      const done = () => {
-        const original = this.el.rewardCopy.dataset.label || this.el.rewardCopy.textContent;
-        this.el.rewardCopy.dataset.label = original;
-        this.el.rewardCopy.textContent = this.config.strings.copied;
-        window.setTimeout(() => {
-          this.el.rewardCopy.textContent = original;
-        }, 2000);
-      };
+      const done = () => this.flashCopyButton('COPIED ✓');
+      const fail = () => this.flashCopyButton('COPY FAILED');
 
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(code).then(done, () => {});
-        return;
+      if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+        navigator.clipboard.writeText(code).then(done, () => this.copyFallback(code, done, fail));
+      } else {
+        this.copyFallback(code, done, fail);
       }
+    }
 
-      // Older Safari and any non-secure context.
-      const field = document.createElement('textarea');
-      field.value = code;
-      field.setAttribute('readonly', '');
-      field.style.position = 'fixed';
-      field.style.opacity = '0';
-      document.body.appendChild(field);
-      field.select();
+    copyFallback(code, done, fail) {
+      const input = document.createElement('input');
+      input.value = code;
+      input.setAttribute('readonly', '');
+      input.style.position = 'absolute';
+      input.style.left = '-9999px';
+      this.appendChild(input);
+      input.select();
+      input.setSelectionRange(0, code.length);
+
+      let copied = false;
       try {
-        document.execCommand('copy');
-        done();
+        copied = document.execCommand('copy');
       } catch (error) {
-        /* Leave the code on screen to be copied by hand. */
+        copied = false;
       }
-      document.body.removeChild(field);
-    }
 
-    /* ----------------------------------------------------------- render */
-
-    render(revealDealer) {
-      const reveal = revealDealer || this.round.revealed;
-
-      this.paint(this.el.playerCards, this.round.player, false);
-      this.paint(this.el.dealerCards, this.round.dealer, !reveal);
-
-      const player = score(this.round.player);
-      if (this.el.playerScore) this.el.playerScore.textContent = this.label(player);
-
-      if (this.el.dealerScore) {
-        this.el.dealerScore.textContent = reveal
-          ? this.label(score(this.round.dealer))
-          : this.label(score([this.round.dealer[0]]), true);
+      input.remove();
+      if (copied) {
+        done();
+      } else {
+        fail();
       }
     }
 
-    // "17" for a hard hand, "7 / 17" for a soft one, "?" while the hole card
-    // is face down. At 21 the soft reading is noise — a natural should read
-    // "21", not "11 / 21".
-    label(hand, partial) {
-      if (partial) return hand.total + ' + ?';
-      if (!hand.soft || hand.total >= 21) return String(hand.total);
-      return hand.total - 10 + ' / ' + hand.total;
-    }
-
-    paint(target, hand, hideSecond) {
-      if (!target) return;
-      target.innerHTML = '';
-
-      hand.forEach((card, index) => {
-        const facedown = hideSecond && index === 1;
-        target.appendChild(this.cardNode(card, facedown, index));
-      });
-    }
-
-    cardNode(card, facedown, index) {
-      const node = document.createElement('div');
-      node.className = 'bj-card' + (facedown ? ' bj-card--back' : '');
-      if (!facedown && card.suit.red) node.classList.add('bj-card--red');
-      if (!REDUCED_MOTION) node.style.animationDelay = index * 70 + 'ms';
-
-      if (facedown) {
-        node.setAttribute('aria-label', this.config.strings.faceDown);
-        return node;
-      }
-
-      node.setAttribute(
-        'aria-label',
-        card.rank.label + ' of ' + card.suit.name
-      );
-
-      const rank = document.createElement('span');
-      rank.className = 'bj-card__rank';
-      rank.textContent = card.rank.label;
-
-      const suit = document.createElement('span');
-      suit.className = 'bj-card__suit';
-      suit.textContent = card.suit.symbol;
-      suit.setAttribute('aria-hidden', 'true');
-
-      node.appendChild(rank);
-      node.appendChild(suit);
-      return node;
-    }
-
-    setStatus(message, tone) {
-      if (!this.el.status) return;
-      this.el.status.textContent = message;
-      this.el.status.dataset.tone = tone || '';
-    }
-
-    appendStatus(message) {
-      if (!this.el.status) return;
-      this.el.status.textContent = this.el.status.textContent + ' ' + message;
-    }
-
-    toggle(map) {
-      Object.keys(map).forEach((key) => {
-        const node = this.el[key];
-        if (node) node.hidden = !map[key];
-      });
+    flashCopyButton(label) {
+      if (!this.copyBtn) return;
+      this.copyBtn.textContent = label;
+      window.clearTimeout(this.copyTimer);
+      this.copyTimer = window.setTimeout(() => {
+        this.copyBtn.textContent = 'COPY';
+      }, 1800);
     }
   }
 
-  if (!customElements.get('blackjack-table')) {
-    customElements.define('blackjack-table', BlackjackTable);
+  if (!customElements.get('blackjack-game')) {
+    customElements.define('blackjack-game', BlackjackGame);
   }
 })();

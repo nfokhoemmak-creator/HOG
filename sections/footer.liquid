@@ -1,8 +1,17 @@
+{%- liquid
+  comment
+    The social row belongs with the brand blurb, so it renders under the
+    first text block only; a footer with no text block gets it under the
+    newsletter instead so it never disappears.
+  endcomment
+  assign social_placed = false
+-%}
+
 <footer class="footer">
   <div class="container">
     <div class="footer__grid">
       {%- for block in section.blocks -%}
-        <div {{ block.shopify_attributes }}>
+        <div class="footer__col" {{ block.shopify_attributes }}>
           {%- case block.type -%}
             {%- when 'menu' -%}
               {%- if block.settings.heading != blank -%}
@@ -18,7 +27,13 @@
               {%- if block.settings.heading != blank -%}
                 <h2 class="footer__heading">{{ block.settings.heading }}</h2>
               {%- endif -%}
-              <div class="footer__menu">{{ block.settings.text }}</div>
+              <div class="footer__blurb">{{ block.settings.text }}</div>
+              {%- if section.settings.show_social and social_placed == false -%}
+                {%- assign social_placed = true -%}
+                <div class="footer__social">
+                  {% render 'social-links' %}
+                </div>
+              {%- endif -%}
 
             {%- when 'contact' -%}
               {%- if block.settings.heading != blank -%}
@@ -40,7 +55,7 @@
       {%- endfor -%}
 
       {%- if section.settings.show_newsletter -%}
-        <div>
+        <div class="footer__col footer__newsletter">
           {%- assign newsletter_fallback = 'general.newsletter_form.heading' | t -%}
           <h2 class="footer__heading">
             {{ section.settings.newsletter_heading | default: newsletter_fallback }}
@@ -69,8 +84,10 @@
             {%- endif -%}
           {%- endform -%}
 
-          {%- if section.settings.show_social -%}
-            <div style="margin-top: var(--space-4);">
+          <p class="footer__note">{{ 'general.newsletter_form.body' | t }}</p>
+
+          {%- if section.settings.show_social and social_placed == false -%}
+            <div class="footer__social">
               {% render 'social-links' %}
             </div>
           {%- endif -%}
@@ -79,7 +96,7 @@
     </div>
 
     <div class="footer__bottom">
-      <span>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. {{ settings.brand_tagline }}</span>
+      <p>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}{% if settings.brand_tagline != blank %} &middot; {{ settings.brand_tagline }}{% endif %}</p>
 
       {%- if section.settings.show_payment_icons and shop.enabled_payment_types.size > 0 -%}
         <ul class="payment-list">
@@ -160,7 +177,7 @@
           "type": "richtext",
           "id": "text",
           "label": "t:sections.footer.blocks.text.settings.text.label",
-          "default": "<p>Limited-run streetwear out of Lebanon.</p>"
+          "default": "<p>Daily essentials, made in Lebanon. Limited runs, no restocks.</p>"
         }
       ]
     },

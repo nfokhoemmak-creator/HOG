@@ -174,14 +174,6 @@
     "cart": {
       "name": "Cart",
       "settings": {
-        "cart_free_shipping_enabled": {
-          "label": "Show free-shipping progress",
-          "info": "Only turn this on if you actually offer free shipping at this amount — set the matching rate under Settings → Shipping."
-        },
-        "cart_free_shipping_threshold": {
-          "label": "Free shipping over",
-          "info": "In your store currency, whole units. 100 means free shipping from $100."
-        },
         "cart_type": {
           "label": "Cart type",
           "options__1": "Drawer",
@@ -193,10 +185,6 @@
         "cart_notice": {
           "label": "Cart notice"
         }
-      },
-      "headers": {
-        "free_shipping": "Free shipping",
-        "behaviour": "Behaviour"
       }
     },
     "social": {
@@ -623,68 +611,54 @@
         }
       }
     },
-    "blackjack": {
-      "name": "Blackjack",
+    "faq": {
+      "name": "FAQ",
       "presets": {
-        "name": "Blackjack"
-      },
-      "headers": {
-        "reward": "Reward",
-        "rules": "Rules",
-        "appearance": "Appearance"
-      },
-      "paragraphs": {
-        "security": "Discount codes set here are visible in the page source — anyone can read them without playing. Create the discount in Discounts with a usage limit (one per customer, or a capped total) so that does not cost you anything."
+        "name": "FAQ"
       },
       "settings": {
-        "eyebrow": {
-          "label": "Eyebrow"
-        },
         "heading": {
           "label": "Heading"
-        },
-        "subheading": {
-          "label": "Text"
-        },
-        "button_label": {
-          "label": "Deal button label"
-        },
-        "reward_win_label": {
-          "label": "Reward for beating the dealer",
-          "info": "Shown before the hand and again on the win. Describe the offer, e.g. \"10% off your order\"."
-        },
-        "reward_win_code": {
-          "label": "Discount code",
-          "info": "Must match a code in Discounts. Leave blank to hide the whole section."
-        },
-        "reward_blackjack_label": {
-          "label": "Reward for a natural blackjack"
-        },
-        "reward_blackjack_code": {
-          "label": "Blackjack discount code",
-          "info": "Optional. Falls back to the standard code when blank."
-        },
-        "reward_url": {
-          "label": "Where the winner goes next",
-          "info": "Defaults to the all-products collection."
-        },
-        "play_limit": {
-          "label": "Plays allowed",
-          "info": "Held in the visitor's browser, so it is a courtesy rather than enforcement. The usage limit on the discount code is what actually protects the margin.",
-          "options__1": "One hand per day",
-          "options__2": "One hand, ever",
-          "options__3": "Unlimited"
-        },
-        "allow_double": {
-          "label": "Allow double down",
-          "info": "Doubling on the opening two cards. Raises the win rate slightly."
-        },
-        "dealer_hits_soft_17": {
-          "label": "Dealer hits soft 17",
-          "info": "On: the house edge goes up and fewer players win. Off: dealer stands on all 17s, which is friendlier to the player."
-        },
-        "felt_color": {
-          "label": "Table felt"
+        }
+      },
+      "blocks": {
+        "question": {
+          "name": "Question",
+          "settings": {
+            "question": {
+              "label": "Question"
+            },
+            "answer": {
+              "label": "Answer"
+            }
+          }
+        }
+      }
+    },
+    "testimonials": {
+      "name": "Testimonials",
+      "presets": {
+        "name": "Testimonials"
+      },
+      "settings": {
+        "heading": {
+          "label": "Heading"
+        }
+      },
+      "blocks": {
+        "quote": {
+          "name": "Quote",
+          "settings": {
+            "rating": {
+              "label": "Stars"
+            },
+            "quote": {
+              "label": "Quote"
+            },
+            "author": {
+              "label": "Attribution"
+            }
+          }
         }
       }
     },
@@ -718,52 +692,73 @@
         }
       }
     },
-    "testimonials": {
-      "name": "Testimonials",
+    "viral_program": {
+      "name": "Secret — viral reward",
       "presets": {
-        "name": "Testimonials"
+        "name": "Secret — viral reward"
+      },
+      "headers": {
+        "limits": "Limits and rules",
+        "contact": "Claiming"
       },
       "settings": {
+        "eyebrow": {
+          "label": "Eyebrow"
+        },
         "heading": {
           "label": "Heading"
+        },
+        "intro": {
+          "label": "Intro"
+        },
+        "cap_amount": {
+          "label": "Maximum payout per order",
+          "info": "0 hides the line."
+        },
+        "currency_label": {
+          "label": "Currency symbol"
+        },
+        "rules": {
+          "label": "Rules"
+        },
+        "contact_handle": {
+          "label": "Handle to DM",
+          "info": "Defaults to your Instagram from Theme settings → Social."
+        },
+        "contact_email": {
+          "label": "Claims email"
+        },
+        "button_label": {
+          "label": "Button label"
+        },
+        "button_link": {
+          "label": "Button link",
+          "info": "Defaults to your Instagram profile."
         }
       },
       "blocks": {
-        "quote": {
-          "name": "Quote",
+        "tier": {
+          "name": "Reward tier",
           "settings": {
-            "rating": {
-              "label": "Stars"
+            "views": {
+              "label": "Views needed"
             },
-            "quote": {
-              "label": "Quote"
+            "reward_percent": {
+              "label": "Reward"
             },
-            "author": {
-              "label": "Attribution"
+            "note": {
+              "label": "Note"
             }
           }
-        }
-      }
-    },
-    "faq": {
-      "name": "FAQ",
-      "presets": {
-        "name": "FAQ"
-      },
-      "settings": {
-        "heading": {
-          "label": "Heading"
-        }
-      },
-      "blocks": {
-        "question": {
-          "name": "Question",
+        },
+        "step": {
+          "name": "Step",
           "settings": {
-            "question": {
-              "label": "Question"
+            "title": {
+              "label": "Title"
             },
-            "answer": {
-              "label": "Answer"
+            "text": {
+              "label": "Text"
             }
           }
         }

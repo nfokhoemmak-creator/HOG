@@ -89,8 +89,10 @@
       "item_added": "Added to cart",
       "quantity_error": "Only {{ quantity }} available.",
       "continue_shopping": "Continue shopping",
-      "free_shipping_progress_html": "You're <strong>{{ amount }}</strong> away from free shipping",
-      "free_shipping_met_html": "<strong>Free shipping unlocked.</strong>",
+      "discount_prompt": "Have a discount code?",
+      "discount_label": "Discount code",
+      "discount_placeholder": "Enter code",
+      "discount_apply": "Apply",
       "free_shipping_label": "Progress towards free shipping"
     },
     "featured_collection": {
@@ -145,35 +147,16 @@
       "by_author": "by {{ author }}",
       "share": "Share this"
     },
-    "blackjack": {
-      "dealer": "Dealer",
-      "you": "You",
-      "hit": "Hit",
-      "stand": "Stand",
-      "double": "Double",
-      "again": "Deal again",
-      "copy": "Copy",
-      "copied": "Copied",
-      "shop_now": "Shop the drop",
-      "face_down": "Face-down card",
-      "stake_html": "Beat the dealer and win {{ reward }}.",
-      "rules": "Dealer stands on all 17s. Blackjack pays the top tier.",
-      "rules_soft17": "Dealer hits soft 17. Blackjack pays the top tier.",
-      "no_js": "This game needs JavaScript. Everything else on the site works without it.",
-      "needs_code": "Add a discount code in this section's settings to turn the game on.",
-      "status": {
-        "your_move": "Your move.",
-        "win": "You win.",
-        "blackjack": "Blackjack.",
-        "lose": "Dealer takes it.",
-        "bust": "Bust.",
-        "push": "Push — that one's free, go again.",
-        "come_back": "Come back tomorrow for another hand.",
-        "already_won": "You already beat the dealer. Your code is below."
-      }
-    },
     "testimonials": {
       "rating": "Rated {{ rating }} out of 5"
+    },
+    "viral_program": {
+      "views": "{{ count }} views",
+      "back": "of your order back",
+      "cap": "Capped at {{ currency }}{{ amount }} per order.",
+      "how": "How it works",
+      "rules": "The rules",
+      "claim": "Ready to claim?"
     }
   },
   "products": {
@@ -224,7 +207,8 @@
         "minutes": "Min",
         "seconds": "Sec",
         "live": "Live now"
-      }
+      },
+      "size_guide_full": "Open the full size guide"
     },
     "facets": {
       "apply": "Apply",
