@@ -205,6 +205,41 @@
               {%- endif -%}
             </product-form>
 
+            {%- comment -%}
+              Sticky buy bar for small screens. It is a second submit button for
+              the same form (via form=), so it inherits validation and the
+              variant chosen above — there is no second source of truth.
+              product-form.js mirrors the price and disabled state into it and
+              reveals it once the real button scrolls away.
+            {%- endcomment -%}
+            {%- if block.settings.show_sticky_bar -%}
+              <div class="buy-bar" data-buy-bar hidden>
+                <div class="buy-bar__meta">
+                  <span class="buy-bar__title">{{ product.title | escape }}</span>
+                  <span class="buy-bar__price" data-buy-bar-price>
+                    {{ current_variant.price | money }}
+                  </span>
+                </div>
+                <button
+                  type="submit"
+                  name="add"
+                  form="{{ form_id }}"
+                  class="btn btn--large"
+                  data-buy-bar-button
+                  {% unless current_variant.available %}disabled aria-disabled="true"{% endunless %}
+                >
+                  <span data-buy-bar-text>
+                    {%- if current_variant.available -%}
+                      {%- if is_preorder -%}{{ 'products.product.preorder' | t }}
+                      {%- else -%}{{ 'products.product.add_to_cart' | t }}{%- endif -%}
+                    {%- else -%}
+                      {{ 'products.product.sold_out' | t }}
+                    {%- endif -%}
+                  </span>
+                </button>
+              </div>
+            {%- endif -%}
+
           {%- when 'description' -%}
             {%- if product.description != blank -%}
               <div class="product__description rte" {{ block.shopify_attributes }}>
@@ -238,6 +273,31 @@
 
           {%- when 'text' -%}
             <div class="muted" {{ block.shopify_attributes }}>{{ block.settings.text }}</div>
+
+          {%- when 'trust' -%}
+            <div class="trust-row" {{ block.shopify_attributes }}>
+              {%- for i in (1..3) -%}
+                {%- liquid
+                  assign title_key = 'title_' | append: i
+                  assign text_key = 'text_' | append: i
+                  assign icon_key = 'icon_' | append: i
+                  assign item_title = block.settings[title_key]
+                  assign item_text = block.settings[text_key]
+                  assign item_icon = block.settings[icon_key]
+                -%}
+                {%- if item_title != blank -%}
+                  <div class="trust-item">
+                    {% render 'icon', name: item_icon %}
+                    <p>
+                      <strong>{{ item_title | escape }}</strong>
+                      {%- if item_text != blank -%}
+                        <span>{{ item_text | escape }}</span>
+                      {%- endif -%}
+                    </p>
+                  </div>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
 
           {%- when 'share' -%}
             <a
@@ -322,6 +382,13 @@
           "id": "show_dynamic_checkout",
           "label": "t:sections.main_product.blocks.buy_buttons.settings.show_dynamic_checkout.label",
           "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_sticky_bar",
+          "label": "t:sections.main_product.blocks.buy_buttons.settings.show_sticky_bar.label",
+          "info": "t:sections.main_product.blocks.buy_buttons.settings.show_sticky_bar.info",
+          "default": true
         }
       ]
     },
@@ -357,6 +424,91 @@
           "type": "richtext",
           "id": "text",
           "label": "t:sections.main_product.blocks.text.settings.text.label"
+        }
+      ]
+    },
+    {
+      "type": "trust",
+      "name": "t:sections.main_product.blocks.trust.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon_1",
+          "label": "t:sections.main_product.blocks.trust.settings.icon.label",
+          "options": [
+            { "value": "truck", "label": "t:sections.main_product.blocks.trust.icons.truck" },
+            { "value": "shield", "label": "t:sections.main_product.blocks.trust.icons.shield" },
+            { "value": "refresh", "label": "t:sections.main_product.blocks.trust.icons.refresh" },
+            { "value": "check", "label": "t:sections.main_product.blocks.trust.icons.check" },
+            { "value": "spark", "label": "t:sections.main_product.blocks.trust.icons.spark" },
+            { "value": "star", "label": "t:sections.main_product.blocks.trust.icons.star" }
+          ],
+          "default": "truck"
+        },
+        {
+          "type": "text",
+          "id": "title_1",
+          "label": "t:sections.main_product.blocks.trust.settings.title.label",
+          "default": "Delivery all over Lebanon"
+        },
+        {
+          "type": "text",
+          "id": "text_1",
+          "label": "t:sections.main_product.blocks.trust.settings.text.label",
+          "default": "2–4 business days"
+        },
+        {
+          "type": "select",
+          "id": "icon_2",
+          "label": "t:sections.main_product.blocks.trust.settings.icon.label",
+          "options": [
+            { "value": "truck", "label": "t:sections.main_product.blocks.trust.icons.truck" },
+            { "value": "shield", "label": "t:sections.main_product.blocks.trust.icons.shield" },
+            { "value": "refresh", "label": "t:sections.main_product.blocks.trust.icons.refresh" },
+            { "value": "check", "label": "t:sections.main_product.blocks.trust.icons.check" },
+            { "value": "spark", "label": "t:sections.main_product.blocks.trust.icons.spark" },
+            { "value": "star", "label": "t:sections.main_product.blocks.trust.icons.star" }
+          ],
+          "default": "shield"
+        },
+        {
+          "type": "text",
+          "id": "title_2",
+          "label": "t:sections.main_product.blocks.trust.settings.title.label",
+          "default": "Secure checkout"
+        },
+        {
+          "type": "text",
+          "id": "text_2",
+          "label": "t:sections.main_product.blocks.trust.settings.text.label",
+          "default": "Card and cash on delivery"
+        },
+        {
+          "type": "select",
+          "id": "icon_3",
+          "label": "t:sections.main_product.blocks.trust.settings.icon.label",
+          "options": [
+            { "value": "truck", "label": "t:sections.main_product.blocks.trust.icons.truck" },
+            { "value": "shield", "label": "t:sections.main_product.blocks.trust.icons.shield" },
+            { "value": "refresh", "label": "t:sections.main_product.blocks.trust.icons.refresh" },
+            { "value": "check", "label": "t:sections.main_product.blocks.trust.icons.check" },
+            { "value": "spark", "label": "t:sections.main_product.blocks.trust.icons.spark" },
+            { "value": "star", "label": "t:sections.main_product.blocks.trust.icons.star" }
+          ],
+          "default": "refresh"
+        },
+        {
+          "type": "text",
+          "id": "title_3",
+          "label": "t:sections.main_product.blocks.trust.settings.title.label",
+          "default": "14-day exchanges"
+        },
+        {
+          "type": "text",
+          "id": "text_3",
+          "label": "t:sections.main_product.blocks.trust.settings.text.label",
+          "default": "Unworn, tags on"
         }
       ]
     },

@@ -20,6 +20,8 @@
       </button>
     </div>
 
+    {% render 'shipping-meter' %}
+
     <div class="cart-drawer__body">
       <p class="form__error" data-cart-error hidden></p>
 
@@ -145,7 +147,7 @@
         <p class="cart-notice">{{ 'sections.cart.taxes_and_shipping_at_checkout' | t }}</p>
 
         <form action="{{ routes.cart_url }}" method="post" id="cart-drawer-form">
-          <button type="submit" name="checkout" class="btn btn--accent btn--full">
+          <button type="submit" name="checkout" class="btn btn--large btn--full btn--lift">
             {{ 'sections.cart.checkout' | t }}
           </button>
         </form>

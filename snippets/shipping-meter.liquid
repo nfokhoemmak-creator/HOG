@@ -1,0 +1,58 @@
+{%- comment -%}
+  Free-shipping progress.
+
+  Rendered inside the cart drawer and the cart page. Both re-render server-side
+  after every cart mutation, so there is nothing to keep in sync client-side.
+
+  The threshold is a theme setting in whole currency units; cart.total_price is
+  in cents, hence the × 100.
+
+  Accepts:
+  - compact: {Boolean} drop the bar and show only the line of text.
+{%- endcomment -%}
+
+{%- liquid
+  assign threshold = settings.cart_free_shipping_threshold | times: 100
+
+  if settings.cart_free_shipping_enabled and threshold > 0
+    assign total = cart.total_price
+    assign remaining = threshold | minus: total
+    assign met = false
+    if remaining <= 0
+      assign met = true
+      assign remaining = 0
+    endif
+
+    assign remaining_money = remaining | money
+
+    assign percent = total | times: 100 | divided_by: threshold
+    if percent > 100
+      assign percent = 100
+    endif
+  endif
+-%}
+
+{%- if settings.cart_free_shipping_enabled and threshold > 0 and cart.item_count > 0 -%}
+  <div class="ship-meter{% if met %} ship-meter--met{% endif %}">
+    <p class="ship-meter__label">
+      {%- if met -%}
+        {{ 'sections.cart.free_shipping_met_html' | t }}
+      {%- else -%}
+        {{ 'sections.cart.free_shipping_progress_html' | t: amount: remaining_money }}
+      {%- endif -%}
+    </p>
+
+    {%- unless compact -%}
+      <div
+        class="ship-meter__track"
+        role="progressbar"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuenow="{{ percent }}"
+        aria-label="{{ 'sections.cart.free_shipping_label' | t }}"
+      >
+        <span class="ship-meter__fill" style="width: {{ percent }}%;"></span>
+      </div>
+    {%- endunless -%}
+  </div>
+{%- endif -%}

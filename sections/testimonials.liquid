@@ -1,0 +1,88 @@
+{%- comment -%}
+  Customer quotes. Social proof belongs above the newsletter block: it answers
+  "is this real" before the page asks for an email address.
+{%- endcomment -%}
+
+<div class="container section">
+  {%- if section.settings.heading != blank -%}
+    <div class="section__head">
+      <h2 class="h2">{{ section.settings.heading | escape }}</h2>
+    </div>
+  {%- endif -%}
+
+  <div class="quote-grid">
+    {%- for block in section.blocks -%}
+      <blockquote class="quote{% if settings.animations_enabled %} reveal{% endif %}" {{ block.shopify_attributes }}>
+        {%- if block.settings.rating > 0 -%}
+          <div
+            class="quote__stars"
+            role="img"
+            aria-label="{{ 'sections.testimonials.rating' | t: rating: block.settings.rating }}"
+          >
+            {%- for i in (1..block.settings.rating) -%}
+              {% render 'icon', name: 'star' %}
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+
+        <p class="quote__text">{{ block.settings.quote | escape }}</p>
+
+        {%- if block.settings.author != blank -%}
+          <cite class="quote__author">{{ block.settings.author | escape }}</cite>
+        {%- endif -%}
+      </blockquote>
+    {%- endfor -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.testimonials.name",
+  "tag": "section",
+  "class": "testimonials-section",
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.testimonials.settings.heading.label",
+      "default": "What people say"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "quote",
+      "name": "t:sections.testimonials.blocks.quote.name",
+      "settings": [
+        {
+          "type": "range",
+          "id": "rating",
+          "min": 0,
+          "max": 5,
+          "step": 1,
+          "label": "t:sections.testimonials.blocks.quote.settings.rating.label",
+          "default": 5
+        },
+        {
+          "type": "textarea",
+          "id": "quote",
+          "label": "t:sections.testimonials.blocks.quote.settings.quote.label",
+          "default": "Fabric is heavier than I expected. Fits exactly like the size guide says."
+        },
+        {
+          "type": "text",
+          "id": "author",
+          "label": "t:sections.testimonials.blocks.quote.settings.author.label",
+          "default": "Verified buyer"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.testimonials.presets.name",
+      "blocks": [{ "type": "quote" }, { "type": "quote" }, { "type": "quote" }]
+    }
+  ]
+}
+{% endschema %}

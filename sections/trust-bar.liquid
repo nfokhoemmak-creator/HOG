@@ -1,0 +1,77 @@
+{%- comment -%}
+  A row of objection-handlers: shipping, payment, returns. Cheap to render and
+  it answers the three questions that stall a first-time order.
+{%- endcomment -%}
+
+{%- if section.blocks.size > 0 -%}
+  <div class="trust-bar">
+    <div class="container">
+      <div class="trust-row">
+        {%- for block in section.blocks -%}
+          <div class="trust-item" {{ block.shopify_attributes }}>
+            {% render 'icon', name: block.settings.icon %}
+            <p>
+              <strong>{{ block.settings.title | escape }}</strong>
+              {%- if block.settings.text != blank -%}
+                <span>{{ block.settings.text | escape }}</span>
+              {%- endif -%}
+            </p>
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.trust_bar.name",
+  "tag": "section",
+  "class": "trust-bar-section",
+  "max_blocks": 4,
+  "blocks": [
+    {
+      "type": "item",
+      "name": "t:sections.trust_bar.blocks.item.name",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "t:sections.trust_bar.blocks.item.settings.icon.label",
+          "options": [
+            { "value": "truck", "label": "t:sections.trust_bar.icons.truck" },
+            { "value": "shield", "label": "t:sections.trust_bar.icons.shield" },
+            { "value": "refresh", "label": "t:sections.trust_bar.icons.refresh" },
+            { "value": "check", "label": "t:sections.trust_bar.icons.check" },
+            { "value": "spark", "label": "t:sections.trust_bar.icons.spark" },
+            { "value": "star", "label": "t:sections.trust_bar.icons.star" }
+          ],
+          "default": "truck"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:sections.trust_bar.blocks.item.settings.title.label",
+          "default": "Delivery all over Lebanon"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "t:sections.trust_bar.blocks.item.settings.text.label",
+          "default": "2–4 business days"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.trust_bar.presets.name",
+      "blocks": [
+        { "type": "item", "settings": { "icon": "truck", "title": "Delivery all over Lebanon", "text": "2–4 business days" } },
+        { "type": "item", "settings": { "icon": "shield", "title": "Secure checkout", "text": "Card or cash on delivery" } },
+        { "type": "item", "settings": { "icon": "refresh", "title": "14-day exchanges", "text": "Unworn, tags on" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

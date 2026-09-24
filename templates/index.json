@@ -36,11 +36,24 @@
     "categories": {
       "type": "collection-list",
       "blocks": {
-        "col-1": { "type": "featured_collection", "settings": {} },
-        "col-2": { "type": "featured_collection", "settings": {} },
-        "col-3": { "type": "featured_collection", "settings": {} }
+        "col-1": {
+          "type": "featured_collection",
+          "settings": {}
+        },
+        "col-2": {
+          "type": "featured_collection",
+          "settings": {}
+        },
+        "col-3": {
+          "type": "featured_collection",
+          "settings": {}
+        }
       },
-      "block_order": ["col-1", "col-2", "col-3"],
+      "block_order": [
+        "col-1",
+        "col-2",
+        "col-3"
+      ],
       "settings": {
         "title": "Shop by category",
         "columns_desktop": 3
@@ -62,14 +75,149 @@
         "heading": "Get the drop first",
         "text": "<p>New releases go to the list before anywhere else. Delivery all over Lebanon.</p>"
       }
+    },
+    "trust": {
+      "type": "trust-bar",
+      "blocks": {
+        "t1": {
+          "type": "item",
+          "settings": {
+            "icon": "truck",
+            "title": "Delivery all over Lebanon",
+            "text": "2–4 business days"
+          }
+        },
+        "t2": {
+          "type": "item",
+          "settings": {
+            "icon": "shield",
+            "title": "Secure checkout",
+            "text": "Card or cash on delivery"
+          }
+        },
+        "t3": {
+          "type": "item",
+          "settings": {
+            "icon": "refresh",
+            "title": "14-day exchanges",
+            "text": "Unworn, tags on"
+          }
+        }
+      },
+      "block_order": [
+        "t1",
+        "t2",
+        "t3"
+      ],
+      "settings": {}
+    },
+    "blackjack": {
+      "type": "blackjack",
+      "settings": {
+        "eyebrow": "House rules",
+        "heading": "Beat the dealer, beat the price",
+        "subheading": "<p>One hand a day. Beat the house and the code is yours to spend on the drop.</p>",
+        "button_label": "Deal me in",
+        "reward_win_label": "10% off your order",
+        "reward_win_code": "HOG10",
+        "reward_blackjack_label": "Blackjack — 20% off your order",
+        "reward_blackjack_code": "HOG20",
+        "play_limit": "daily",
+        "allow_double": true,
+        "dealer_hits_soft_17": false,
+        "felt_color": "#0e5c3a"
+      }
+    },
+    "testimonials": {
+      "type": "testimonials",
+      "blocks": {
+        "q1": {
+          "type": "quote",
+          "settings": {
+            "rating": 5,
+            "quote": "Fabric is heavier than I expected. Fits exactly like the size guide says.",
+            "author": "Verified buyer"
+          }
+        },
+        "q2": {
+          "type": "quote",
+          "settings": {
+            "rating": 5,
+            "quote": "Ordered Tuesday, had it Thursday in Beirut. No notes.",
+            "author": "Verified buyer"
+          }
+        },
+        "q3": {
+          "type": "quote",
+          "settings": {
+            "rating": 5,
+            "quote": "Missed the last drop and regretted it. Not making that mistake twice.",
+            "author": "Verified buyer"
+          }
+        }
+      },
+      "block_order": [
+        "q1",
+        "q2",
+        "q3"
+      ],
+      "settings": {
+        "heading": "What people say"
+      }
+    },
+    "faq": {
+      "type": "faq",
+      "blocks": {
+        "f1": {
+          "type": "question",
+          "settings": {
+            "question": "How long does delivery take?",
+            "answer": "<p>Orders ship within 2–4 business days, all over Lebanon.</p>"
+          }
+        },
+        "f2": {
+          "type": "question",
+          "settings": {
+            "question": "Do you restock sold-out sizes?",
+            "answer": "<p>No. Every piece is a limited run — when a size sells out, that is it.</p>"
+          }
+        },
+        "f3": {
+          "type": "question",
+          "settings": {
+            "question": "Can I exchange a piece?",
+            "answer": "<p>Yes, within 14 days, unworn and with the tags still on. Message us on Instagram to start one.</p>"
+          }
+        },
+        "f4": {
+          "type": "question",
+          "settings": {
+            "question": "How does the blackjack game work?",
+            "answer": "<p>One hand a day. Beat the dealer and you unlock a discount code you can use at checkout straight away.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "f1",
+        "f2",
+        "f3",
+        "f4"
+      ],
+      "settings": {
+        "heading": "Questions"
+      }
     }
   },
   "order": [
     "hero",
+    "trust",
     "featured",
     "drop-banner",
     "categories",
+    "blackjack",
+    "testimonials",
     "image-with-text",
+    "faq",
     "newsletter"
   ]
 }

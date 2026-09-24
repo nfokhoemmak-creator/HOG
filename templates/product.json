@@ -3,18 +3,37 @@
     "main": {
       "type": "main-product",
       "blocks": {
-        "badges": { "type": "badges", "settings": {} },
-        "title": { "type": "title", "settings": {} },
-        "price": { "type": "price", "settings": {} },
-        "variant_picker": { "type": "variant_picker", "settings": {} },
-        "quantity": { "type": "quantity_selector", "settings": {} },
+        "badges": {
+          "type": "badges",
+          "settings": {}
+        },
+        "title": {
+          "type": "title",
+          "settings": {}
+        },
+        "price": {
+          "type": "price",
+          "settings": {}
+        },
+        "variant_picker": {
+          "type": "variant_picker",
+          "settings": {}
+        },
+        "quantity": {
+          "type": "quantity_selector",
+          "settings": {}
+        },
         "buy_buttons": {
           "type": "buy_buttons",
           "settings": {
-            "show_dynamic_checkout": true
+            "show_dynamic_checkout": true,
+            "show_sticky_bar": true
           }
         },
-        "description": { "type": "description", "settings": {} },
+        "description": {
+          "type": "description",
+          "settings": {}
+        },
         "fabric": {
           "type": "accordion",
           "settings": {
@@ -40,10 +59,27 @@
           "type": "accordion",
           "settings": {
             "heading": "Shipping & returns",
-            "content": "<p>Delivery all over Lebanon, 2–4 business days. Exchanges accepted within 7 days on unworn pieces with tags attached.</p>"
+            "content": "<p>Delivery all over Lebanon, 2–4 business days. Exchanges accepted within 14 days on unworn pieces with tags attached.</p>"
           }
         },
-        "share": { "type": "share", "settings": {} }
+        "share": {
+          "type": "share",
+          "settings": {}
+        },
+        "trust": {
+          "type": "trust",
+          "settings": {
+            "icon_1": "truck",
+            "title_1": "Delivery all over Lebanon",
+            "text_1": "2–4 business days",
+            "icon_2": "shield",
+            "title_2": "Secure checkout",
+            "text_2": "Card or cash on delivery",
+            "icon_3": "refresh",
+            "title_3": "14-day exchanges",
+            "text_3": "Unworn, tags on"
+          }
+        }
       },
       "block_order": [
         "badges",
@@ -52,6 +88,7 @@
         "variant_picker",
         "quantity",
         "buy_buttons",
+        "trust",
         "description",
         "fabric",
         "fit",
@@ -75,5 +112,8 @@
       }
     }
   },
-  "order": ["main", "related"]
+  "order": [
+    "main",
+    "related"
+  ]
 }

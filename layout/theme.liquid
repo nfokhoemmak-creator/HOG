@@ -56,17 +56,37 @@
         --font-body-scale: {{ settings.type_body_scale | divided_by: 100.0 }};
         --font-heading-scale: {{ settings.type_heading_scale | divided_by: 100.0 }};
 
+        /* Surfaces ------------------------------------------------------- */
         --color-bg: {{ settings.color_background }};
         --color-bg-alt: {{ settings.color_background_alt }};
+        --color-surface: {{ settings.color_surface_raised }};
+        --color-border: {{ settings.color_border }};
+        --color-border-strong: {{ settings.color_border_strong }};
+
+        /* Text ----------------------------------------------------------- */
         --color-fg: {{ settings.color_text }};
         --color-muted: {{ settings.color_text_muted }};
-        --color-accent: {{ settings.color_accent }};
-        --color-accent-contrast: {{ settings.color_accent_contrast }};
-        --color-border: {{ settings.color_border }};
-        --color-sale: {{ settings.color_sale }};
 
+        /* Action --------------------------------------------------------- */
         --color-btn-bg: {{ settings.color_button_background }};
         --color-btn-fg: {{ settings.color_button_text }};
+        --color-btn-bg-hover: {{ settings.color_accent_hover }};
+        --color-accent: {{ settings.color_accent }};
+        --color-accent-contrast: {{ settings.color_accent_contrast }};
+
+        /* Status --------------------------------------------------------- */
+        --color-success: {{ settings.color_success }};
+        --color-sale: {{ settings.color_sale }};
+        --color-gold: {{ settings.color_gold }};
+        --color-felt: {{ settings.color_felt }};
+
+        /* Translucent derivatives. rgb() triplets let CSS mix its own alphas
+           without a second colour setting for every tint. */
+        --rgb-accent: {{ settings.color_accent | color_extract: 'red' }} {{ settings.color_accent | color_extract: 'green' }} {{ settings.color_accent | color_extract: 'blue' }};
+        --rgb-fg: {{ settings.color_text | color_extract: 'red' }} {{ settings.color_text | color_extract: 'green' }} {{ settings.color_text | color_extract: 'blue' }};
+        --rgb-bg: {{ settings.color_background | color_extract: 'red' }} {{ settings.color_background | color_extract: 'green' }} {{ settings.color_background | color_extract: 'blue' }};
+        --rgb-success: {{ settings.color_success | color_extract: 'red' }} {{ settings.color_success | color_extract: 'green' }} {{ settings.color_success | color_extract: 'blue' }};
+        --rgb-gold: {{ settings.color_gold | color_extract: 'red' }} {{ settings.color_gold | color_extract: 'green' }} {{ settings.color_gold | color_extract: 'blue' }};
 
         --container: {{ settings.layout_max_width }}px;
         --gutter: {{ settings.layout_gutter }}px;
@@ -89,6 +109,7 @@
           preorder: {{ 'products.product.preorder' | t | json }},
           unavailable: {{ 'products.product.unavailable' | t | json }},
           lowStock: {{ 'products.product.low_stock' | t: count: '{{ count }}' | json }},
+          inStock: {{ 'products.product.in_stock' | t | json }},
           cartError: {{ 'sections.cart.error' | t | json }},
           itemAdded: {{ 'sections.cart.item_added' | t | json }}
         },

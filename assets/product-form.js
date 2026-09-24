@@ -35,6 +35,11 @@
       this.variants = this.readVariants();
       this.optionInputs = Array.from(this.querySelectorAll('[data-option-index]'));
 
+      this.buyBar = this.querySelector('[data-buy-bar]');
+      this.buyBarButton = this.querySelector('[data-buy-bar-button]');
+      this.buyBarPrice = this.querySelector('[data-buy-bar-price]');
+      this.initBuyBar();
+
       this.optionInputs.forEach((input) => {
         input.addEventListener('change', () => this.onOptionChange());
       });
@@ -125,6 +130,7 @@
       const compare = this.priceTarget.querySelector('[data-price-compare]');
 
       if (current) current.textContent = formatMoney(variant.price);
+      if (this.buyBarPrice) this.buyBarPrice.textContent = formatMoney(variant.price);
 
       if (compare) {
         const onSale = variant.compare_at_price && variant.compare_at_price > variant.price;
@@ -142,12 +148,18 @@
       const low = managed && variant.available && quantity > 0 && quantity <= 5;
 
       this.inventoryTarget.classList.toggle('product__inventory--low', low);
+      this.inventoryTarget.classList.toggle('product__inventory--in', !low && variant.available);
 
       if (low) {
         this.inventoryTarget.textContent = (strings.lowStock || 'Only {{ count }} left').replace(
           '{{ count }}',
           quantity
         );
+        this.inventoryTarget.hidden = false;
+      } else if (variant.available) {
+        // Confirming stock is worth a line of its own: the commonest silent
+        // objection on a limited-run store is "is my size even still here".
+        this.inventoryTarget.textContent = strings.inStock || 'In stock';
         this.inventoryTarget.hidden = false;
       } else {
         this.inventoryTarget.hidden = true;
@@ -164,11 +176,43 @@
     }
 
     setButton(label, disabled) {
-      if (!this.submitButton) return;
-      const text = this.submitButton.querySelector('[data-button-text]') || this.submitButton;
-      text.textContent = label;
-      this.submitButton.disabled = disabled;
-      this.submitButton.setAttribute('aria-disabled', String(disabled));
+      if (this.submitButton) {
+        const text = this.submitButton.querySelector('[data-button-text]') || this.submitButton;
+        text.textContent = label;
+        this.submitButton.disabled = disabled;
+        this.submitButton.setAttribute('aria-disabled', String(disabled));
+      }
+
+      if (this.buyBarButton) {
+        const barText = this.buyBarButton.querySelector('[data-buy-bar-text]') || this.buyBarButton;
+        barText.textContent = label;
+        this.buyBarButton.disabled = disabled;
+        this.buyBarButton.setAttribute('aria-disabled', String(disabled));
+      }
+    }
+
+    /**
+     * Reveal the sticky bar only while the real add-to-cart button is off
+     * screen. Watching the button itself means the bar never covers the thing
+     * it duplicates, and it stays hidden on desktop where CSS hides it anyway.
+     */
+    initBuyBar() {
+      if (!this.buyBar || !this.submitButton) return;
+
+      this.buyBar.hidden = false;
+
+      if (!('IntersectionObserver' in window)) return;
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            this.buyBar.classList.toggle('is-visible', !entry.isIntersecting);
+          });
+        },
+        { rootMargin: '0px 0px -120px 0px' }
+      );
+
+      observer.observe(this.submitButton);
     }
 
     updateURL(variant) {
