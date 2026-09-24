@@ -14,6 +14,7 @@
    8.  Footer
    9.  Hero
    10. Drop banner + marquee
+   10b. Image with text
    11. Product cards + grids
    12. Product page
    13. Collection + facets
@@ -800,6 +801,21 @@ textarea::placeholder {
 @keyframes marquee {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
+}
+
+/* Editorial split block.
+   The section sets `display: grid` inline but never any columns, so without
+   this rule it stacks at every width. `direction: rtl` on the wrapper is how
+   the section flips image and text; the children reset to ltr. */
+
+.image-with-text {
+  grid-template-columns: 1fr;
+}
+
+@media screen and (min-width: 990px) {
+  .image-with-text {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 /* 11. Product cards + grids ----------------------------------------------- */
@@ -1748,6 +1764,9 @@ textarea::placeholder {
 }
 
 .ship-meter__fill {
+  /* It is a <span>; without this it stays display:inline, where width and
+     height do not apply and the bar never fills. */
+  display: block;
   height: 100%;
   width: 0;
   border-radius: 999px;

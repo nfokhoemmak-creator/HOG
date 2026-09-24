@@ -33,7 +33,13 @@
       this.sectionId = this.dataset.sectionId;
 
       this.variants = this.readVariants();
-      this.optionInputs = Array.from(this.querySelectorAll('[data-option-index]'));
+
+      // The variant picker is its own section block, so the option inputs are
+      // siblings of this element rather than children. Look them up from the
+      // product wrapper — querying `this` finds nothing and every variant
+      // fails to match, which disables add-to-cart entirely.
+      this.scope = this.closest('.product') || this.closest('.product__info') || document;
+      this.optionInputs = Array.from(this.scope.querySelectorAll('[data-option-index]'));
 
       this.buyBar = this.querySelector('[data-buy-bar]');
       this.buyBarButton = this.querySelector('[data-buy-bar-button]');
