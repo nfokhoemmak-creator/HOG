@@ -132,7 +132,15 @@
           soldOut: {{ 'products.product.sold_out' | t | json }},
           preorder: {{ 'products.product.preorder' | t | json }},
           unavailable: {{ 'products.product.unavailable' | t | json }},
-          lowStock: {{ 'products.product.low_stock' | t: count: '{{ count }}' | json }},
+          {%- comment -%}
+            product-form.js swaps the double-braced count placeholder for the real
+            quantity. Shopify's
+            parser will not accept that literal inside an output tag, so the
+            placeholder is assembled from pieces and spliced in with replace.
+          {%- endcomment -%}
+          {%- assign count_token = '{' | append: '{ count }' | append: '}' -%}
+          {%- assign low_stock_string = 'products.product.low_stock' | t: count: 'COUNTX' | replace: 'COUNTX', count_token -%}
+          lowStock: {{ low_stock_string | json }},
           inStock: {{ 'products.product.in_stock' | t | json }},
           cartError: {{ 'sections.cart.error' | t | json }},
           itemAdded: {{ 'sections.cart.item_added' | t | json }},
