@@ -75,10 +75,21 @@
     }
 
     onOptionChange(config) {
-      const options = this.selectedOptions();
-      const variant = this.matchVariant(options);
+      let variant;
 
-      this.markUnavailableOptions(options);
+      if (this.optionInputs.length === 0) {
+        // Single-variant product (no option inputs): use the preselected id,
+        // falling back to the first available variant.
+        const selectedId = this.idInput ? this.idInput.value : '';
+        variant =
+          this.variants.find((candidate) => String(candidate.id) === String(selectedId)) ||
+          this.variants.find((candidate) => candidate.available) ||
+          this.variants[0];
+      } else {
+        const options = this.selectedOptions();
+        variant = this.matchVariant(options);
+        this.markUnavailableOptions(options);
+      }
 
       if (!variant) {
         this.setButton(strings.unavailable || 'Unavailable', true);

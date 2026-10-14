@@ -3,11 +3,24 @@
     "brand": {
       "name": "Brand",
       "settings": {
-        "logo": { "label": "Logo", "info": "Leave empty to use the built-in Jamalati logo." },
-        "logo_width": { "label": "Logo width" },
-        "favicon": { "label": "Favicon", "info": "Will be scaled down to 32 x 32px. Leave empty to use the Jamalati sparkle." },
-        "brand_tagline": { "label": "Tagline" },
-        "share_image": { "label": "Social sharing image", "info": "Shown when a link to the store is shared. 1200 x 630px works best." }
+        "logo": {
+          "label": "Logo",
+          "info": "Leave empty to use the built-in Jamalati logo."
+        },
+        "logo_width": {
+          "label": "Logo width"
+        },
+        "favicon": {
+          "label": "Favicon",
+          "info": "Will be scaled down to 32 x 32px. Leave empty to use the Jamalati sparkle."
+        },
+        "brand_tagline": {
+          "label": "Tagline"
+        },
+        "share_image": {
+          "label": "Social sharing image",
+          "info": "Shown when a link to the store is shared. 1200 x 630px works best."
+        }
       }
     },
     "colors": {
@@ -19,18 +32,43 @@
         "buttons": "Buttons"
       },
       "settings": {
-        "color_background": { "label": "Background" },
-        "color_background_alt": { "label": "Alternate background" },
-        "color_surface": { "label": "Cards and inputs" },
-        "color_border": { "label": "Borders and rules" },
-        "color_text": { "label": "Text" },
-        "color_text_muted": { "label": "Muted text" },
-        "color_accent": { "label": "Accent", "info": "Brand pink. Used for badges, highlights, links and the default button." },
-        "color_accent_contrast": { "label": "Text on accent" },
-        "color_star": { "label": "Review stars" },
-        "color_sale": { "label": "Sale price" },
-        "color_button_background": { "label": "Button background" },
-        "color_button_text": { "label": "Button text" }
+        "color_background": {
+          "label": "Background"
+        },
+        "color_background_alt": {
+          "label": "Alternate background"
+        },
+        "color_surface": {
+          "label": "Cards and inputs"
+        },
+        "color_border": {
+          "label": "Borders and rules"
+        },
+        "color_text": {
+          "label": "Text"
+        },
+        "color_text_muted": {
+          "label": "Muted text"
+        },
+        "color_accent": {
+          "label": "Accent",
+          "info": "Brand pink. Used for badges, highlights, links and the default button."
+        },
+        "color_accent_contrast": {
+          "label": "Text on accent"
+        },
+        "color_star": {
+          "label": "Review stars"
+        },
+        "color_sale": {
+          "label": "Sale price"
+        },
+        "color_button_background": {
+          "label": "Button background"
+        },
+        "color_button_text": {
+          "label": "Button text"
+        }
       }
     },
     "typography": {
@@ -40,23 +78,52 @@
         "body": "Body"
       },
       "settings": {
-        "type_heading_font": { "label": "Heading font" },
-        "type_heading_scale": { "label": "Heading size" },
-        "type_heading_tracking": { "label": "Heading letter spacing" },
-        "type_heading_uppercase": { "label": "Uppercase headings" },
-        "type_body_font": { "label": "Body font" },
-        "type_body_scale": { "label": "Body size" }
+        "type_heading_font": {
+          "label": "Heading font"
+        },
+        "type_heading_scale": {
+          "label": "Heading size"
+        },
+        "type_heading_tracking": {
+          "label": "Heading letter spacing"
+        },
+        "type_heading_uppercase": {
+          "label": "Uppercase headings"
+        },
+        "type_body_font": {
+          "label": "Body font"
+        },
+        "type_body_scale": {
+          "label": "Body size"
+        }
       }
     },
     "layout": {
       "name": "Layout",
       "settings": {
-        "layout_max_width": { "label": "Max content width" },
-        "layout_gutter": { "label": "Page gutter" },
-        "layout_corner_radius": { "label": "Corner radius", "info": "Applies to cards, images and panels." },
-        "button_shape": { "label": "Button shape", "options__1": "Pill", "options__2": "Rounded", "options__3": "Square" },
-        "grid_gap": { "label": "Grid gap" },
-        "animations_enabled": { "label": "Enable animations", "info": "Respects the visitor's reduced-motion preference." }
+        "layout_max_width": {
+          "label": "Max content width"
+        },
+        "layout_gutter": {
+          "label": "Page gutter"
+        },
+        "layout_corner_radius": {
+          "label": "Corner radius",
+          "info": "Applies to cards, images and panels."
+        },
+        "button_shape": {
+          "label": "Button shape",
+          "options__1": "Pill",
+          "options__2": "Rounded",
+          "options__3": "Square"
+        },
+        "grid_gap": {
+          "label": "Grid gap"
+        },
+        "animations_enabled": {
+          "label": "Enable animations",
+          "info": "Respects the visitor's reduced-motion preference."
+        }
       }
     },
     "product_cards": {
@@ -68,13 +135,36 @@
           "options__2": "Portrait",
           "options__3": "Natural"
         },
-        "card_hover_second_image": { "label": "Show second image on hover" },
-        "card_show_vendor": { "label": "Show vendor" },
-        "card_show_badges": { "label": "Show badges", "info": "Reads the product tags bestseller, new, limited and preorder. Sale badges are automatic." },
-        "card_show_rating": { "label": "Show star rating", "info": "Reads the reviews.rating and reviews.rating_count product metafields (set by review apps such as Judge.me or Shopify Product Reviews)." },
-        "card_show_savings": { "label": "Show “Save X%” on sale items" },
-        "card_quick_add": { "label": "Enable quick add" },
-        "currency_code_enabled": { "label": "Show currency code", "info": "Displays $45.00 USD instead of $45.00." }
+        "card_hover_second_image": {
+          "label": "Show second image on hover"
+        },
+        "card_show_vendor": {
+          "label": "Show vendor"
+        },
+        "card_show_badges": {
+          "label": "Show badges",
+          "info": "Reads the product tags bestseller, new, limited and preorder. Sale badges are automatic."
+        },
+        "card_show_rating": {
+          "label": "Show star rating",
+          "info": "Reads the reviews.rating and reviews.rating_count product metafields (set by review apps such as Judge.me or Shopify Product Reviews)."
+        },
+        "card_show_savings": {
+          "label": "Show “Save X%” on sale items"
+        },
+        "card_quick_add": {
+          "label": "Enable quick add"
+        },
+        "currency_code_enabled": {
+          "label": "Show currency code",
+          "info": "Displays $45.00 USD instead of $45.00."
+        },
+        "card_quick_add_style": {
+          "label": "Quick add style",
+          "options__1": "Button under the price (always visible)",
+          "options__2": "Overlay on hover",
+          "info": "Quick add only appears on products with a single variant."
+        }
       }
     },
     "cart": {
@@ -85,26 +175,54 @@
           "options__1": "Drawer",
           "options__2": "Page"
         },
-        "cart_free_shipping_bar": { "label": "Show free shipping progress bar", "info": "Make sure a matching free shipping rate exists in Settings → Shipping." },
-        "cart_free_shipping_threshold": { "label": "Free shipping threshold", "info": "In your store currency, e.g. 50 for $50." },
-        "cart_show_note": { "label": "Enable order notes" },
-        "cart_notice": { "label": "Cart notice" }
+        "cart_free_shipping_bar": {
+          "label": "Show free shipping progress bar",
+          "info": "Only turn this on if you also create a free-shipping rate in Settings → Shipping."
+        },
+        "cart_free_shipping_threshold": {
+          "label": "Free shipping threshold",
+          "info": "In your store currency, e.g. 50 for $50."
+        },
+        "cart_show_note": {
+          "label": "Enable order notes"
+        },
+        "cart_notice": {
+          "label": "Cart notice"
+        },
+        "cart_flat_shipping": {
+          "label": "Flat shipping rate",
+          "info": "Shown in the cart as an estimate so there are no surprises at checkout. Must match the rate in Settings → Shipping. Set to 0 to hide."
+        }
       }
     },
     "social": {
       "name": "Social",
       "settings": {
-        "social_instagram_link": { "label": "Instagram" },
-        "social_tiktok_link": { "label": "TikTok" },
-        "social_whatsapp_link": { "label": "WhatsApp", "info": "Use a wa.me link, e.g. https://wa.me/9613000000" },
-        "whatsapp_button": { "label": "Show floating WhatsApp chat button", "info": "Needs the WhatsApp link above." },
-        "social_facebook_link": { "label": "Facebook" }
+        "social_instagram_link": {
+          "label": "Instagram"
+        },
+        "social_tiktok_link": {
+          "label": "TikTok"
+        },
+        "social_whatsapp_link": {
+          "label": "WhatsApp",
+          "info": "Use a wa.me link, e.g. https://wa.me/9613000000"
+        },
+        "whatsapp_button": {
+          "label": "Show floating WhatsApp chat button",
+          "info": "Needs the WhatsApp link above."
+        },
+        "social_facebook_link": {
+          "label": "Facebook"
+        }
       }
     },
     "search": {
       "name": "Search",
       "settings": {
-        "predictive_search_enabled": { "label": "Enable search suggestions" }
+        "predictive_search_enabled": {
+          "label": "Enable search suggestions"
+        }
       }
     }
   },
@@ -112,16 +230,29 @@
     "announcement_bar": {
       "name": "Announcement bar",
       "settings": {
-        "color_scheme": { "label": "Color scheme", "options__1": "Accent", "options__2": "Inverse", "options__3": "Default" },
-        "rotate": { "label": "Rotate announcements" },
-        "rotate_speed": { "label": "Seconds between announcements" }
+        "color_scheme": {
+          "label": "Color scheme",
+          "options__1": "Accent",
+          "options__2": "Inverse",
+          "options__3": "Default"
+        },
+        "rotate": {
+          "label": "Rotate announcements"
+        },
+        "rotate_speed": {
+          "label": "Seconds between announcements"
+        }
       },
       "blocks": {
         "announcement": {
           "name": "Announcement",
           "settings": {
-            "text": { "label": "Text" },
-            "link": { "label": "Link" }
+            "text": {
+              "label": "Text"
+            },
+            "link": {
+              "label": "Link"
+            }
           }
         }
       }
@@ -129,163 +260,505 @@
     "header": {
       "name": "Header",
       "settings": {
-        "menu": { "label": "Menu" },
-        "sticky": { "label": "Sticky header" },
-        "show_search": { "label": "Show search" },
-        "show_account": { "label": "Show account link" }
+        "menu": {
+          "label": "Menu"
+        },
+        "sticky": {
+          "label": "Sticky header"
+        },
+        "show_search": {
+          "label": "Show search"
+        },
+        "show_account": {
+          "label": "Show account link"
+        }
       }
     },
     "footer": {
       "name": "Footer",
       "settings": {
-        "show_newsletter": { "label": "Show newsletter signup" },
-        "newsletter_heading": { "label": "Newsletter heading" },
-        "show_payment_icons": { "label": "Show payment icons" },
-        "show_social": { "label": "Show social links" }
+        "show_newsletter": {
+          "label": "Show newsletter signup"
+        },
+        "newsletter_heading": {
+          "label": "Newsletter heading"
+        },
+        "show_payment_icons": {
+          "label": "Show payment icons"
+        },
+        "show_social": {
+          "label": "Show social links"
+        }
       },
       "blocks": {
-        "menu": { "name": "Menu", "settings": { "heading": { "label": "Heading" }, "menu": { "label": "Menu" } } },
-        "text": { "name": "Text", "settings": { "heading": { "label": "Heading" }, "text": { "label": "Text" } } }
+        "menu": {
+          "name": "Menu",
+          "settings": {
+            "heading": {
+              "label": "Heading"
+            },
+            "menu": {
+              "label": "Menu"
+            }
+          }
+        },
+        "text": {
+          "name": "Text",
+          "settings": {
+            "heading": {
+              "label": "Heading"
+            },
+            "text": {
+              "label": "Text"
+            }
+          }
+        }
       }
     },
     "hero": {
       "name": "Hero",
       "settings": {
-        "image": { "label": "Image", "info": "Portrait or square product/model shot. 1200 x 1500px works best." },
-        "video_url": { "label": "Video URL", "info": "MP4 hosted in Files. Replaces the image." },
-        "layout": { "label": "Layout", "options__1": "Split (text beside image)", "options__2": "Overlay (text on image)" },
-        "overlay_opacity": { "label": "Image overlay opacity" },
-        "badge": { "label": "Badge", "info": "Small pill above the heading, e.g. “New: Glow Serum”." },
-        "heading": { "label": "Heading", "info": "Wrap a word in *asterisks* to color it pink." },
-        "subheading": { "label": "Subheading" },
-        "button_label": { "label": "Primary button label" },
-        "button_link": { "label": "Primary button link" },
-        "button_label_2": { "label": "Secondary button label" },
-        "button_link_2": { "label": "Secondary button link" },
-        "show_proof": { "label": "Show social proof row" },
-        "proof_rating": { "label": "Rating", "info": "e.g. 4.9" },
-        "proof_text": { "label": "Proof text" },
-        "perks": { "label": "Perks", "info": "One per line, shown as a check list under the buttons." },
-        "float_top": { "label": "Floating pill (top)" },
-        "float_bottom": { "label": "Floating pill (bottom)" },
-        "text_alignment": { "label": "Alignment", "options__1": "Left", "options__2": "Center" },
-        "show_countdown": { "label": "Show countdown" },
-        "countdown_date": { "label": "Countdown date", "info": "Format: 2026-12-01T20:00:00" },
-        "countdown_heading": { "label": "Countdown heading" }
+        "image": {
+          "label": "Image",
+          "info": "Portrait or square product/model shot. 1200 x 1500px works best."
+        },
+        "video_url": {
+          "label": "Video URL",
+          "info": "MP4 hosted in Files. Replaces the image."
+        },
+        "layout": {
+          "label": "Layout",
+          "options__1": "Split (text beside image)",
+          "options__2": "Overlay (text on image)"
+        },
+        "overlay_opacity": {
+          "label": "Image overlay opacity"
+        },
+        "badge": {
+          "label": "Badge",
+          "info": "Small pill above the heading, e.g. “5 flavors · $17 each”."
+        },
+        "heading": {
+          "label": "Heading",
+          "info": "Wrap a word in *asterisks* to color it pink."
+        },
+        "subheading": {
+          "label": "Subheading"
+        },
+        "button_label": {
+          "label": "Primary button label"
+        },
+        "button_link": {
+          "label": "Primary button link"
+        },
+        "button_label_2": {
+          "label": "Secondary button label"
+        },
+        "button_link_2": {
+          "label": "Secondary button link"
+        },
+        "show_proof": {
+          "label": "Show social proof row"
+        },
+        "proof_rating": {
+          "label": "Rating",
+          "info": "e.g. 4.9"
+        },
+        "proof_text": {
+          "label": "Proof text"
+        },
+        "perks": {
+          "label": "Perks",
+          "info": "One per line, shown as a check list under the buttons."
+        },
+        "float_top": {
+          "label": "Floating pill (top)"
+        },
+        "float_bottom": {
+          "label": "Floating pill (bottom)"
+        },
+        "text_alignment": {
+          "label": "Alignment",
+          "options__1": "Left",
+          "options__2": "Center"
+        },
+        "show_countdown": {
+          "label": "Show countdown"
+        },
+        "countdown_date": {
+          "label": "Countdown date",
+          "info": "Format: 2026-12-01T20:00:00"
+        },
+        "countdown_heading": {
+          "label": "Countdown heading"
+        },
+        "featured_product": {
+          "label": "Featured product",
+          "info": "Uses the product image as the hero visual (unless an image is set above) and sends the primary button to the product page."
+        },
+        "show_price": {
+          "label": "Show price in the primary button"
+        }
       }
     },
     "featured_collection": {
       "name": "Featured collection",
       "settings": {
-        "title": { "label": "Heading" },
-        "subtitle": { "label": "Subheading" },
-        "collection": { "label": "Collection" },
-        "products_to_show": { "label": "Products to show" },
-        "columns_desktop": { "label": "Columns on desktop" },
-        "columns_mobile": { "label": "Columns on mobile", "options__1": "1 column", "options__2": "2 columns" },
-        "show_view_all": { "label": "Show “View all”" }
+        "title": {
+          "label": "Heading"
+        },
+        "subtitle": {
+          "label": "Subheading"
+        },
+        "collection": {
+          "label": "Collection"
+        },
+        "products_to_show": {
+          "label": "Products to show"
+        },
+        "columns_desktop": {
+          "label": "Columns on desktop"
+        },
+        "columns_mobile": {
+          "label": "Columns on mobile",
+          "options__1": "1 column",
+          "options__2": "2 columns"
+        },
+        "show_view_all": {
+          "label": "Show “View all”"
+        },
+        "eyebrow": {
+          "label": "Eyebrow"
+        }
       }
     },
     "promo_banner": {
       "name": "Promo banner",
       "settings": {
-        "eyebrow": { "label": "Eyebrow" },
-        "heading": { "label": "Heading" },
-        "text": { "label": "Text" },
-        "code": { "label": "Discount code", "info": "Shown in a dashed pill. Create the matching discount in Discounts." },
-        "button_label": { "label": "Button label" },
-        "button_link": { "label": "Button link" },
-        "background_image": { "label": "Background image" },
-        "show_countdown": { "label": "Show countdown" },
-        "countdown_date": { "label": "Countdown date", "info": "Format: 2026-12-01T20:00:00" },
-        "marquee": { "label": "Scrolling marquee text", "info": "Repeats across the strip below the banner. Leave blank to hide." }
+        "eyebrow": {
+          "label": "Eyebrow"
+        },
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Text"
+        },
+        "code": {
+          "label": "Discount code",
+          "info": "Shown in a dashed pill. Create the matching discount in Discounts."
+        },
+        "button_label": {
+          "label": "Button label"
+        },
+        "button_link": {
+          "label": "Button link"
+        },
+        "background_image": {
+          "label": "Background image"
+        },
+        "show_countdown": {
+          "label": "Show countdown"
+        },
+        "countdown_date": {
+          "label": "Countdown date",
+          "info": "Format: 2026-12-01T20:00:00"
+        },
+        "marquee": {
+          "label": "Scrolling marquee text",
+          "info": "Repeats across the strip below the banner. Leave blank to hide."
+        }
       }
     },
     "image_with_text": {
       "name": "Image with text",
       "settings": {
-        "image": { "label": "Image" },
-        "eyebrow": { "label": "Eyebrow" },
-        "heading": { "label": "Heading" },
-        "text": { "label": "Text" },
-        "button_label": { "label": "Button label" },
-        "button_link": { "label": "Button link" },
-        "layout": { "label": "Image position", "options__1": "Left", "options__2": "Right" }
+        "image": {
+          "label": "Image"
+        },
+        "eyebrow": {
+          "label": "Eyebrow"
+        },
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Text"
+        },
+        "button_label": {
+          "label": "Button label"
+        },
+        "button_link": {
+          "label": "Button link"
+        },
+        "layout": {
+          "label": "Image position",
+          "options__1": "Left",
+          "options__2": "Right"
+        }
       },
       "blocks": {
-        "stat": { "name": "Stat", "settings": { "value": { "label": "Value" }, "label": { "label": "Label" } } }
+        "stat": {
+          "name": "Stat",
+          "settings": {
+            "value": {
+              "label": "Value"
+            },
+            "label": {
+              "label": "Label"
+            }
+          }
+        }
       }
     },
     "rich_text": {
       "name": "Rich text",
       "settings": {
-        "heading": { "label": "Heading" },
-        "text": { "label": "Text" },
-        "text_alignment": { "label": "Alignment", "options__1": "Left", "options__2": "Center" }
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Text"
+        },
+        "text_alignment": {
+          "label": "Alignment",
+          "options__1": "Left",
+          "options__2": "Center"
+        }
       }
     },
     "newsletter": {
       "name": "Newsletter",
       "settings": {
-        "eyebrow": { "label": "Eyebrow" },
-        "heading": { "label": "Heading" },
-        "text": { "label": "Text" }
+        "eyebrow": {
+          "label": "Eyebrow"
+        },
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Text"
+        }
       }
     },
     "collection_list": {
       "name": "Collection list",
       "settings": {
-        "title": { "label": "Heading" },
-        "columns_desktop": { "label": "Columns on desktop" }
+        "title": {
+          "label": "Heading"
+        },
+        "columns_desktop": {
+          "label": "Columns on desktop"
+        }
       },
       "blocks": {
-        "featured_collection": { "name": "Collection", "settings": { "collection": { "label": "Collection" }, "title": { "label": "Custom title" } } }
+        "featured_collection": {
+          "name": "Collection",
+          "settings": {
+            "collection": {
+              "label": "Collection"
+            },
+            "title": {
+              "label": "Custom title"
+            }
+          }
+        }
       }
     },
     "main_product": {
       "name": "Product information",
       "blocks": {
-        "title": { "name": "Title" },
-        "price": { "name": "Price" },
-        "rating": { "name": "Star rating", "settings": { "fallback_rating": { "label": "Fallback rating", "info": "Shown when the product has no review metafields yet. Leave blank to hide." }, "fallback_count": { "label": "Fallback review count" }, "link": { "label": "Link to reviews (anchor)", "info": "e.g. #reviews" } } },
-        "benefits": { "name": "Benefit list", "settings": { "text": { "label": "Benefits", "info": "One per line. Overridden by the custom.benefits metafield when set." } } },
-        "variant_picker": { "name": "Variant picker" },
-        "quantity_selector": { "name": "Quantity selector" },
-        "buy_buttons": { "name": "Buy buttons", "settings": { "show_dynamic_checkout": { "label": "Show dynamic checkout buttons" }, "show_stock": { "label": "Show stock status" }, "low_stock_threshold": { "label": "Low stock threshold" } } },
-        "trust": { "name": "Trust icons", "settings": { "item_1": { "label": "Item 1" }, "item_2": { "label": "Item 2" }, "item_3": { "label": "Item 3" } } },
-        "guarantee": { "name": "Guarantee", "settings": { "heading": { "label": "Heading" }, "text": { "label": "Text" } } },
-        "description": { "name": "Description" },
-        "accordion": { "name": "Collapsible row", "settings": { "heading": { "label": "Heading" }, "content": { "label": "Content" }, "metafield": { "label": "Metafield key", "info": "Optional. e.g. custom.ingredients — overrides the content above when present." } } },
-        "share": { "name": "Share" },
-        "text": { "name": "Text", "settings": { "text": { "label": "Text" } } }
+        "title": {
+          "name": "Title"
+        },
+        "price": {
+          "name": "Price",
+          "settings": {
+            "note": {
+              "label": "Note under the price",
+              "info": "e.g. “+ $4 flat shipping · Cash on delivery”. Leave empty to hide."
+            }
+          }
+        },
+        "rating": {
+          "name": "Star rating",
+          "settings": {
+            "fallback_rating": {
+              "label": "Fallback rating",
+              "info": "Shown when the product has no review metafields yet. Leave blank to hide."
+            },
+            "fallback_count": {
+              "label": "Fallback review count"
+            },
+            "link": {
+              "label": "Link to reviews (anchor)",
+              "info": "e.g. #reviews"
+            }
+          }
+        },
+        "benefits": {
+          "name": "Benefit list",
+          "settings": {
+            "text": {
+              "label": "Benefits",
+              "info": "One per line. Overridden by the custom.benefits metafield when set."
+            }
+          }
+        },
+        "variant_picker": {
+          "name": "Variant picker"
+        },
+        "quantity_selector": {
+          "name": "Quantity selector"
+        },
+        "buy_buttons": {
+          "name": "Buy buttons",
+          "settings": {
+            "show_dynamic_checkout": {
+              "label": "Show dynamic checkout buttons"
+            },
+            "show_stock": {
+              "label": "Show stock status"
+            },
+            "low_stock_threshold": {
+              "label": "Low stock threshold"
+            }
+          }
+        },
+        "trust": {
+          "name": "Trust icons",
+          "settings": {
+            "item_1": {
+              "label": "Item 1"
+            },
+            "item_2": {
+              "label": "Item 2"
+            },
+            "item_3": {
+              "label": "Item 3"
+            },
+            "icon_1": {
+              "label": "Icon 1"
+            },
+            "icon_2": {
+              "label": "Icon 2"
+            },
+            "icon_3": {
+              "label": "Icon 3"
+            }
+          }
+        },
+        "guarantee": {
+          "name": "Guarantee",
+          "settings": {
+            "heading": {
+              "label": "Heading"
+            },
+            "text": {
+              "label": "Text"
+            }
+          }
+        },
+        "description": {
+          "name": "Description"
+        },
+        "accordion": {
+          "name": "Collapsible row",
+          "settings": {
+            "heading": {
+              "label": "Heading"
+            },
+            "content": {
+              "label": "Content"
+            },
+            "metafield": {
+              "label": "Metafield key",
+              "info": "Optional. e.g. custom.ingredients — overrides the content above when present."
+            }
+          }
+        },
+        "share": {
+          "name": "Share"
+        },
+        "text": {
+          "name": "Text",
+          "settings": {
+            "text": {
+              "label": "Text"
+            }
+          }
+        },
+        "flavors": {
+          "name": "Flavor switcher",
+          "settings": {
+            "collection": {
+              "label": "Collection of flavors",
+              "info": "Each flavor is its own product. Pick the collection that holds all of them."
+            },
+            "label": {
+              "label": "Label"
+            },
+            "strip_text": {
+              "label": "Text to remove from names",
+              "info": "e.g. “LipPlumper” so “Strawberry LipPlumper” shows as “Strawberry”."
+            }
+          }
+        }
       },
       "settings": {
-        "media_layout": { "label": "Gallery layout", "options__1": "Stacked", "options__2": "Thumbnails" },
-        "enable_sticky_info": { "label": "Sticky product info on desktop" },
-        "enable_sticky_atc": { "label": "Sticky add-to-cart bar", "info": "Appears when the main button scrolls out of view." }
+        "media_layout": {
+          "label": "Gallery layout",
+          "options__1": "Stacked",
+          "options__2": "Thumbnails"
+        },
+        "enable_sticky_info": {
+          "label": "Sticky product info on desktop"
+        },
+        "enable_sticky_atc": {
+          "label": "Sticky add-to-cart bar",
+          "info": "Appears when the main button scrolls out of view."
+        }
       }
     },
     "main_collection": {
       "name": "Product grid",
       "settings": {
-        "columns_desktop": { "label": "Columns on desktop" },
-        "columns_mobile": { "label": "Columns on mobile", "options__1": "1 column", "options__2": "2 columns" },
-        "show_filters": { "label": "Show filters" },
-        "show_sort": { "label": "Show sorting" },
-        "show_count": { "label": "Show product count" }
+        "columns_desktop": {
+          "label": "Columns on desktop"
+        },
+        "columns_mobile": {
+          "label": "Columns on mobile",
+          "options__1": "1 column",
+          "options__2": "2 columns"
+        },
+        "show_filters": {
+          "label": "Show filters"
+        },
+        "show_sort": {
+          "label": "Show sorting"
+        },
+        "show_count": {
+          "label": "Show product count"
+        }
       }
     },
     "main_collection_banner": {
       "name": "Collection banner",
       "settings": {
-        "show_image": { "label": "Show collection image" },
-        "show_description": { "label": "Show collection description" }
+        "show_image": {
+          "label": "Show collection image"
+        },
+        "show_description": {
+          "label": "Show collection description"
+        }
       }
     },
     "main_cart": {
       "name": "Cart",
       "settings": {
-        "show_cross_sell": { "label": "Show recommended products" }
+        "show_cross_sell": {
+          "label": "Show recommended products"
+        }
       }
     }
   }

@@ -4,18 +4,21 @@
       "type": "hero",
       "settings": {
         "layout": "split",
+        "featured_product": "strawberry-lipplumper",
         "overlay_opacity": 70,
-        "badge": "New in: the Glow Collection",
-        "heading": "Skin that *glows*, every single day",
-        "subheading": "Clean, dermatologist-tested skincare and makeup made for real life. Visible results in 14 days — or your money back.",
-        "button_label": "Shop bestsellers",
-        "button_label_2": "Find my routine",
+        "badge": "5 flavors · $17 each",
+        "heading": "Fuller lips in *60 seconds*",
+        "subheading": "A juicy, hydrating gloss that visibly plumps your pout. No needles, no filler, no downtime. Pick your flavor and feel the tingle.",
+        "button_label": "Shop lip plumpers",
+        "show_price": true,
+        "button_label_2": "See it work",
+        "button_link_2": "/#results",
         "show_proof": true,
         "proof_rating": "4.9",
-        "proof_text": "Loved by 10,000+ happy customers",
-        "perks": "Free shipping over $50\nCruelty-free\n30-day returns",
-        "float_top": "Dermatologist-tested",
-        "float_bottom": "2,300+ five-star reviews",
+        "proof_text": "Loved by lips all over Lebanon",
+        "perks": "$4 flat shipping\nCash on delivery\nCruelty-free",
+        "float_top": "Needle-free plump",
+        "float_bottom": "5 flavors to love",
         "text_alignment": "left",
         "show_countdown": false,
         "countdown_heading": "Offer ends in"
@@ -24,177 +27,208 @@
     "trust": {
       "type": "trust-bar",
       "blocks": {
-        "t1": { "type": "item", "settings": { "icon": "truck", "heading": "Free shipping over $50", "text": "Delivered in 1–3 business days" } },
-        "t2": { "type": "item", "settings": { "icon": "refresh", "heading": "30-day returns", "text": "Unopened products, no questions asked" } },
-        "t3": { "type": "item", "settings": { "icon": "face", "heading": "Dermatologist-tested", "text": "Safe for sensitive skin" } },
-        "t4": { "type": "item", "settings": { "icon": "lock", "heading": "Secure checkout", "text": "Cards, Apple Pay or cash on delivery" } }
+        "t1": { "type": "item", "settings": { "icon": "truck", "heading": "$4 flat shipping", "text": "Anywhere in Lebanon" } },
+        "t2": { "type": "item", "settings": { "icon": "cash", "heading": "Cash on delivery", "text": "Pay when it arrives" } },
+        "t3": { "type": "item", "settings": { "icon": "clock", "heading": "Delivered in 1–3 days", "text": "Ships within 24 hours" } },
+        "t4": { "type": "item", "settings": { "icon": "rabbit", "heading": "Cruelty-free", "text": "Never tested on animals" } }
       },
       "block_order": ["t1", "t2", "t3", "t4"],
       "settings": {}
     },
-    "bestsellers": {
+    "flavors": {
       "type": "featured-collection",
       "settings": {
-        "eyebrow": "Customer favorites",
-        "title": "Bestsellers",
-        "subtitle": "The products our customers reorder again and again.",
-        "products_to_show": 8,
-        "columns_desktop": 4,
+        "eyebrow": "Pick your flavor",
+        "title": "Five flavors. One plump.",
+        "subtitle": "Every plumper is $17 and ships anywhere in Lebanon for $4. Which one is yours?",
+        "collection": "lip-plumpers",
+        "products_to_show": 5,
+        "columns_desktop": 5,
         "columns_mobile": "2",
-        "show_view_all": true,
+        "show_view_all": false,
         "background": "default"
+      }
+    },
+    "how-it-works": {
+      "type": "how-it-works",
+      "blocks": {
+        "s1": { "type": "step", "settings": { "heading": "Swipe it on", "text": "Apply a generous layer to clean lips. Wear it alone as a glossy nude or over your favorite lipstick." } },
+        "s2": { "type": "step", "settings": { "heading": "Feel the tingle", "text": "Within seconds you'll feel a warm, tingly buzz. That's the plumping actives waking up your lips." } },
+        "s3": { "type": "step", "settings": { "heading": "Watch them plump", "text": "In about a minute the tingle fades and your lips look visibly fuller, smoother and glossier. Reapply anytime." } }
+      },
+      "block_order": ["s1", "s2", "s3"],
+      "settings": {
+        "eyebrow": "How it works",
+        "heading": "One swipe. Sixty seconds. Fuller lips.",
+        "text": "No needles, no appointments, no downtime. Just a gloss that gets to work the moment it touches your lips.",
+        "button_label": "Pick my flavor",
+        "button_link": "/collections/lip-plumpers",
+        "background": "alt"
       }
     },
     "benefits": {
       "type": "benefits",
       "blocks": {
-        "b1": { "type": "benefit", "settings": { "icon": "sparkle", "heading": "Visible results in 14 days", "text": "Clinically-backed actives at effective doses, so you see the difference — not just feel it." } },
-        "b2": { "type": "benefit", "settings": { "icon": "leaf", "heading": "Clean ingredients", "text": "No parabens, sulfates, phthalates or synthetic fragrance. Ever." } },
-        "b3": { "type": "benefit", "settings": { "icon": "face", "heading": "Dermatologist-tested", "text": "Formulated and tested for sensitive skin, so everyone can glow." } },
-        "b4": { "type": "benefit", "settings": { "icon": "rabbit", "heading": "Cruelty-free & vegan", "text": "Never tested on animals. Always kind to the planet." } }
+        "b1": { "type": "benefit", "settings": { "icon": "lips", "heading": "Visible plump in minutes", "text": "A fuller, juicier pout you can see in the mirror — not in a month." } },
+        "b2": { "type": "benefit", "settings": { "icon": "drop", "heading": "Hydrating gloss finish", "text": "High shine that conditions your lips instead of drying them out." } },
+        "b3": { "type": "benefit", "settings": { "icon": "shield", "heading": "No needles, no downtime", "text": "All the volume, none of the appointments, swelling or $300 bills." } },
+        "b4": { "type": "benefit", "settings": { "icon": "sparkle", "heading": "5 flavors to love", "text": "Strawberry, Pomegranate, Vanilla, Raspberry and Mercury. Collect them all." } }
       },
       "block_order": ["b1", "b2", "b3", "b4"],
       "settings": {
         "eyebrow": "Why Jamalati",
-        "heading": "Beauty you can feel good about",
-        "text": "Every formula is built around one question: does it actually work, and is it kind to your skin?",
+        "heading": "Everything a plumper should be",
+        "text": "Made to be worn every day: hydrating, glossy and seriously plumping.",
         "columns_desktop": 4,
-        "background": "alt"
+        "background": "default"
       }
     },
     "before-after": {
       "type": "before-after",
       "blocks": {
-        "p1": { "type": "point", "settings": { "text": "94% saw brighter, more even skin" } },
-        "p2": { "type": "point", "settings": { "text": "89% said fine lines looked softer" } },
-        "p3": { "type": "point", "settings": { "text": "100% reported zero irritation" } }
+        "p1": { "type": "point", "settings": { "text": "Fuller-looking lips in about a minute" } },
+        "p2": { "type": "point", "settings": { "text": "Glossy, hydrated, never sticky" } },
+        "p3": { "type": "point", "settings": { "text": "The tingle fades, the plump stays" } }
       },
       "block_order": ["p1", "p2", "p3"],
       "settings": {
         "label_before": "Before",
-        "label_after": "After 14 days",
+        "label_after": "After 60 seconds",
         "start_position": 50,
         "layout": "left",
         "eyebrow": "See the difference",
-        "heading": "Real skin. Real results. 14 days.",
-        "text": "<p>Drag the slider. In an independent 4-week trial, 94% of participants saw brighter, more even skin — with zero irritation.</p>",
-        "button_label": "Start my glow"
+        "heading": "See the plump for yourself",
+        "text": "<p>Drag the slider. One swipe, sixty seconds, visibly fuller lips.</p>",
+        "button_label": "Get the plump for $17",
+        "button_link": "/collections/lip-plumpers"
       }
     },
     "testimonials": {
       "type": "testimonials",
       "blocks": {
-        "r1": { "type": "testimonial", "settings": { "rating": 5, "quote": "My skin has never looked this good. Two weeks in and the glow is real — I get compliments every day.", "name": "Maya K.", "product": "Glow Serum", "verified": true } },
-        "r2": { "type": "testimonial", "settings": { "rating": 5, "quote": "Finally a lip tint that lasts through coffee and lunch. The shade range is perfect for Middle Eastern skin tones.", "name": "Nour H.", "product": "Velvet Lip Tint", "verified": true } },
-        "r3": { "type": "testimonial", "settings": { "rating": 5, "quote": "I have super sensitive skin and nothing stings. Delivery to Beirut took two days and the packaging is gorgeous.", "name": "Lea S.", "product": "Calm Cleanser", "verified": true } }
+        "r1": { "type": "testimonial", "settings": { "rating": 5, "quote": "I was so close to booking filler. Tried this instead and my lips looked fuller in a minute. The strawberry one tastes amazing too.", "name": "Maya K.", "product": "Strawberry", "verified": true } },
+        "r2": { "type": "testimonial", "settings": { "rating": 5, "quote": "The tingle is real but it fades fast and the plump actually shows in photos. I wear it over my nude lipstick every day.", "name": "Nour H.", "product": "Pomegranate", "verified": true } },
+        "r3": { "type": "testimonial", "settings": { "rating": 5, "quote": "Ordered Tuesday, delivered to Beirut Thursday, paid cash at the door. Already ordering vanilla for my sister.", "name": "Lea S.", "product": "Vanilla", "verified": true } }
       },
       "block_order": ["r1", "r2", "r3"],
       "settings": {
         "eyebrow": "Real results",
-        "heading": "Loved by thousands of glowing customers",
+        "heading": "Lips all over Lebanon are loving it",
         "summary_rating": "4.9",
-        "summary_text": "based on 2,300+ verified reviews",
+        "summary_text": "average rating from verified buyers",
         "columns_desktop": 3,
         "background": "alt"
+      }
+    },
+    "comparison": {
+      "type": "comparison",
+      "blocks": {
+        "c1": { "type": "row", "settings": { "label": "Visibly fuller lips", "col_1": "yes", "col_2": "yes", "col_3": "no" } },
+        "c2": { "type": "row", "settings": { "label": "No needles, no pain", "col_1": "yes", "col_2": "no", "col_3": "yes" } },
+        "c3": { "type": "row", "settings": { "label": "Hydrating, glossy finish", "col_1": "yes", "col_2": "no", "col_3": "yes" } },
+        "c4": { "type": "row", "settings": { "label": "Price", "col_1": "$17", "col_2": "$300+", "col_3": "$10–20" } },
+        "c5": { "type": "row", "settings": { "label": "Works in", "col_1": "60 seconds", "col_2": "Days of swelling", "col_3": "—" } },
+        "c6": { "type": "row", "settings": { "label": "5 flavors", "col_1": "yes", "col_2": "no", "col_3": "no" } }
+      },
+      "block_order": ["c1", "c2", "c3", "c4", "c5", "c6"],
+      "settings": {
+        "eyebrow": "Compare",
+        "heading": "Why not just get filler?",
+        "text": "The fuller-lip look, without the needle, the price tag or the waiting room.",
+        "column_1": "Jamalati Lip Plumper",
+        "column_2": "Lip filler",
+        "column_3": "Regular gloss",
+        "button_label": "Get the plump for $17",
+        "button_link": "/collections/lip-plumpers",
+        "background": "default"
       }
     },
     "promo": {
       "type": "promo-banner",
       "settings": {
-        "eyebrow": "Limited-time offer",
-        "heading": "Buy 2, get the 3rd free",
-        "text": "<p>Build your full routine and we'll cover the third product. Automatically applied at checkout.</p>",
+        "eyebrow": "Mix & match",
+        "heading": "Can't pick just one?",
+        "text": "<p>Buy any 2 plumpers and get the 3rd free. Mix and match flavors — applied automatically at checkout.</p>",
         "code": "",
-        "button_label": "Build my routine",
+        "button_label": "Mix my flavors",
+        "button_link": "/collections/lip-plumpers",
         "show_countdown": false,
-        "marquee": "Free shipping over $50 · Cruelty-free · Dermatologist-tested · 30-day returns ·"
-      }
-    },
-    "categories": {
-      "type": "collection-list",
-      "blocks": {
-        "col-1": { "type": "featured_collection", "settings": { "title": "Skincare" } },
-        "col-2": { "type": "featured_collection", "settings": { "title": "Makeup" } },
-        "col-3": { "type": "featured_collection", "settings": { "title": "Body" } },
-        "col-4": { "type": "featured_collection", "settings": { "title": "Sets & gifts" } }
-      },
-      "block_order": ["col-1", "col-2", "col-3", "col-4"],
-      "settings": {
-        "eyebrow": "Shop by category",
-        "title": "Find your routine",
-        "columns_desktop": 4
+        "marquee": "$4 flat shipping · Cash on delivery · 5 flavors · Cruelty-free · No needles ·"
       }
     },
     "story": {
       "type": "image-with-text",
       "blocks": {
-        "s1": { "type": "stat", "settings": { "value": "10k+", "label": "Happy customers" } },
-        "s2": { "type": "stat", "settings": { "value": "4.9★", "label": "Average rating" } },
-        "s3": { "type": "stat", "settings": { "value": "0", "label": "Harsh ingredients" } }
+        "s1": { "type": "stat", "settings": { "value": "60 sec", "label": "To a visible plump" } },
+        "s2": { "type": "stat", "settings": { "value": "5", "label": "Flavors to collect" } },
+        "s3": { "type": "stat", "settings": { "value": "$4", "label": "Flat shipping, Lebanon" } }
       },
       "block_order": ["s1", "s2", "s3"],
       "settings": {
+        "image": "shopify://shop_images/19A56EBB-E363-4831-B575-8859642B1AF8.png",
         "layout": "right",
-        "eyebrow": "Our story",
-        "heading": "Made for your skin, not for the trend",
-        "text": "<p>Jamalati started with one frustration: beauty that promised everything and delivered irritation. So we built formulas around effective doses of proven actives, tested them on real skin, and left out everything that doesn't belong on your face.</p>",
-        "button_label": "Read our story",
+        "eyebrow": "Why we made it",
+        "heading": "The fuller-lip look, minus the needle",
+        "text": "<p>We wanted lips that look fuller without the appointments, the swelling or the price tag. So we made a plumping gloss that actually works, feels good and tastes even better — in five flavors, delivered to your door anywhere in Lebanon.</p>",
+        "button_label": "Shop all flavors",
+        "button_link": "/collections/lip-plumpers",
         "background": "default"
       }
     },
     "ugc": {
       "type": "ugc-gallery",
       "blocks": {
-        "u1": { "type": "image", "settings": { "caption": "@maya.k" } },
-        "u2": { "type": "image", "settings": { "caption": "Glow Serum" } },
-        "u3": { "type": "image", "settings": { "caption": "@nour.h" } },
-        "u4": { "type": "image", "settings": { "caption": "Velvet Lip Tint" } },
-        "u5": { "type": "image", "settings": { "caption": "@lea.s" } },
-        "u6": { "type": "image", "settings": { "caption": "Calm Cleanser" } }
+        "u1": { "type": "image", "settings": { "image": "shopify://shop_images/093B8FD3-0CD9-434A-BFDA-86EE3BC9D102.png", "caption": "Strawberry", "link": "/products/strawberry-lipplumper" } },
+        "u2": { "type": "image", "settings": { "image": "shopify://shop_images/6528B346-5F68-4E4C-BCB1-2123F78D7268.png", "caption": "Pomegranate", "link": "/products/pomegranate-lipplumper" } },
+        "u3": { "type": "image", "settings": { "image": "shopify://shop_images/6753A4DE-A0DB-4707-962B-090CABB069A7.png", "caption": "Vanilla", "link": "/products/vanilla-lipplumper" } },
+        "u4": { "type": "image", "settings": { "image": "shopify://shop_images/B7E40205-76A6-45A9-A31B-D414BBABA349.png", "caption": "Raspberry", "link": "/products/raspberry-lipplumper" } },
+        "u5": { "type": "image", "settings": { "image": "shopify://shop_images/19A56EBB-E363-4831-B575-8859642B1AF8.png", "caption": "Mercury", "link": "/products/mercury-lipplumper" } }
       },
-      "block_order": ["u1", "u2", "u3", "u4", "u5", "u6"],
+      "block_order": ["u1", "u2", "u3", "u4", "u5"],
       "settings": {
-        "eyebrow": "#jamalatiglow",
-        "heading": "Tag us to be featured",
+        "eyebrow": "#jamalatilips",
+        "heading": "Show us your pout",
         "handle": "@jamalati",
-        "columns_desktop": 6
+        "columns_desktop": 5
       }
     },
     "faq": {
       "type": "faq",
       "blocks": {
-        "q1": { "type": "question", "settings": { "question": "How long does delivery take?", "answer": "<p>Orders ship within 24 hours and arrive in 1–3 business days anywhere in Lebanon. You'll get a WhatsApp message with tracking as soon as it's on the way.</p>" } },
-        "q2": { "type": "question", "settings": { "question": "Can I pay cash on delivery?", "answer": "<p>Yes. Choose cash on delivery at checkout, or pay securely by card or Apple Pay.</p>" } },
-        "q3": { "type": "question", "settings": { "question": "Is Jamalati suitable for sensitive skin?", "answer": "<p>Every formula is dermatologist-tested and free from parabens, sulfates and synthetic fragrance. If you have a known allergy, check the full ingredient list on each product page.</p>" } },
-        "q4": { "type": "question", "settings": { "question": "What if it doesn't work for me?", "answer": "<p>Give it 14 days. If you don't love your results, contact us within 30 days for a full refund or exchange on unopened products.</p>" } },
-        "q5": { "type": "question", "settings": { "question": "Are your products cruelty-free?", "answer": "<p>100%. We never test on animals and neither do our suppliers.</p>" } }
+        "q1": { "type": "question", "settings": { "question": "Does it hurt? What does the tingle feel like?", "answer": "<p>You'll feel a warm, tingly buzz for a few minutes — that's the plumping actives boosting circulation in your lips. It fades on its own; the plump stays. If your lips are cracked or very sensitive, start with a thin layer.</p>" } },
+        "q2": { "type": "question", "settings": { "question": "How long does the plump last?", "answer": "<p>Most people see fuller-looking lips for a few hours after each application. Reapply whenever you like — it doubles as a hydrating gloss.</p>" } },
+        "q3": { "type": "question", "settings": { "question": "Can I wear it with lipstick?", "answer": "<p>Yes. Wear it alone for a glossy nude, layer it over your lipstick for extra volume and shine, or apply it first and let the tingle settle before your usual look.</p>" } },
+        "q4": { "type": "question", "settings": { "question": "Which flavor should I pick?", "answer": "<p>Strawberry and Raspberry are sweet and fruity, Pomegranate is tart and juicy, Vanilla is soft and creamy, and Mercury is our fresh, crisp signature. Can't decide? Buy two and get a third flavor free.</p>" } },
+        "q5": { "type": "question", "settings": { "question": "How much is shipping and how fast is delivery?", "answer": "<p>Shipping is a flat $4 anywhere in Lebanon. Orders ship within 24 hours and arrive in 1–3 business days. Cash on delivery is available, or pay securely by card.</p>" } },
+        "q6": { "type": "question", "settings": { "question": "What if it doesn't work for me?", "answer": "<p>Message us on WhatsApp within 30 days and we'll sort out a refund or exchange. We want you to love your lips.</p>" } }
       },
-      "block_order": ["q1", "q2", "q3", "q4", "q5"],
+      "block_order": ["q1", "q2", "q3", "q4", "q5", "q6"],
       "settings": {
         "eyebrow": "Good to know",
         "heading": "Questions? We've got answers.",
         "open_first": true,
-        "background": "default"
+        "background": "alt"
       }
     },
     "newsletter": {
       "type": "newsletter",
       "settings": {
         "eyebrow": "Welcome gift",
-        "heading": "Get 10% off your first order",
-        "text": "<p>Join the Jamalati list for launches, skincare tips and subscriber-only offers.</p>"
+        "heading": "Get 10% off your first plumper",
+        "text": "<p>Join the list for new flavors, lip tips and subscriber-only offers.</p>"
       }
     }
   },
   "order": [
     "hero",
     "trust",
-    "bestsellers",
+    "flavors",
+    "how-it-works",
     "benefits",
     "before-after",
     "testimonials",
+    "comparison",
     "promo",
-    "categories",
     "story",
     "ugc",
     "faq",

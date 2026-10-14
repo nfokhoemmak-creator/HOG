@@ -200,7 +200,10 @@
           {%- endfor -%}
         {%- endif -%}
 
-        <div class="cart-totals">
+        {%- liquid
+          assign flat_shipping = settings.cart_flat_shipping | default: 0 | times: 100
+        -%}
+        <div class="cart-totals{% if flat_shipping > 0 %} cart-totals--secondary{% endif %}">
           <span>{{ 'sections.cart.subtotal' | t }}</span>
           <span>
             {%- if settings.currency_code_enabled -%}
@@ -210,6 +213,17 @@
             {%- endif -%}
           </span>
         </div>
+
+        {%- if flat_shipping > 0 -%}
+          <div class="cart-totals cart-totals--secondary">
+            <span>{{ 'sections.cart.shipping_flat' | t }} <span class="muted">({{ 'sections.cart.shipping_flat_note' | t }})</span></span>
+            <span>{{ flat_shipping | money }}</span>
+          </div>
+          <div class="cart-totals">
+            <span>{{ 'sections.cart.estimated_total' | t }}</span>
+            <span>{{ cart.total_price | plus: flat_shipping | money }}</span>
+          </div>
+        {%- endif -%}
 
         <form action="{{ routes.cart_url }}" method="post" id="cart-drawer-form">
           <button type="submit" name="checkout" class="btn btn--large btn--full">

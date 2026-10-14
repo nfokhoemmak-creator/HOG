@@ -1,0 +1,94 @@
+<div class="section{% if section.settings.background == 'alt' %} section--alt{% endif %}" id="how-it-works">
+  <div class="container">
+    <div class="section__head section__head--center">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="eyebrow">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="h2">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+      {%- if section.settings.text != blank -%}
+        <p class="lead">{{ section.settings.text }}</p>
+      {%- endif -%}
+    </div>
+
+    <ol class="steps">
+      {%- for block in section.blocks -%}
+        <li class="step{% if settings.animations_enabled %} reveal{% endif %}" {{ block.shopify_attributes }}>
+          {%- if block.settings.image != blank -%}
+            <img
+              class="step__image"
+              src="{{ block.settings.image | image_url: width: 800, height: 800, crop: 'center' }}"
+              alt="{{ block.settings.image.alt | escape }}"
+              width="800"
+              height="800"
+              loading="lazy"
+            >
+          {%- endif -%}
+          <span class="step__number" aria-hidden="true">{{ forloop.index }}</span>
+          <div class="step__body">
+            {%- if block.settings.heading != blank -%}
+              <h3 class="h4">{{ block.settings.heading }}</h3>
+            {%- endif -%}
+            {%- if block.settings.text != blank -%}
+              <p>{{ block.settings.text }}</p>
+            {%- endif -%}
+          </div>
+        </li>
+      {%- endfor -%}
+    </ol>
+
+    {%- if section.settings.button_label != blank -%}
+      <div class="center" style="margin-top: var(--space-6);">
+        <a class="btn btn--large" href="{{ section.settings.button_link | default: routes.all_products_collection_url }}">{{ section.settings.button_label }}</a>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "How it works",
+  "tag": "section",
+  "class": "how-it-works-section",
+  "max_blocks": 4,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "How it works" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "One swipe. Sixty seconds. Fuller lips." },
+    { "type": "text", "id": "text", "label": "Text", "default": "No needles, no appointments, no downtime. Just a gloss that gets to work the moment it touches your lips." },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Pick my flavor" },
+    { "type": "url", "id": "button_link", "label": "Button link" },
+    {
+      "type": "select",
+      "id": "background",
+      "label": "Background",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "alt", "label": "Alternate" }
+      ],
+      "default": "default"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "Step",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image (optional)" },
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Swipe it on" },
+        { "type": "textarea", "id": "text", "label": "Text", "default": "Apply a generous layer to clean lips, alone or over your lipstick." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "How it works",
+      "blocks": [
+        { "type": "step", "settings": { "heading": "Swipe it on", "text": "Apply a generous layer to clean lips. Wear it alone as a glossy nude or over your favorite lipstick." } },
+        { "type": "step", "settings": { "heading": "Feel the tingle", "text": "Within seconds you'll feel a warm, tingly buzz. That's the plumping actives waking up your lips." } },
+        { "type": "step", "settings": { "heading": "Watch them plump", "text": "In about a minute the tingle fades and your lips look visibly fuller, smoother and glossier. Reapply anytime." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

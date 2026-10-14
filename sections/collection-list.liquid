@@ -16,7 +16,7 @@
     <div class="product-grid" style="--cols-desktop: {{ section.settings.columns_desktop }}; --cols-tablet: {{ section.settings.columns_desktop }}; --cols-mobile: 2;">
       {%- assign fallback_title = 'onboarding.collection_title' | t -%}
       {%- for block in section.blocks -%}
-        {%- assign block_collection = collections[block.settings.collection] -%}
+        {%- assign block_collection = block.settings.collection -%}
         <div class="card" {{ block.shopify_attributes }}>
           <a class="card__media card__media--square" href="{{ block_collection.url | default: routes.collections_url }}">
             {%- if block_collection.image -%}
@@ -70,7 +70,7 @@
       "type": "text",
       "id": "title",
       "label": "t:sections.collection_list.settings.title.label",
-      "default": "Find your routine"
+      "default": "Shop by collection"
     },
     {
       "type": "range",
@@ -104,9 +104,8 @@
     {
       "name": "t:sections.collection_list.name",
       "blocks": [
-        { "type": "featured_collection", "settings": { "title": "Skincare" } },
-        { "type": "featured_collection", "settings": { "title": "Makeup" } },
-        { "type": "featured_collection", "settings": { "title": "Body" } },
+        { "type": "featured_collection", "settings": { "title": "Lip plumpers" } },
+        { "type": "featured_collection", "settings": { "title": "New arrivals" } },
         { "type": "featured_collection", "settings": { "title": "Sets & gifts" } }
       ]
     }

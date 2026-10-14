@@ -1,0 +1,114 @@
+<div class="section{% if section.settings.background == 'alt' %} section--alt{% endif %}">
+  <div class="container container--medium">
+    <div class="section__head section__head--center">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="eyebrow">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="h2">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+      {%- if section.settings.text != blank -%}
+        <p class="lead">{{ section.settings.text }}</p>
+      {%- endif -%}
+    </div>
+
+    <div class="compare-wrap">
+      <table class="compare">
+        <thead>
+          <tr>
+            <th scope="col"><span class="visually-hidden">Feature</span></th>
+            <th scope="col" class="compare__us">
+              {%- if settings.logo != blank -%}
+                <img src="{{ settings.logo | image_url: width: 240 }}" alt="{{ section.settings.column_1 | escape }}" width="120" height="auto" loading="lazy">
+              {%- else -%}
+                <img src="{{ 'jamalati-logo.png' | asset_url }}" alt="{{ section.settings.column_1 | escape }}" width="1462" height="399" loading="lazy">
+              {%- endif -%}
+            </th>
+            <th scope="col">{{ section.settings.column_2 }}</th>
+            <th scope="col">{{ section.settings.column_3 }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {%- for block in section.blocks -%}
+            <tr {{ block.shopify_attributes }}>
+              <th scope="row">{{ block.settings.label }}</th>
+              {%- assign cells = block.settings.col_1 | append: '|' | append: block.settings.col_2 | append: '|' | append: block.settings.col_3 | split: '|' -%}
+              {%- for cell in cells -%}
+                {%- assign value = cell | strip | downcase -%}
+                <td{% if forloop.first %} class="compare__us"{% endif %}>
+                  {%- if value == 'yes' -%}
+                    <span class="compare__yes">{% render 'icon', name: 'check' %}<span class="visually-hidden">Yes</span></span>
+                  {%- elsif value == 'no' -%}
+                    <span class="compare__no">{% render 'icon', name: 'close' %}<span class="visually-hidden">No</span></span>
+                  {%- else -%}
+                    {{ cell | strip }}
+                  {%- endif -%}
+                </td>
+              {%- endfor -%}
+            </tr>
+          {%- endfor -%}
+        </tbody>
+      </table>
+    </div>
+
+    {%- if section.settings.button_label != blank -%}
+      <div class="center" style="margin-top: var(--space-6);">
+        <a class="btn btn--large" href="{{ section.settings.button_link | default: routes.all_products_collection_url }}">{{ section.settings.button_label }}</a>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Comparison table",
+  "tag": "section",
+  "class": "comparison-section",
+  "max_blocks": 8,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Compare" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Why not just get filler?" },
+    { "type": "text", "id": "text", "label": "Text", "default": "The fuller-lip look, without the needle, the price tag or the waiting room." },
+    { "type": "text", "id": "column_1", "label": "Column 1 (your brand)", "default": "Jamalati Lip Plumper" },
+    { "type": "text", "id": "column_2", "label": "Column 2", "default": "Lip filler" },
+    { "type": "text", "id": "column_3", "label": "Column 3", "default": "Regular gloss" },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Get the plump for $17" },
+    { "type": "url", "id": "button_link", "label": "Button link" },
+    {
+      "type": "select",
+      "id": "background",
+      "label": "Background",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "alt", "label": "Alternate" }
+      ],
+      "default": "default"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "row",
+      "name": "Row",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Feature", "default": "Instant volume" },
+        { "type": "text", "id": "col_1", "label": "Column 1 value", "info": "Type “yes” or “no” for a check or cross, or any short text.", "default": "yes" },
+        { "type": "text", "id": "col_2", "label": "Column 2 value", "default": "yes" },
+        { "type": "text", "id": "col_3", "label": "Column 3 value", "default": "no" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Comparison table",
+      "blocks": [
+        { "type": "row", "settings": { "label": "Visibly fuller lips", "col_1": "yes", "col_2": "yes", "col_3": "no" } },
+        { "type": "row", "settings": { "label": "No needles, no pain", "col_1": "yes", "col_2": "no", "col_3": "yes" } },
+        { "type": "row", "settings": { "label": "Hydrating, glossy finish", "col_1": "yes", "col_2": "no", "col_3": "yes" } },
+        { "type": "row", "settings": { "label": "Price", "col_1": "$17", "col_2": "$300+", "col_3": "$10–20" } },
+        { "type": "row", "settings": { "label": "Works in", "col_1": "60 seconds", "col_2": "Days of swelling", "col_3": "—" } },
+        { "type": "row", "settings": { "label": "5 flavors", "col_1": "yes", "col_2": "no", "col_3": "no" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

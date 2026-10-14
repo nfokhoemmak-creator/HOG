@@ -8,19 +8,19 @@
         "announcement-1": {
           "type": "announcement",
           "settings": {
-            "text": "✨ Free shipping on orders over $50"
+            "text": "💋 Fuller lips in 60 seconds — no needles, no filler"
           }
         },
         "announcement-2": {
           "type": "announcement",
           "settings": {
-            "text": "💗 10% off your first order with code WELCOME10"
+            "text": "🚚 $4 flat shipping all over Lebanon · Cash on delivery"
           }
         },
         "announcement-3": {
           "type": "announcement",
           "settings": {
-            "text": "🚚 Delivery all over Lebanon · Cash on delivery available"
+            "text": "💗 10% off your first order with code WELCOME10"
           }
         }
       },
@@ -34,7 +34,7 @@
     "header": {
       "type": "header",
       "settings": {
-        "menu": "main-menu",
+        "menu": "jamalati-main",
         "sticky": true,
         "show_search": true,
         "show_account": true

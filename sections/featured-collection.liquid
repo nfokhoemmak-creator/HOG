@@ -1,5 +1,5 @@
 {%- liquid
-  assign target = collections[section.settings.collection]
+  assign target = section.settings.collection
   assign product_limit = section.settings.products_to_show
 
   assign fallback_title = 'onboarding.collection_title' | t
@@ -72,19 +72,19 @@
       "type": "text",
       "id": "eyebrow",
       "label": "Eyebrow",
-      "default": "Customer favorites"
+      "default": "Pick your flavor"
     },
     {
       "type": "text",
       "id": "title",
       "label": "t:sections.featured_collection.settings.title.label",
-      "default": "Bestsellers"
+      "default": "Five flavors. One plump."
     },
     {
       "type": "text",
       "id": "subtitle",
       "label": "t:sections.featured_collection.settings.subtitle.label",
-      "default": "The products our customers reorder again and again."
+      "default": "Every plumper is $17 and ships anywhere in Lebanon for $4."
     },
     {
       "type": "collection",

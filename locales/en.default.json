@@ -23,8 +23,8 @@
       "page": "Page {{ number }}"
     },
     "newsletter_form": {
-      "heading": "Get 10% off your first order",
-      "body": "Join the Jamalati list for launches, skincare tips and subscriber-only offers.",
+      "heading": "Get 10% off your first plumper",
+      "body": "Join the list for new flavors, lip tips and subscriber-only offers.",
       "email_placeholder": "Your email address",
       "submit": "Claim my 10% off",
       "confirmation": "You're in! Check your inbox for your code.",
@@ -42,7 +42,7 @@
     "cart": "Cart",
     "account": "Account",
     "whatsapp": "Chat with us",
-    "shop_all": "Shop all"
+    "shop_all": "Shop all flavors"
   },
   "accessibility": {
     "skip_to_text": "Skip to content",
@@ -77,8 +77,8 @@
     "cart": {
       "title": "Your bag",
       "empty": "Your bag is empty",
-      "empty_body": "Your glow is one click away. Browse our bestsellers to get started.",
-      "browse_catalog": "Shop bestsellers",
+      "empty_body": "Your perfect pout is one tap away. Pick a flavor to get started.",
+      "browse_catalog": "Shop lip plumpers",
       "checkout": "Checkout securely",
       "view_cart": "View bag",
       "subtotal": "Subtotal",
@@ -96,8 +96,11 @@
       "continue_shopping": "Continue shopping",
       "free_shipping_remaining_html": "You're <strong>{{ amount }}</strong> away from free shipping",
       "free_shipping_unlocked": "🎉 You've unlocked free shipping!",
-      "upsell_title": "Complete your routine",
-      "upsell_add": "Add"
+      "upsell_title": "Add another flavor",
+      "upsell_add": "Add",
+      "shipping_flat": "Shipping",
+      "shipping_flat_note": "flat rate, Lebanon",
+      "estimated_total": "Estimated total"
     },
     "featured_collection": {
       "view_all": "View all"
@@ -127,7 +130,7 @@
     "404": {
       "title": "Page not found",
       "subtext": "That page has moved or never existed. Your glow is still right here.",
-      "link": "Shop bestsellers"
+      "link": "Shop lip plumpers"
     },
     "password": {
       "opening_soon": "Launching soon",
@@ -158,7 +161,7 @@
     },
     "before_after": {
       "before": "Before",
-      "after": "After"
+      "after": "After 60 seconds"
     }
   },
   "products": {
@@ -195,7 +198,7 @@
       "ingredients": "Ingredients",
       "how_to_use": "How to use",
       "shipping": "Shipping & returns",
-      "shipping_body": "Free shipping on orders over $50. Delivery in 1–3 business days. Not in love? Return unopened products within 30 days.",
+      "shipping_body": "$4 flat shipping anywhere in Lebanon, delivered in 1–3 business days. Cash on delivery available. Questions? Message us on WhatsApp.",
       "read_reviews": "Read reviews",
       "secure_checkout": "Secure checkout",
       "media": {
@@ -212,7 +215,10 @@
         "minutes": "Min",
         "seconds": "Sec",
         "live": "Offer has ended"
-      }
+      },
+      "flavor": "Flavor",
+      "selected": "Selected",
+      "price_note": "+ $4 flat shipping · Cash on delivery"
     },
     "facets": {
       "apply": "Apply",
@@ -351,7 +357,7 @@
     }
   },
   "onboarding": {
-    "product_title": "Example product title",
+    "product_title": "Strawberry LipPlumper",
     "collection_title": "Example collection"
   }
 }

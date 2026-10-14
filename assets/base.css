@@ -2449,3 +2449,189 @@ body.is-locked {
 
   .sticky-atc { padding-block: var(--space-3); }
 }
+
+/* --- Lip plumper additions ----------------------------------------------- */
+
+.btn__price { opacity: 0.85; font-weight: var(--font-body-weight); }
+
+.hero__product { display: block; }
+
+.hero__product img {
+  background:
+    radial-gradient(60% 50% at 30% 25%, rgb(var(--color-accent-rgb) / 0.35), transparent 70%),
+    linear-gradient(160deg, var(--color-surface), var(--color-bg-alt));
+  object-fit: contain;
+  padding: var(--space-4);
+}
+
+.product__price-note {
+  margin-top: var(--space-2);
+  font-size: 1.3rem;
+  color: var(--color-muted);
+}
+
+/* Flavor switcher (sibling products) */
+
+.flavors { display: grid; gap: var(--space-2); }
+
+.flavors__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.flavor {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.4rem 1.2rem 0.4rem 0.4rem;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface);
+  font-size: 1.3rem;
+  font-weight: var(--font-body-weight-bold);
+  transition: border-color var(--duration) var(--ease), box-shadow var(--duration) var(--ease);
+}
+
+.flavor img,
+.flavor__swatch {
+  width: 3.4rem;
+  height: 3.4rem;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--accent-soft);
+}
+
+.flavor:hover { border-color: var(--color-accent); }
+
+.flavor--current {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+  color: var(--color-accent);
+}
+
+.flavor--sold { opacity: 0.45; text-decoration: line-through; }
+
+/* Quick add under the price */
+
+.card__quick-add--below {
+  position: static;
+  opacity: 1;
+  transform: none;
+  margin-top: var(--space-2);
+}
+
+/* How it works */
+
+.steps {
+  display: grid;
+  gap: var(--grid-gap);
+  counter-reset: step;
+}
+
+.step {
+  position: relative;
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.step__image {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: calc(var(--radius) * 0.6);
+}
+
+.step__number {
+  display: inline-grid;
+  place-items: center;
+  width: 4.4rem;
+  height: 4.4rem;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+  font-family: var(--font-heading-family);
+  font-weight: var(--font-heading-weight);
+  font-size: 1.8rem;
+}
+
+.step__body p { font-size: 1.4rem; color: var(--color-muted); }
+
+/* Comparison table */
+
+.compare-wrap {
+  position: relative; /* contains the visually-hidden labels so they can't widen the page */
+  overflow-x: auto;
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.compare {
+  width: 100%;
+  min-width: 52rem;
+  border-collapse: collapse;
+  font-size: 1.4rem;
+}
+
+.compare th,
+.compare td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  text-align: center;
+  vertical-align: middle;
+}
+
+.compare tbody tr:last-child th,
+.compare tbody tr:last-child td { border-bottom: 0; }
+
+.compare thead th {
+  font-family: var(--font-heading-family);
+  font-weight: var(--font-heading-weight);
+  font-size: 1.3rem;
+  color: var(--color-muted);
+  padding-block: var(--space-4);
+}
+
+.compare thead th img { width: 11rem; margin-inline: auto; }
+
+.compare tbody th {
+  text-align: left;
+  font-weight: var(--font-body-weight-bold);
+}
+
+.compare .compare__us {
+  background: var(--accent-soft);
+  color: var(--color-fg);
+  font-weight: var(--font-body-weight-bold);
+}
+
+.compare__yes,
+.compare__no {
+  display: inline-grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 50%;
+}
+
+.compare__yes { background: var(--color-accent); color: var(--color-accent-contrast); }
+.compare__no { background: rgb(var(--color-fg-rgb) / 0.08); color: var(--color-muted); }
+.compare__yes svg, .compare__no svg { width: 1.4rem; height: 1.4rem; }
+
+/* Cart totals */
+
+.cart-totals--secondary {
+  font-family: var(--font-body-family);
+  font-weight: var(--font-body-weight);
+  font-size: 1.3rem;
+  color: var(--color-muted);
+}
+
+@media screen and (min-width: 750px) {
+  .steps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}

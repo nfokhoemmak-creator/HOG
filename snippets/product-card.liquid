@@ -122,9 +122,13 @@
     if quick_add == null
       assign quick_add = settings.card_quick_add
     endif
+    assign quick_add_below = false
+    if settings.card_quick_add_style == 'below'
+      assign quick_add_below = true
+    endif
   -%}
 
-  {%- if quick_add and card_product.available -%}
+  {%- if quick_add and card_product.available and quick_add_below == false -%}
     <div class="card__quick-add">
       {%- if card_product.variants.size == 1 -%}
         <form method="post" action="{{ routes.cart_add_url }}" data-quick-add-form>
@@ -165,5 +169,29 @@
     {%- endif -%}
 
     {% render 'price', product: card_product %}
+
+    {%- if quick_add and card_product.available and quick_add_below -%}
+      <div class="card__quick-add card__quick-add--below">
+        {%- if card_product.variants.size == 1 -%}
+          <form method="post" action="{{ routes.cart_add_url }}" data-quick-add-form>
+            <input type="hidden" name="form_type" value="product">
+            <input type="hidden" name="utf8" value="✓">
+            <input type="hidden" name="id" value="{{ card_product.variants.first.id }}">
+            <input type="hidden" name="quantity" value="1">
+            <button
+              type="submit"
+              class="btn btn--small btn--full"
+              aria-label="{{ 'products.product.quick_add_for' | t: product: card_product.title }}"
+            >
+              {{ 'products.product.quick_add' | t }}
+            </button>
+          </form>
+        {%- else -%}
+          <a class="btn btn--small btn--full btn--soft" href="{{ card_product.url }}">
+            {{ 'products.product.choose_options' | t }}
+          </a>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
   </div>
 </div>

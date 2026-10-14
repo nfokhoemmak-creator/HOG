@@ -1,15 +1,16 @@
 # Jamalati — Shopify Theme
 
 Custom Online Store 2.0 theme for **[jamalati.com](https://jamalati.com)** — a
-clean-beauty cosmetics brand shipping all over Lebanon.
+lip plumper brand shipping all over Lebanon for a flat $4.
 
-> *Beauty that feels like you.*
+> *Fuller lips. No needles.*
 
 Built from scratch: no Dawn fork, no vendor bundles. Plain Liquid, one
-stylesheet, three small vanilla-JS modules. The homepage and product page are
-laid out as a conversion funnel: hero with social proof → trust bar →
-bestsellers → benefits → before/after → reviews → offer → categories → story →
-UGC → FAQ → email capture.
+stylesheet, three small vanilla-JS modules. The homepage is a single-product
+funnel: hero with the product and social proof → trust bar ($4 shipping, cash
+on delivery) → the five flavors with one-tap add to bag → how it works →
+benefits → before/after → reviews → comparison vs filler → mix & match offer →
+story → gallery → FAQ → email capture.
 
 ---
 
@@ -17,16 +18,18 @@ UGC → FAQ → email capture.
 
 1. Download **`jamalati-theme.zip`** from this repo (or run `npm run zip`).
 2. Shopify admin → **Online Store → Themes → Add theme → Upload zip file**.
-3. Click **Customize** on the new theme. The logo, colors, fonts and all
-   homepage sections are already set — you only need to:
-   - pick a collection for the **Bestsellers** section and the four
-     **Find your routine** category tiles,
-   - drop in a hero image and two before/after photos,
+3. Click **Customize** on the new theme. The logo, colors, fonts, menus,
+   the **Lip Plumpers** collection and all homepage sections are already
+   wired up — you only need to:
+   - drop in two before/after photos (Before / after section),
    - add your WhatsApp number under **Theme settings → Social**,
-   - create the `WELCOME10` discount (Discounts → Create) and a free-shipping
-     rate over $50 (Settings → Shipping) so the announcement bar and cart
-     progress bar are telling the truth.
+   - create the `WELCOME10` discount and the “buy 2, get the 3rd free”
+     automatic discount (Discounts → Create), or edit those two messages,
+   - replace the sample reviews with real ones.
 4. Preview on your phone, then **Publish**.
+
+The $4 flat rate is read from **Theme settings → Cart → Flat shipping rate**
+and must match the Lebanon rate in **Settings → Shipping** (it does today).
 
 ## Requirements (for development only)
 
@@ -64,18 +67,21 @@ scripts/          validate-json.mjs, package-zip.mjs
 
 | Where | What | Setting |
 | --- | --- | --- |
-| Announcement bar | Rotating offers (free shipping, welcome code, COD) | Header group |
-| Hero | Split layout, pink highlight word, star rating + "10,000+ customers", perk checklist, floating trust pills | Hero section |
+| Announcement bar | Rotating messages ($4 shipping, cash on delivery, welcome code) | Header group |
+| Hero | Featured product image + price in the button, highlight word, rating row, perk checklist, floating pills | Hero section |
 | Trust bar | 4 icon promises under the hero and above the footer | Trust bar section |
+| Flavor grid | All five plumpers with an always-visible “Add to bag” button | Featured collection + Theme settings → Product cards |
+| How it works | 3 numbered steps | How it works section |
+| Comparison | Jamalati vs lip filler vs regular gloss, check/cross cells | Comparison table section |
 | Product cards | Bestseller / New / Sale badges, star rating, "Save X%", quick add | Theme settings → Product cards |
 | Before / after | Draggable image comparison with result stats | Before / after section |
 | Testimonials | Star reviews with verified badge + rating summary pill | Testimonials section |
 | Promo banner | Gradient offer card with optional countdown and discount code | Promo banner section |
 | FAQ | Accordion with FAQ structured data for Google | FAQ section |
 | Newsletter | "Get 10% off" email capture (tags subscribers `newsletter`) | Newsletter section + footer |
-| Product page | Rating under title, benefit checklist, stock urgency, trust icons, guarantee box, ingredients / how-to-use accordions, WhatsApp share | Product template blocks |
+| Product page | Rating, “+ $4 shipping · cash on delivery” under the price, benefit checklist, **flavor switcher** across the five products, stock urgency, trust icons, guarantee box, how-to-use / ingredients accordions, WhatsApp share | Product template blocks |
 | Sticky add-to-cart | Bottom bar appears when the main button scrolls away | Product section settings |
-| Cart drawer | Free-shipping progress bar, "complete your routine" upsell, lock icon on checkout | Theme settings → Cart |
+| Cart drawer | Subtotal + $4 flat shipping + estimated total (no checkout surprises), “add another flavor” upsell, optional free-shipping progress bar | Theme settings → Cart |
 | WhatsApp | Floating chat button | Theme settings → Social |
 
 ## Design system
@@ -101,6 +107,10 @@ is uploaded in theme settings (header, mobile menu, footer, password page,
 hero placeholder, Organization structured data).
 
 ## Content conventions
+
+Flavors are separate products. Put them all in one collection (today:
+`lip-plumpers`) and the product page's **Flavor switcher** block links between
+them, stripping the text “LipPlumper” from the names.
 
 Product **tags** the theme reads:
 

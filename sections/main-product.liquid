@@ -144,6 +144,9 @@
                 price_class: 'product__price',
                 id_prefix: 'ProductPrice'
               %}
+              {%- if block.settings.note != blank -%}
+                <p class="product__price-note">{{ block.settings.note }}</p>
+              {%- endif -%}
             </div>
 
           {%- when 'benefits' -%}
@@ -163,6 +166,39 @@
                   {%- endif -%}
                 {%- endfor -%}
               </ul>
+            {%- endif -%}
+
+          {%- when 'flavors' -%}
+            {%- liquid
+              assign flavor_collection = block.settings.collection
+              assign strip_text = block.settings.strip_text
+              assign current_name = product.title | remove: strip_text | strip
+            -%}
+            {%- if flavor_collection.products.size > 1 -%}
+              <div class="flavors" {{ block.shopify_attributes }}>
+                <span class="variant-option__label">
+                  <span>{{ block.settings.label | default: 'products.product.flavor' | t }}</span>
+                  <span class="muted">{{ current_name }}</span>
+                </span>
+                <div class="flavors__list">
+                  {%- for item in flavor_collection.products -%}
+                    {%- assign item_name = item.title | remove: strip_text | strip -%}
+                    <a
+                      class="flavor{% if item.id == product.id %} flavor--current{% endif %}{% unless item.available %} flavor--sold{% endunless %}"
+                      href="{{ item.url }}"
+                      {% if item.id == product.id %}aria-current="page"{% endif %}
+                      title="{{ item_name | escape }}"
+                    >
+                      {%- if item.featured_media -%}
+                        <img src="{{ item.featured_media | image_url: width: 140, height: 140, crop: 'center' }}" alt="" width="56" height="56" loading="lazy">
+                      {%- else -%}
+                        <span class="flavor__swatch" aria-hidden="true"></span>
+                      {%- endif -%}
+                      <span class="flavor__name">{{ item_name }}</span>
+                    </a>
+                  {%- endfor -%}
+                </div>
+              </div>
             {%- endif -%}
 
           {%- when 'variant_picker' -%}
@@ -264,13 +300,13 @@
           {%- when 'trust' -%}
             <ul class="product__trust" {{ block.shopify_attributes }}>
               {%- if block.settings.item_1 != blank -%}
-                <li>{% render 'icon', name: 'truck' %}<span>{{ block.settings.item_1 }}</span></li>
+                <li>{% render 'icon', name: block.settings.icon_1 %}<span>{{ block.settings.item_1 }}</span></li>
               {%- endif -%}
               {%- if block.settings.item_2 != blank -%}
-                <li>{% render 'icon', name: 'refresh' %}<span>{{ block.settings.item_2 }}</span></li>
+                <li>{% render 'icon', name: block.settings.icon_2 %}<span>{{ block.settings.item_2 }}</span></li>
               {%- endif -%}
               {%- if block.settings.item_3 != blank -%}
-                <li>{% render 'icon', name: 'lock' %}<span>{{ block.settings.item_3 }}</span></li>
+                <li>{% render 'icon', name: block.settings.icon_3 %}<span>{{ block.settings.item_3 }}</span></li>
               {%- endif -%}
             </ul>
 
@@ -438,13 +474,30 @@
         { "type": "text", "id": "link", "label": "t:sections.main_product.blocks.rating.settings.link.label", "info": "t:sections.main_product.blocks.rating.settings.link.info", "default": "#reviews" }
       ]
     },
-    { "type": "price", "name": "t:sections.main_product.blocks.price.name", "limit": 1 },
+    {
+      "type": "price",
+      "name": "t:sections.main_product.blocks.price.name",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "note", "label": "t:sections.main_product.blocks.price.settings.note.label", "info": "t:sections.main_product.blocks.price.settings.note.info", "default": "+ $4 flat shipping · Cash on delivery" }
+      ]
+    },
+    {
+      "type": "flavors",
+      "name": "t:sections.main_product.blocks.flavors.name",
+      "limit": 1,
+      "settings": [
+        { "type": "collection", "id": "collection", "label": "t:sections.main_product.blocks.flavors.settings.collection.label", "info": "t:sections.main_product.blocks.flavors.settings.collection.info" },
+        { "type": "text", "id": "label", "label": "t:sections.main_product.blocks.flavors.settings.label.label", "default": "Flavor" },
+        { "type": "text", "id": "strip_text", "label": "t:sections.main_product.blocks.flavors.settings.strip_text.label", "info": "t:sections.main_product.blocks.flavors.settings.strip_text.info", "default": "LipPlumper" }
+      ]
+    },
     {
       "type": "benefits",
       "name": "t:sections.main_product.blocks.benefits.name",
       "limit": 1,
       "settings": [
-        { "type": "textarea", "id": "text", "label": "t:sections.main_product.blocks.benefits.settings.text.label", "info": "t:sections.main_product.blocks.benefits.settings.text.info", "default": "Visible results in 14 days\nDermatologist-tested, fragrance-free\nCruelty-free & vegan" }
+        { "type": "textarea", "id": "text", "label": "t:sections.main_product.blocks.benefits.settings.text.label", "info": "t:sections.main_product.blocks.benefits.settings.text.info", "default": "Visibly fuller lips in about 60 seconds\nHydrating, high-shine gloss finish\nNo needles, no filler, no downtime" }
       ]
     },
     { "type": "variant_picker", "name": "t:sections.main_product.blocks.variant_picker.name", "limit": 1 },
@@ -464,8 +517,44 @@
       "name": "t:sections.main_product.blocks.trust.name",
       "limit": 1,
       "settings": [
-        { "type": "text", "id": "item_1", "label": "t:sections.main_product.blocks.trust.settings.item_1.label", "default": "Free shipping over $50" },
-        { "type": "text", "id": "item_2", "label": "t:sections.main_product.blocks.trust.settings.item_2.label", "default": "30-day returns" },
+        { "type": "select", "id": "icon_1", "label": "t:sections.main_product.blocks.trust.settings.icon_1.label", "options": [
+            { "value": "truck", "label": "Truck" },
+            { "value": "clock", "label": "Clock" },
+            { "value": "cash", "label": "Cash" },
+            { "value": "refresh", "label": "Returns" },
+            { "value": "lock", "label": "Lock" },
+            { "value": "shield", "label": "Shield" },
+            { "value": "rabbit", "label": "Cruelty-free" },
+            { "value": "leaf", "label": "Leaf" },
+            { "value": "heart", "label": "Heart" },
+            { "value": "lips", "label": "Lips" }
+          ], "default": "truck" },
+        { "type": "text", "id": "item_1", "label": "t:sections.main_product.blocks.trust.settings.item_1.label", "default": "$4 flat shipping" },
+        { "type": "select", "id": "icon_2", "label": "t:sections.main_product.blocks.trust.settings.icon_2.label", "options": [
+            { "value": "truck", "label": "Truck" },
+            { "value": "clock", "label": "Clock" },
+            { "value": "cash", "label": "Cash" },
+            { "value": "refresh", "label": "Returns" },
+            { "value": "lock", "label": "Lock" },
+            { "value": "shield", "label": "Shield" },
+            { "value": "rabbit", "label": "Cruelty-free" },
+            { "value": "leaf", "label": "Leaf" },
+            { "value": "heart", "label": "Heart" },
+            { "value": "lips", "label": "Lips" }
+          ], "default": "clock" },
+        { "type": "text", "id": "item_2", "label": "t:sections.main_product.blocks.trust.settings.item_2.label", "default": "Delivered in 1–3 days" },
+        { "type": "select", "id": "icon_3", "label": "t:sections.main_product.blocks.trust.settings.icon_3.label", "options": [
+            { "value": "truck", "label": "Truck" },
+            { "value": "clock", "label": "Clock" },
+            { "value": "cash", "label": "Cash" },
+            { "value": "refresh", "label": "Returns" },
+            { "value": "lock", "label": "Lock" },
+            { "value": "shield", "label": "Shield" },
+            { "value": "rabbit", "label": "Cruelty-free" },
+            { "value": "leaf", "label": "Leaf" },
+            { "value": "heart", "label": "Heart" },
+            { "value": "lips", "label": "Lips" }
+          ], "default": "cash" },
         { "type": "text", "id": "item_3", "label": "t:sections.main_product.blocks.trust.settings.item_3.label", "default": "Cash on delivery" }
       ]
     },
@@ -474,8 +563,8 @@
       "name": "t:sections.main_product.blocks.guarantee.name",
       "limit": 1,
       "settings": [
-        { "type": "text", "id": "heading", "label": "t:sections.main_product.blocks.guarantee.settings.heading.label", "default": "The 14-day glow guarantee" },
-        { "type": "text", "id": "text", "label": "t:sections.main_product.blocks.guarantee.settings.text.label", "default": "Don't love your results? Message us within 30 days for a full refund or exchange." }
+        { "type": "text", "id": "heading", "label": "t:sections.main_product.blocks.guarantee.settings.heading.label", "default": "Love it or your money back" },
+        { "type": "text", "id": "text", "label": "t:sections.main_product.blocks.guarantee.settings.text.label", "default": "Not plumped? Message us on WhatsApp within 30 days for a refund or exchange." }
       ]
     },
     { "type": "description", "name": "t:sections.main_product.blocks.description.name", "limit": 1 },
