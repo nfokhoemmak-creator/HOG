@@ -29,7 +29,13 @@
         <div class="product-grid" style="--cols-desktop: 4; --cols-mobile: 2;">
           {%- for item in search.results -%}
             {%- if item.object_type == 'product' -%}
-              {% render 'product-card', card_product: item, lazy_load: forloop.index > 4 %}
+              {%- liquid
+                assign lazy = true
+                if forloop.index <= 4
+                  assign lazy = false
+                endif
+              -%}
+              {% render 'product-card', card_product: item, lazy_load: lazy %}
             {%- else -%}
               <div class="card">
                 <a class="card__title" href="{{ item.url }}">{{ item.title | escape }}</a>

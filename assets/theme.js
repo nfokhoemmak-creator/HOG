@@ -1,7 +1,7 @@
 /* ==========================================================================
-   House of Garments — theme.js
+   Jamalati — theme.js
    Global behaviour: mobile nav, announcement rotation, reveal-on-scroll,
-   quantity inputs, and the drop countdown.
+   quantity inputs, countdowns, the before/after slider and the sticky add-to-cart bar.
 
    No dependencies. Everything degrades: if this file fails to load, the
    storefront still renders, navigates and checks out.
@@ -67,7 +67,7 @@
     }, 60);
   }
 
-  window.HOG = Object.assign(window.HOG || {}, { trapFocus, lockScroll, announce });
+  window.JAM = Object.assign(window.JAM || {}, { trapFocus, lockScroll, announce });
 
   /* --------------------------------------------------------- <menu-drawer> */
 
@@ -219,6 +219,74 @@
     customElements.define('quantity-input', QuantityInput);
   }
 
+  /* --------------------------------------------------------- <before-after> */
+
+  class BeforeAfter extends HTMLElement {
+    connectedCallback() {
+      this.range = this.querySelector('input[type="range"]');
+      if (!this.range) return;
+
+      const update = () => this.style.setProperty('--split', `${this.range.value}%`);
+      this.range.addEventListener('input', update);
+      update();
+    }
+  }
+
+  if (!customElements.get('before-after')) {
+    customElements.define('before-after', BeforeAfter);
+  }
+
+  /* ------------------------------------------------------------ <sticky-atc> */
+
+  class StickyAtc extends HTMLElement {
+    connectedCallback() {
+      this.target = document.querySelector(this.dataset.target || '[data-main-atc]');
+      this.button = this.querySelector('[data-sticky-submit]');
+      this.price = this.querySelector('[data-sticky-price]');
+      if (!this.target || !('IntersectionObserver' in window)) return;
+
+      this.observer = new IntersectionObserver(
+        (entries) => {
+          const visible = entries[0].isIntersecting;
+          const pastTarget = entries[0].boundingClientRect.top < 0;
+          this.toggle(!visible && pastTarget);
+        },
+        { threshold: 0 }
+      );
+      this.observer.observe(this.target);
+
+      if (this.button) {
+        this.button.addEventListener('click', () => {
+          const form = this.target.closest('form');
+          if (form && typeof form.requestSubmit === 'function') form.requestSubmit();
+          else this.target.click();
+        });
+      }
+
+      document.addEventListener('variant:change', (event) => {
+        const variant = event.detail && event.detail.variant;
+        if (!variant) return;
+        if (this.price && event.detail.formatted) this.price.textContent = event.detail.formatted;
+        if (this.button) this.button.disabled = !variant.available;
+      });
+    }
+
+    disconnectedCallback() {
+      if (this.observer) this.observer.disconnect();
+      document.body.classList.remove('has-sticky-atc');
+    }
+
+    toggle(show) {
+      this.classList.toggle('is-visible', show);
+      this.setAttribute('aria-hidden', String(!show));
+      document.body.classList.toggle('has-sticky-atc', show);
+    }
+  }
+
+  if (!customElements.get('sticky-atc')) {
+    customElements.define('sticky-atc', StickyAtc);
+  }
+
   /* ------------------------------------------------------ reveal on scroll */
 
   function initReveal() {
@@ -282,7 +350,16 @@
 
   /* ------------------------------------------------------------------ boot */
 
+  function initHeaderShadow() {
+    const header = document.querySelector('[data-header]');
+    if (!header) return;
+    const update = () => header.classList.toggle('is-scrolled', window.scrollY > 8);
+    window.addEventListener('scroll', update, { passive: true });
+    update();
+  }
+
   function boot() {
+    initHeaderShadow();
     initReveal();
     initGalleries();
     initDetailsDismiss();

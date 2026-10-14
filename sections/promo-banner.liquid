@@ -1,0 +1,137 @@
+<div class="section section--tight">
+  <div class="container">
+    <div class="promo-banner">
+      {%- if section.settings.background_image != blank -%}
+        <img
+          class="promo-banner__bg"
+          src="{{ section.settings.background_image | image_url: width: 2000 }}"
+          alt=""
+          width="{{ section.settings.background_image.width }}"
+          height="{{ section.settings.background_image.height }}"
+          loading="lazy"
+          aria-hidden="true"
+        >
+      {%- endif -%}
+
+      <div class="promo-banner__content{% if settings.animations_enabled %} reveal{% endif %}">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="eyebrow">{{ section.settings.eyebrow }}</p>
+        {%- endif -%}
+
+        {%- if section.settings.heading != blank -%}
+          <h2 class="promo-banner__heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+
+        {%- if section.settings.text != blank -%}
+          <div class="promo-banner__text">{{ section.settings.text }}</div>
+        {%- endif -%}
+
+        {%- if section.settings.show_countdown and section.settings.countdown_date != blank -%}
+          <countdown-timer data-date="{{ section.settings.countdown_date }}">
+            <div class="countdown">
+              <div class="countdown__unit"><span class="countdown__value" data-days>--</span><span class="countdown__label">{{ 'products.product.drop_countdown.days' | t }}</span></div>
+              <div class="countdown__unit"><span class="countdown__value" data-hours>--</span><span class="countdown__label">{{ 'products.product.drop_countdown.hours' | t }}</span></div>
+              <div class="countdown__unit"><span class="countdown__value" data-minutes>--</span><span class="countdown__label">{{ 'products.product.drop_countdown.minutes' | t }}</span></div>
+              <div class="countdown__unit"><span class="countdown__value" data-seconds>--</span><span class="countdown__label">{{ 'products.product.drop_countdown.seconds' | t }}</span></div>
+            </div>
+            <p class="eyebrow" data-live-message hidden>{{ 'products.product.drop_countdown.live' | t }}</p>
+          </countdown-timer>
+        {%- endif -%}
+
+        {%- if section.settings.code != blank -%}
+          <span class="promo-banner__code">{% render 'icon', name: 'gift' %}{{ section.settings.code }}</span>
+        {%- endif -%}
+
+        {%- if section.settings.button_label != blank -%}
+          <a class="btn btn--large btn--contrast" href="{{ section.settings.button_link | default: routes.all_products_collection_url }}">
+            {{ section.settings.button_label }}
+          </a>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+{%- if section.settings.marquee != blank -%}
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee__track">
+      {%- for i in (1..8) -%}
+        <span class="marquee__item">{{ section.settings.marquee }}</span>
+      {%- endfor -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.promo_banner.name",
+  "tag": "section",
+  "class": "promo-banner-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:sections.promo_banner.settings.eyebrow.label",
+      "default": "Limited-time offer"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.promo_banner.settings.heading.label",
+      "default": "Buy 2, get the 3rd free"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "t:sections.promo_banner.settings.text.label",
+      "default": "<p>Build your full routine and we'll cover the third product. Automatically applied at checkout.</p>"
+    },
+    {
+      "type": "text",
+      "id": "code",
+      "label": "t:sections.promo_banner.settings.code.label",
+      "info": "t:sections.promo_banner.settings.code.info"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:sections.promo_banner.settings.button_label.label",
+      "default": "Build my routine"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "t:sections.promo_banner.settings.button_link.label"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "t:sections.promo_banner.settings.background_image.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_countdown",
+      "label": "t:sections.promo_banner.settings.show_countdown.label",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "countdown_date",
+      "label": "t:sections.promo_banner.settings.countdown_date.label",
+      "info": "t:sections.promo_banner.settings.countdown_date.info"
+    },
+    {
+      "type": "text",
+      "id": "marquee",
+      "label": "t:sections.promo_banner.settings.marquee.label",
+      "info": "t:sections.promo_banner.settings.marquee.info",
+      "default": "Free shipping over $50 · Cruelty-free · Dermatologist-tested · 30-day returns ·"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.promo_banner.name"
+    }
+  ]
+}
+{% endschema %}

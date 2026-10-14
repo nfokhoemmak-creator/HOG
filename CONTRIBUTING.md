@@ -18,11 +18,10 @@ chore/<name> tooling, docs, dependencies
 ## Working on a change
 
 ```bash
-npm run dev -- --store houseofgarments.myshopify.com
+npm run dev -- --store jamalati.myshopify.com
 ```
 
-Test every change against a real store with real products. The catalog is small
-and mostly limited runs, so check both the in-stock and sold-out states.
+Test every change against a real store with real products. Check both the in-stock and sold-out states, and the cart drawer with 0, 1 and 3 items.
 
 ## Rules of the road
 

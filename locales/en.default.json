@@ -13,7 +13,7 @@
         "one": "{{ count }} result",
         "other": "{{ count }} results"
       },
-      "no_results": "No results for “{{ terms }}”. Try a different spelling or browse the full catalog.",
+      "no_results": "No results for “{{ terms }}”. Try a different spelling or browse all products.",
       "results_for": "Results for “{{ terms }}”"
     },
     "pagination": {
@@ -23,11 +23,12 @@
       "page": "Page {{ number }}"
     },
     "newsletter_form": {
-      "heading": "Get the drop first",
-      "body": "New releases go out to the list before anywhere else.",
-      "email_placeholder": "Email address",
-      "submit": "Sign up",
-      "confirmation": "You're on the list."
+      "heading": "Get 10% off your first order",
+      "body": "Join the Jamalati list for launches, skincare tips and subscriber-only offers.",
+      "email_placeholder": "Your email address",
+      "submit": "Claim my 10% off",
+      "confirmation": "You're in! Check your inbox for your code.",
+      "fine_print": "No spam, ever. Unsubscribe anytime."
     },
     "share": {
       "copy_to_clipboard": "Copy link",
@@ -39,7 +40,9 @@
     "close": "Close",
     "menu": "Menu",
     "cart": "Cart",
-    "account": "Account"
+    "account": "Account",
+    "whatsapp": "Chat with us",
+    "shop_all": "Shop all"
   },
   "accessibility": {
     "skip_to_text": "Skip to content",
@@ -53,7 +56,9 @@
     },
     "next_slide": "Next",
     "previous_slide": "Previous",
-    "carousel": "Gallery"
+    "carousel": "Gallery",
+    "star_rating": "{{ rating }} out of 5 stars",
+    "before_after_slider": "Drag to compare before and after"
   },
   "sections": {
     "announcements": {
@@ -70,25 +75,29 @@
       }
     },
     "cart": {
-      "title": "Your cart",
-      "empty": "Your cart is empty.",
-      "empty_body": "Nothing in here yet. The catalog moves fast.",
-      "browse_catalog": "Browse the catalog",
-      "checkout": "Checkout",
-      "view_cart": "View cart",
+      "title": "Your bag",
+      "empty": "Your bag is empty",
+      "empty_body": "Your glow is one click away. Browse our bestsellers to get started.",
+      "browse_catalog": "Shop bestsellers",
+      "checkout": "Checkout securely",
+      "view_cart": "View bag",
       "subtotal": "Subtotal",
-      "taxes_and_shipping_at_checkout": "Taxes and shipping calculated at checkout",
+      "taxes_and_shipping_at_checkout": "Shipping and any taxes are calculated at checkout.",
       "note": "Order note",
-      "note_placeholder": "Delivery instructions, size swap requests, anything we should know",
+      "note_placeholder": "Gift message, delivery instructions, anything we should know",
       "remove": "Remove",
       "quantity": "Quantity",
       "product": "Product",
       "total": "Total",
       "update": "Update",
       "error": "Something went wrong. Please try again.",
-      "item_added": "Added to cart",
+      "item_added": "Added to your bag",
       "quantity_error": "Only {{ quantity }} available.",
-      "continue_shopping": "Continue shopping"
+      "continue_shopping": "Continue shopping",
+      "free_shipping_remaining_html": "You're <strong>{{ amount }}</strong> away from free shipping",
+      "free_shipping_unlocked": "🎉 You've unlocked free shipping!",
+      "upsell_title": "Complete your routine",
+      "upsell_add": "Add"
     },
     "featured_collection": {
       "view_all": "View all"
@@ -117,11 +126,11 @@
     },
     "404": {
       "title": "Page not found",
-      "subtext": "That page doesn't exist — or the drop it belonged to is gone.",
-      "link": "Back to the catalog"
+      "subtext": "That page has moved or never existed. Your glow is still right here.",
+      "link": "Shop bestsellers"
     },
     "password": {
-      "opening_soon": "Opening soon",
+      "opening_soon": "Launching soon",
       "login_password": "Enter store password",
       "login_form_heading": "Enter using password",
       "login_form_password_label": "Password",
@@ -129,7 +138,8 @@
       "login_form_submit": "Enter",
       "login_form_error": "Wrong password. Try again.",
       "admin_link_html": "Are you the store owner? <a href=\"/admin\" class=\"link underline\">Log in here</a>",
-      "powered_by_shopify_html": "This shop will be powered by {{ shopify }}"
+      "powered_by_shopify_html": "This shop will be powered by {{ shopify }}",
+      "notify_me": "Be the first to know"
     },
     "blog": {
       "title": "Journal",
@@ -141,56 +151,67 @@
       "posted_on": "Posted on",
       "by_author": "by {{ author }}",
       "share": "Share this"
+    },
+    "testimonials": {
+      "verified": "Verified buyer",
+      "reviews_count": "{{ count }} reviews"
+    },
+    "before_after": {
+      "before": "Before",
+      "after": "After"
     }
   },
   "products": {
     "product": {
-      "add_to_cart": "Add to cart",
+      "add_to_cart": "Add to bag",
       "adding": "Adding…",
-      "added": "Added",
+      "added": "Added ✓",
       "sold_out": "Sold out",
-      "sold_out_short": "SOLD",
+      "sold_out_short": "Sold out",
       "unavailable": "Unavailable",
       "preorder": "Pre-order",
-      "preorder_note": "Pre-order — ships when the run lands.",
+      "preorder_note": "Pre-order — ships as soon as it's back.",
+      "bestseller": "Bestseller",
       "limited": "Limited",
       "new": "New",
       "on_sale": "Sale",
       "save_amount": "Save {{ amount }}",
+      "save_percent": "Save {{ percent }}%",
       "quantity": {
         "label": "Quantity",
         "increase": "Increase quantity for {{ product }}",
         "decrease": "Decrease quantity for {{ product }}",
         "input_label": "Quantity for {{ product }}"
       },
-      "low_stock": "Only {{ count }} left",
-      "in_stock": "In stock",
+      "low_stock": "Only {{ count }} left — order soon",
+      "in_stock": "In stock, ready to ship",
       "vendor": "Vendor",
       "view_details": "View details",
-      "quick_add": "Quick add",
-      "quick_add_for": "Quick add {{ product }}",
+      "quick_add": "Add to bag",
+      "quick_add_for": "Add {{ product }} to bag",
       "choose_options": "Choose options",
       "variant_sold_out_or_unavailable": "Variant sold out or unavailable",
       "description": "Description",
-      "fabric": "Materials",
-      "fit": "Fit",
-      "size_guide": "Size guide",
+      "ingredients": "Ingredients",
+      "how_to_use": "How to use",
       "shipping": "Shipping & returns",
-      "shipping_body": "Delivery all over Lebanon, 2–4 business days. Exchanges accepted within 7 days on unworn pieces with tags attached.",
+      "shipping_body": "Free shipping on orders over $50. Delivery in 1–3 business days. Not in love? Return unopened products within 30 days.",
+      "read_reviews": "Read reviews",
+      "secure_checkout": "Secure checkout",
       "media": {
         "gallery_viewer": "Gallery viewer",
         "load_image": "Load image {{ index }} in gallery view",
         "image_available": "Image {{ index }} is now available in gallery view",
         "play_video": "Play video"
       },
-      "share": "Share",
+      "share": "Share on WhatsApp",
       "drop_countdown": {
-        "heading": "Drops in",
+        "heading": "Offer ends in",
         "days": "Days",
         "hours": "Hrs",
         "minutes": "Min",
         "seconds": "Sec",
-        "live": "Live now"
+        "live": "Offer has ended"
       }
     },
     "facets": {

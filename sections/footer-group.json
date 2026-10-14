@@ -2,14 +2,25 @@
   "name": "Footer",
   "type": "footer",
   "sections": {
+    "trust": {
+      "type": "trust-bar",
+      "blocks": {
+        "t1": { "type": "item", "settings": { "icon": "truck", "heading": "Free shipping over $50", "text": "Delivered in 1–3 business days" } },
+        "t2": { "type": "item", "settings": { "icon": "refresh", "heading": "30-day returns", "text": "Unopened products, no questions asked" } },
+        "t3": { "type": "item", "settings": { "icon": "rabbit", "heading": "Cruelty-free", "text": "Never tested on animals" } },
+        "t4": { "type": "item", "settings": { "icon": "lock", "heading": "Secure checkout", "text": "Cards, Apple Pay or cash on delivery" } }
+      },
+      "block_order": ["t1", "t2", "t3", "t4"],
+      "settings": {}
+    },
     "footer": {
       "type": "footer",
       "blocks": {
         "text-1": {
           "type": "text",
           "settings": {
-            "heading": "House of Garments",
-            "text": "<p>Limited-run streetwear out of Lebanon. Delivery all over Lebanon.</p>"
+            "heading": "",
+            "text": "<p>Clean, effective beauty made to be loved every day. Dermatologist-tested, cruelty-free and made with ingredients you can pronounce.</p>"
           }
         },
         "menu-1": {
@@ -22,7 +33,7 @@
         "menu-2": {
           "type": "menu",
           "settings": {
-            "heading": "Info",
+            "heading": "Help",
             "menu": "footer"
           }
         }
@@ -30,11 +41,11 @@
       "block_order": ["text-1", "menu-1", "menu-2"],
       "settings": {
         "show_newsletter": true,
-        "newsletter_heading": "Get the drop first",
+        "newsletter_heading": "Get 10% off your first order",
         "show_payment_icons": true,
         "show_social": true
       }
     }
   },
-  "order": ["footer"]
+  "order": ["trust", "footer"]
 }

@@ -3,73 +3,201 @@
     "hero": {
       "type": "hero",
       "settings": {
-        "height": "full",
-        "overlay_opacity": 45,
-        "heading": "NEW DROP",
-        "subheading": "Limited pieces, made in Lebanon. Once they're gone, they're gone.",
+        "layout": "split",
+        "overlay_opacity": 70,
+        "badge": "New in: the Glow Collection",
+        "heading": "Skin that *glows*, every single day",
+        "subheading": "Clean, dermatologist-tested skincare and makeup made for real life. Visible results in 14 days — or your money back.",
+        "button_label": "Shop bestsellers",
+        "button_label_2": "Find my routine",
+        "show_proof": true,
+        "proof_rating": "4.9",
+        "proof_text": "Loved by 10,000+ happy customers",
+        "perks": "Free shipping over $50\nCruelty-free\n30-day returns",
+        "float_top": "Dermatologist-tested",
+        "float_bottom": "2,300+ five-star reviews",
         "text_alignment": "left",
-        "button_label": "Shop the drop",
         "show_countdown": false,
-        "countdown_heading": "Drops in"
+        "countdown_heading": "Offer ends in"
       }
     },
-    "featured": {
+    "trust": {
+      "type": "trust-bar",
+      "blocks": {
+        "t1": { "type": "item", "settings": { "icon": "truck", "heading": "Free shipping over $50", "text": "Delivered in 1–3 business days" } },
+        "t2": { "type": "item", "settings": { "icon": "refresh", "heading": "30-day returns", "text": "Unopened products, no questions asked" } },
+        "t3": { "type": "item", "settings": { "icon": "face", "heading": "Dermatologist-tested", "text": "Safe for sensitive skin" } },
+        "t4": { "type": "item", "settings": { "icon": "lock", "heading": "Secure checkout", "text": "Cards, Apple Pay or cash on delivery" } }
+      },
+      "block_order": ["t1", "t2", "t3", "t4"],
+      "settings": {}
+    },
+    "bestsellers": {
       "type": "featured-collection",
       "settings": {
-        "title": "New drop",
+        "eyebrow": "Customer favorites",
+        "title": "Bestsellers",
+        "subtitle": "The products our customers reorder again and again.",
         "products_to_show": 8,
         "columns_desktop": 4,
         "columns_mobile": "2",
-        "show_view_all": true
+        "show_view_all": true,
+        "background": "default"
       }
     },
-    "drop-banner": {
-      "type": "drop-banner",
+    "benefits": {
+      "type": "benefits",
+      "blocks": {
+        "b1": { "type": "benefit", "settings": { "icon": "sparkle", "heading": "Visible results in 14 days", "text": "Clinically-backed actives at effective doses, so you see the difference — not just feel it." } },
+        "b2": { "type": "benefit", "settings": { "icon": "leaf", "heading": "Clean ingredients", "text": "No parabens, sulfates, phthalates or synthetic fragrance. Ever." } },
+        "b3": { "type": "benefit", "settings": { "icon": "face", "heading": "Dermatologist-tested", "text": "Formulated and tested for sensitive skin, so everyone can glow." } },
+        "b4": { "type": "benefit", "settings": { "icon": "rabbit", "heading": "Cruelty-free & vegan", "text": "Never tested on animals. Always kind to the planet." } }
+      },
+      "block_order": ["b1", "b2", "b3", "b4"],
       "settings": {
-        "eyebrow": "Limited run",
-        "heading": "NO RESTOCKS",
-        "text": "<p>Every piece is made in a small batch. When a size sells out, that's it.</p>",
-        "button_label": "Shop the catalog",
-        "marquee": "EVERYBODY CAN'T HAVE LIMITED ITEMS ·"
+        "eyebrow": "Why Jamalati",
+        "heading": "Beauty you can feel good about",
+        "text": "Every formula is built around one question: does it actually work, and is it kind to your skin?",
+        "columns_desktop": 4,
+        "background": "alt"
+      }
+    },
+    "before-after": {
+      "type": "before-after",
+      "blocks": {
+        "p1": { "type": "point", "settings": { "text": "94% saw brighter, more even skin" } },
+        "p2": { "type": "point", "settings": { "text": "89% said fine lines looked softer" } },
+        "p3": { "type": "point", "settings": { "text": "100% reported zero irritation" } }
+      },
+      "block_order": ["p1", "p2", "p3"],
+      "settings": {
+        "label_before": "Before",
+        "label_after": "After 14 days",
+        "start_position": 50,
+        "layout": "left",
+        "eyebrow": "See the difference",
+        "heading": "Real skin. Real results. 14 days.",
+        "text": "<p>Drag the slider. In an independent 4-week trial, 94% of participants saw brighter, more even skin — with zero irritation.</p>",
+        "button_label": "Start my glow"
+      }
+    },
+    "testimonials": {
+      "type": "testimonials",
+      "blocks": {
+        "r1": { "type": "testimonial", "settings": { "rating": 5, "quote": "My skin has never looked this good. Two weeks in and the glow is real — I get compliments every day.", "name": "Maya K.", "product": "Glow Serum", "verified": true } },
+        "r2": { "type": "testimonial", "settings": { "rating": 5, "quote": "Finally a lip tint that lasts through coffee and lunch. The shade range is perfect for Middle Eastern skin tones.", "name": "Nour H.", "product": "Velvet Lip Tint", "verified": true } },
+        "r3": { "type": "testimonial", "settings": { "rating": 5, "quote": "I have super sensitive skin and nothing stings. Delivery to Beirut took two days and the packaging is gorgeous.", "name": "Lea S.", "product": "Calm Cleanser", "verified": true } }
+      },
+      "block_order": ["r1", "r2", "r3"],
+      "settings": {
+        "eyebrow": "Real results",
+        "heading": "Loved by thousands of glowing customers",
+        "summary_rating": "4.9",
+        "summary_text": "based on 2,300+ verified reviews",
+        "columns_desktop": 3,
+        "background": "alt"
+      }
+    },
+    "promo": {
+      "type": "promo-banner",
+      "settings": {
+        "eyebrow": "Limited-time offer",
+        "heading": "Buy 2, get the 3rd free",
+        "text": "<p>Build your full routine and we'll cover the third product. Automatically applied at checkout.</p>",
+        "code": "",
+        "button_label": "Build my routine",
+        "show_countdown": false,
+        "marquee": "Free shipping over $50 · Cruelty-free · Dermatologist-tested · 30-day returns ·"
       }
     },
     "categories": {
       "type": "collection-list",
       "blocks": {
-        "col-1": { "type": "featured_collection", "settings": {} },
-        "col-2": { "type": "featured_collection", "settings": {} },
-        "col-3": { "type": "featured_collection", "settings": {} }
+        "col-1": { "type": "featured_collection", "settings": { "title": "Skincare" } },
+        "col-2": { "type": "featured_collection", "settings": { "title": "Makeup" } },
+        "col-3": { "type": "featured_collection", "settings": { "title": "Body" } },
+        "col-4": { "type": "featured_collection", "settings": { "title": "Sets & gifts" } }
       },
-      "block_order": ["col-1", "col-2", "col-3"],
+      "block_order": ["col-1", "col-2", "col-3", "col-4"],
       "settings": {
-        "title": "Shop by category",
-        "columns_desktop": 3
+        "eyebrow": "Shop by category",
+        "title": "Find your routine",
+        "columns_desktop": 4
       }
     },
-    "image-with-text": {
+    "story": {
       "type": "image-with-text",
+      "blocks": {
+        "s1": { "type": "stat", "settings": { "value": "10k+", "label": "Happy customers" } },
+        "s2": { "type": "stat", "settings": { "value": "4.9★", "label": "Average rating" } },
+        "s3": { "type": "stat", "settings": { "value": "0", "label": "Harsh ingredients" } }
+      },
+      "block_order": ["s1", "s2", "s3"],
       "settings": {
-        "layout": "left",
-        "heading": "Made in limited runs",
-        "text": "<p>Heavyweight fabric, boxy fits, and nothing that gets remade. House of Garments releases in drops — follow along on Instagram so you don't miss one.</p>",
-        "button_label": "Follow @houseofgarments.co",
-        "button_link": "https://www.instagram.com/houseofgarments.co/"
+        "layout": "right",
+        "eyebrow": "Our story",
+        "heading": "Made for your skin, not for the trend",
+        "text": "<p>Jamalati started with one frustration: beauty that promised everything and delivered irritation. So we built formulas around effective doses of proven actives, tested them on real skin, and left out everything that doesn't belong on your face.</p>",
+        "button_label": "Read our story",
+        "background": "default"
+      }
+    },
+    "ugc": {
+      "type": "ugc-gallery",
+      "blocks": {
+        "u1": { "type": "image", "settings": { "caption": "@maya.k" } },
+        "u2": { "type": "image", "settings": { "caption": "Glow Serum" } },
+        "u3": { "type": "image", "settings": { "caption": "@nour.h" } },
+        "u4": { "type": "image", "settings": { "caption": "Velvet Lip Tint" } },
+        "u5": { "type": "image", "settings": { "caption": "@lea.s" } },
+        "u6": { "type": "image", "settings": { "caption": "Calm Cleanser" } }
+      },
+      "block_order": ["u1", "u2", "u3", "u4", "u5", "u6"],
+      "settings": {
+        "eyebrow": "#jamalatiglow",
+        "heading": "Tag us to be featured",
+        "handle": "@jamalati",
+        "columns_desktop": 6
+      }
+    },
+    "faq": {
+      "type": "faq",
+      "blocks": {
+        "q1": { "type": "question", "settings": { "question": "How long does delivery take?", "answer": "<p>Orders ship within 24 hours and arrive in 1–3 business days anywhere in Lebanon. You'll get a WhatsApp message with tracking as soon as it's on the way.</p>" } },
+        "q2": { "type": "question", "settings": { "question": "Can I pay cash on delivery?", "answer": "<p>Yes. Choose cash on delivery at checkout, or pay securely by card or Apple Pay.</p>" } },
+        "q3": { "type": "question", "settings": { "question": "Is Jamalati suitable for sensitive skin?", "answer": "<p>Every formula is dermatologist-tested and free from parabens, sulfates and synthetic fragrance. If you have a known allergy, check the full ingredient list on each product page.</p>" } },
+        "q4": { "type": "question", "settings": { "question": "What if it doesn't work for me?", "answer": "<p>Give it 14 days. If you don't love your results, contact us within 30 days for a full refund or exchange on unopened products.</p>" } },
+        "q5": { "type": "question", "settings": { "question": "Are your products cruelty-free?", "answer": "<p>100%. We never test on animals and neither do our suppliers.</p>" } }
+      },
+      "block_order": ["q1", "q2", "q3", "q4", "q5"],
+      "settings": {
+        "eyebrow": "Good to know",
+        "heading": "Questions? We've got answers.",
+        "open_first": true,
+        "background": "default"
       }
     },
     "newsletter": {
       "type": "newsletter",
       "settings": {
-        "heading": "Get the drop first",
-        "text": "<p>New releases go to the list before anywhere else. Delivery all over Lebanon.</p>"
+        "eyebrow": "Welcome gift",
+        "heading": "Get 10% off your first order",
+        "text": "<p>Join the Jamalati list for launches, skincare tips and subscriber-only offers.</p>"
       }
     }
   },
   "order": [
     "hero",
-    "featured",
-    "drop-banner",
+    "trust",
+    "bestsellers",
+    "benefits",
+    "before-after",
+    "testimonials",
+    "promo",
     "categories",
-    "image-with-text",
+    "story",
+    "ugc",
+    "faq",
     "newsletter"
   ]
 }

@@ -1,19 +1,28 @@
 {%- liquid
   assign target = collections[section.settings.collection]
-  assign limit = section.settings.products_to_show
+  assign product_limit = section.settings.products_to_show
 
   assign fallback_title = 'onboarding.collection_title' | t
   assign heading = section.settings.title | default: target.title | default: fallback_title
 -%}
 
-<div class="section">
+<div class="section{% if section.settings.background == 'alt' %} section--alt{% endif %}">
   <div class="container">
     <div class="section__head">
-      <h2 class="h2">{{ heading }}</h2>
+      <div>
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="eyebrow">{{ section.settings.eyebrow }}</p>
+        {%- endif -%}
+        <h2 class="h2">{{ heading }}</h2>
+        {%- if section.settings.subtitle != blank -%}
+          <p class="lead" style="margin-top: var(--space-2);">{{ section.settings.subtitle }}</p>
+        {%- endif -%}
+      </div>
 
-      {%- if section.settings.show_view_all and target != blank -%}
-        <a class="underline eyebrow" href="{{ target.url }}">
+      {%- if section.settings.show_view_all -%}
+        <a class="link-arrow" href="{{ target.url | default: routes.all_products_collection_url }}">
           {{ 'sections.featured_collection.view_all' | t }}
+          {% render 'icon', name: 'arrow-right' %}
         </a>
       {%- endif -%}
     </div>
@@ -23,18 +32,28 @@
       style="--cols-desktop: {{ section.settings.columns_desktop }}; --cols-mobile: {{ section.settings.columns_mobile }};"
     >
       {%- if target.products.size > 0 -%}
-        {%- for product in target.products limit: limit -%}
-          {% render 'product-card', card_product: product, lazy_load: forloop.index > 4 %}
+        {%- for product in target.products limit: product_limit -%}
+          {%- liquid
+            assign lazy = true
+            if forloop.index <= 4
+              assign lazy = false
+            endif
+          -%}
+          {% render 'product-card', card_product: product, lazy_load: lazy %}
         {%- endfor -%}
       {%- else -%}
-        {%- for i in (1..limit) -%}
+        {%- for i in (1..product_limit) -%}
           <div class="card">
             <div class="card__media card__media--{{ settings.card_image_ratio }}">
+              {%- if forloop.first -%}
+                <div class="card__badges"><span class="badge badge--accent">{{ 'products.product.bestseller' | t }}</span></div>
+              {%- endif -%}
               {{ 'product-' | append: forloop.index | placeholder_svg_tag: 'card__image' }}
             </div>
             <div class="card__info">
               <span class="card__title">{{ 'onboarding.product_title' | t }}</span>
-              <div class="price"><span class="price__current">{{ 3000 | money }}</span></div>
+              <span class="rating card__rating">{% render 'stars', rating: 5, size: 'small', uid: forloop.index %}<span>(128)</span></span>
+              <div class="price"><span class="price__current">{{ 2900 | money }}</span></div>
             </div>
           </div>
         {%- endfor -%}
@@ -51,9 +70,21 @@
   "settings": [
     {
       "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Customer favorites"
+    },
+    {
+      "type": "text",
       "id": "title",
       "label": "t:sections.featured_collection.settings.title.label",
-      "default": "New drop"
+      "default": "Bestsellers"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "t:sections.featured_collection.settings.subtitle.label",
+      "default": "The products our customers reorder again and again."
     },
     {
       "type": "collection",
@@ -93,6 +124,16 @@
       "id": "show_view_all",
       "label": "t:sections.featured_collection.settings.show_view_all.label",
       "default": true
+    },
+    {
+      "type": "select",
+      "id": "background",
+      "label": "Background",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "alt", "label": "Alternate" }
+      ],
+      "default": "default"
     }
   ],
   "presets": [

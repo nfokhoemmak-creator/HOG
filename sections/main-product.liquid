@@ -2,8 +2,13 @@
   assign current_variant = product.selected_or_first_available_variant
 
   assign is_preorder = false
-  if product.tags contains 'preorder' or product.title contains 'PRE-ORDER'
+  if product.tags contains 'preorder'
     assign is_preorder = true
+  endif
+
+  assign is_bestseller = false
+  if product.tags contains 'bestseller'
+    assign is_bestseller = true
   endif
 
   assign is_limited = false
@@ -12,6 +17,9 @@
   endif
 
   assign form_id = 'ProductForm-' | append: section.id
+
+  assign rating_value = product.metafields.reviews.rating.value.rating
+  assign rating_count = product.metafields.reviews.rating_count.value
 -%}
 
 <div class="container">
@@ -71,7 +79,7 @@
                 src="{{ media.preview_image | image_url: width: 200 }}"
                 alt=""
                 width="72"
-                height="96"
+                height="72"
                 loading="lazy"
               >
             </button>
@@ -85,13 +93,16 @@
       {%- for block in section.blocks -%}
         {%- case block.type -%}
           {%- when 'badges' -%}
-            {%- if is_preorder or is_limited or product.available == false -%}
+            {%- if is_preorder or is_bestseller or is_limited or product.available == false -%}
               <div class="product__badges" {{ block.shopify_attributes }}>
-                {%- if is_preorder -%}
-                  <span class="badge badge--accent">{{ 'products.product.preorder' | t }}</span>
+                {%- if is_bestseller -%}
+                  <span class="badge badge--accent">{{ 'products.product.bestseller' | t }}</span>
                 {%- endif -%}
                 {%- if is_limited -%}
                   <span class="badge badge--accent">{{ 'products.product.limited' | t }}</span>
+                {%- endif -%}
+                {%- if is_preorder -%}
+                  <span class="badge">{{ 'products.product.preorder' | t }}</span>
                 {%- endif -%}
                 {%- unless product.available -%}
                   <span class="badge badge--sold">{{ 'products.product.sold_out' | t }}</span>
@@ -102,6 +113,29 @@
           {%- when 'title' -%}
             <h1 class="product__title" {{ block.shopify_attributes }}>{{ product.title | escape }}</h1>
 
+          {%- when 'rating' -%}
+            {%- liquid
+              assign show_rating = rating_value
+              assign show_count = rating_count
+              if show_rating == blank and block.settings.fallback_rating != blank
+                assign show_rating = block.settings.fallback_rating
+                assign show_count = block.settings.fallback_count
+              endif
+            -%}
+            {%- if show_rating != blank -%}
+              <div class="rating product__rating" {{ block.shopify_attributes }}>
+                {% render 'stars', rating: show_rating, uid: section.id %}
+                <span class="rating__value">{{ show_rating }}</span>
+                {%- if show_count != blank -%}
+                  {%- if block.settings.link != blank -%}
+                    <a href="{{ block.settings.link }}">{{ 'sections.testimonials.reviews_count' | t: count: show_count }}</a>
+                  {%- else -%}
+                    <span>{{ 'sections.testimonials.reviews_count' | t: count: show_count }}</span>
+                  {%- endif -%}
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+
           {%- when 'price' -%}
             <div id="ProductPrice-{{ section.id }}" {{ block.shopify_attributes }}>
               {% render 'price',
@@ -111,7 +145,25 @@
                 id_prefix: 'ProductPrice'
               %}
             </div>
-            <p class="product__inventory" id="ProductInventory-{{ section.id }}" hidden></p>
+
+          {%- when 'benefits' -%}
+            {%- liquid
+              assign benefits_text = block.settings.text
+              if product.metafields.custom.benefits != blank
+                assign benefits_text = product.metafields.custom.benefits
+              endif
+              assign benefit_lines = benefits_text | newline_to_br | split: '<br />'
+            -%}
+            {%- if benefits_text != blank -%}
+              <ul class="checklist" {{ block.shopify_attributes }}>
+                {%- for line in benefit_lines -%}
+                  {%- assign clean = line | strip -%}
+                  {%- if clean != blank -%}
+                    <li>{% render 'icon', name: 'check' %}<span>{{ clean }}</span></li>
+                  {%- endif -%}
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
 
           {%- when 'variant_picker' -%}
             {%- unless product.has_only_default_variant -%}
@@ -160,50 +212,78 @@
             </div>
 
           {%- when 'buy_buttons' -%}
-            <product-form
-              data-section-id="{{ section.id }}"
-              data-price-target="ProductPrice-{{ section.id }}"
-              data-inventory-target="ProductInventory-{{ section.id }}"
-              data-preorder="{{ is_preorder }}"
-              {{ block.shopify_attributes }}
-            >
-              <script type="application/json" data-variants>
-                {{ product.variants | json }}
-              </script>
+            <div class="product__buy" {{ block.shopify_attributes }}>
+              <product-form
+                data-section-id="{{ section.id }}"
+                data-price-target="ProductPrice-{{ section.id }}"
+                data-inventory-target="ProductInventory-{{ section.id }}"
+                data-preorder="{{ is_preorder }}"
+                data-low-stock="{{ block.settings.low_stock_threshold }}"
+                data-show-stock="{{ block.settings.show_stock }}"
+              >
+                <script type="application/json" data-variants>
+                  {{ product.variants | json }}
+                </script>
 
-              {%- form 'product', product, id: form_id, novalidate: 'novalidate' -%}
-                <input type="hidden" name="id" value="{{ current_variant.id }}">
+                {%- form 'product', product, id: form_id, novalidate: 'novalidate' -%}
+                  <input type="hidden" name="id" value="{{ current_variant.id }}">
 
-                <button
-                  type="submit"
-                  name="add"
-                  class="btn btn--accent btn--full"
-                  {% unless current_variant.available %}disabled aria-disabled="true"{% endunless %}
-                >
-                  <span data-button-text>
-                    {%- if current_variant.available -%}
-                      {%- if is_preorder -%}
-                        {{ 'products.product.preorder' | t }}
+                  <button
+                    type="submit"
+                    name="add"
+                    class="btn btn--large btn--full"
+                    data-main-atc
+                    {% unless current_variant.available %}disabled aria-disabled="true"{% endunless %}
+                  >
+                    <span data-button-text>
+                      {%- if current_variant.available -%}
+                        {%- if is_preorder -%}
+                          {{ 'products.product.preorder' | t }}
+                        {%- else -%}
+                          {{ 'products.product.add_to_cart' | t }}
+                        {%- endif -%}
                       {%- else -%}
-                        {{ 'products.product.add_to_cart' | t }}
+                        {{ 'products.product.sold_out' | t }}
                       {%- endif -%}
-                    {%- else -%}
-                      {{ 'products.product.sold_out' | t }}
-                    {%- endif -%}
-                  </span>
-                </button>
+                    </span>
+                  </button>
 
-                {%- if block.settings.show_dynamic_checkout -%}
-                  {{ form | payment_button }}
-                {%- endif -%}
-              {%- endform -%}
+                  {%- if block.settings.show_dynamic_checkout -%}
+                    {{ form | payment_button }}
+                  {%- endif -%}
+                {%- endform -%}
+              </product-form>
+
+              <p class="product__inventory" id="ProductInventory-{{ section.id }}" hidden></p>
 
               {%- if is_preorder -%}
-                <p class="product__inventory" style="margin-top: var(--space-2);">
-                  {{ 'products.product.preorder_note' | t }}
-                </p>
+                <p class="product__inventory">{{ 'products.product.preorder_note' | t }}</p>
               {%- endif -%}
-            </product-form>
+            </div>
+
+          {%- when 'trust' -%}
+            <ul class="product__trust" {{ block.shopify_attributes }}>
+              {%- if block.settings.item_1 != blank -%}
+                <li>{% render 'icon', name: 'truck' %}<span>{{ block.settings.item_1 }}</span></li>
+              {%- endif -%}
+              {%- if block.settings.item_2 != blank -%}
+                <li>{% render 'icon', name: 'refresh' %}<span>{{ block.settings.item_2 }}</span></li>
+              {%- endif -%}
+              {%- if block.settings.item_3 != blank -%}
+                <li>{% render 'icon', name: 'lock' %}<span>{{ block.settings.item_3 }}</span></li>
+              {%- endif -%}
+            </ul>
+
+          {%- when 'guarantee' -%}
+            <div class="product__guarantee" {{ block.shopify_attributes }}>
+              {% render 'icon', name: 'shield' %}
+              <div>
+                {%- if block.settings.heading != blank -%}
+                  <strong>{{ block.settings.heading }}</strong>
+                {%- endif -%}
+                {{ block.settings.text }}
+              </div>
+            </div>
 
           {%- when 'description' -%}
             {%- if product.description != blank -%}
@@ -241,13 +321,14 @@
 
           {%- when 'share' -%}
             <a
-              class="underline eyebrow"
+              class="link-arrow"
               href="https://wa.me/?text={{ shop.url | append: product.url | url_encode }}"
               target="_blank"
               rel="noopener"
               aria-describedby="a11y-new-window-message"
               {{ block.shopify_attributes }}
             >
+              {% render 'icon', name: 'whatsapp' %}
               {{ 'products.product.share' | t }}
             </a>
         {%- endcase -%}
@@ -255,6 +336,34 @@
     </div>
   </div>
 </div>
+
+{%- if section.settings.enable_sticky_atc and product.available -%}
+  <sticky-atc class="sticky-atc" data-target="[data-main-atc]" aria-hidden="true">
+    <div class="sticky-atc__inner">
+      {%- if product.featured_media -%}
+        <img
+          class="sticky-atc__image"
+          src="{{ product.featured_media | image_url: width: 120, height: 120, crop: 'center' }}"
+          alt=""
+          width="48"
+          height="48"
+          loading="lazy"
+        >
+      {%- endif -%}
+      <div class="sticky-atc__info">
+        <span class="sticky-atc__title">{{ product.title | escape }}</span>
+        <span class="sticky-atc__price" data-sticky-price>{{ current_variant.price | money }}</span>
+      </div>
+      <button type="button" class="btn" data-sticky-submit>
+        {%- if is_preorder -%}
+          {{ 'products.product.preorder' | t }}
+        {%- else -%}
+          {{ 'products.product.add_to_cart' | t }}
+        {%- endif -%}
+      </button>
+    </div>
+  </sticky-atc>
+{%- endif -%}
 
 <script type="application/ld+json">
   {
@@ -266,6 +375,9 @@
     "brand": { "@type": "Brand", "name": {{ product.vendor | default: shop.name | json }} },
     {%- if product.featured_media -%}
       "image": {{ product.featured_media | image_url: width: 1200 | prepend: "https:" | json }},
+    {%- endif -%}
+    {%- if rating_value and rating_count -%}
+      "aggregateRating": { "@type": "AggregateRating", "ratingValue": {{ rating_value | json }}, "reviewCount": {{ rating_count | json }} },
     {%- endif -%}
     "url": {{ shop.url | append: product.url | json }},
     "offers": [
@@ -297,19 +409,44 @@
         { "value": "stacked", "label": "t:sections.main_product.settings.media_layout.options__1" },
         { "value": "thumbnails", "label": "t:sections.main_product.settings.media_layout.options__2" }
       ],
-      "default": "stacked"
+      "default": "thumbnails"
     },
     {
       "type": "checkbox",
       "id": "enable_sticky_info",
       "label": "t:sections.main_product.settings.enable_sticky_info.label",
       "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sticky_atc",
+      "label": "t:sections.main_product.settings.enable_sticky_atc.label",
+      "info": "t:sections.main_product.settings.enable_sticky_atc.info",
+      "default": true
     }
   ],
   "blocks": [
     { "type": "badges", "name": "Badges", "limit": 1 },
     { "type": "title", "name": "t:sections.main_product.blocks.title.name", "limit": 1 },
+    {
+      "type": "rating",
+      "name": "t:sections.main_product.blocks.rating.name",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "fallback_rating", "label": "t:sections.main_product.blocks.rating.settings.fallback_rating.label", "info": "t:sections.main_product.blocks.rating.settings.fallback_rating.info" },
+        { "type": "text", "id": "fallback_count", "label": "t:sections.main_product.blocks.rating.settings.fallback_count.label" },
+        { "type": "text", "id": "link", "label": "t:sections.main_product.blocks.rating.settings.link.label", "info": "t:sections.main_product.blocks.rating.settings.link.info", "default": "#reviews" }
+      ]
+    },
     { "type": "price", "name": "t:sections.main_product.blocks.price.name", "limit": 1 },
+    {
+      "type": "benefits",
+      "name": "t:sections.main_product.blocks.benefits.name",
+      "limit": 1,
+      "settings": [
+        { "type": "textarea", "id": "text", "label": "t:sections.main_product.blocks.benefits.settings.text.label", "info": "t:sections.main_product.blocks.benefits.settings.text.info", "default": "Visible results in 14 days\nDermatologist-tested, fragrance-free\nCruelty-free & vegan" }
+      ]
+    },
     { "type": "variant_picker", "name": "t:sections.main_product.blocks.variant_picker.name", "limit": 1 },
     { "type": "quantity_selector", "name": "t:sections.main_product.blocks.quantity_selector.name", "limit": 1 },
     {
@@ -317,12 +454,28 @@
       "name": "t:sections.main_product.blocks.buy_buttons.name",
       "limit": 1,
       "settings": [
-        {
-          "type": "checkbox",
-          "id": "show_dynamic_checkout",
-          "label": "t:sections.main_product.blocks.buy_buttons.settings.show_dynamic_checkout.label",
-          "default": true
-        }
+        { "type": "checkbox", "id": "show_dynamic_checkout", "label": "t:sections.main_product.blocks.buy_buttons.settings.show_dynamic_checkout.label", "default": true },
+        { "type": "checkbox", "id": "show_stock", "label": "t:sections.main_product.blocks.buy_buttons.settings.show_stock.label", "default": true },
+        { "type": "range", "id": "low_stock_threshold", "min": 1, "max": 50, "step": 1, "label": "t:sections.main_product.blocks.buy_buttons.settings.low_stock_threshold.label", "default": 10 }
+      ]
+    },
+    {
+      "type": "trust",
+      "name": "t:sections.main_product.blocks.trust.name",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "item_1", "label": "t:sections.main_product.blocks.trust.settings.item_1.label", "default": "Free shipping over $50" },
+        { "type": "text", "id": "item_2", "label": "t:sections.main_product.blocks.trust.settings.item_2.label", "default": "30-day returns" },
+        { "type": "text", "id": "item_3", "label": "t:sections.main_product.blocks.trust.settings.item_3.label", "default": "Cash on delivery" }
+      ]
+    },
+    {
+      "type": "guarantee",
+      "name": "t:sections.main_product.blocks.guarantee.name",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "heading", "label": "t:sections.main_product.blocks.guarantee.settings.heading.label", "default": "The 14-day glow guarantee" },
+        { "type": "text", "id": "text", "label": "t:sections.main_product.blocks.guarantee.settings.text.label", "default": "Don't love your results? Message us within 30 days for a full refund or exchange." }
       ]
     },
     { "type": "description", "name": "t:sections.main_product.blocks.description.name", "limit": 1 },
@@ -330,34 +483,16 @@
       "type": "accordion",
       "name": "t:sections.main_product.blocks.accordion.name",
       "settings": [
-        {
-          "type": "text",
-          "id": "heading",
-          "label": "t:sections.main_product.blocks.accordion.settings.heading.label",
-          "default": "Materials"
-        },
-        {
-          "type": "richtext",
-          "id": "content",
-          "label": "t:sections.main_product.blocks.accordion.settings.content.label"
-        },
-        {
-          "type": "text",
-          "id": "metafield",
-          "label": "t:sections.main_product.blocks.accordion.settings.metafield.label",
-          "info": "t:sections.main_product.blocks.accordion.settings.metafield.info"
-        }
+        { "type": "text", "id": "heading", "label": "t:sections.main_product.blocks.accordion.settings.heading.label", "default": "Ingredients" },
+        { "type": "richtext", "id": "content", "label": "t:sections.main_product.blocks.accordion.settings.content.label" },
+        { "type": "text", "id": "metafield", "label": "t:sections.main_product.blocks.accordion.settings.metafield.label", "info": "t:sections.main_product.blocks.accordion.settings.metafield.info" }
       ]
     },
     {
       "type": "text",
       "name": "t:sections.main_product.blocks.text.name",
       "settings": [
-        {
-          "type": "richtext",
-          "id": "text",
-          "label": "t:sections.main_product.blocks.text.settings.text.label"
-        }
+        { "type": "richtext", "id": "text", "label": "t:sections.main_product.blocks.text.settings.text.label" }
       ]
     },
     { "type": "share", "name": "t:sections.main_product.blocks.share.name", "limit": 1 }

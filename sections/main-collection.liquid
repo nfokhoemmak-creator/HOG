@@ -106,7 +106,13 @@
         style="--cols-desktop: {{ section.settings.columns_desktop }}; --cols-mobile: {{ section.settings.columns_mobile }};"
       >
         {%- for product in collection.products -%}
-          {% render 'product-card', card_product: product, lazy_load: forloop.index > 4 %}
+          {%- liquid
+            assign lazy = true
+            if forloop.index <= 4
+              assign lazy = false
+            endif
+          -%}
+          {% render 'product-card', card_product: product, lazy_load: lazy %}
         {%- endfor -%}
       </div>
 

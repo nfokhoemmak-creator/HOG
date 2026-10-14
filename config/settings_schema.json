@@ -1,11 +1,11 @@
 [
   {
     "name": "theme_info",
-    "theme_name": "House of Garments",
-    "theme_version": "1.0.0",
-    "theme_author": "House of Garments",
-    "theme_documentation_url": "https://houseofgarments.co",
-    "theme_support_url": "https://houseofgarments.co/pages/contact"
+    "theme_name": "Jamalati",
+    "theme_version": "2.0.0",
+    "theme_author": "Jamalati",
+    "theme_documentation_url": "https://jamalati.com",
+    "theme_support_url": "https://jamalati.com/pages/contact"
   },
   {
     "name": "t:settings_schema.brand.name",
@@ -13,17 +13,18 @@
       {
         "type": "image_picker",
         "id": "logo",
-        "label": "t:settings_schema.brand.settings.logo.label"
+        "label": "t:settings_schema.brand.settings.logo.label",
+        "info": "t:settings_schema.brand.settings.logo.info"
       },
       {
         "type": "range",
         "id": "logo_width",
-        "min": 60,
+        "min": 80,
         "max": 320,
         "step": 10,
         "unit": "px",
         "label": "t:settings_schema.brand.settings.logo_width.label",
-        "default": 140
+        "default": 150
       },
       {
         "type": "image_picker",
@@ -35,7 +36,7 @@
         "type": "text",
         "id": "brand_tagline",
         "label": "t:settings_schema.brand.settings.brand_tagline.label",
-        "default": "EVERYBODY CAN'T HAVE LIMITED ITEMS"
+        "default": "Beauty that feels like you."
       },
       {
         "type": "image_picker",
@@ -56,19 +57,25 @@
         "type": "color",
         "id": "color_background",
         "label": "t:settings_schema.colors.settings.color_background.label",
-        "default": "#0a0a0a"
+        "default": "#fff7f4"
       },
       {
         "type": "color",
         "id": "color_background_alt",
         "label": "t:settings_schema.colors.settings.color_background_alt.label",
-        "default": "#151515"
+        "default": "#feece9"
+      },
+      {
+        "type": "color",
+        "id": "color_surface",
+        "label": "t:settings_schema.colors.settings.color_surface.label",
+        "default": "#ffffff"
       },
       {
         "type": "color",
         "id": "color_border",
         "label": "t:settings_schema.colors.settings.color_border.label",
-        "default": "#2a2a2a"
+        "default": "#f5d6d3"
       },
       {
         "type": "header",
@@ -78,13 +85,13 @@
         "type": "color",
         "id": "color_text",
         "label": "t:settings_schema.colors.settings.color_text.label",
-        "default": "#f5f5f5"
+        "default": "#2e1622"
       },
       {
         "type": "color",
         "id": "color_text_muted",
         "label": "t:settings_schema.colors.settings.color_text_muted.label",
-        "default": "#8a8a8a"
+        "default": "#8b6874"
       },
       {
         "type": "header",
@@ -94,20 +101,26 @@
         "type": "color",
         "id": "color_accent",
         "label": "t:settings_schema.colors.settings.color_accent.label",
-        "default": "#d6ff3f",
+        "default": "#f0437f",
         "info": "t:settings_schema.colors.settings.color_accent.info"
       },
       {
         "type": "color",
         "id": "color_accent_contrast",
         "label": "t:settings_schema.colors.settings.color_accent_contrast.label",
-        "default": "#0a0a0a"
+        "default": "#ffffff"
+      },
+      {
+        "type": "color",
+        "id": "color_star",
+        "label": "t:settings_schema.colors.settings.color_star.label",
+        "default": "#f5a623"
       },
       {
         "type": "color",
         "id": "color_sale",
         "label": "t:settings_schema.colors.settings.color_sale.label",
-        "default": "#ff4d4d"
+        "default": "#e5325b"
       },
       {
         "type": "header",
@@ -117,13 +130,13 @@
         "type": "color",
         "id": "color_button_background",
         "label": "t:settings_schema.colors.settings.color_button_background.label",
-        "default": "#f5f5f5"
+        "default": "#f0437f"
       },
       {
         "type": "color",
         "id": "color_button_text",
         "label": "t:settings_schema.colors.settings.color_button_text.label",
-        "default": "#0a0a0a"
+        "default": "#ffffff"
       }
     ]
   },
@@ -138,7 +151,7 @@
         "type": "font_picker",
         "id": "type_heading_font",
         "label": "t:settings_schema.typography.settings.type_heading_font.label",
-        "default": "archivo_n6"
+        "default": "quicksand_n7"
       },
       {
         "type": "range",
@@ -148,23 +161,23 @@
         "step": 5,
         "unit": "%",
         "label": "t:settings_schema.typography.settings.type_heading_scale.label",
-        "default": 105
+        "default": 100
       },
       {
         "type": "range",
         "id": "type_heading_tracking",
-        "min": -1,
+        "min": -2,
         "max": 8,
         "step": 1,
         "unit": "px",
         "label": "t:settings_schema.typography.settings.type_heading_tracking.label",
-        "default": 1
+        "default": 0
       },
       {
         "type": "checkbox",
         "id": "type_heading_uppercase",
         "label": "t:settings_schema.typography.settings.type_heading_uppercase.label",
-        "default": true
+        "default": false
       },
       {
         "type": "header",
@@ -174,7 +187,7 @@
         "type": "font_picker",
         "id": "type_body_font",
         "label": "t:settings_schema.typography.settings.type_body_font.label",
-        "default": "assistant_n4"
+        "default": "nunito_sans_n4"
       },
       {
         "type": "range",
@@ -184,7 +197,7 @@
         "step": 5,
         "unit": "%",
         "label": "t:settings_schema.typography.settings.type_body_scale.label",
-        "default": 100
+        "default": 105
       }
     ]
   },
@@ -199,7 +212,7 @@
         "step": 20,
         "unit": "px",
         "label": "t:settings_schema.layout.settings.layout_max_width.label",
-        "default": 1440
+        "default": 1320
       },
       {
         "type": "range",
@@ -209,18 +222,29 @@
         "step": 2,
         "unit": "px",
         "label": "t:settings_schema.layout.settings.layout_gutter.label",
-        "default": 24
+        "default": 20
       },
       {
         "type": "range",
         "id": "layout_corner_radius",
         "min": 0,
-        "max": 24,
+        "max": 32,
         "step": 1,
         "unit": "px",
         "label": "t:settings_schema.layout.settings.layout_corner_radius.label",
-        "default": 0,
+        "default": 18,
         "info": "t:settings_schema.layout.settings.layout_corner_radius.info"
+      },
+      {
+        "type": "select",
+        "id": "button_shape",
+        "label": "t:settings_schema.layout.settings.button_shape.label",
+        "options": [
+          { "value": "pill", "label": "t:settings_schema.layout.settings.button_shape.options__1" },
+          { "value": "rounded", "label": "t:settings_schema.layout.settings.button_shape.options__2" },
+          { "value": "square", "label": "t:settings_schema.layout.settings.button_shape.options__3" }
+        ],
+        "default": "pill"
       },
       {
         "type": "range",
@@ -230,7 +254,7 @@
         "step": 2,
         "unit": "px",
         "label": "t:settings_schema.layout.settings.grid_gap.label",
-        "default": 8
+        "default": 20
       },
       {
         "type": "checkbox",
@@ -253,7 +277,7 @@
           { "value": "portrait", "label": "t:settings_schema.product_cards.settings.card_image_ratio.options__2" },
           { "value": "natural", "label": "t:settings_schema.product_cards.settings.card_image_ratio.options__3" }
         ],
-        "default": "portrait"
+        "default": "square"
       },
       {
         "type": "checkbox",
@@ -276,10 +300,16 @@
       },
       {
         "type": "checkbox",
-        "id": "card_sold_out_short",
-        "label": "t:settings_schema.product_cards.settings.card_sold_out_short.label",
+        "id": "card_show_rating",
+        "label": "t:settings_schema.product_cards.settings.card_show_rating.label",
         "default": true,
-        "info": "t:settings_schema.product_cards.settings.card_sold_out_short.info"
+        "info": "t:settings_schema.product_cards.settings.card_show_rating.info"
+      },
+      {
+        "type": "checkbox",
+        "id": "card_show_savings",
+        "label": "t:settings_schema.product_cards.settings.card_show_savings.label",
+        "default": true
       },
       {
         "type": "checkbox",
@@ -291,7 +321,7 @@
         "type": "checkbox",
         "id": "currency_code_enabled",
         "label": "t:settings_schema.product_cards.settings.currency_code_enabled.label",
-        "default": true,
+        "default": false,
         "info": "t:settings_schema.product_cards.settings.currency_code_enabled.info"
       }
     ]
@@ -311,15 +341,29 @@
       },
       {
         "type": "checkbox",
+        "id": "cart_free_shipping_bar",
+        "label": "t:settings_schema.cart.settings.cart_free_shipping_bar.label",
+        "default": true,
+        "info": "t:settings_schema.cart.settings.cart_free_shipping_bar.info"
+      },
+      {
+        "type": "number",
+        "id": "cart_free_shipping_threshold",
+        "label": "t:settings_schema.cart.settings.cart_free_shipping_threshold.label",
+        "default": 50,
+        "info": "t:settings_schema.cart.settings.cart_free_shipping_threshold.info"
+      },
+      {
+        "type": "checkbox",
         "id": "cart_show_note",
         "label": "t:settings_schema.cart.settings.cart_show_note.label",
-        "default": true
+        "default": false
       },
       {
         "type": "richtext",
         "id": "cart_notice",
         "label": "t:settings_schema.cart.settings.cart_notice.label",
-        "default": "<p>Delivery all over Lebanon. Orders ship within 2–4 business days.</p>"
+        "default": "<p>Secure checkout · Cash on delivery available · Ships in 1–3 business days</p>"
       }
     ]
   },
@@ -330,18 +374,26 @@
         "type": "text",
         "id": "social_instagram_link",
         "label": "t:settings_schema.social.settings.social_instagram_link.label",
-        "default": "https://www.instagram.com/houseofgarments.co/"
+        "default": "https://www.instagram.com/jamalati"
       },
       {
         "type": "text",
         "id": "social_tiktok_link",
-        "label": "t:settings_schema.social.settings.social_tiktok_link.label"
+        "label": "t:settings_schema.social.settings.social_tiktok_link.label",
+        "default": "https://www.tiktok.com/@jamalati"
       },
       {
         "type": "text",
         "id": "social_whatsapp_link",
         "label": "t:settings_schema.social.settings.social_whatsapp_link.label",
         "info": "t:settings_schema.social.settings.social_whatsapp_link.info"
+      },
+      {
+        "type": "checkbox",
+        "id": "whatsapp_button",
+        "label": "t:settings_schema.social.settings.whatsapp_button.label",
+        "default": true,
+        "info": "t:settings_schema.social.settings.whatsapp_button.info"
       },
       {
         "type": "text",

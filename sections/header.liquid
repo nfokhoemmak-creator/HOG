@@ -2,7 +2,7 @@
   assign menu = linklists[section.settings.menu]
 -%}
 
-<header class="header{% if section.settings.sticky %} header--sticky{% endif %}">
+<header class="header{% if section.settings.sticky %} header--sticky{% endif %}" data-header>
   <div class="container header__inner">
     <menu-drawer class="menu-toggle">
       <button
@@ -18,7 +18,11 @@
 
       <div class="menu-drawer" id="MenuDrawer" role="dialog" aria-modal="true" aria-label="{{ 'general.menu' | t }}">
         <div class="menu-drawer__head">
-          <span class="eyebrow">{{ 'general.menu' | t }}</span>
+          {%- if settings.logo != blank -%}
+            <img src="{{ settings.logo | image_url: width: 300 }}" alt="{{ shop.name | escape }}" width="120" height="auto" style="width: 11rem;">
+          {%- else -%}
+            <img src="{{ 'jamalati-logo.png' | asset_url }}" alt="{{ shop.name | escape }}" width="1462" height="399" style="width: 11rem;">
+          {%- endif -%}
           <button type="button" class="header__icon" data-menu-close aria-label="{{ 'general.close' | t }}">
             {% render 'icon', name: 'close' %}
           </button>
@@ -38,6 +42,11 @@
             </div>
           {%- endfor -%}
         </nav>
+
+        <div class="menu-drawer__foot">
+          <a class="btn btn--full" href="{{ routes.all_products_collection_url }}">{{ 'general.shop_all' | t }}</a>
+          {% render 'social-links' %}
+        </div>
       </div>
     </menu-drawer>
 
@@ -46,7 +55,7 @@
     {%- else -%}
       <div class="header__logo">
     {%- endif -%}
-      <a href="{{ routes.root_url }}">
+      <a href="{{ routes.root_url }}" aria-label="{{ shop.name | escape }}">
         {%- if settings.logo != blank -%}
           <img
             src="{{ settings.logo | image_url: width: 600 }}"
@@ -56,7 +65,13 @@
             style="width: {{ settings.logo_width }}px;"
           >
         {%- else -%}
-          {{ shop.name }}
+          <img
+            src="{{ 'jamalati-logo.png' | asset_url }}"
+            alt="{{ shop.name | escape }}"
+            width="1462"
+            height="399"
+            style="width: {{ settings.logo_width }}px;"
+          >
         {%- endif -%}
       </a>
     {%- if request.page_type == 'index' -%}
@@ -112,10 +127,17 @@
     "url": {{ shop.url | append: routes.root_url | json }},
     {%- if settings.logo -%}
       "logo": {{ settings.logo | image_url: width: 600 | prepend: "https:" | json }},
+    {%- else -%}
+      "logo": {{ 'jamalati-logo.png' | asset_url | prepend: "https:" | json }},
     {%- endif -%}
-    {%- if settings.social_instagram_link != blank -%}
-      "sameAs": [{{ settings.social_instagram_link | json }}],
-    {%- endif -%}
+    "sameAs": [
+      {%- assign socials = '' -%}
+      {%- if settings.social_instagram_link != blank -%}{%- assign socials = socials | append: settings.social_instagram_link | append: '|' -%}{%- endif -%}
+      {%- if settings.social_tiktok_link != blank -%}{%- assign socials = socials | append: settings.social_tiktok_link | append: '|' -%}{%- endif -%}
+      {%- if settings.social_facebook_link != blank -%}{%- assign socials = socials | append: settings.social_facebook_link | append: '|' -%}{%- endif -%}
+      {%- assign social_list = socials | split: '|' -%}
+      {%- for s in social_list -%}{{ s | json }}{% unless forloop.last %},{% endunless %}{%- endfor -%}
+    ],
     "description": {{ shop.description | default: settings.brand_tagline | json }}
   }
 </script>

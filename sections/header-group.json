@@ -8,21 +8,27 @@
         "announcement-1": {
           "type": "announcement",
           "settings": {
-            "text": "DELIVERY ALL OVER LEBANON"
+            "text": "✨ Free shipping on orders over $50"
           }
         },
         "announcement-2": {
           "type": "announcement",
           "settings": {
-            "text": "EVERYBODY CAN'T HAVE LIMITED ITEMS"
+            "text": "💗 10% off your first order with code WELCOME10"
+          }
+        },
+        "announcement-3": {
+          "type": "announcement",
+          "settings": {
+            "text": "🚚 Delivery all over Lebanon · Cash on delivery available"
           }
         }
       },
-      "block_order": ["announcement-1", "announcement-2"],
+      "block_order": ["announcement-1", "announcement-2", "announcement-3"],
       "settings": {
         "color_scheme": "accent",
         "rotate": true,
-        "rotate_speed": 5
+        "rotate_speed": 4
       }
     },
     "header": {

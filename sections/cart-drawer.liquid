@@ -4,6 +4,16 @@
   must be rendered here — nothing is templated client-side.
 {%- endcomment -%}
 
+{%- liquid
+  assign threshold = settings.cart_free_shipping_threshold | times: 100
+  assign remaining = threshold | minus: cart.total_price
+  assign remaining_money = remaining | money
+  assign progress = 0
+  if threshold > 0
+    assign progress = cart.total_price | times: 100 | divided_by: threshold | at_most: 100
+  endif
+-%}
+
 <cart-drawer class="cart-drawer" aria-hidden="true">
   <div class="cart-drawer__overlay" tabindex="-1"></div>
 
@@ -14,11 +24,28 @@
     aria-label="{{ 'sections.cart.title' | t }}"
   >
     <div class="cart-drawer__head">
-      <h2 class="h4">{{ 'sections.cart.title' | t }}</h2>
+      <h2 class="h4">{{ 'sections.cart.title' | t }}{% if cart.item_count > 0 %} <span class="muted">({{ cart.item_count }})</span>{% endif %}</h2>
       <button type="button" class="header__icon" data-cart-close aria-label="{{ 'general.close' | t }}">
         {% render 'icon', name: 'close' %}
       </button>
     </div>
+
+    {%- if settings.cart_free_shipping_bar and threshold > 0 -%}
+      <div class="shipping-bar{% if remaining <= 0 %} shipping-bar--unlocked{% endif %}">
+        <p class="shipping-bar__text">
+          {%- if remaining > 0 -%}
+            {{ 'sections.cart.free_shipping_remaining_html' | t: amount: remaining_money }}
+          {%- else -%}
+            {{ 'sections.cart.free_shipping_unlocked' | t }}
+          {%- endif -%}
+        </p>
+        <div class="shipping-bar__track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ progress }}">
+          <div class="shipping-bar__fill" style="--progress: {{ progress }}%;"></div>
+        </div>
+      </div>
+    {%- else -%}
+      <div></div>
+    {%- endif -%}
 
     <div class="cart-drawer__body">
       <p class="form__error" data-cart-error hidden></p>
@@ -41,7 +68,7 @@
                     src="{{ item.image | image_url: width: 200 }}"
                     alt="{{ item.image.alt | escape }}"
                     width="100"
-                    height="133"
+                    height="100"
                     loading="lazy"
                   >
                 {%- endif -%}
@@ -89,7 +116,12 @@
                     </button>
                   </quantity-input>
 
-                  <span class="price">{{ item.final_line_price | money }}</span>
+                  <span class="price">
+                    {%- if item.original_line_price > item.final_line_price -%}
+                      <s class="price__compare">{{ item.original_line_price | money }}</s>
+                    {%- endif -%}
+                    {{ item.final_line_price | money }}
+                  </span>
                 </div>
 
                 <button type="button" class="cart-item__remove" data-line-remove="{{ item.key }}">
@@ -99,6 +131,43 @@
             </li>
           {%- endfor -%}
         </ul>
+
+        {%- comment -%} Upsell: first in-stock recommendation not already in the cart. {%- endcomment -%}
+        {%- liquid
+          assign first_item = cart.items.first
+          assign candidates = first_item.product.collections.first.products
+          assign upsell_count = 0
+        -%}
+        {%- if candidates.size > 0 -%}
+          <div class="cart-upsell">
+            {%- for candidate in candidates -%}
+              {%- if upsell_count >= 2 -%}{%- break -%}{%- endif -%}
+              {%- assign in_cart = false -%}
+              {%- for item in cart.items -%}
+                {%- if item.product_id == candidate.id -%}{%- assign in_cart = true -%}{%- endif -%}
+              {%- endfor -%}
+              {%- if in_cart or candidate.available == false or candidate.variants.size != 1 -%}{%- continue -%}{%- endif -%}
+              {%- if upsell_count == 0 -%}
+                <p class="cart-upsell__title">{{ 'sections.cart.upsell_title' | t }}</p>
+              {%- endif -%}
+              {%- assign upsell_count = upsell_count | plus: 1 -%}
+              <form method="post" action="{{ routes.cart_add_url }}" class="cart-upsell__item" data-quick-add-form>
+                <input type="hidden" name="id" value="{{ candidate.variants.first.id }}">
+                <input type="hidden" name="quantity" value="1">
+                {%- if candidate.featured_media -%}
+                  <img src="{{ candidate.featured_media | image_url: width: 120, height: 120, crop: 'center' }}" alt="" width="56" height="56" loading="lazy">
+                {%- else -%}
+                  <span></span>
+                {%- endif -%}
+                <span>
+                  <strong>{{ candidate.title | escape }}</strong><br>
+                  <span class="muted">{{ candidate.price | money }}</span>
+                </span>
+                <button type="submit" class="btn btn--small btn--soft">{{ 'sections.cart.upsell_add' | t }}</button>
+              </form>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
 
         {%- if settings.cart_show_note -%}
           <details class="accordion" style="margin-top: var(--space-5);">
@@ -122,6 +191,15 @@
 
     {%- if cart.item_count > 0 -%}
       <div class="cart-drawer__foot">
+        {%- if cart.cart_level_discount_applications.size > 0 -%}
+          {%- for discount in cart.cart_level_discount_applications -%}
+            <div class="cart-totals accent" style="font-size: 1.3rem;">
+              <span>{{ discount.title }}</span>
+              <span>-{{ discount.total_allocated_amount | money }}</span>
+            </div>
+          {%- endfor -%}
+        {%- endif -%}
+
         <div class="cart-totals">
           <span>{{ 'sections.cart.subtotal' | t }}</span>
           <span>
@@ -133,28 +211,20 @@
           </span>
         </div>
 
-        {%- if cart.cart_level_discount_applications.size > 0 -%}
-          {%- for discount in cart.cart_level_discount_applications -%}
-            <div class="cart-totals accent">
-              <span>{{ discount.title }}</span>
-              <span>-{{ discount.total_allocated_amount | money }}</span>
-            </div>
-          {%- endfor -%}
-        {%- endif -%}
-
-        <p class="cart-notice">{{ 'sections.cart.taxes_and_shipping_at_checkout' | t }}</p>
-
         <form action="{{ routes.cart_url }}" method="post" id="cart-drawer-form">
-          <button type="submit" name="checkout" class="btn btn--accent btn--full">
+          <button type="submit" name="checkout" class="btn btn--large btn--full">
+            {% render 'icon', name: 'lock' %}
             {{ 'sections.cart.checkout' | t }}
           </button>
         </form>
 
-        <a class="cart-notice underline" href="{{ routes.cart_url }}">{{ 'sections.cart.view_cart' | t }}</a>
+        <p class="cart-notice">{{ 'sections.cart.taxes_and_shipping_at_checkout' | t }}</p>
 
         {%- if settings.cart_notice != blank -%}
           <div class="cart-notice">{{ settings.cart_notice }}</div>
         {%- endif -%}
+
+        <a class="cart-notice underline" href="{{ routes.cart_url }}">{{ 'sections.cart.view_cart' | t }}</a>
       </div>
     {%- endif -%}
   </div>

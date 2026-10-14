@@ -1,5 +1,5 @@
 /* ==========================================================================
-   House of Garments — cart-drawer.js
+   Jamalati — cart-drawer.js
    Talks to the Shopify Ajax Cart API and keeps the drawer in sync.
 
    The drawer is progressive enhancement over /cart. Every trigger that opens
@@ -89,16 +89,16 @@
       this.opener = opener || null;
       this.classList.add('is-open');
       this.setAttribute('aria-hidden', 'false');
-      if (window.HOG) {
-        window.HOG.lockScroll(true);
-        this.releaseFocus = window.HOG.trapFocus(this.panel, () => this.close());
+      if (window.JAM) {
+        window.JAM.lockScroll(true);
+        this.releaseFocus = window.JAM.trapFocus(this.panel, () => this.close());
       }
     }
 
     close() {
       this.classList.remove('is-open');
       this.setAttribute('aria-hidden', 'true');
-      if (window.HOG) window.HOG.lockScroll(false);
+      if (window.JAM) window.JAM.lockScroll(false);
       if (this.releaseFocus) this.releaseFocus();
       if (this.opener && document.body.contains(this.opener)) this.opener.focus();
     }
@@ -179,7 +179,7 @@
 
     document.dispatchEvent(new CustomEvent('cart:updated', { detail: { item: data } }));
 
-    if (window.HOG) window.HOG.announce(strings.itemAdded);
+    if (window.JAM) window.JAM.announce(strings.itemAdded);
 
     const drawer = document.querySelector('cart-drawer');
     if (drawer && window.theme && window.theme.cartType === 'drawer') {
@@ -192,7 +192,7 @@
     return data;
   }
 
-  window.HOG = Object.assign(window.HOG || {}, { addToCart, updateCartCount });
+  window.JAM = Object.assign(window.JAM || {}, { addToCart, updateCartCount });
 
   /* ------------------------------------------------------------ quick add */
 

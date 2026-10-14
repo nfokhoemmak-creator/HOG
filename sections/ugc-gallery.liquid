@@ -1,0 +1,109 @@
+<div class="section section--tight">
+  <div class="container">
+    <div class="section__head section__head--center">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="eyebrow">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="h2">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+      {%- if section.settings.handle != blank -%}
+        <a class="link-arrow" href="{{ settings.social_instagram_link | default: '#' }}" target="_blank" rel="noopener">
+          {% render 'icon', name: 'instagram' %}{{ section.settings.handle }}
+        </a>
+      {%- endif -%}
+    </div>
+
+    <div class="ugc" style="--cols-desktop: {{ section.settings.columns_desktop }};">
+      {%- for block in section.blocks -%}
+        {%- if block.settings.link != blank -%}
+          <a class="ugc__item" href="{{ block.settings.link }}" target="_blank" rel="noopener" {{ block.shopify_attributes }}>
+        {%- else -%}
+          <div class="ugc__item" {{ block.shopify_attributes }}>
+        {%- endif -%}
+          {%- if block.settings.image != blank -%}
+            <img
+              src="{{ block.settings.image | image_url: width: 600, height: 600, crop: 'center' }}"
+              alt="{{ block.settings.image.alt | escape }}"
+              width="600"
+              height="600"
+              loading="lazy"
+            >
+          {%- else -%}
+            {%- assign idx = forloop.index | modulo: 6 | plus: 1 -%}
+            {{ 'product-' | append: idx | placeholder_svg_tag }}
+          {%- endif -%}
+          {%- if block.settings.caption != blank -%}
+            <span class="ugc__caption">{{ block.settings.caption }}</span>
+          {%- endif -%}
+        {%- if block.settings.link != blank -%}
+          </a>
+        {%- else -%}
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Instagram gallery",
+  "tag": "section",
+  "class": "ugc-section",
+  "max_blocks": 12,
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "#jamalatiglow"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Tag us to be featured"
+    },
+    {
+      "type": "text",
+      "id": "handle",
+      "label": "Instagram handle",
+      "default": "@jamalati"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 3,
+      "max": 6,
+      "step": 1,
+      "label": "Columns on desktop",
+      "default": 6
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Image",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "caption", "label": "Caption", "info": "e.g. the product shown or the customer's handle" },
+        { "type": "url", "id": "link", "label": "Link" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Instagram gallery",
+      "blocks": [
+        { "type": "image", "settings": { "caption": "@maya.k" } },
+        { "type": "image", "settings": { "caption": "Glow Serum" } },
+        { "type": "image", "settings": { "caption": "@nour.h" } },
+        { "type": "image", "settings": { "caption": "Velvet Lip Tint" } },
+        { "type": "image", "settings": { "caption": "@lea.s" } },
+        { "type": "image", "settings": { "caption": "Calm Cleanser" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

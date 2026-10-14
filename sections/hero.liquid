@@ -1,79 +1,140 @@
 {%- liquid
   assign alignment = section.settings.text_alignment | default: 'left'
+  assign layout = section.settings.layout | default: 'split'
+  assign heading_html = section.settings.heading | escape | replace_first: '*', '<em>' | replace_first: '*', '</em>'
+  assign perks = section.settings.perks | newline_to_br | split: '<br />'
 -%}
 
-<section class="hero hero--{{ section.settings.height }} hero--{{ alignment }}">
-  <div class="hero__media">
-    {%- if section.settings.video_url != blank -%}
-      <video autoplay muted loop playsinline poster="{{ section.settings.image | image_url: width: 1600 }}">
-        <source src="{{ section.settings.video_url }}" type="video/mp4">
-      </video>
-    {%- elsif section.settings.image != blank -%}
-      <img
-        src="{{ section.settings.image | image_url: width: 2400 }}"
-        srcset="
-          {{ section.settings.image | image_url: width: 800 }} 800w,
-          {{ section.settings.image | image_url: width: 1400 }} 1400w,
-          {{ section.settings.image | image_url: width: 2000 }} 2000w,
-          {{ section.settings.image | image_url: width: 2400 }} 2400w
-        "
-        sizes="100vw"
-        alt="{{ section.settings.image.alt | escape }}"
-        width="{{ section.settings.image.width }}"
-        height="{{ section.settings.image.height }}"
-        fetchpriority="high"
-      >
-    {%- else -%}
-      {{ 'lifestyle-1' | placeholder_svg_tag: 'hero__placeholder' }}
-    {%- endif -%}
-  </div>
+<section class="hero hero--{{ layout }} hero--{{ alignment }}">
+  {%- if layout == 'overlay' -%}
+    <div class="hero__media">
+      {%- if section.settings.video_url != blank -%}
+        <video autoplay muted loop playsinline poster="{{ section.settings.image | image_url: width: 1600 }}">
+          <source src="{{ section.settings.video_url }}" type="video/mp4">
+        </video>
+      {%- elsif section.settings.image != blank -%}
+        <img
+          src="{{ section.settings.image | image_url: width: 2400 }}"
+          srcset="
+            {{ section.settings.image | image_url: width: 800 }} 800w,
+            {{ section.settings.image | image_url: width: 1400 }} 1400w,
+            {{ section.settings.image | image_url: width: 2000 }} 2000w,
+            {{ section.settings.image | image_url: width: 2400 }} 2400w
+          "
+          sizes="100vw"
+          alt="{{ section.settings.image.alt | escape }}"
+          width="{{ section.settings.image.width }}"
+          height="{{ section.settings.image.height }}"
+          fetchpriority="high"
+        >
+      {%- else -%}
+        {{ 'lifestyle-1' | placeholder_svg_tag: 'hero__placeholder-svg' }}
+      {%- endif -%}
+    </div>
+    <div class="hero__shade" style="opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};"></div>
+  {%- endif -%}
 
-  <div class="hero__overlay" style="opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};"></div>
+  <div class="container hero__inner">
+    <div class="hero__content">
+      {%- if section.settings.badge != blank -%}
+        <span class="pill">{% render 'icon', name: 'sparkle' %}{{ section.settings.badge }}</span>
+      {%- endif -%}
 
-  <div class="container hero__content">
-    {%- if section.settings.heading != blank -%}
-      <h2 class="hero__heading">{{ section.settings.heading }}</h2>
-    {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="hero__heading">{{ heading_html }}</h2>
+      {%- endif -%}
 
-    {%- if section.settings.subheading != blank -%}
-      <p class="hero__subheading">{{ section.settings.subheading }}</p>
-    {%- endif -%}
+      {%- if section.settings.subheading != blank -%}
+        <p class="hero__subheading">{{ section.settings.subheading }}</p>
+      {%- endif -%}
 
-    {%- if section.settings.show_countdown and section.settings.countdown_date != blank -%}
-      <countdown-timer data-date="{{ section.settings.countdown_date }}">
-        {%- if section.settings.countdown_heading != blank -%}
-          <p class="eyebrow">{{ section.settings.countdown_heading }}</p>
+      {%- if section.settings.show_countdown and section.settings.countdown_date != blank -%}
+        <countdown-timer data-date="{{ section.settings.countdown_date }}">
+          {%- if section.settings.countdown_heading != blank -%}
+            <p class="eyebrow" style="margin-bottom: var(--space-2);">{{ section.settings.countdown_heading }}</p>
+          {%- endif -%}
+          <div class="countdown">
+            <div class="countdown__unit"><span class="countdown__value" data-days>--</span><span class="countdown__label">{{ 'products.product.drop_countdown.days' | t }}</span></div>
+            <div class="countdown__unit"><span class="countdown__value" data-hours>--</span><span class="countdown__label">{{ 'products.product.drop_countdown.hours' | t }}</span></div>
+            <div class="countdown__unit"><span class="countdown__value" data-minutes>--</span><span class="countdown__label">{{ 'products.product.drop_countdown.minutes' | t }}</span></div>
+            <div class="countdown__unit"><span class="countdown__value" data-seconds>--</span><span class="countdown__label">{{ 'products.product.drop_countdown.seconds' | t }}</span></div>
+          </div>
+          <p class="eyebrow" data-live-message hidden>{{ 'products.product.drop_countdown.live' | t }}</p>
+        </countdown-timer>
+      {%- endif -%}
+
+      <div class="hero__actions">
+        {%- if section.settings.button_label != blank -%}
+          <a class="btn btn--large" href="{{ section.settings.button_link | default: routes.all_products_collection_url }}">
+            {{ section.settings.button_label }}
+            {% render 'icon', name: 'arrow-right' %}
+          </a>
+        {%- endif -%}
+        {%- if section.settings.button_label_2 != blank -%}
+          <a class="btn btn--large btn--outline" href="{{ section.settings.button_link_2 | default: routes.collections_url }}">
+            {{ section.settings.button_label_2 }}
+          </a>
+        {%- endif -%}
+      </div>
+
+      {%- if section.settings.show_proof -%}
+        <div class="hero__proof">
+          <span class="hero__avatars" aria-hidden="true"><span></span><span></span><span></span></span>
+          {%- if section.settings.proof_rating != blank -%}
+            {% render 'stars', rating: section.settings.proof_rating, uid: section.id %}
+            <strong>{{ section.settings.proof_rating }}/5</strong>
+          {%- endif -%}
+          {%- if section.settings.proof_text != blank -%}
+            <span>{{ section.settings.proof_text }}</span>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      {%- if section.settings.perks != blank -%}
+        <ul class="checklist checklist--inline">
+          {%- for perk in perks -%}
+            {%- assign perk_text = perk | strip -%}
+            {%- if perk_text != blank -%}
+              <li>{% render 'icon', name: 'check' %}{{ perk_text }}</li>
+            {%- endif -%}
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+    </div>
+
+    {%- if layout == 'split' -%}
+      <div class="hero__media">
+        {%- if section.settings.float_top != blank -%}
+          <span class="hero__float hero__float--top">{% render 'icon', name: 'sparkle' %}{{ section.settings.float_top }}</span>
+        {%- endif -%}
+        {%- if section.settings.float_bottom != blank -%}
+          <span class="hero__float hero__float--bottom">{% render 'icon', name: 'heart' %}{{ section.settings.float_bottom }}</span>
         {%- endif -%}
 
-        <div class="countdown">
-          <div class="countdown__unit">
-            <span class="countdown__value" data-days>--</span>
-            <span class="countdown__label">{{ 'products.product.drop_countdown.days' | t }}</span>
+        {%- if section.settings.video_url != blank -%}
+          <video autoplay muted loop playsinline poster="{{ section.settings.image | image_url: width: 1200 }}">
+            <source src="{{ section.settings.video_url }}" type="video/mp4">
+          </video>
+        {%- elsif section.settings.image != blank -%}
+          <img
+            src="{{ section.settings.image | image_url: width: 1400 }}"
+            srcset="
+              {{ section.settings.image | image_url: width: 700 }} 700w,
+              {{ section.settings.image | image_url: width: 1000 }} 1000w,
+              {{ section.settings.image | image_url: width: 1400 }} 1400w
+            "
+            sizes="(min-width: 750px) 50vw, 100vw"
+            alt="{{ section.settings.image.alt | escape }}"
+            width="{{ section.settings.image.width }}"
+            height="{{ section.settings.image.height }}"
+            fetchpriority="high"
+          >
+        {%- else -%}
+          <div class="hero__placeholder">
+            <img src="{{ 'jamalati-logo.png' | asset_url }}" alt="" width="1462" height="399" loading="eager">
           </div>
-          <div class="countdown__unit">
-            <span class="countdown__value" data-hours>--</span>
-            <span class="countdown__label">{{ 'products.product.drop_countdown.hours' | t }}</span>
-          </div>
-          <div class="countdown__unit">
-            <span class="countdown__value" data-minutes>--</span>
-            <span class="countdown__label">{{ 'products.product.drop_countdown.minutes' | t }}</span>
-          </div>
-          <div class="countdown__unit">
-            <span class="countdown__value" data-seconds>--</span>
-            <span class="countdown__label">{{ 'products.product.drop_countdown.seconds' | t }}</span>
-          </div>
-        </div>
-
-        <p class="eyebrow accent" data-live-message hidden>
-          {{ 'products.product.drop_countdown.live' | t }}
-        </p>
-      </countdown-timer>
-    {%- endif -%}
-
-    {%- if section.settings.button_label != blank -%}
-      <a class="btn btn--accent" href="{{ section.settings.button_link | default: routes.all_products_collection_url }}">
-        {{ section.settings.button_label }}
-      </a>
+        {%- endif -%}
+      </div>
     {%- endif -%}
   </div>
 </section>
@@ -85,47 +146,120 @@
   "class": "hero-section",
   "settings": [
     {
+      "type": "select",
+      "id": "layout",
+      "label": "t:sections.hero.settings.layout.label",
+      "options": [
+        { "value": "split", "label": "t:sections.hero.settings.layout.options__1" },
+        { "value": "overlay", "label": "t:sections.hero.settings.layout.options__2" }
+      ],
+      "default": "split"
+    },
+    {
       "type": "image_picker",
       "id": "image",
-      "label": "t:sections.hero.settings.image.label"
+      "label": "t:sections.hero.settings.image.label",
+      "info": "t:sections.hero.settings.image.info"
     },
     {
       "type": "url",
       "id": "video_url",
-      "label": "t:sections.hero.settings.video_url.label"
-    },
-    {
-      "type": "select",
-      "id": "height",
-      "label": "t:sections.hero.settings.height.label",
-      "options": [
-        { "value": "small", "label": "t:sections.hero.settings.height.options__1" },
-        { "value": "medium", "label": "t:sections.hero.settings.height.options__2" },
-        { "value": "full", "label": "t:sections.hero.settings.height.options__3" }
-      ],
-      "default": "full"
+      "label": "t:sections.hero.settings.video_url.label",
+      "info": "t:sections.hero.settings.video_url.info"
     },
     {
       "type": "range",
       "id": "overlay_opacity",
       "min": 0,
-      "max": 90,
+      "max": 100,
       "step": 5,
       "unit": "%",
       "label": "t:sections.hero.settings.overlay_opacity.label",
-      "default": 45
+      "default": 70
+    },
+    {
+      "type": "text",
+      "id": "badge",
+      "label": "t:sections.hero.settings.badge.label",
+      "info": "t:sections.hero.settings.badge.info",
+      "default": "New in: the Glow Collection"
     },
     {
       "type": "text",
       "id": "heading",
       "label": "t:sections.hero.settings.heading.label",
-      "default": "NEW DROP"
+      "info": "t:sections.hero.settings.heading.info",
+      "default": "Skin that *glows*, every single day"
     },
     {
       "type": "text",
       "id": "subheading",
       "label": "t:sections.hero.settings.subheading.label",
-      "default": "Limited pieces. Once they're gone, they're gone."
+      "default": "Clean, dermatologist-tested skincare and makeup made for real life. Visible results in 14 days — or your money back."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:sections.hero.settings.button_label.label",
+      "default": "Shop bestsellers"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "t:sections.hero.settings.button_link.label"
+    },
+    {
+      "type": "text",
+      "id": "button_label_2",
+      "label": "t:sections.hero.settings.button_label_2.label",
+      "default": "Find my routine"
+    },
+    {
+      "type": "url",
+      "id": "button_link_2",
+      "label": "t:sections.hero.settings.button_link_2.label"
+    },
+    {
+      "type": "header",
+      "content": "Social proof"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_proof",
+      "label": "t:sections.hero.settings.show_proof.label",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "proof_rating",
+      "label": "t:sections.hero.settings.proof_rating.label",
+      "info": "t:sections.hero.settings.proof_rating.info",
+      "default": "4.9"
+    },
+    {
+      "type": "text",
+      "id": "proof_text",
+      "label": "t:sections.hero.settings.proof_text.label",
+      "default": "Loved by 10,000+ happy customers"
+    },
+    {
+      "type": "textarea",
+      "id": "perks",
+      "label": "t:sections.hero.settings.perks.label",
+      "info": "t:sections.hero.settings.perks.info",
+      "default": "Free shipping over $50\nCruelty-free\n30-day returns"
+    },
+    {
+      "type": "text",
+      "id": "float_top",
+      "label": "t:sections.hero.settings.float_top.label",
+      "default": "Dermatologist-tested"
+    },
+    {
+      "type": "text",
+      "id": "float_bottom",
+      "label": "t:sections.hero.settings.float_bottom.label",
+      "default": "2,300+ five-star reviews"
     },
     {
       "type": "select",
@@ -133,21 +267,9 @@
       "label": "t:sections.hero.settings.text_alignment.label",
       "options": [
         { "value": "left", "label": "t:sections.hero.settings.text_alignment.options__1" },
-        { "value": "center", "label": "t:sections.hero.settings.text_alignment.options__2" },
-        { "value": "right", "label": "t:sections.hero.settings.text_alignment.options__3" }
+        { "value": "center", "label": "t:sections.hero.settings.text_alignment.options__2" }
       ],
       "default": "left"
-    },
-    {
-      "type": "text",
-      "id": "button_label",
-      "label": "t:sections.hero.settings.button_label.label",
-      "default": "Shop the drop"
-    },
-    {
-      "type": "url",
-      "id": "button_link",
-      "label": "t:sections.hero.settings.button_link.label"
     },
     {
       "type": "header",
@@ -169,7 +291,7 @@
       "type": "text",
       "id": "countdown_heading",
       "label": "t:sections.hero.settings.countdown_heading.label",
-      "default": "Drops in"
+      "default": "Offer ends in"
     }
   ],
   "presets": [

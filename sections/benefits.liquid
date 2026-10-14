@@ -1,0 +1,143 @@
+<div class="section{% if section.settings.background == 'alt' %} section--alt{% endif %}">
+  <div class="container">
+    {%- if section.settings.heading != blank or section.settings.text != blank -%}
+      <div class="section__head section__head--center">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="eyebrow">{{ section.settings.eyebrow }}</p>
+        {%- endif -%}
+        {%- if section.settings.heading != blank -%}
+          <h2 class="h2">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.text != blank -%}
+          <p class="lead">{{ section.settings.text }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="benefits" style="--cols-desktop: {{ section.settings.columns_desktop }};">
+      {%- for block in section.blocks -%}
+        <div class="benefit{% if settings.animations_enabled %} reveal{% endif %}" {{ block.shopify_attributes }}>
+          {%- if block.settings.image != blank -%}
+            <img
+              class="benefit__image"
+              src="{{ block.settings.image | image_url: width: 800 }}"
+              alt="{{ block.settings.image.alt | escape }}"
+              width="{{ block.settings.image.width }}"
+              height="{{ block.settings.image.height }}"
+              loading="lazy"
+            >
+          {%- else -%}
+            <span class="benefit__icon">{% render 'icon', name: block.settings.icon %}</span>
+          {%- endif -%}
+          {%- if block.settings.heading != blank -%}
+            <h3>{{ block.settings.heading }}</h3>
+          {%- endif -%}
+          {%- if block.settings.text != blank -%}
+            <p>{{ block.settings.text }}</p>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Benefits grid",
+  "tag": "section",
+  "class": "benefits-section",
+  "max_blocks": 8,
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Why Jamalati"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Beauty you can feel good about"
+    },
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Text",
+      "default": "Every formula is built around one question: does it actually work, and is it kind to your skin?"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "label": "Columns on desktop",
+      "default": 4
+    },
+    {
+      "type": "select",
+      "id": "background",
+      "label": "Background",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "alt", "label": "Alternate" }
+      ],
+      "default": "default"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "benefit",
+      "name": "Benefit",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "leaf", "label": "Leaf (clean)" },
+            { "value": "face", "label": "Face (dermatologist-tested)" },
+            { "value": "rabbit", "label": "Cruelty-free" },
+            { "value": "sparkle", "label": "Sparkle (results)" },
+            { "value": "drop", "label": "Drop (hydration)" },
+            { "value": "shield", "label": "Shield (guarantee)" },
+            { "value": "heart", "label": "Heart" },
+            { "value": "truck", "label": "Truck" },
+            { "value": "gift", "label": "Gift" }
+          ],
+          "default": "sparkle"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image (optional, replaces the icon)"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Visible results in 14 days"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Text",
+          "default": "Clinically-backed actives at effective doses, so you see the difference — not just feel it."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Benefits grid",
+      "blocks": [
+        { "type": "benefit", "settings": { "icon": "sparkle", "heading": "Visible results in 14 days", "text": "Clinically-backed actives at effective doses, so you see the difference — not just feel it." } },
+        { "type": "benefit", "settings": { "icon": "leaf", "heading": "Clean ingredients", "text": "No parabens, sulfates, phthalates or synthetic fragrance. Ever." } },
+        { "type": "benefit", "settings": { "icon": "face", "heading": "Dermatologist-tested", "text": "Formulated and tested for sensitive skin, so everyone can glow." } },
+        { "type": "benefit", "settings": { "icon": "rabbit", "heading": "Cruelty-free & vegan", "text": "Never tested on animals. Always kind to the planet." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

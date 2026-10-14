@@ -1,10 +1,11 @@
 {%- comment -%}
-  Renders a price, handling sale, unit and "from" pricing.
+  Renders a price, handling sale, unit, savings and "from" pricing.
 
   Accepts:
   - product: {Object} product or variant (required)
   - use_variant: {Boolean} price the selected/first available variant instead of the product
   - show_compare: {Boolean} render the struck-through compare-at price (default true)
+  - show_savings: {Boolean} render a "Save X%" pill (defaults to settings.card_show_savings)
   - price_class: {String} extra class on the wrapper
   - id_prefix: {String} used to build data-target ids for JS updates
 
@@ -23,13 +24,20 @@
   assign price = target.price | default: 0
 
   assign on_sale = false
+  assign percent = 0
   if compare_at > price
     assign on_sale = true
+    assign percent = compare_at | minus: price | times: 100.0 | divided_by: compare_at | round
   endif
 
   assign show_from = false
   if product.price_varies and use_variant != true
     assign show_from = true
+  endif
+
+  assign savings = show_savings
+  if savings == null
+    assign savings = settings.card_show_savings
   endif
 
   if settings.currency_code_enabled
@@ -59,6 +67,12 @@
     >
       {{ money_compare }}
     </s>
+  {%- endif -%}
+
+  {%- if savings -%}
+    <span class="price__save" data-price-save {% unless on_sale %}hidden{% endunless %}>
+      {{ 'products.product.save_percent' | t: percent: percent }}
+    </span>
   {%- endif -%}
 
   {%- if target.unit_price_measurement -%}

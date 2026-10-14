@@ -1,0 +1,37 @@
+{%- comment -%}
+  Renders a 5-star rating row.
+
+  Accepts:
+  - rating: {Number} 0–5, decimals allowed (required)
+  - size: {String} 'small' | 'large' (optional)
+  - uid: {String} unique id suffix so half-star gradients don't collide (optional)
+
+  Usage:
+  {% render 'stars', rating: 4.8, size: 'small', uid: product.id %}
+{%- endcomment -%}
+
+{%- liquid
+  assign value = rating | default: 0 | times: 1.0
+  assign rounded = value | times: 2 | round | divided_by: 2.0
+  assign full = rounded | floor
+  assign has_half = rounded | minus: full
+  assign empty_count = 5 | minus: full
+  if has_half > 0
+    assign empty_count = empty_count | minus: 1
+  endif
+  assign star_label = 'accessibility.star_rating' | t: rating: value
+-%}
+
+<span class="stars{% if size %} stars--{{ size }}{% endif %}" role="img" aria-label="{{ star_label }}">
+  {%- for i in (1..full) -%}
+    {% render 'icon', name: 'star' %}
+  {%- endfor -%}
+  {%- if has_half > 0 -%}
+    {% render 'icon', name: 'star-half', uid: uid %}
+  {%- endif -%}
+  {%- if empty_count > 0 -%}
+    {%- for i in (1..empty_count) -%}
+      {% render 'icon', name: 'star-empty' %}
+    {%- endfor -%}
+  {%- endif -%}
+</span>

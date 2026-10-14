@@ -1,5 +1,5 @@
 /* ==========================================================================
-   House of Garments — product-form.js
+   Jamalati — product-form.js
    Variant selection and add-to-cart on the product page.
 
    Variant data is embedded as JSON by sections/main-product.liquid. Selecting
@@ -33,7 +33,9 @@
       this.sectionId = this.dataset.sectionId;
 
       this.variants = this.readVariants();
-      this.optionInputs = Array.from(this.querySelectorAll('[data-option-index]'));
+      // The variant picker is a sibling block, not a child of this element.
+      const scope = this.closest('.product') || document;
+      this.optionInputs = Array.from(scope.querySelectorAll('[data-option-index]'));
 
       this.optionInputs.forEach((input) => {
         input.addEventListener('change', () => this.onOptionChange());
@@ -97,7 +99,7 @@
     /**
      * Grey out any option value that produces no purchasable variant given the
      * other currently-selected options. Sizes are the option that matters here:
-     * limited runs sell out one size at a time.
+     * shades and sizes sell out independently.
      */
     markUnavailableOptions(selected) {
       this.optionInputs.forEach((input) => {
@@ -126,28 +128,49 @@
 
       if (current) current.textContent = formatMoney(variant.price);
 
+      const onSale = variant.compare_at_price && variant.compare_at_price > variant.price;
       if (compare) {
-        const onSale = variant.compare_at_price && variant.compare_at_price > variant.price;
         compare.textContent = onSale ? formatMoney(variant.compare_at_price) : '';
         compare.hidden = !onSale;
-        this.priceTarget.classList.toggle('price--on-sale', Boolean(onSale));
       }
+
+      const save = this.priceTarget.querySelector('[data-price-save]');
+      if (save) {
+        if (onSale) {
+          const percent = Math.round(((variant.compare_at_price - variant.price) / variant.compare_at_price) * 100);
+          save.textContent = save.textContent.replace(/\d+/, percent);
+        }
+        save.hidden = !onSale;
+      }
+
+      const price = this.priceTarget.querySelector('.price');
+      if (price) price.classList.toggle('price--on-sale', Boolean(onSale));
+
+      document.dispatchEvent(
+        new CustomEvent('variant:change', { detail: { variant, formatted: formatMoney(variant.price) } })
+      );
     }
 
     updateInventory(variant) {
       if (!this.inventoryTarget) return;
 
+      if (this.dataset.showStock === 'false') {
+        this.inventoryTarget.hidden = true;
+        return;
+      }
+
       const quantity = variant.inventory_quantity;
       const managed = variant.inventory_management === 'shopify';
-      const low = managed && variant.available && quantity > 0 && quantity <= 5;
+      const threshold = parseInt(this.dataset.lowStock, 10) || 10;
+      const low = managed && variant.available && quantity > 0 && quantity <= threshold;
 
       this.inventoryTarget.classList.toggle('product__inventory--low', low);
 
       if (low) {
-        this.inventoryTarget.textContent = (strings.lowStock || 'Only {{ count }} left').replace(
-          '{{ count }}',
-          quantity
-        );
+        this.inventoryTarget.textContent = (strings.lowStock || 'Only __COUNT__ left').replace('__COUNT__', quantity);
+        this.inventoryTarget.hidden = false;
+      } else if (variant.available) {
+        this.inventoryTarget.textContent = strings.inStock || 'In stock';
         this.inventoryTarget.hidden = false;
       } else {
         this.inventoryTarget.hidden = true;
@@ -192,7 +215,7 @@
     }
 
     async onSubmit(event) {
-      if (!window.HOG || typeof window.HOG.addToCart !== 'function') return; // let it post natively
+      if (!window.JAM || typeof window.JAM.addToCart !== 'function') return; // let it post natively
       event.preventDefault();
 
       const original = this.submitButton
@@ -202,7 +225,7 @@
       this.setButton(strings.adding || 'Adding…', true);
 
       try {
-        await window.HOG.addToCart(new FormData(this.form), this.submitButton);
+        await window.JAM.addToCart(new FormData(this.form), this.submitButton);
         this.setButton(strings.added || 'Added', false);
         window.setTimeout(() => this.setButton(original, false), 1800);
       } catch (error) {

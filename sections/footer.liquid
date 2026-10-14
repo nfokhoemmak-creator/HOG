@@ -17,8 +17,19 @@
             {%- when 'text' -%}
               {%- if block.settings.heading != blank -%}
                 <h2 class="footer__heading">{{ block.settings.heading }}</h2>
+              {%- else -%}
+                {%- if settings.logo != blank -%}
+                  <img class="footer__logo" src="{{ settings.logo | image_url: width: 400 }}" alt="{{ shop.name | escape }}" width="{{ settings.logo.width }}" height="{{ settings.logo.height }}" loading="lazy">
+                {%- else -%}
+                  <img class="footer__logo" src="{{ 'jamalati-logo.png' | asset_url }}" alt="{{ shop.name | escape }}" width="1462" height="399" loading="lazy">
+                {%- endif -%}
               {%- endif -%}
               <div class="footer__menu">{{ block.settings.text }}</div>
+              {%- if section.settings.show_social -%}
+                <div style="margin-top: var(--space-4);">
+                  {% render 'social-links' %}
+                </div>
+              {%- endif -%}
 
             {%- when 'contact' -%}
               {%- if block.settings.heading != blank -%}
@@ -68,12 +79,6 @@
               <p class="form__success">{{ 'general.newsletter_form.confirmation' | t }}</p>
             {%- endif -%}
           {%- endform -%}
-
-          {%- if section.settings.show_social -%}
-            <div style="margin-top: var(--space-4);">
-              {% render 'social-links' %}
-            </div>
-          {%- endif -%}
         </div>
       {%- endif -%}
     </div>
@@ -112,7 +117,7 @@
       "type": "text",
       "id": "newsletter_heading",
       "label": "t:sections.footer.settings.newsletter_heading.label",
-      "default": "Get the drop first"
+      "default": "Get 10% off your first order"
     },
     {
       "type": "checkbox",
@@ -154,13 +159,13 @@
           "type": "text",
           "id": "heading",
           "label": "t:sections.footer.blocks.text.settings.heading.label",
-          "default": "House of Garments"
+          "info": "Leave empty to show the logo instead."
         },
         {
           "type": "richtext",
           "id": "text",
           "label": "t:sections.footer.blocks.text.settings.text.label",
-          "default": "<p>Limited-run streetwear out of Lebanon.</p>"
+          "default": "<p>Clean, effective beauty made to be loved every day.</p>"
         }
       ]
     },
