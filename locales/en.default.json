@@ -100,7 +100,12 @@
       "upsell_add": "Add",
       "shipping_flat": "Shipping",
       "shipping_flat_note": "flat rate, Lebanon",
-      "estimated_total": "Estimated total"
+      "estimated_total": "Estimated total",
+      "free_shipping_qty_remaining_html": {
+        "one": "Add <strong>1 more</strong> plumper and shipping is free",
+        "other": "Add <strong>{{ count }} more</strong> plumpers and shipping is free"
+      },
+      "shipping_free": "Free"
     },
     "featured_collection": {
       "view_all": "View all"
@@ -218,7 +223,7 @@
       },
       "flavor": "Flavor",
       "selected": "Selected",
-      "price_note": "+ $4 flat shipping · Cash on delivery"
+      "price_note": "+ $4 flat shipping · Free on 3+ · Cash on delivery"
     },
     "facets": {
       "apply": "Apply",

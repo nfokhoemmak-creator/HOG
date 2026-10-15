@@ -5,12 +5,28 @@
 {%- endcomment -%}
 
 {%- liquid
-  assign threshold = settings.cart_free_shipping_threshold | times: 100
-  assign remaining = threshold | minus: cart.total_price
-  assign remaining_money = remaining | money
+  assign bar_mode = settings.cart_free_shipping_bar | default: 'none'
+  assign threshold = settings.cart_free_shipping_threshold | default: 0 | times: 100
+  assign free_qty = settings.cart_free_shipping_qty | default: 0
   assign progress = 0
-  if threshold > 0
+  assign shipping_free = false
+  assign show_bar = false
+
+  if bar_mode == 'amount' and threshold > 0
+    assign show_bar = true
+    assign remaining = threshold | minus: cart.total_price
+    assign remaining_money = remaining | money
     assign progress = cart.total_price | times: 100 | divided_by: threshold | at_most: 100
+    if remaining <= 0
+      assign shipping_free = true
+    endif
+  elsif bar_mode == 'quantity' and free_qty > 0
+    assign show_bar = true
+    assign remaining_qty = free_qty | minus: cart.item_count
+    assign progress = cart.item_count | times: 100 | divided_by: free_qty | at_most: 100
+    if remaining_qty <= 0
+      assign shipping_free = true
+    endif
   endif
 -%}
 
@@ -30,13 +46,15 @@
       </button>
     </div>
 
-    {%- if settings.cart_free_shipping_bar and threshold > 0 -%}
-      <div class="shipping-bar{% if remaining <= 0 %} shipping-bar--unlocked{% endif %}">
+    {%- if show_bar and cart.item_count > 0 -%}
+      <div class="shipping-bar{% if shipping_free %} shipping-bar--unlocked{% endif %}">
         <p class="shipping-bar__text">
-          {%- if remaining > 0 -%}
-            {{ 'sections.cart.free_shipping_remaining_html' | t: amount: remaining_money }}
-          {%- else -%}
+          {%- if shipping_free -%}
             {{ 'sections.cart.free_shipping_unlocked' | t }}
+          {%- elsif bar_mode == 'quantity' -%}
+            {{ 'sections.cart.free_shipping_qty_remaining_html' | t: count: remaining_qty }}
+          {%- else -%}
+            {{ 'sections.cart.free_shipping_remaining_html' | t: amount: remaining_money }}
           {%- endif -%}
         </p>
         <div class="shipping-bar__track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ progress }}">
@@ -217,11 +235,19 @@
         {%- if flat_shipping > 0 -%}
           <div class="cart-totals cart-totals--secondary">
             <span>{{ 'sections.cart.shipping_flat' | t }} <span class="muted">({{ 'sections.cart.shipping_flat_note' | t }})</span></span>
-            <span>{{ flat_shipping | money }}</span>
+            {%- if shipping_free -%}
+              <span><s class="muted">{{ flat_shipping | money }}</s> <strong class="accent">{{ 'sections.cart.shipping_free' | t }}</strong></span>
+            {%- else -%}
+              <span>{{ flat_shipping | money }}</span>
+            {%- endif -%}
           </div>
           <div class="cart-totals">
             <span>{{ 'sections.cart.estimated_total' | t }}</span>
-            <span>{{ cart.total_price | plus: flat_shipping | money }}</span>
+            {%- if shipping_free -%}
+              <span>{{ cart.total_price | money }}</span>
+            {%- else -%}
+              <span>{{ cart.total_price | plus: flat_shipping | money }}</span>
+            {%- endif -%}
           </div>
         {%- endif -%}
 

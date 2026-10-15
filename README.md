@@ -23,8 +23,8 @@ story → gallery → FAQ → email capture.
    wired up — you only need to:
    - drop in two before/after photos (Before / after section),
    - add your WhatsApp number under **Theme settings → Social**,
-   - create the `WELCOME10` discount and the “buy 2, get the 3rd free”
-     automatic discount (Discounts → Create), or edit those two messages,
+   - the `WELCOME10` code and the automatic “free shipping on 3+ items”
+     discount already exist in Discounts; edit the site copy if you change them,
    - replace the sample reviews with real ones.
 4. Preview on your phone, then **Publish**.
 
@@ -81,7 +81,7 @@ scripts/          validate-json.mjs, package-zip.mjs
 | Newsletter | "Get 10% off" email capture (tags subscribers `newsletter`) | Newsletter section + footer |
 | Product page | Rating, “+ $4 shipping · cash on delivery” under the price, benefit checklist, **flavor switcher** across the five products, stock urgency, trust icons, guarantee box, how-to-use / ingredients accordions, WhatsApp share | Product template blocks |
 | Sticky add-to-cart | Bottom bar appears when the main button scrolls away | Product section settings |
-| Cart drawer | Subtotal + $4 flat shipping + estimated total (no checkout surprises), “add another flavor” upsell, optional free-shipping progress bar | Theme settings → Cart |
+| Cart drawer | Subtotal + $4 flat shipping + estimated total (no checkout surprises), “add 1 more plumper and shipping is free” progress bar, “add another flavor” upsell | Theme settings → Cart |
 | WhatsApp | Floating chat button | Theme settings → Social |
 
 ## Design system

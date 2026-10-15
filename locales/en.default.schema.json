@@ -176,12 +176,15 @@
           "options__2": "Page"
         },
         "cart_free_shipping_bar": {
-          "label": "Show free shipping progress bar",
-          "info": "Only turn this on if you also create a free-shipping rate in Settings → Shipping."
+          "label": "Free shipping progress bar",
+          "options__1": "Off",
+          "options__2": "Based on number of items",
+          "options__3": "Based on order amount",
+          "info": "Must match an automatic free shipping discount in Discounts, otherwise checkout will still charge shipping."
         },
         "cart_free_shipping_threshold": {
-          "label": "Free shipping threshold",
-          "info": "In your store currency, e.g. 50 for $50."
+          "label": "Order amount for free shipping",
+          "info": "Used when the bar is based on order amount. In your store currency, e.g. 50 for $50."
         },
         "cart_show_note": {
           "label": "Enable order notes"
@@ -192,6 +195,10 @@
         "cart_flat_shipping": {
           "label": "Flat shipping rate",
           "info": "Shown in the cart as an estimate so there are no surprises at checkout. Must match the rate in Settings → Shipping. Set to 0 to hide."
+        },
+        "cart_free_shipping_qty": {
+          "label": "Items needed for free shipping",
+          "info": "Used when the bar is based on number of items."
         }
       }
     },

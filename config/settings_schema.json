@@ -358,11 +358,23 @@
         "info": "t:settings_schema.cart.settings.cart_flat_shipping.info"
       },
       {
-        "type": "checkbox",
+        "type": "select",
         "id": "cart_free_shipping_bar",
         "label": "t:settings_schema.cart.settings.cart_free_shipping_bar.label",
-        "default": false,
+        "options": [
+          { "value": "none", "label": "t:settings_schema.cart.settings.cart_free_shipping_bar.options__1" },
+          { "value": "quantity", "label": "t:settings_schema.cart.settings.cart_free_shipping_bar.options__2" },
+          { "value": "amount", "label": "t:settings_schema.cart.settings.cart_free_shipping_bar.options__3" }
+        ],
+        "default": "quantity",
         "info": "t:settings_schema.cart.settings.cart_free_shipping_bar.info"
+      },
+      {
+        "type": "number",
+        "id": "cart_free_shipping_qty",
+        "label": "t:settings_schema.cart.settings.cart_free_shipping_qty.label",
+        "default": 3,
+        "info": "t:settings_schema.cart.settings.cart_free_shipping_qty.info"
       },
       {
         "type": "number",

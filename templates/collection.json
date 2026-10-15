@@ -10,13 +10,212 @@
     "product-grid": {
       "type": "main-collection",
       "settings": {
-        "columns_desktop": 4,
+        "columns_desktop": 5,
         "columns_mobile": "2",
-        "show_filters": true,
-        "show_sort": true,
-        "show_count": true
+        "show_filters": false,
+        "show_sort": false,
+        "show_count": false
+      }
+    },
+    "trust": {
+      "type": "trust-bar",
+      "blocks": {
+        "t1": {
+          "type": "item",
+          "settings": {
+            "icon": "truck",
+            "heading": "$4 flat shipping",
+            "text": "Free when you buy 3 or more"
+          }
+        },
+        "t2": {
+          "type": "item",
+          "settings": {
+            "icon": "cash",
+            "heading": "Cash on delivery",
+            "text": "Pay when it arrives"
+          }
+        },
+        "t3": {
+          "type": "item",
+          "settings": {
+            "icon": "clock",
+            "heading": "Delivered in 1–3 days",
+            "text": "Ships within 24 hours"
+          }
+        },
+        "t4": {
+          "type": "item",
+          "settings": {
+            "icon": "rabbit",
+            "heading": "Cruelty-free",
+            "text": "Never tested on animals"
+          }
+        }
+      },
+      "block_order": [
+        "t1",
+        "t2",
+        "t3",
+        "t4"
+      ],
+      "settings": {}
+    },
+    "how-it-works": {
+      "type": "how-it-works",
+      "blocks": {
+        "s1": {
+          "type": "step",
+          "settings": {
+            "heading": "Swipe it on",
+            "text": "Apply a generous layer to clean lips. Wear it alone as a glossy nude or over your favorite lipstick."
+          }
+        },
+        "s2": {
+          "type": "step",
+          "settings": {
+            "heading": "Feel the tingle",
+            "text": "Within seconds you'll feel a warm, tingly buzz. That's the plumping actives waking up your lips."
+          }
+        },
+        "s3": {
+          "type": "step",
+          "settings": {
+            "heading": "Watch them plump",
+            "text": "In about a minute the tingle fades and your lips look visibly fuller, smoother and glossier. Reapply anytime."
+          }
+        }
+      },
+      "block_order": [
+        "s1",
+        "s2",
+        "s3"
+      ],
+      "settings": {
+        "eyebrow": "How it works",
+        "heading": "One swipe. Sixty seconds. Fuller lips.",
+        "text": "No needles, no appointments, no downtime. Just a gloss that gets to work the moment it touches your lips.",
+        "button_label": "Pick my flavor",
+        "button_link": "/collections/lip-plumpers",
+        "background": "alt"
+      }
+    },
+    "reviews": {
+      "type": "testimonials",
+      "blocks": {
+        "r1": {
+          "type": "testimonial",
+          "settings": {
+            "rating": 5,
+            "quote": "I was so close to booking filler. Tried this instead and my lips looked fuller in a minute. The strawberry one tastes amazing too.",
+            "name": "Maya K.",
+            "product": "Strawberry",
+            "verified": true
+          }
+        },
+        "r2": {
+          "type": "testimonial",
+          "settings": {
+            "rating": 5,
+            "quote": "The tingle is real but it fades fast and the plump actually shows in photos. I wear it over my nude lipstick every day.",
+            "name": "Nour H.",
+            "product": "Pomegranate",
+            "verified": true
+          }
+        },
+        "r3": {
+          "type": "testimonial",
+          "settings": {
+            "rating": 5,
+            "quote": "Ordered Tuesday, delivered to Beirut Thursday, paid cash at the door. Already ordering vanilla for my sister.",
+            "name": "Lea S.",
+            "product": "Vanilla",
+            "verified": true
+          }
+        }
+      },
+      "block_order": [
+        "r1",
+        "r2",
+        "r3"
+      ],
+      "settings": {
+        "eyebrow": "Real results",
+        "heading": "Lips all over Lebanon are loving it",
+        "summary_rating": "4.9",
+        "summary_text": "average rating from verified buyers",
+        "columns_desktop": 3,
+        "background": "alt"
+      }
+    },
+    "faq": {
+      "type": "faq",
+      "blocks": {
+        "q1": {
+          "type": "question",
+          "settings": {
+            "question": "Does it hurt? What does the tingle feel like?",
+            "answer": "<p>You'll feel a warm, tingly buzz for a few minutes — that's the plumping actives boosting circulation in your lips. It fades on its own; the plump stays. If your lips are cracked or very sensitive, start with a thin layer.</p>"
+          }
+        },
+        "q2": {
+          "type": "question",
+          "settings": {
+            "question": "How long does the plump last?",
+            "answer": "<p>Most people see fuller-looking lips for a few hours after each application. Reapply whenever you like — it doubles as a hydrating gloss.</p>"
+          }
+        },
+        "q3": {
+          "type": "question",
+          "settings": {
+            "question": "Can I wear it with lipstick?",
+            "answer": "<p>Yes. Wear it alone for a glossy nude, layer it over your lipstick for extra volume and shine, or apply it first and let the tingle settle before your usual look.</p>"
+          }
+        },
+        "q4": {
+          "type": "question",
+          "settings": {
+            "question": "Which flavor should I pick?",
+            "answer": "<p>Strawberry and Raspberry are sweet and fruity, Pomegranate is tart and juicy, Vanilla is soft and creamy, and Mercury is our fresh, crisp signature. Can't decide? Pick any three and shipping is free.</p>"
+          }
+        },
+        "q5": {
+          "type": "question",
+          "settings": {
+            "question": "How much is shipping and how fast is delivery?",
+            "answer": "<p>Shipping is a flat $4 anywhere in Lebanon. Orders ship within 24 hours and arrive in 1–3 business days. Cash on delivery is available, or pay securely by card.</p>"
+          }
+        },
+        "q6": {
+          "type": "question",
+          "settings": {
+            "question": "What if it doesn't work for me?",
+            "answer": "<p>Message us on WhatsApp within 30 days and we'll sort out a refund or exchange. We want you to love your lips.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "q1",
+        "q2",
+        "q3",
+        "q4",
+        "q5",
+        "q6"
+      ],
+      "settings": {
+        "eyebrow": "Good to know",
+        "heading": "Questions? We've got answers.",
+        "open_first": true,
+        "background": "alt"
       }
     }
   },
-  "order": ["banner", "product-grid"]
+  "order": [
+    "banner",
+    "product-grid",
+    "trust",
+    "how-it-works",
+    "reviews",
+    "faq"
+  ]
 }

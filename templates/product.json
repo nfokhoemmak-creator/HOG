@@ -16,7 +16,7 @@
         "price": {
           "type": "price",
           "settings": {
-            "note": "+ $4 flat shipping anywhere in Lebanon · Cash on delivery"
+            "note": "+ $4 flat shipping · Free shipping on 3+ · Cash on delivery"
           }
         },
         "benefits": {
@@ -130,7 +130,7 @@
       "settings": {
         "eyebrow": "Try another flavor",
         "title": "More flavors to love",
-        "subtitle": "Buy any 2 and get the 3rd free.",
+        "subtitle": "Add any 3 flavors and shipping is free.",
         "collection": "lip-plumpers",
         "products_to_show": 5,
         "columns_desktop": 5,
